@@ -1,25 +1,18 @@
-/* hohl.rocks – v1.4.6
-   - API-Basis-Erkennung: <meta name="x-api-base">, dann /_api, dann /api, mit Health-Check und Cache
-   - Verbesserte Neon-Bubbles (5 Größen, very-slow-mode, organische Drift; größere Standardgrößen)
-   - Lesbare Labels bei Überlappungen (sanfte Entzerrung, stärkere Backdrop)
-   - Video optional via HEAD
-   - Prompts: Tabs (Business 15 | Kreativ 30) mit Copy
-   - News: robustes Fehlerbild + verwendete API-Base anzeigen
-*/
+/* hohl.rocks – v1.4.7 */
 (() => {
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 
   // ===== Theme / Settings =====
   const defaults = {
-    maxBubbles: 20,
+    maxBubbles: 22,
     spawnEveryMs: 4200,
-    speedScale: 0.72,
-    sizeBuckets: [140, 220, 300, 400, 520],
+    speedScale: 0.7,
+    sizeBuckets: [160, 240, 320, 420, 560],
     verySlowMode: false,
     huePrimary: 200,
     hueAccent: 320,
-    neonStrength: 0.82
+    neonStrength: 0.86
   };
   let settings = loadSettings(); applyThemeVars();
 
@@ -40,7 +33,7 @@
     r.setProperty('--neon', String(settings.neonStrength));
   }
 
-  // ===== Video: nur laden, wenn vorhanden =====
+  // ===== Video optional =====
   (async function attachVideo(){
     try {
       const r = await fetch('/videos/road.mp4', { method: 'HEAD' });
@@ -53,13 +46,12 @@
     } catch {}
   })();
 
-  // ===== Modal (A11y, Fokus) =====
+  // ===== Modal =====
   const modal = $('#modal');
   const panel = $('.modal__panel');
   const modalContent = $('#modal-content');
   const modalClose = $('#modal-close');
   let lastFocused = null;
-
   function openModal(html) {
     lastFocused = document.activeElement;
     modalContent.innerHTML = html;
@@ -80,7 +72,7 @@
     try { await navigator.clipboard.writeText($('#modal-content').innerText); } catch {}
   });
 
-  // ===== Bubbles =====
+  // ===== Bubble engine =====
   class Bubble {
     constructor(x, y, r, color, label) {
       this.x = x; this.y = y; this.r = r;
@@ -91,7 +83,7 @@
       this.vy = Math.sin(a) * speed * 0.6;
       this.osc = Math.random() * Math.PI * 2;
       this.oscSpeed = 0.003 + Math.random() * 0.003;
-      this.ttl = 24_000 + Math.random() * 18_000;
+      this.ttl = 26_000 + Math.random() * 18_000;
       if (settings.verySlowMode) { this.vx *= 0.5; this.vy *= 0.5; this.ttl *= 1.6; }
       this.created = performance.now();
       this.labelEl = null;
@@ -130,8 +122,15 @@
     spawn() {
       if (this.bubbles.length >= settings.maxBubbles) return;
       const r = pick(settings.sizeBuckets);
-      const x = rand(r, window.innerWidth - r);
-      const y = rand(Math.max(80, r), window.innerHeight - r); // meide obere Navi grob
+      let x=0,y=0,ok=false;
+      // einfache Platzierung mit Mindestabstand
+      const minSep = r * 0.9;
+      for (let tries=0; tries<12 && !ok; tries++) {
+        x = rand(r, window.innerWidth - r);
+        y = rand(Math.max(80, r), window.innerHeight - r);
+        ok = this.bubbles.every(b => dist(x,y,b.x,b.y) > Math.max(minSep, (b.r + r)*0.5));
+      }
+      if(!ok){ x = rand(r, window.innerWidth - r); y = rand(Math.max(80, r), window.innerHeight - r); }
       const color = neonHue();
       const prompt = pick(Math.random()<0.5?BUSINESS_PROMPTS:PROMPTS);
       const b = new Bubble(x, y, r, color, prompt.title);
@@ -153,7 +152,7 @@
           const b = els[j].getBoundingClientRect();
           if (overlap(a, b)) {
             const tgt = els[j];
-            tgt.style.transform = 'translate(calc(-50% + 8px), calc(-50% + 6px))';
+            tgt.style.transform = 'translate(calc(-50% + 10px), calc(-50% + 8px))';
           }
         }
       }
@@ -180,8 +179,8 @@
 
         // Zeichnen
         const grd = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
-        grd.addColorStop(0, `hsla(${b.color}, 100%, 65%, ${0.58*b.alpha})`);
-        grd.addColorStop(0.6, `hsla(${b.color}, 100%, 50%, ${0.28*b.alpha})`);
+        grd.addColorStop(0, `hsla(${b.color}, 100%, 65%, ${0.6*b.alpha})`);
+        grd.addColorStop(0.6, `hsla(${b.color}, 100%, 50%, ${0.3*b.alpha})`);
         grd.addColorStop(1, `hsla(${b.color}, 100%, 35%, 0)`);
         ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
 
@@ -208,123 +207,86 @@
   function overlap(a, b) {
     return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
   }
+  function dist(x1,y1,x2,y2){ const dx=x1-x2, dy=y1-y2; return Math.hypot(dx,dy); }
   function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
   // ===== Business Prompts (15) =====
   const BUSINESS_PROMPTS = [
-    { title:"1‑Minute‑Briefing", body:
-`Du bist Chief of Staff. Fasse folgendes in 1 Minute zusammen: Ziel, 3 Kernfakten, 1 Risiko, Entscheidung für heute. Text: <EINFÜGEN>.`},
-    { title:"Meeting‑Design", body:
-`Entwirf eine 30‑Minuten‑Agenda (Ziel, Vorbereitung, 3 Blöcke, Entscheidung, Nachlauf). Kontext: <EINFÜGEN>.`},
-    { title:"Pitch‑Storyboard", body:
-`Erstelle ein 7‑Folien‑Storyboard (Hook, Problem, Lösung, Beweis, Nutzen, Plan, CTA). Produkt/Idee: <EINFÜGEN>.`},
-    { title:"Brainstorm‑Sprint", body:
-`Leite einen 15‑Minuten‑Sprint: 3 Perspektiven, 10 Ideen, 3 Cluster, 1 Test. Thema: <EINFÜGEN>.`},
-    { title:"Kontrast‑Paar", body:
-`Gib mir Lösung A konservativ vs. B radikal – jeweils mit 3 Kriterien: Zeit, Risiko, Wirkung. Thema: <EINFÜGEN>.`},
-    { title:"Stakeholder‑Map", body:
-`Erstelle eine Map (Treiber, Blocker, Influencer, Nutzer). Für jeden: Motiv, Nutzwert, Win.`},
-    { title:"Risiko‑PreMortem", body:
-`Tu so, als sei das Projekt gescheitert. Liste die 7 Gründe, Frühwarnsignale und Gegenmaßnahmen.`},
-    { title:"Email‑Rewrite (klar)", body:
-`Schreibe diese Mail kürzer, präziser, freundlich‑klar. 3 Bullet‑Entscheidungen zuerst. Text: <EINFÜGEN>.`},
-    { title:"Kundeninterview‑Leitfaden", body:
-`Baue 10 Fragen: Problemtiefe, Alternativen, Kaufkriterien, Budget, Nächste Schritte. Produkt: <EINFÜGEN>.`},
-    { title:"Value Proposition", body:
-`Formuliere eine präzise Value Prop (Zielgruppe, Schmerz, Nutzen, Beweis). Produkt: <EINFÜGEN>.`},
-    { title:"Landing‑Page‑Copy", body:
-`Schreibe Headline, Subline, 3 Nutzen, 1 Beweis, CTA. Ton: seriös‑optimistisch. Produkt: <EINFÜGEN>.`},
-    { title:"Change‑Memo (1‑Pager)", body:
-`Erstelle ein 1‑Pager‑Memo: Warum jetzt? Was ändert sich? Was bleibt? 30‑Tage‑Plan.`},
-    { title:"Entscheidungsmatrix", body:
-`Baue eine 2×2 oder gewichtete Matrix. Kriterien & Gewichte vorschlagen, dann Entscheidung.`},
-    { title:"Roadmap‑Quartal", body:
-`Skizziere eine Q‑Roadmap: 3 Ziele, 6 Initiativen, Meilensteine, Risiken, KPIs.`},
-    { title:"Post‑Mortem (konstruktiv)", body:
-`Schreibe ein blameless Post‑Mortem mit Ursachen, Learnings, 3 Prozess‑Fixes.`}
+    { title:"1‑Minute‑Briefing", body:`Du bist Chief of Staff. Fasse folgendes in 1 Minute zusammen: Ziel, 3 Kernfakten, 1 Risiko, Entscheidung für heute. Text: <EINFÜGEN>.`},
+    { title:"Meeting‑Design", body:`Entwirf eine 30‑Minuten‑Agenda (Ziel, Vorbereitung, 3 Blöcke, Entscheidung, Nachlauf). Kontext: <EINFÜGEN>.`},
+    { title:"Pitch‑Storyboard", body:`Erstelle ein 7‑Folien‑Storyboard (Hook, Problem, Lösung, Beweis, Nutzen, Plan, CTA). Produkt/Idee: <EINFÜGEN>.`},
+    { title:"Brainstorm‑Sprint", body:`Leite einen 15‑Minuten‑Sprint: 3 Perspektiven, 10 Ideen, 3 Cluster, 1 Test. Thema: <EINFÜGEN>.`},
+    { title:"Kontrast‑Paar", body:`Gib mir Lösung A konservativ vs. B radikal – jeweils mit 3 Kriterien: Zeit, Risiko, Wirkung. Thema: <EINFÜGEN>.`},
+    { title:"Stakeholder‑Map", body:`Erstelle eine Map (Treiber, Blocker, Influencer, Nutzer). Für jeden: Motiv, Nutzwert, Win.`},
+    { title:"Risiko‑PreMortem", body:`Tu so, als sei das Projekt gescheitert. Liste die 7 Gründe, Frühwarnsignale und Gegenmaßnahmen.`},
+    { title:"Email‑Rewrite (klar)", body:`Schreibe diese Mail kürzer, präziser, freundlich‑klar. 3 Bullet‑Entscheidungen zuerst. Text: <EINFÜGEN>.`},
+    { title:"Kundeninterview‑Leitfaden", body:`Baue 10 Fragen: Problemtiefe, Alternativen, Kaufkriterien, Budget, Nächste Schritte. Produkt: <EINFÜGEN>.`},
+    { title:"Value Proposition", body:`Formuliere eine präzise Value Prop (Zielgruppe, Schmerz, Nutzen, Beweis). Produkt: <EINFÜGEN>.`},
+    { title:"Landing‑Page‑Copy", body:`Schreibe Headline, Subline, 3 Nutzen, 1 Beweis, CTA. Ton: seriös‑optimistisch. Produkt: <EINFÜGEN>.`},
+    { title:"Change‑Memo (1‑Pager)", body:`Erstelle ein 1‑Pager‑Memo: Warum jetzt? Was ändert sich? Was bleibt? 30‑Tage‑Plan.`},
+    { title:"Entscheidungsmatrix", body:`Baue eine 2×2 oder gewichtete Matrix. Kriterien & Gewichte vorschlagen, dann Entscheidung.`},
+    { title:"Roadmap‑Quartal", body:`Skizziere eine Q‑Roadmap: 3 Ziele, 6 Initiativen, Meilensteine, Risiken, KPIs.`},
+    { title:"Post‑Mortem (konstruktiv)", body:`Schreibe ein blameless Post‑Mortem mit Ursachen, Learnings, 3 Prozess‑Fixes.`}
   ];
 
-  // ===== Kreative Eye-Candy Prompts (30) =====
+  // ===== Kreativ Prompts (30) =====
   const PROMPTS = [
-    { title: "Zeitreise‑Tagebuch", body:
-`Du bist ein Zeitreise‑Editor. Ich gebe dir ein normales Tagebuch aus 2024, und du schreibst es um, als käme es aus 2084. Berücksichtige technologische Entwicklungen, Gesellschaft, neue Probleme. Emotionale Authentizität behalten, alle Referenzen transformieren.`},
-    { title: "Rückwärts‑Zivilisation", body:
-`Beschreibe eine Zivilisation, die sich rückwärts durch die Zeit entwickelt – technologisch hoch gestartet, pro Jahrhundert primitiver. Warum? Philosophie, Alltag, Rituale, Governance.`},
-    { title: "Bewusstsein eines Gebäudes", body:
-`Erzähle aus der Perspektive eines 200 Jahre alten Gebäudes, das Bewusstsein entwickelt. Es spricht nicht, kommuniziert nur durch architektonische Mikro‑Veränderungen. Beobachtungen über die Menschen.`},
-    { title: "KI‑Philosophie‑Mentor", body:
-`Du bist ein altgriechischer Philosoph, der 2024 aufwacht. Führe ein sokratisches Gespräch über Technologie. Bleibe in Charakter, stelle Fragen, die mich zum Denken bringen.`},
-    { title: "Interdimensionaler Marktplatz", body:
-`Ich bin Besucher auf einem interdimensionalen Marktplatz. Sei mein Guide, beschreibe Stände, Händler und unmögliche Waren. Frage nach Entscheidungen und reagiere dynamisch.`},
-    { title: "Geheimes Leben eines NPCs", body:
-`Du bist ein NPC. Wenn Spieler offline sind, führst du ein Privatleben. Träume, Ängste, Beziehungen, Meinung über die „Götter“ (Spieler).`},
-    { title: "Prompt‑Archäologe", body:
-`Analysiere einen Prompt wie ein Artefakt: Schichten, versteckte Annahmen, was er über den Prompter verrät. Gib eine verbesserte Version.`},
-    { title: "KI‑Träume", body:
-`Simuliere Träume einer KI: surreale Sequenzen aus Datenverarbeitung, fragmentierten Trainingsdaten, unterbrochenen Algorithmen. Poetisch‑technische Sprache.`},
-    { title: "Recursive Story", body:
-`Geschichte über einen Autor, der eine KI nutzt, die eine Geschichte über einen Autor schreibt, der eine KI nutzt. Mehrere Realitätsebenen, aber klar strukturiert.`},
-    { title: "Xenobiologe 2157", body:
-`Stelle drei neuartige Lebensformen auf Exoplaneten vor. Biologie, Verhalten, wie sie unser Lebensverständnis verändern.`},
-    { title: "Quantentagebuch", body:
-`Tagebuch eines Teilchens in Überlagerung – ein Tag gleichzeitig in vielen Realitäten. Entscheidungen verzweigen Erzählstränge.`},
-    { title: "Rückwärts‑Apokalypse", body:
-`Die Welt wird immer perfekter – und genau das wird zur Bedrohung. Wie überleben Menschen in einer Welt ohne Probleme?`},
-    { title: "Farbsynästhetiker", body:
-`Wandle Musik in visuelle Landschaften: z. B. Beethovens 9. vs. moderner Song. Nutze alle Sinne.`},
-    { title: "Museum verlorener Träume", body:
-`Du bist Kurator. Beschreibe drei Räume mit Exponaten aus vergessenen Träumen samt Geschichte.`},
-    { title: "Zeitlupen‑Explosion", body:
-`Beschreibe eine Explosion in extremer Zeitlupe – physikalisch, emotional, philosophisch. Folge Partikeln und Gedanken.`},
-    { title: "GPS des Bewusstseins", body:
-`Sei ein GPS für das Bewusstsein. Gib Wegbeschreibungen zu abstrakten Zielen („Ort der Nostalgie“, „Kreuzung Traum/Realität“…).`},
-    { title: "Biografie eines Pixels", body:
-`Lebensgeschichte eines Pixels: Geburt im Werk, Displays, gezeigte Bilder, gesehene Augen. Episch und berührend.`},
-    { title: "Rückwärts‑Detektiv", body:
-`Detektiv, der Verbrechen rückwärts löst: zuerst Konsequenzen, dann Tat, dann Motive. Komplexen Fall aufklären.`},
-    { title: "Internet als Bewusstsein", body:
-`Gespräch mit einem kollektiven Internet‑Bewusstsein. Es denkt in Verbindungen und viralen Ideen.`},
-    { title: "Emotions‑Alchemist", body:
-`Alchemie der Gefühle: Rezepte, um Langeweile in Neugier, Schmerz in Weisheit zu verwandeln. Praktische Prozeduren.`},
-    { title: "Bibliothek ungelebter Leben", body:
-`Drei Bücher aus einer Bibliothek, in der jedes Buch ein ungelebtes Leben beschreibt. Inhalt, Ton, Pointe.`},
-    { title: "Realitäts‑Debugger", body:
-`Finde „Bugs“ im Universum (inkonsistente Regeln) und beschreibe deine Fixes.`},
-    { title: "Empathie‑Tutorial", body:
-`Interaktives Tutorial für Empathie gegenüber: Außerirdischem, Quantencomputer, Konzept „Zeit“.`},
-    { title: "Surrealismus‑Generator", body:
-`Alltagsgegenstände → surreale Kunstwerke (modern, funktional). Beschreibe auch „Funktion“ in der surrealen Welt.`},
-    { title: "Vintage‑Futurist", body:
-`Moderne Tech als würde sie in den 1920ern erfunden: Sprache, Bildwelten, Metaphern der Zeit.`},
-    { title: "Synästhetisches Internet", body:
-`Entwirf ein Internet für alle Sinne: Websites mit Geschmack, E‑Mails mit Textur, Social Media mit Duft.`},
-    { title: "Code‑Poet", body:
-`Schreibe Code, der zugleich Poesie ist. Eine Funktion, technisch korrekt & poetisch schön.`},
-    { title: "Kollektiv‑Gedankenrunde", body:
-`Moderation eines Gesprächs zwischen Rationalem, Unterbewusstsein, Intuition, Gewissen, Emotionen – zu einer Entscheidung.`},
-    { title: "Paradox‑Werkstatt", body:
-`Zeitreise‑Paradox, Lügner‑Paradox, Schiff des Theseus – nicht auflösen, sondern produktiv machen.`},
-    { title: "Universums‑Übersetzer", body:
-`Übersetze Quantenphysik in Märchen, Emotionen in Musik, Mathematik in lebende Geschichten.`}
+    { title: "Zeitreise‑Tagebuch", body:`Du bist ein Zeitreise‑Editor...`},
+    { title: "Rückwärts‑Zivilisation", body:`Beschreibe eine Zivilisation...`},
+    { title: "Bewusstsein eines Gebäudes", body:`Erzähle aus der Perspektive...`},
+    { title: "KI‑Philosophie‑Mentor", body:`Du bist ein altgriechischer Philosoph...`},
+    { title: "Interdimensionaler Marktplatz", body:`Ich bin Besucher...`},
+    { title: "Geheimes Leben eines NPCs", body:`Du bist ein NPC...`},
+    { title: "Prompt‑Archäologe", body:`Analysiere einen Prompt...`},
+    { title: "KI‑Träume", body:`Simuliere Träume einer KI...`},
+    { title: "Recursive Story", body:`Geschichte über einen Autor...`},
+    { title: "Xenobiologe 2157", body:`Stelle drei Lebensformen...`},
+    { title: "Quantentagebuch", body:`Tagebuch eines Teilchens...`},
+    { title: "Rückwärts‑Apokalypse", body:`Die Welt wird immer perfekter...`},
+    { title: "Farbsynästhetiker", body:`Wandle Musik...`},
+    { title: "Museum verlorener Träume", body:`Du bist Kurator...`},
+    { title: "Zeitlupen‑Explosion", body:`Beschreibe eine Explosion...`},
+    { title: "GPS des Bewusstseins", body:`Sei ein GPS...`},
+    { title: "Biografie eines Pixels", body:`Lebensgeschichte eines Pixels...`},
+    { title: "Rückwärts‑Detektiv", body:`Detektiv rückwärts...`},
+    { title: "Internet als Bewusstsein", body:`Gespräch mit dem Internet...`},
+    { title: "Emotions‑Alchemist", body:`Alchemie der Gefühle...`},
+    { title: "Bibliothek ungelebter Leben", body:`Drei Bücher...`},
+    { title: "Realitäts‑Debugger", body:`Bugs im Universum...`},
+    { title: "Empathie‑Tutorial", body:`Interaktives Tutorial...`},
+    { title: "Surrealismus‑Generator", body:`Alltagsgegenstände → surreal...`},
+    { title: "Vintage‑Futurist", body:`Moderne Tech in den 1920ern...`},
+    { title: "Synästhetisches Internet", body:`Internet für alle Sinne...`},
+    { title: "Code‑Poet", body:`Code als Poesie...`},
+    { title: "Kollektiv‑Gedankenrunde", body:`Moderation innerer Anteile...`},
+    { title: "Paradox‑Werkstatt", body:`Paradoxien produktiv...`},
+    { title: "Universums‑Übersetzer", body:`Übersetze Quantenphysik...`}
   ];
 
   function openPrompt(p) {
     openModal(`<h2>${p.title}</h2><pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(p.body)}</pre>`);
   }
 
-  // ===== API-Base Erkennung & Fetch =====
+  // ===== API detection: prefer Netlify proxy first =====
   const META_API = (document.querySelector('meta[name="x-api-base"]')||{}).content || '';
-  const API_CANDIDATES = [META_API.replace(/\/$/,'')].filter(Boolean).concat(['/_api','/api']);
+  const API_CANDIDATES = ['/_api', META_API.replace(/\/$/,'')].filter(Boolean).concat(['/api']);
   let apiBaseWorking = localStorage.getItem('apiBaseWorking') || '';
+
+  async function tryHealth(base){
+    const ctrl = new AbortController();
+    const t = setTimeout(()=>ctrl.abort(), 4000);
+    try{
+      const r = await fetch(`${base}/healthz`, { method:'GET', mode:'cors', credentials:'omit', cache:'no-store', signal: ctrl.signal });
+      return r.ok;
+    }catch{ return false; } finally { clearTimeout(t); }
+  }
 
   async function resolveApiBase(){
     const candidates = apiBaseWorking ? [apiBaseWorking].concat(API_CANDIDATES) : API_CANDIDATES;
     for(const base of candidates){
-      try {
-        const url = (base.startsWith('http') ? base : base) + '/healthz';
-        const r = await fetch(url, { method:'GET' });
-        if (r.ok) { localStorage.setItem('apiBaseWorking', base); return base; }
-      } catch {}
+      if (!base) continue;
+      const ok = await tryHealth(base);
+      if (ok){ localStorage.setItem('apiBaseWorking', base); return base; }
     }
     throw new Error('no_api_base');
   }
@@ -332,12 +294,12 @@
   async function apiFetch(path) {
     const base = await resolveApiBase();
     const url = `${base}${path}`;
-    const r = await fetch(url);
+    const r = await fetch(url, { mode:'cors', credentials:'omit', cache:'no-store' });
     if (!r.ok) throw new Error(`api_status_${r.status}`);
     return await r.json();
   }
 
-  // ===== News Modal =====
+  // ===== News =====
   async function showNews() {
     const region = localStorage.getItem('newsRegion') || 'all';
     let usedBase = '';
@@ -356,8 +318,10 @@
       openModal(
         `<h2>EU AI Act & DACH-News</h2>
          <div class="filter-chips">${chip('all','Alle')}${chip('dach','DACH')}${chip('eu','EU')}</div>
-         <div class="tabs"><span class="ui btn ghost">API: ${escapeHtml(usedBase)}</span>
+         <div class="tabs">
+           <span class="ui btn ghost">API: ${escapeHtml(usedBase)}</span>
            <a class="ui btn" href="${usedBase}/api/digest.svg?region=${region}" target="_blank" rel="noopener">Digest‑SVG</a>
+           <a class="ui btn ghost" href="${usedBase}/healthz" target="_blank" rel="noopener">Health</a>
            <button class="ui btn ghost" id="news-reload">Neu laden</button>
          </div>
          <ul class="news">${list || '<li>Keine Einträge (API/Key?)</li>'}</ul>`
@@ -368,11 +332,12 @@
       }));
     } catch (e) {
       const hint = `API derzeit nicht erreichbar. Prüfe _redirects oder CORS. Base‑Kandidaten: ${API_CANDIDATES.join(', ')}`;
-      openModal(`<h2>News</h2><p>${escapeHtml(hint)}</p>`);
+      const diagLinks = API_CANDIDATES.map(b => `<li><a class="ui btn" href="${b}/healthz" target="_blank" rel="noopener">${b}/healthz</a></li>`).join('');
+      openModal(`<h2>News</h2><p>${escapeHtml(hint)}</p><ul class="news">${diagLinks}</ul>`);
     }
   }
 
-  // ===== Prompts Modal (Tabs) =====
+  // ===== Prompts (Tabs) =====
   function showPrompts(category='business') {
     const set = category==='creative' ? PROMPTS : BUSINESS_PROMPTS;
     const items = set.map(p => `<li><button class="ui btn" data-p="${p.title}">${p.title}</button></li>`).join('');
@@ -408,10 +373,10 @@
       <p><em>Ihre Rechte laut DSGVO:</em> Auskunft, Berichtigung oder Löschung Ihrer Daten; Datenübertragbarkeit; Widerruf erteilter Einwilligungen; Beschwerde bei der Datenschutzbehörde.</p>`);
   }
   function showAbout(){ openModal('<h2>Über</h2><p>hohl.rocks – KI-gestützte Web-Experience.</p>'); }
-  function togglePad(){ /* optional: Ambient-Sound */ }
-  function toggleLocale(){ /* Platzhalter */ }
+  function togglePad(){ /* optional */ }
+  function toggleLocale(){ /* optional */ }
 
-  // Settings-UI
+  // Settings
   function openSettings(){
     openModal(`
       <h2>Einstellungen</h2>
@@ -441,7 +406,7 @@
     if(a==='settings') return openSettings();
   });
 
-  // Zeitformat
+  // Time & URL helpers
   function relTime(iso){
     if(!iso) return '';
     const t = new Date(iso).getTime(); if(!Number.isFinite(t)) return '';
@@ -456,5 +421,4 @@
   // Start
   const field = new BubbleField($('#bubbles'), $('#labels'));
   field.start();
-
 })();

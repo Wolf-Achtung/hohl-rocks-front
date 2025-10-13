@@ -1,2 +1,3 @@
 # Netlify → Railway-API (ERSETZE die Domain mit deiner Railway-API-URL oder Subdomain!)
-/_api/*  https://hohlrocks-production.up.railway.app/:splat  200
+/_api/*  https://hohl-rocks-back-production.up.railway.app/:splat  200
+

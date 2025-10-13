@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>hohl.rocks — KI‑gestützte Web‑Experience</title>
+    <meta name="description" content="Neon‑Bubbles, Prompts & KI‑News. Ruhig, klar, magisch‑intuitiv." />
+    <meta property="og:image" content="/api/digest.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <video class="bg" autoplay muted loop playsinline aria-hidden="true">
+      <source src="/videos/road.mp4" type="video/mp4" />
+    </video>
+
+    <canvas id="bubbles" aria-hidden="true"></canvas>
+    <ul id="bubble-labels" aria-hidden="true"></ul>
+
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <button class="nav-btn" data-action="news" type="button">News</button>
+        <button class="nav-btn" data-action="prompts" type="button">Prompts</button>
+        <button class="nav-btn" data-action="projekte" type="button">Projekte</button>
+        <button class="nav-btn" data-action="impressum" type="button">Impressum</button>
+        <button class="nav-btn" data-action="locale" type="button">DE/EN</button>
+        <button class="nav-btn" data-action="klang" type="button">Klang</button>
+        <button class="nav-btn gear" data-action="settings" aria-label="Einstellungen" title="Einstellungen (S)" type="button">⚙︎</button>
+      </nav>
+    </header>
+
+    <main class="hero" role="main" id="main">
+      <h1>hohl.rocks</h1>
+    </main>
+
+    <footer class="dock">
+      <button class="chip" data-action="about">Über</button>
+      <button class="chip" data-action="news">News</button>
+      <button class="chip" data-action="prompts">Prompts</button>
+      <button class="chip" data-action="favoriten">Favoriten</button>
+      <button class="chip" data-action="projekte">Projekte</button>
+      <button class="chip" data-action="impressum">Impressum</button>
+      <button class="chip" data-action="settings">⚙︎</button>
+    </footer>
+
+    <section id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Overlay">
+      <div class="modal__panel" tabindex="-1">
+        <div class="modal__toolbar">
+          <button class="ui btn" data-copy="modal" type="button">Kopieren</button>
+          <button class="ui btn ghost modal__close" aria-label="Schließen" type="button">Schließen</button>
+        </div>
+        <div id="modal-content"></div>
+      </div>
+    </section>
+
+    <section id="tour" class="tour" aria-hidden="true" aria-label="Onboarding">
+      <div class="tour__panel" role="dialog" aria-modal="true" tabindex="-1">
+        <ol>
+          <li><strong>Bubbles</strong>: Klicke eine Bubble – du erhältst einen sofort nutzbaren Prompt.</li>
+          <li><strong>Shortcuts</strong>: <kbd>N</kbd> News · <kbd>P</kbd> Prompts · <kbd>Esc</kbd> Schließen.</li>
+          <li><strong>Feintuning</strong>: Drücke <kbd>S</kbd> für Einstellungen (Größe, Dichte, Tempo).</li>
+        </ol>
+        <div class="tour__actions">
+          <button class="ui btn" data-tour="done" type="button">Verstanden</button>
+          <button class="ui btn ghost" data-tour="skip" type="button">Überspringen</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="shortcut-hint" aria-hidden="true">N: News · P: Prompts · Esc: Schließen</div>
+    <div class="helper" id="helper" role="note">Was kann ich hier tun? – Bewege die Maus, klicke Bubbles, nutze N/P/Esc.</div>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

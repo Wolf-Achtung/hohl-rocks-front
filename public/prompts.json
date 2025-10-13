@@ -1,0 +1,92 @@
+[
+  {
+    "id": "meeting-klarziehen",
+    "title": "Meeting-Klarziehen (5x Warum)",
+    "category": "Meetings",
+    "content": "Rolle: Moderator:in. Ziel: Das eigentliche Problem eines Meetings klarmachen.\nVorgehen: Stelle nacheinander 5 Warum-Fragen zu dem Thema, fasse die Antworten in 1 Satz zusammen, formuliere 3 präzise Ziele für dieses Meeting und schlage eine 30‑Minuten-Agenda mit Timeboxes vor."
+  },
+  {
+    "id": "pitch-10-30-50",
+    "title": "Pitch 10‑30‑50",
+    "category": "Pitch",
+    "content": "Du bist Senior Copywriter: Formuliere einen Produkt‑Pitch in 10, 30 und 50 Wörtern. Zielgruppe: Entscheider:in. Ton: seriös‑optimistisch. Jeder Pitch endet mit einer konkreten nächsten Aktion."
+  },
+  {
+    "id": "brainstorm-anti",
+    "title": "Anti‑Brainstorm",
+    "category": "Ideen",
+    "content": "Generiere 8 bewusst schlechte Ideen zum Thema. Extrahiere aus jeder den Funken, der sich positiv nutzen lässt. Forme daraus 5 ernsthafte, ungewöhnliche Vorschläge mit Nutzenversprechen."
+  },
+  {
+    "id": "email-kondensat",
+    "title": "E‑Mail‑Kondensat",
+    "category": "Schreiben",
+    "content": "Komprimiere folgende E‑Mail auf 3 Bulletpoints (Kern, Risiko, Entscheidung). Formuliere anschließend eine freundliche, klare Antwort mit 2 Optionen und Bitte um Auswahl."
+  },
+  {
+    "id": "one-minute-plan",
+    "title": "One‑Minute‑Plan",
+    "category": "Organisation",
+    "content": "Erstelle die nächsten 5 Schritte (je <12 Wörter), mit Verantwortlichem, Ziel und Done‑Kriterium. Format: Tabelle (Schritt | Owner | Ziel | Done)."
+  },
+  {
+    "id": "prompt-linter",
+    "title": "Prompt‑Linter",
+    "category": "Prompts",
+    "content": "Prüfe diesen Prompt: Rollenklärung, Ziel, Constraints, Daten, Ton, Format, Grenzen. Liste 7 konkrete Verbesserungen, erkläre kurz warum, gib eine optimierte Endfassung aus."
+  },
+  {
+    "id": "kontrast-paar",
+    "title": "Kontrast‑Paar",
+    "category": "Analyse",
+    "content": "Zwei Wege entwickeln: A konservativ, B radikal. Vergleiche entlang Wirkung, Aufwand, Risiko. Füge eine Empfehlung mit 3 Gründen hinzu."
+  },
+  {
+    "id": "retro-15min",
+    "title": "Retro in 15 Min",
+    "category": "Meetings",
+    "content": "Leite eine kurze Retrospektive: 1) Was lief gut? 2) Was nervte? 3) Was ändern wir sofort? Ergebnis: 3 Maßnahmen mit Owner & Termin."
+  },
+  {
+    "id": "storyboard-6",
+    "title": "Storyboard (6 Shots)",
+    "category": "Ideen",
+    "content": "Erstelle ein 6‑Shot‑Storyboard für einen 30‑s Clip: Szene | visuelle Idee | Stimmung | Kamera | Text/Callout. Stil: ruhig, minimal, klare Typo."
+  },
+  {
+    "id": "faq-cheatsheet",
+    "title": "FAQ‑Cheatsheet für Stakeholder",
+    "category": "Schreiben",
+    "content": "Erzeuge ein 1‑Seiten‑FAQ zu [Thema]. Struktur: Frage, Kurzantwort (2 Sätze), Link/Quelle. 8–10 Fragen, Fokus auf Einwände."
+  },
+  {
+    "id": "risiko-radar",
+    "title": "Risiko‑Radar",
+    "category": "Analyse",
+    "content": "Liste 10 Risiken (technisch, rechtlich, organisatorisch). Bewerte Impact (1–5) & Eintrittswahrscheinlichkeit (1–5). Liefere Top‑3‑Maßnahmen zur Reduktion, mit Owner."
+  },
+  {
+    "id": "klartext-umschreiben",
+    "title": "Klartext‑Umschreiben",
+    "category": "Schreiben",
+    "content": "Schreibe folgenden Absatz in klarer, freundlicher Geschäftssprache um. Max. 90 Wörter. Keine Buzzwords. Nutze aktive Verben. Mach 2 Varianten (neutral/optimistisch)."
+  },
+  {
+    "id": "meeting-minutes",
+    "title": "Meeting‑Minutes in 3 Punkten",
+    "category": "Meetings",
+    "content": "Erstelle aus diesem Transkript 3 Bulletpoints (Entscheidung, offene Punkte, ToDos). Ergänze eine kurze Follow‑up‑Mail an das Team."
+  },
+  {
+    "id": "cage-match",
+    "title": "Cage‑Match (Modelle)",
+    "category": "Analyse",
+    "content": "Vergleiche zwei Modelle an den Kriterien Faktentreue, Stil, Latenz, Kosten. Gib je Kriterium 1–5 Punkte + 1 Satz Begründung. Fazit: klare Empfehlung."
+  },
+  {
+    "id": "research-agent",
+    "title": "Research‑Agent (DACH)",
+    "category": "Recherche",
+    "content": "Recherchiere 6–8 aktuelle Quellen (DACH) zu [Frage]. Gib je Quelle 1 Satz Kernaussage + URL + Datum. Ziehe 5 Insights als Fazit."
+  }
+]

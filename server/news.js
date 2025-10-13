@@ -5,10 +5,9 @@ const router = Router();
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY || '';
 const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || '';
 
-const DACH_SITES = ['heise.de','golem.de','t3n.de','zeit.de','tagesschau.de','spiegel.de','handelsblatt.com','faz.net','br.de','orfonline.org'];
-const EU_SITES = ['europa.eu','europa.eu/commission','edpb.europa.eu','edps.europa.eu','eur-lex.europa.eu','parlament.europa.eu'];
-
-const AI_ACT_TERMS = ['EU AI Act','AI Act','KI-Verordnung','Hochrisiko-KI','Transparenzpflichten','Konformitätsbewertung','CE-Kennzeichnung'];
+const DACH_SITES = ['heise.de','golem.de','t3n.de','zeit.de','tagesschau.de','spiegel.de','handelsblatt.com','faz.net','br.de'];
+const EU_SITES = ['europa.eu','edpb.europa.eu','edps.europa.eu','eur-lex.europa.eu','parlament.europa.eu'];
+const AI_ACT_TERMS = ['EU AI Act','KI‑Verordnung','Hochrisiko‑KI','Transparenzpflichten','Konformitätsbewertung','CE‑Kennzeichnung'];
 
 function boostQuery(region='all'){
   const base = `${AI_ACT_TERMS.join(' OR ')}`;
@@ -34,23 +33,22 @@ router.get('/news/live', async (req, res) => {
       })
     });
     const j = await r.json().catch(() => ({}));
-    // Normalisiere
     const items = Array.isArray(j.results) ? j.results.map(x => ({
       title: x.title, url: x.url, snippet: x.content, published: x.published_date || null
     })) : [];
     res.json({ items });
-  } catch (e) {
+  } catch {
     res.status(500).json({ error: 'tavily_failed' });
   }
 });
 
 router.get('/ai-weekly', async (_req, res) => {
   if (!PERPLEXITY_API_KEY) return res.json({ items: [] });
-  // Platzhalter: bessere Weekly-Logik wäre möglich – hier minimal zurückgeben
+  // Platzhalter: später echte Zusammenfassung
   res.json({ items: [] });
 });
 
-router.get('/digest.svg', async (req, res) => {
+router.get('/digest.svg', (req, res) => {
   const region = (req.query.region || 'all').toString();
   const title = region === 'dach' ? 'DACH' : region.toUpperCase();
   const svg = `

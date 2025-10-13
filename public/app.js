@@ -1,9 +1,9 @@
-/* hohl.rocks – v1.4.4
-   - Video-Hintergrund (optional, HEAD-Check, kein 404-Spam)
-   - Neon-Bubbles: 5 Größen, very-slow-mode, organische Drift + oszillation
+/* hohl.rocks – v1.4.5
+   - API-Basis-Erkennung: <meta name="x-api-base">, dann /_api, dann /api
+   - Verbesserte Neon-Bubbles (5 Größen, very-slow-mode, organische Drift)
    - Lesbare Labels bei Überlappungen (sanfte Entzerrung)
+   - Video optional via HEAD
    - Top-Navigation only; Modal mit Fokus-Management und Copy
-   - News via Netlify-Proxy "/_api" → Railway-API; Fallback auf "/api"
 */
 (() => {
   const $ = (s, c = document) => c.querySelector(s);
@@ -18,7 +18,7 @@
     verySlowMode: false,
     huePrimary: 200,
     hueAccent: 320,
-    neonStrength: 0.75
+    neonStrength: 0.78
   };
   let settings = loadSettings(); applyThemeVars();
 
@@ -170,13 +170,13 @@
         b.x += b.vx + Math.cos(b.osc) * 0.08;
         b.y += b.vy + Math.sin(b.osc * 0.7) * 0.05;
 
-        // Um die Ecken „wraparound“
+        // Wraparound
         if (b.x < -b.r) b.x = window.innerWidth + b.r;
         if (b.x > window.innerWidth + b.r) b.x = -b.r;
         if (b.y < -b.r) b.y = window.innerHeight + b.r;
         if (b.y > window.innerHeight + b.r) b.y = -b.r;
 
-        // Zeichnen (Neon-Glühen)
+        // Zeichnen
         const grd = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
         grd.addColorStop(0, `hsla(${b.color}, 100%, 65%, ${0.55*b.alpha})`);
         grd.addColorStop(0.6, `hsla(${b.color}, 100%, 50%, ${0.25*b.alpha})`);
@@ -208,7 +208,7 @@
   }
   function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
-  // ===== Eye-Candy Prompts (30) =====
+  // ===== 30 Eye-Candy Prompts =====
   const PROMPTS = [
     { title: "Zeitreise‑Tagebuch", body:
 `Du bist ein Zeitreise‑Editor. Ich gebe dir ein normales Tagebuch aus 2024, und du schreibst es um, als käme es aus 2084. Berücksichtige technologische Entwicklungen, Gesellschaft, neue Probleme. Emotionale Authentizität behalten, alle Referenzen transformieren.`},
@@ -277,11 +277,14 @@
   }
 
   // ===== Navigation & News =====
-  const API_BASES = ['/_api', '/api']; // erst Netlify‑Proxy, dann Same‑Origin
+  const META_API = (document.querySelector('meta[name="x-api-base"]')||{}).content || '';
+  const API_BASES = [META_API.replace(/\/$/,'')].filter(Boolean).concat(['/_api','/api']);
+
   async function apiFetch(path) {
     for (const base of API_BASES) {
       try {
-        const r = await fetch(`${base}${path}`);
+        const url = base.startsWith('http') ? `${base}${path}` : `${base}${path}`;
+        const r = await fetch(url);
         if (r.ok) return await r.json();
       } catch {}
     }
@@ -305,7 +308,7 @@
         `<h2>EU AI Act & DACH-News</h2>
          <div class="filter-chips">${chip('all','Alle')}${chip('dach','DACH')}${chip('eu','EU')}</div>
          <div style="display:flex;gap:8px;margin-bottom:8px;">
-           <a class="ui btn" href="/_api/api/digest.svg?region=${region}" target="_blank" rel="noopener">Digest-Karte (SVG)</a>
+           <a class="ui btn" href="${API_BASES[0] ? API_BASES[0] : '/_api'}/api/digest.svg?region=${region}" target="_blank" rel="noopener">Digest-Karte (SVG)</a>
            <button class="ui btn ghost" id="news-reload">Neu laden</button>
          </div>
          <ul class="news">${list || '<li>Keine Einträge (API/Key?)</li>'}</ul>`

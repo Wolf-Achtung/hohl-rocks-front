@@ -1,6 +1,6 @@
 {
   "name": "hohl.rocks-web-api",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "type": "module",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-rate-limit": "^7.3.0",
-    "helmet": "^7.1.0"
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
   }
 }

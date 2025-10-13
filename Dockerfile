@@ -1,4 +1,3 @@
-# Node API (web-api)
 FROM node:22-alpine
 
 WORKDIR /app

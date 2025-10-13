@@ -1,9 +1,10 @@
-/* hohl.rocks – v1.4.5
-   - API-Basis-Erkennung: <meta name="x-api-base">, dann /_api, dann /api
-   - Verbesserte Neon-Bubbles (5 Größen, very-slow-mode, organische Drift)
-   - Lesbare Labels bei Überlappungen (sanfte Entzerrung)
+/* hohl.rocks – v1.4.6
+   - API-Basis-Erkennung: <meta name="x-api-base">, dann /_api, dann /api, mit Health-Check und Cache
+   - Verbesserte Neon-Bubbles (5 Größen, very-slow-mode, organische Drift; größere Standardgrößen)
+   - Lesbare Labels bei Überlappungen (sanfte Entzerrung, stärkere Backdrop)
    - Video optional via HEAD
-   - Top-Navigation only; Modal mit Fokus-Management und Copy
+   - Prompts: Tabs (Business 15 | Kreativ 30) mit Copy
+   - News: robustes Fehlerbild + verwendete API-Base anzeigen
 */
 (() => {
   const $ = (s, c = document) => c.querySelector(s);
@@ -11,14 +12,14 @@
 
   // ===== Theme / Settings =====
   const defaults = {
-    maxBubbles: 18,
-    spawnEveryMs: 3600,
-    speedScale: 0.85,
-    sizeBuckets: [120, 180, 240, 320, 420],
+    maxBubbles: 20,
+    spawnEveryMs: 4200,
+    speedScale: 0.72,
+    sizeBuckets: [140, 220, 300, 400, 520],
     verySlowMode: false,
     huePrimary: 200,
     hueAccent: 320,
-    neonStrength: 0.78
+    neonStrength: 0.82
   };
   let settings = loadSettings(); applyThemeVars();
 
@@ -30,6 +31,7 @@
     settings = { ...settings, ...next };
     localStorage.setItem('settings', JSON.stringify(settings));
     applyThemeVars();
+    field && field.applySettings && field.applySettings();
   }
   function applyThemeVars() {
     const r = document.documentElement.style;
@@ -89,7 +91,7 @@
       this.vy = Math.sin(a) * speed * 0.6;
       this.osc = Math.random() * Math.PI * 2;
       this.oscSpeed = 0.003 + Math.random() * 0.003;
-      this.ttl = 22_000 + Math.random() * 16_000;
+      this.ttl = 24_000 + Math.random() * 18_000;
       if (settings.verySlowMode) { this.vx *= 0.5; this.vy *= 0.5; this.ttl *= 1.6; }
       this.created = performance.now();
       this.labelEl = null;
@@ -129,9 +131,9 @@
       if (this.bubbles.length >= settings.maxBubbles) return;
       const r = pick(settings.sizeBuckets);
       const x = rand(r, window.innerWidth - r);
-      const y = rand(r, window.innerHeight - r);
+      const y = rand(Math.max(80, r), window.innerHeight - r); // meide obere Navi grob
       const color = neonHue();
-      const prompt = pick(PROMPTS);
+      const prompt = pick(Math.random()<0.5?BUSINESS_PROMPTS:PROMPTS);
       const b = new Bubble(x, y, r, color, prompt.title);
       this.bubbles.push(b);
       // Label DOM
@@ -165,7 +167,7 @@
       for (const b of this.bubbles) {
         if (!b.alive(now)) { if (b.labelEl) b.labelEl.remove(); continue; }
         const t = b.progress(now);
-        b.alpha = t < 0.15 ? t / 0.15 : (t > 0.85 ? (1 - t) / 0.15 : 1);
+        b.alpha = t < 0.12 ? t / 0.12 : (t > 0.88 ? (1 - t) / 0.12 : 1);
         b.osc += b.oscSpeed;
         b.x += b.vx + Math.cos(b.osc) * 0.08;
         b.y += b.vy + Math.sin(b.osc * 0.7) * 0.05;
@@ -178,8 +180,8 @@
 
         // Zeichnen
         const grd = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
-        grd.addColorStop(0, `hsla(${b.color}, 100%, 65%, ${0.55*b.alpha})`);
-        grd.addColorStop(0.6, `hsla(${b.color}, 100%, 50%, ${0.25*b.alpha})`);
+        grd.addColorStop(0, `hsla(${b.color}, 100%, 65%, ${0.58*b.alpha})`);
+        grd.addColorStop(0.6, `hsla(${b.color}, 100%, 50%, ${0.28*b.alpha})`);
         grd.addColorStop(1, `hsla(${b.color}, 100%, 35%, 0)`);
         ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
 
@@ -208,7 +210,41 @@
   }
   function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
-  // ===== 30 Eye-Candy Prompts =====
+  // ===== Business Prompts (15) =====
+  const BUSINESS_PROMPTS = [
+    { title:"1‑Minute‑Briefing", body:
+`Du bist Chief of Staff. Fasse folgendes in 1 Minute zusammen: Ziel, 3 Kernfakten, 1 Risiko, Entscheidung für heute. Text: <EINFÜGEN>.`},
+    { title:"Meeting‑Design", body:
+`Entwirf eine 30‑Minuten‑Agenda (Ziel, Vorbereitung, 3 Blöcke, Entscheidung, Nachlauf). Kontext: <EINFÜGEN>.`},
+    { title:"Pitch‑Storyboard", body:
+`Erstelle ein 7‑Folien‑Storyboard (Hook, Problem, Lösung, Beweis, Nutzen, Plan, CTA). Produkt/Idee: <EINFÜGEN>.`},
+    { title:"Brainstorm‑Sprint", body:
+`Leite einen 15‑Minuten‑Sprint: 3 Perspektiven, 10 Ideen, 3 Cluster, 1 Test. Thema: <EINFÜGEN>.`},
+    { title:"Kontrast‑Paar", body:
+`Gib mir Lösung A konservativ vs. B radikal – jeweils mit 3 Kriterien: Zeit, Risiko, Wirkung. Thema: <EINFÜGEN>.`},
+    { title:"Stakeholder‑Map", body:
+`Erstelle eine Map (Treiber, Blocker, Influencer, Nutzer). Für jeden: Motiv, Nutzwert, Win.`},
+    { title:"Risiko‑PreMortem", body:
+`Tu so, als sei das Projekt gescheitert. Liste die 7 Gründe, Frühwarnsignale und Gegenmaßnahmen.`},
+    { title:"Email‑Rewrite (klar)", body:
+`Schreibe diese Mail kürzer, präziser, freundlich‑klar. 3 Bullet‑Entscheidungen zuerst. Text: <EINFÜGEN>.`},
+    { title:"Kundeninterview‑Leitfaden", body:
+`Baue 10 Fragen: Problemtiefe, Alternativen, Kaufkriterien, Budget, Nächste Schritte. Produkt: <EINFÜGEN>.`},
+    { title:"Value Proposition", body:
+`Formuliere eine präzise Value Prop (Zielgruppe, Schmerz, Nutzen, Beweis). Produkt: <EINFÜGEN>.`},
+    { title:"Landing‑Page‑Copy", body:
+`Schreibe Headline, Subline, 3 Nutzen, 1 Beweis, CTA. Ton: seriös‑optimistisch. Produkt: <EINFÜGEN>.`},
+    { title:"Change‑Memo (1‑Pager)", body:
+`Erstelle ein 1‑Pager‑Memo: Warum jetzt? Was ändert sich? Was bleibt? 30‑Tage‑Plan.`},
+    { title:"Entscheidungsmatrix", body:
+`Baue eine 2×2 oder gewichtete Matrix. Kriterien & Gewichte vorschlagen, dann Entscheidung.`},
+    { title:"Roadmap‑Quartal", body:
+`Skizziere eine Q‑Roadmap: 3 Ziele, 6 Initiativen, Meilensteine, Risiken, KPIs.`},
+    { title:"Post‑Mortem (konstruktiv)", body:
+`Schreibe ein blameless Post‑Mortem mit Ursachen, Learnings, 3 Prozess‑Fixes.`}
+  ];
+
+  // ===== Kreative Eye-Candy Prompts (30) =====
   const PROMPTS = [
     { title: "Zeitreise‑Tagebuch", body:
 `Du bist ein Zeitreise‑Editor. Ich gebe dir ein normales Tagebuch aus 2024, und du schreibst es um, als käme es aus 2084. Berücksichtige technologische Entwicklungen, Gesellschaft, neue Probleme. Emotionale Authentizität behalten, alle Referenzen transformieren.`},
@@ -276,24 +312,37 @@
     openModal(`<h2>${p.title}</h2><pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(p.body)}</pre>`);
   }
 
-  // ===== Navigation & News =====
+  // ===== API-Base Erkennung & Fetch =====
   const META_API = (document.querySelector('meta[name="x-api-base"]')||{}).content || '';
-  const API_BASES = [META_API.replace(/\/$/,'')].filter(Boolean).concat(['/_api','/api']);
+  const API_CANDIDATES = [META_API.replace(/\/$/,'')].filter(Boolean).concat(['/_api','/api']);
+  let apiBaseWorking = localStorage.getItem('apiBaseWorking') || '';
 
-  async function apiFetch(path) {
-    for (const base of API_BASES) {
+  async function resolveApiBase(){
+    const candidates = apiBaseWorking ? [apiBaseWorking].concat(API_CANDIDATES) : API_CANDIDATES;
+    for(const base of candidates){
       try {
-        const url = base.startsWith('http') ? `${base}${path}` : `${base}${path}`;
-        const r = await fetch(url);
-        if (r.ok) return await r.json();
+        const url = (base.startsWith('http') ? base : base) + '/healthz';
+        const r = await fetch(url, { method:'GET' });
+        if (r.ok) { localStorage.setItem('apiBaseWorking', base); return base; }
       } catch {}
     }
-    throw new Error('api_unavailable');
+    throw new Error('no_api_base');
   }
 
+  async function apiFetch(path) {
+    const base = await resolveApiBase();
+    const url = `${base}${path}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`api_status_${r.status}`);
+    return await r.json();
+  }
+
+  // ===== News Modal =====
   async function showNews() {
     const region = localStorage.getItem('newsRegion') || 'all';
+    let usedBase = '';
     try {
+      usedBase = await resolveApiBase();
       const data = await apiFetch(`/api/news/live?region=${encodeURIComponent(region)}`);
       const items = (data.items || []).slice(0, 12);
       const list = items.map(it => {
@@ -307,8 +356,8 @@
       openModal(
         `<h2>EU AI Act & DACH-News</h2>
          <div class="filter-chips">${chip('all','Alle')}${chip('dach','DACH')}${chip('eu','EU')}</div>
-         <div style="display:flex;gap:8px;margin-bottom:8px;">
-           <a class="ui btn" href="${API_BASES[0] ? API_BASES[0] : '/_api'}/api/digest.svg?region=${region}" target="_blank" rel="noopener">Digest-Karte (SVG)</a>
+         <div class="tabs"><span class="ui btn ghost">API: ${escapeHtml(usedBase)}</span>
+           <a class="ui btn" href="${usedBase}/api/digest.svg?region=${region}" target="_blank" rel="noopener">Digest‑SVG</a>
            <button class="ui btn ghost" id="news-reload">Neu laden</button>
          </div>
          <ul class="news">${list || '<li>Keine Einträge (API/Key?)</li>'}</ul>`
@@ -317,19 +366,29 @@
       $('#modal').querySelectorAll('[data-region]').forEach(el => el.addEventListener('click', () => {
         localStorage.setItem('newsRegion', el.getAttribute('data-region')); showNews();
       }));
-    } catch {
-      openModal('<h2>News</h2><p>API derzeit nicht erreichbar.</p>');
+    } catch (e) {
+      const hint = `API derzeit nicht erreichbar. Prüfe _redirects oder CORS. Base‑Kandidaten: ${API_CANDIDATES.join(', ')}`;
+      openModal(`<h2>News</h2><p>${escapeHtml(hint)}</p>`);
     }
   }
 
-  function showPrompts() {
-    const items = PROMPTS.map(p => `<li><button class="ui btn" data-p="${p.title}">${p.title}</button></li>`).join('');
-    openModal(`<h2>Prompts</h2><ul class="news">${items}</ul>`);
+  // ===== Prompts Modal (Tabs) =====
+  function showPrompts(category='business') {
+    const set = category==='creative' ? PROMPTS : BUSINESS_PROMPTS;
+    const items = set.map(p => `<li><button class="ui btn" data-p="${p.title}">${p.title}</button></li>`).join('');
+    openModal(`<h2>Prompts</h2>
+      <div class="tabs">
+        <button class="ui btn ${category==='business'?'active':''}" data-tab="business">Büro‑Tauglich (15)</button>
+        <button class="ui btn ${category==='creative'?'active':''}" data-tab="creative">Kreativ‑Eye‑Candy (30)</button>
+      </div>
+      <ul class="news">${items}</ul>`);
     $('#modal').querySelectorAll('[data-p]').forEach(b=>{
-      const title=b.getAttribute('data-p'); const p=PROMPTS.find(x=>x.title===title);
+      const title=b.getAttribute('data-p'); const p=(set.find(x=>x.title===title));
       b.addEventListener('click',()=>openPrompt(p));
     });
+    $('#modal').querySelectorAll('[data-tab]').forEach(t=>t.addEventListener('click',()=>showPrompts(t.getAttribute('data-tab'))));
   }
+
   function showProjekte() {
     openModal(`<h2>Projekte</h2>
       <p><strong>Mit TÜV-zertifizierter Sicherheit in die KI-Zukunft:</strong> Der erfolgreiche Einsatz von KI ist keine Raketenwissenschaft – sondern das Ergebnis unabhängiger Prüfung, fundierter Expertise und strukturierter Vorbereitung.</p>
@@ -359,14 +418,14 @@
       <form class="settings">
         <label>Very-slow-mode <input type="checkbox" id="verySlow"></label>
         <label>Max. Bubbles <input type="range" id="mB" min="6" max="40" step="1" value="${settings.maxBubbles}"><output id="mBo">${settings.maxBubbles}</output></label>
-        <label>Spawn-Intervall (ms) <input type="range" id="sp" min="1500" max="8000" step="100" value="${settings.spawnEveryMs}"><output id="spo">${settings.spawnEveryMs}</output></label>
+        <label>Spawn-Intervall (ms) <input type="range" id="sp" min="1500" max="9000" step="100" value="${settings.spawnEveryMs}"><output id="spo">${settings.spawnEveryMs}</output></label>
       </form>`);
     $('#verySlow').checked = settings.verySlowMode;
-    $('#verySlow').addEventListener('change', e => { saveSettings({ verySlowMode: e.target.checked }); field.applySettings(); });
+    $('#verySlow').addEventListener('change', e => { saveSettings({ verySlowMode: e.target.checked }); });
     $('#mB').addEventListener('input', e => { $('#mBo').textContent = e.target.value; });
     $('#mB').addEventListener('change', e => { saveSettings({ maxBubbles: Number(e.target.value) }); });
     $('#sp').addEventListener('input', e => { $('#spo').textContent = e.target.value; });
-    $('#sp').addEventListener('change', e => { saveSettings({ spawnEveryMs: Number(e.target.value) }); field.applySettings(); });
+    $('#sp').addEventListener('change', e => { saveSettings({ spawnEveryMs: Number(e.target.value) }); });
   }
 
   // Events
@@ -374,7 +433,7 @@
     const b=e.target.closest('[data-action]'); if(!b) return;
     const a=b.dataset.action;
     if(a==='news') return showNews();
-    if(a==='prompts') return showPrompts();
+    if(a==='prompts') return showPrompts('business');
     if(a==='projekte') return showProjekte();
     if(a==='impressum') return showImpressum();
     if(a==='about') return showAbout();

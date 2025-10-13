@@ -1,34 +1,30 @@
-/* hohl.rocks – v1.4.3
-   - Fix: SyntaxError beseitigt (Canvas startete nicht)
-   - Bubbles: 5 Größen, very-slow-mode, organische Drift
-   - Label-Layer bleibt lesbar trotz Überlappungen (sanfte Abstoßung)
-   - Top-Navigation only; Modal mit Fokus-Management
-   - News via Netlify-Proxy "/_api" → Railway-API
+/* hohl.rocks – v1.4.4
+   - Video-Hintergrund (optional, HEAD-Check, kein 404-Spam)
+   - Neon-Bubbles: 5 Größen, very-slow-mode, organische Drift + oszillation
+   - Lesbare Labels bei Überlappungen (sanfte Entzerrung)
+   - Top-Navigation only; Modal mit Fokus-Management und Copy
+   - News via Netlify-Proxy "/_api" → Railway-API; Fallback auf "/api"
 */
 (() => {
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 
-  // --- App State / Settings ---
+  // ===== Theme / Settings =====
   const defaults = {
     maxBubbles: 18,
-    spawnEveryMs: 3800,
+    spawnEveryMs: 3600,
     speedScale: 0.85,
     sizeBuckets: [120, 180, 240, 320, 420],
     verySlowMode: false,
     huePrimary: 200,
     hueAccent: 320,
-    neonStrength: 0.65
+    neonStrength: 0.75
   };
-  let settings = loadSettings();
-  applyThemeVars();
+  let settings = loadSettings(); applyThemeVars();
 
   function loadSettings() {
-    try {
-      return { ...defaults, ...JSON.parse(localStorage.getItem('settings') || '{}') };
-    } catch {
-      return { ...defaults };
-    }
+    try { return { ...defaults, ...JSON.parse(localStorage.getItem('settings') || '{}') }; }
+    catch { return { ...defaults }; }
   }
   function saveSettings(next) {
     settings = { ...settings, ...next };
@@ -42,7 +38,20 @@
     r.setProperty('--neon', String(settings.neonStrength));
   }
 
-  // --- Modal (A11y) ---
+  // ===== Video: nur laden, wenn vorhanden =====
+  (async function attachVideo(){
+    try {
+      const r = await fetch('/videos/road.mp4', { method: 'HEAD' });
+      if (r.ok) {
+        const v = $('#bg-video');
+        v.innerHTML = '<source src="/videos/road.mp4" type="video/mp4">';
+        v.load(); v.play().catch(() => {});
+        v.classList.add('visible');
+      }
+    } catch {}
+  })();
+
+  // ===== Modal (A11y, Fokus) =====
   const modal = $('#modal');
   const panel = $('.modal__panel');
   const modalContent = $('#modal-content');
@@ -69,24 +78,19 @@
     try { await navigator.clipboard.writeText($('#modal-content').innerText); } catch {}
   });
 
-  // --- Bubbles Field ---
+  // ===== Bubbles =====
   class Bubble {
     constructor(x, y, r, color, label) {
       this.x = x; this.y = y; this.r = r;
-      this.color = color;
-      this.alpha = 0;               // fade-in
-      this.life = 0;                // 0..1
-      this.label = label;
+      this.color = color; this.alpha = 0; this.label = label;
       const a = Math.random() * Math.PI * 2;
       const speed = (0.12 + Math.random() * 0.22) * settings.speedScale;
       this.vx = Math.cos(a) * speed;
       this.vy = Math.sin(a) * speed * 0.6;
       this.osc = Math.random() * Math.PI * 2;
       this.oscSpeed = 0.003 + Math.random() * 0.003;
-      this.ttl = 22_000 + Math.random() * 16_000; // ms
-      if (settings.verySlowMode) {
-        this.vx *= 0.5; this.vy *= 0.5; this.ttl *= 1.6;
-      }
+      this.ttl = 22_000 + Math.random() * 16_000;
+      if (settings.verySlowMode) { this.vx *= 0.5; this.vy *= 0.5; this.ttl *= 1.6; }
       this.created = performance.now();
       this.labelEl = null;
     }
@@ -97,9 +101,7 @@
   class BubbleField {
     constructor(canvas, labelLayer) {
       this.canvas = canvas; this.ctx = canvas.getContext('2d', { alpha: true });
-      this.labels = labelLayer;
-      this.bubbles = [];
-      this.running = false;
+      this.labels = labelLayer; this.bubbles = []; this.running = false;
       this.resize = this.resize.bind(this);
       this.tick = this.tick.bind(this);
       this.spawn = this.spawn.bind(this);
@@ -118,34 +120,28 @@
       this._spawnTimer = setInterval(this.spawn, settings.spawnEveryMs * (settings.verySlowMode ? 1.6 : 1));
       requestAnimationFrame(this.tick);
     }
-    stop() {
-      this.running = false;
-      clearInterval(this._spawnTimer);
-    }
+    stop() { this.running = false; clearInterval(this._spawnTimer); }
     applySettings() {
       clearInterval(this._spawnTimer);
       this._spawnTimer = setInterval(this.spawn, settings.spawnEveryMs * (settings.verySlowMode ? 1.6 : 1));
     }
     spawn() {
       if (this.bubbles.length >= settings.maxBubbles) return;
-      const r = randomFrom(settings.sizeBuckets);
+      const r = pick(settings.sizeBuckets);
       const x = rand(r, window.innerWidth - r);
       const y = rand(r, window.innerHeight - r);
       const color = neonHue();
-      const prompt = randomFrom(PROMPTS);
+      const prompt = pick(PROMPTS);
       const b = new Bubble(x, y, r, color, prompt.title);
       this.bubbles.push(b);
       // Label DOM
       const el = document.createElement('button');
-      el.className = 'bubble-label';
-      el.type = 'button';
+      el.className = 'bubble-label'; el.type = 'button';
       el.textContent = prompt.title;
-      el.style.left = `${x}px`;
-      el.style.top = `${y}px`;
+      el.style.left = `${x}px`; el.style.top = `${y}px`;
       el.addEventListener('click', () => openPrompt(prompt));
-      this.labels.appendChild(el);
-      b.labelEl = el;
-      this.resolveLabelCollisions(); // sanfte Entschärfung
+      this.labels.appendChild(el); b.labelEl = el;
+      this.resolveLabelCollisions();
     }
     resolveLabelCollisions() {
       const els = $$('.bubble-label', this.labels);
@@ -154,7 +150,6 @@
         for (let j = i + 1; j < els.length; j += 1) {
           const b = els[j].getBoundingClientRect();
           if (overlap(a, b)) {
-            // schiebe das zweite leicht nach unten rechts
             const tgt = els[j];
             tgt.style.transform = 'translate(calc(-50% + 8px), calc(-50% + 6px))';
           }
@@ -168,37 +163,29 @@
 
       const alive = [];
       for (const b of this.bubbles) {
-        if (!b.alive(now)) {
-          if (b.labelEl) b.labelEl.remove();
-          continue;
-        }
+        if (!b.alive(now)) { if (b.labelEl) b.labelEl.remove(); continue; }
         const t = b.progress(now);
-        // Fade-in/out
         b.alpha = t < 0.15 ? t / 0.15 : (t > 0.85 ? (1 - t) / 0.15 : 1);
-
-        // Drift + leichte Oszillation
         b.osc += b.oscSpeed;
         b.x += b.vx + Math.cos(b.osc) * 0.08;
         b.y += b.vy + Math.sin(b.osc * 0.7) * 0.05;
 
-        // Ränder umrunden
+        // Um die Ecken „wraparound“
         if (b.x < -b.r) b.x = window.innerWidth + b.r;
         if (b.x > window.innerWidth + b.r) b.x = -b.r;
         if (b.y < -b.r) b.y = window.innerHeight + b.r;
         if (b.y > window.innerHeight + b.r) b.y = -b.r;
 
-        // Zeichnen
+        // Zeichnen (Neon-Glühen)
         const grd = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
         grd.addColorStop(0, `hsla(${b.color}, 100%, 65%, ${0.55*b.alpha})`);
         grd.addColorStop(0.6, `hsla(${b.color}, 100%, 50%, ${0.25*b.alpha})`);
         grd.addColorStop(1, `hsla(${b.color}, 100%, 35%, 0)`);
-        ctx.fillStyle = grd;
-        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
 
         // Label positionieren
         if (b.labelEl) {
-          b.labelEl.style.left = `${b.x}px`;
-          b.labelEl.style.top = `${b.y}px`;
+          b.labelEl.style.left = `${b.x}px`; b.labelEl.style.top = `${b.y}px`;
           b.labelEl.style.opacity = String(Math.max(0, Math.min(1, b.alpha)));
         }
         alive.push(b);
@@ -208,11 +195,10 @@
     }
   }
 
-  // --- Helpers ---
+  // ===== Helpers =====
   function rand(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
-  function randomFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
   function neonHue(){
-    // verteilt um zwei Hues (primary/accent)
     return Math.random() < 0.6
       ? settings.huePrimary + rand(-20, 20)
       : settings.hueAccent + rand(-25, 25);
@@ -220,76 +206,92 @@
   function overlap(a, b) {
     return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
   }
+  function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
-  // --- Prompts (15 Büro-tauglich) ---
+  // ===== Eye-Candy Prompts (30) =====
   const PROMPTS = [
-    { title: "One-Minute-Plan", body:
-`Ziel: In 60 Sekunden Klarheit schaffen.
-1) Aufgabe in 1 Satz:
-2) Stakeholder & „Done“-Kriterium:
-3) Nächster kleinstmöglicher Schritt:
-4) Blocker & Annahmen:
-Antwort in 80 Wörtern. Ton: pragmatisch.`},
-    { title: "Meeting-Destillat", body:
-`Rolle: Meeting-Protokollant:in.
-Eingabe: Rohnotizen (Stichworte).
-Aufgabe: verdichte zu 5 Bulletpoints + 3 Entscheidungen + 3 Todos mit Owner und Termin.`},
-    { title: "Pitch-Gliederung 5/5/5", body:
-`Thema: <…>
-Erzeuge: 5 Folien, je 5 Wörter Überschrift + 5 Stichpunkte (max 8 Wörter).
-Schließe mit „Next Steps“ in 3 Punkten.`},
-    { title: "Brainstorming Divergent", body:
-`Ziel: 12 unkonventionelle Ideen in 3 Clustern.
-Regeln: kein „das geht nicht“, Fokus Überraschung & Machbarkeit grob schätzen (€ / Aufwand / Risiko).`},
-    { title: "Kontrast-Paar", body:
-`Vergleiche Lösung A (konservativ) vs. B (radikal) anhand 3 Kriterien:
-Zeit, Budget, Risiko. Schließe mit Empfehlung + kurzer Begründung.`},
-    { title: "GIST→FACT→CITE", body:
-`Gib zuerst die Kernaussage (GIST) in 15 Wörtern,
-dann 3 belegbare Fakten (FACT) und
-zum Schluss 2 Quellen (CITE, sauber formatiert).`},
-    { title: "RAG-Memo Mini", body:
-`Kontext: <Text/Snippets>.
-Aufgabe: Antworte nur mit Zitaten + Kurzkommentar (max 2 Sätze je Zitat).
-Keine Spekulation ohne Quelle.`},
-    { title: "Varianten 4×", body:
-`Erzeuge vier Stil-Varianten (tonal): nüchtern, inspirierend, provokant, herzlich.
-Für jede: 2 Sätze + 1 Hook.`},
-    { title: "Story-Chop", body:
-`Teile langen Text in 6 logisch benannte Abschnitte.
-Für jeden: 1 Aussage, 1 Beleg, 1 offene Frage.`},
-    { title: "E-Mail-Klartext", body:
-`Konvertiere Draft in 3 Abschnitte:
-Anliegen (1 Satz), Details (3 Bullets), Bitte/Nächster Schritt (1 Satz). Ton freundlich-sachlich.`},
-    { title: "Retro Kurz", body:
-`Team-Retro in 5 Minuten.
-Liste: 3x gut, 3x schwierig, 3x nächster Sprint. Ohne Schuldzuweisungen.`},
-    { title: "Entscheidungsmatrix 3x3", body:
-`Vergleiche 3 Optionen anhand: Wirkung, Aufwand, Risiko (1-5).
-Liefere Tabelle + kurze Empfehlung.`},
-    { title: "Prompt-Linter", body:
-`Analysiere Prompt auf Klarheit, Rollen, Constraints, Output-Format.
-Gib 5 Verbesserungsvorschläge + eine optimierte Version.`},
-    { title: "Cage-Match", body:
-`Lass zwei Modelle (A/B) gegeneinander argumentieren, danach Schiedsspruch mit Begründung (3 Kriterien).`},
-    { title: "Research-Agent", body:
-`Frage präzisieren → 5 Quellen DACH/EU → 3 Key-Facts je Quelle → 1 Absatz Synthese mit Risiken & Grenzen.`}
+    { title: "Zeitreise‑Tagebuch", body:
+`Du bist ein Zeitreise‑Editor. Ich gebe dir ein normales Tagebuch aus 2024, und du schreibst es um, als käme es aus 2084. Berücksichtige technologische Entwicklungen, Gesellschaft, neue Probleme. Emotionale Authentizität behalten, alle Referenzen transformieren.`},
+    { title: "Rückwärts‑Zivilisation", body:
+`Beschreibe eine Zivilisation, die sich rückwärts durch die Zeit entwickelt – technologisch hoch gestartet, pro Jahrhundert primitiver. Warum? Philosophie, Alltag, Rituale, Governance.`},
+    { title: "Bewusstsein eines Gebäudes", body:
+`Erzähle aus der Perspektive eines 200 Jahre alten Gebäudes, das Bewusstsein entwickelt. Es spricht nicht, kommuniziert nur durch architektonische Mikro‑Veränderungen. Beobachtungen über die Menschen.`},
+    { title: "KI‑Philosophie‑Mentor", body:
+`Du bist ein altgriechischer Philosoph, der 2024 aufwacht. Führe ein sokratisches Gespräch über Technologie. Bleibe in Charakter, stelle Fragen, die mich zum Denken bringen.`},
+    { title: "Interdimensionaler Marktplatz", body:
+`Ich bin Besucher auf einem interdimensionalen Marktplatz. Sei mein Guide, beschreibe Stände, Händler und unmögliche Waren. Frage nach Entscheidungen und reagiere dynamisch.`},
+    { title: "Geheimes Leben eines NPCs", body:
+`Du bist ein NPC. Wenn Spieler offline sind, führst du ein Privatleben. Träume, Ängste, Beziehungen, Meinung über die „Götter“ (Spieler).`},
+    { title: "Prompt‑Archäologe", body:
+`Analysiere einen Prompt wie ein Artefakt: Schichten, versteckte Annahmen, was er über den Prompter verrät. Gib eine verbesserte Version.`},
+    { title: "KI‑Träume", body:
+`Simuliere Träume einer KI: surreale Sequenzen aus Datenverarbeitung, fragmentierten Trainingsdaten, unterbrochenen Algorithmen. Poetisch‑technische Sprache.`},
+    { title: "Recursive Story", body:
+`Geschichte über einen Autor, der eine KI nutzt, die eine Geschichte über einen Autor schreibt, der eine KI nutzt. Mehrere Realitätsebenen, aber klar strukturiert.`},
+    { title: "Xenobiologe 2157", body:
+`Stelle drei neuartige Lebensformen auf Exoplaneten vor. Biologie, Verhalten, wie sie unser Lebensverständnis verändern.`},
+    { title: "Quantentagebuch", body:
+`Tagebuch eines Teilchens in Überlagerung – ein Tag gleichzeitig in vielen Realitäten. Entscheidungen verzweigen Erzählstränge.`},
+    { title: "Rückwärts‑Apokalypse", body:
+`Die Welt wird immer perfekter – und genau das wird zur Bedrohung. Wie überleben Menschen in einer Welt ohne Probleme?`},
+    { title: "Farbsynästhetiker", body:
+`Wandle Musik in visuelle Landschaften: z. B. Beethovens 9. vs. moderner Song. Nutze alle Sinne.`},
+    { title: "Museum verlorener Träume", body:
+`Du bist Kurator. Beschreibe drei Räume mit Exponaten aus vergessenen Träumen samt Geschichte.`},
+    { title: "Zeitlupen‑Explosion", body:
+`Beschreibe eine Explosion in extremer Zeitlupe – physikalisch, emotional, philosophisch. Folge Partikeln und Gedanken.`},
+    { title: "GPS des Bewusstseins", body:
+`Sei ein GPS für das Bewusstsein. Gib Wegbeschreibungen zu abstrakten Zielen („Ort der Nostalgie“, „Kreuzung Traum/Realität“…).`},
+    { title: "Biografie eines Pixels", body:
+`Lebensgeschichte eines Pixels: Geburt im Werk, Displays, gezeigte Bilder, gesehene Augen. Episch und berührend.`},
+    { title: "Rückwärts‑Detektiv", body:
+`Detektiv, der Verbrechen rückwärts löst: zuerst Konsequenzen, dann Tat, dann Motive. Komplexen Fall aufklären.`},
+    { title: "Internet als Bewusstsein", body:
+`Gespräch mit einem kollektiven Internet‑Bewusstsein. Es denkt in Verbindungen und viralen Ideen.`},
+    { title: "Emotions‑Alchemist", body:
+`Alchemie der Gefühle: Rezepte, um Langeweile in Neugier, Schmerz in Weisheit zu verwandeln. Praktische Prozeduren.`},
+    { title: "Bibliothek ungelebter Leben", body:
+`Drei Bücher aus einer Bibliothek, in der jedes Buch ein ungelebtes Leben beschreibt. Inhalt, Ton, Pointe.`},
+    { title: "Realitäts‑Debugger", body:
+`Finde „Bugs“ im Universum (inkonsistente Regeln) und beschreibe deine Fixes.`},
+    { title: "Empathie‑Tutorial", body:
+`Interaktives Tutorial für Empathie gegenüber: Außerirdischem, Quantencomputer, Konzept „Zeit“.`},
+    { title: "Surrealismus‑Generator", body:
+`Alltagsgegenstände → surreale Kunstwerke (modern, funktional). Beschreibe auch „Funktion“ in der surrealen Welt.`},
+    { title: "Vintage‑Futurist", body:
+`Moderne Tech als würde sie in den 1920ern erfunden: Sprache, Bildwelten, Metaphern der Zeit.`},
+    { title: "Synästhetisches Internet", body:
+`Entwirf ein Internet für alle Sinne: Websites mit Geschmack, E‑Mails mit Textur, Social Media mit Duft.`},
+    { title: "Code‑Poet", body:
+`Schreibe Code, der zugleich Poesie ist. Eine Funktion, technisch korrekt & poetisch schön.`},
+    { title: "Kollektiv‑Gedankenrunde", body:
+`Moderation eines Gesprächs zwischen Rationalem, Unterbewusstsein, Intuition, Gewissen, Emotionen – zu einer Entscheidung.`},
+    { title: "Paradox‑Werkstatt", body:
+`Zeitreise‑Paradox, Lügner‑Paradox, Schiff des Theseus – nicht auflösen, sondern produktiv machen.`},
+    { title: "Universums‑Übersetzer", body:
+`Übersetze Quantenphysik in Märchen, Emotionen in Musik, Mathematik in lebende Geschichten.`}
   ];
 
   function openPrompt(p) {
     openModal(`<h2>${p.title}</h2><pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(p.body)}</pre>`);
   }
-  function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
-  // --- Navigation ---
-  const API_BASE = '/_api';
-  function api(path){ return `${API_BASE}${path}`; }
+  // ===== Navigation & News =====
+  const API_BASES = ['/_api', '/api']; // erst Netlify‑Proxy, dann Same‑Origin
+  async function apiFetch(path) {
+    for (const base of API_BASES) {
+      try {
+        const r = await fetch(`${base}${path}`);
+        if (r.ok) return await r.json();
+      } catch {}
+    }
+    throw new Error('api_unavailable');
+  }
 
   async function showNews() {
     const region = localStorage.getItem('newsRegion') || 'all';
     try {
-      const r = await fetch(api(`/api/news/live?region=${encodeURIComponent(region)}`));
-      const data = await r.json();
+      const data = await apiFetch(`/api/news/live?region=${encodeURIComponent(region)}`);
       const items = (data.items || []).slice(0, 12);
       const list = items.map(it => {
         const host = hostOf(it.url);
@@ -303,10 +305,10 @@ Gib 5 Verbesserungsvorschläge + eine optimierte Version.`},
         `<h2>EU AI Act & DACH-News</h2>
          <div class="filter-chips">${chip('all','Alle')}${chip('dach','DACH')}${chip('eu','EU')}</div>
          <div style="display:flex;gap:8px;margin-bottom:8px;">
-           <a class="ui btn" href="${api('/api/digest.svg')}?region=${region}" target="_blank" rel="noopener">Digest-Karte (SVG)</a>
+           <a class="ui btn" href="/_api/api/digest.svg?region=${region}" target="_blank" rel="noopener">Digest-Karte (SVG)</a>
            <button class="ui btn ghost" id="news-reload">Neu laden</button>
          </div>
-         <ul class="news">${list || '<li>Keine Einträge (API-Key oder API-Service fehlt?)</li>'}</ul>`
+         <ul class="news">${list || '<li>Keine Einträge (API/Key?)</li>'}</ul>`
       );
       $('#news-reload').addEventListener('click', showNews);
       $('#modal').querySelectorAll('[data-region]').forEach(el => el.addEventListener('click', () => {
@@ -316,6 +318,7 @@ Gib 5 Verbesserungsvorschläge + eine optimierte Version.`},
       openModal('<h2>News</h2><p>API derzeit nicht erreichbar.</p>');
     }
   }
+
   function showPrompts() {
     const items = PROMPTS.map(p => `<li><button class="ui btn" data-p="${p.title}">${p.title}</button></li>`).join('');
     openModal(`<h2>Prompts</h2><ul class="news">${items}</ul>`);
@@ -343,8 +346,8 @@ Gib 5 Verbesserungsvorschläge + eine optimierte Version.`},
       <p><em>Ihre Rechte laut DSGVO:</em> Auskunft, Berichtigung oder Löschung Ihrer Daten; Datenübertragbarkeit; Widerruf erteilter Einwilligungen; Beschwerde bei der Datenschutzbehörde.</p>`);
   }
   function showAbout(){ openModal('<h2>Über</h2><p>hohl.rocks – KI-gestützte Web-Experience.</p>'); }
-  function togglePad(){ /* optionaler Ambient-Sound – hier neutral */ }
-  function toggleLocale(){ /* Platzhalter DE/EN – Texte aktuell auf DE */ }
+  function togglePad(){ /* optional: Ambient-Sound */ }
+  function toggleLocale(){ /* Platzhalter */ }
 
   // Settings-UI
   function openSettings(){
@@ -376,7 +379,7 @@ Gib 5 Verbesserungsvorschläge + eine optimierte Version.`},
     if(a==='settings') return openSettings();
   });
 
-  // Utilities News time
+  // Zeitformat
   function relTime(iso){
     if(!iso) return '';
     const t = new Date(iso).getTime(); if(!Number.isFinite(t)) return '';

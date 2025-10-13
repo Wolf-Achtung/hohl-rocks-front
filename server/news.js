@@ -16,6 +16,17 @@ function boostQuery(region='all'){
   return base;
 }
 
+function dedupe(items){
+  const seen = new Set();
+  const out = [];
+  for (const it of items){
+    const key = (String(it.title||'').toLowerCase().slice(0,160) + '|' + (new URL(it.url).hostname.replace(/^www\./,'')));
+    if (seen.has(key)) continue;
+    seen.add(key); out.push(it);
+  }
+  return out;
+}
+
 router.get('/news/live', async (req, res) => {
   const region = (req.query.region || 'all').toString();
   const q = boostQuery(region);
@@ -29,22 +40,23 @@ router.get('/news/live', async (req, res) => {
         api_key: TAVILY_API_KEY,
         query: q,
         search_depth: 'advanced',
-        max_results: 20
+        max_results: 24
       })
     });
     const j = await r.json().catch(() => ({}));
-    const items = Array.isArray(j.results) ? j.results.map(x => ({
+    const itemsRaw = Array.isArray(j.results) ? j.results.map(x => ({
       title: x.title, url: x.url, snippet: x.content, published: x.published_date || null
     })) : [];
+    const items = dedupe(itemsRaw);
     res.json({ items });
-  } catch {
+  } catch (e) {
     res.status(500).json({ error: 'tavily_failed' });
   }
 });
 
 router.get('/ai-weekly', async (_req, res) => {
   if (!PERPLEXITY_API_KEY) return res.json({ items: [] });
-  // Platzhalter: später echte Zusammenfassung
+  // Platzhalter: spätere Implementierung
   res.json({ items: [] });
 });
 

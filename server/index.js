@@ -1,72 +1,45 @@
+/* hohl.rocks API – v1.4.3 */
 import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import helmet from 'helmet';
-import morgan from 'morgan';
-import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import cors from 'cors';
-import { createServer } from 'http';
-import { rateLimiter } from './rate-limit.js';
-import { newsRouter } from './news.js';
-import { sseRouter } from './sse.js';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const server = createServer(app);
 
-const PORT = process.env.PORT || 8080;
-const ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:' + PORT)
-  .split(',').map(s => s.trim()).filter(Boolean);
+const ALLOWED = String(process.env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
 
 app.use(helmet({
-  contentSecurityPolicy: {
-    useDefaults: true,
-    directives: {
-      "default-src": ["'self'"],
-      "script-src": ["'self'"],
-      "style-src": ["'self'"],
-      "img-src": ["'self'", "data:"],
-      "font-src": ["'self'", "data:"],
-      "connect-src": ["'self'", ...ORIGINS, "https:"],
-      "media-src": ["'self'", "blob:"],
-      "object-src": ["'none'"],
-      "frame-ancestors": ["'self'"]
-    }
-  },
-  crossOriginEmbedderPolicy: false
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
+app.use(express.json({ limit: '1mb' }));
+app.set('trust proxy', 1);
 
-app.use('/api', cors({
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true);
-    const ok = ORIGINS.includes(origin) || ORIGINS.includes('*');
-    cb(ok ? null : new Error('CORS: origin not allowed'), ok);
-  }
-}));
+if (ALLOWED.length) {
+  app.use(cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      cb(null, ALLOWED.some(a => origin.startsWith(a)));
+    },
+    credentials: false
+  }));
+} else {
+  app.use(cors());
+}
 
-app.use(compression());
-app.use(express.json({ limit: '256kb' }));
-app.use(morgan(':date[iso] :remote-addr :method :url :status :res[content-length] - :response-time ms'));
+app.use('/api', rateLimit({ windowMs: 60_000, max: 90 }));
 
-app.get('/healthz', (req, res) => res.json({ ok: true, ts: new Date().toISOString(), version: '1.4.2' }));
+// --- Health ---
+app.get('/healthz', (_req, res) => res.json({ ok: true, version: '1.4.3' }));
 
-app.use('/api', rateLimiter);
+// --- News Endpoints ---
+import newsRouter from './news.js';
 app.use('/api', newsRouter);
-app.use('/api', sseRouter);
 
-const publicDir = path.join(__dirname, '..', 'public');
-app.use(express.static(publicDir, { maxAge: '1h', etag: true }));
+// --- Fallback (optional statics, wenn du testweise alles aus Railway serven willst) ---
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
-app.use((req, res, next) => {
-  if (req.path.match(/\.(js|css|map|svg|png|jpg|jpeg|webp|mp4|json)$/)) {
-    return res.status(404).type('text/plain').send('Not found');
-  }
-  next();
-});
-
-app.get('*', (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
-
-server.listen(PORT, () => console.log('[info] server up on', PORT));
-process.on('SIGTERM', () => { console.log('[info] received SIGTERM, shutting down gracefully'); server.close(() => process.exit(0)); });
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`api up on :${PORT}`));

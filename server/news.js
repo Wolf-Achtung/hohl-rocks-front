@@ -59,7 +59,6 @@ router.get('/news/live', async (req, res) => {
 
 router.get('/ai-weekly', async (_req, res) => {
   if (!PERPLEXITY_API_KEY) return res.json({ items: [] });
-  // Platzhalter: spätere Implementierung
   res.json({ items: [] });
 });
 

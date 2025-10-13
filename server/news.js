@@ -20,7 +20,9 @@ function dedupe(items){
   const seen = new Set();
   const out = [];
   for (const it of items){
-    const key = (String(it.title||'').toLowerCase().slice(0,160) + '|' + (new URL(it.url).hostname.replace(/^www\./,'')));
+    let host = '';
+    try{ host = new URL(it.url).hostname.replace(/^www\./,''); }catch{}
+    const key = (String(it.title||'').toLowerCase().slice(0,160) + '|' + host);
     if (seen.has(key)) continue;
     seen.add(key); out.push(it);
   }
@@ -48,6 +50,7 @@ router.get('/news/live', async (req, res) => {
       title: x.title, url: x.url, snippet: x.content, published: x.published_date || null
     })) : [];
     const items = dedupe(itemsRaw);
+    res.set('Cache-Control', 'public, max-age=120');
     res.json({ items });
   } catch (e) {
     res.status(500).json({ error: 'tavily_failed' });

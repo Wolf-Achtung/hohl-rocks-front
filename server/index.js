@@ -1,4 +1,4 @@
-/* hohl.rocks API – v1.4.5 */
+/* hohl.rocks API – v1.4.6 */
 import express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -26,14 +26,23 @@ app.use(express.json({ limit: '1mb' }));
 app.use(morgan('combined'));
 app.set('trust proxy', 1);
 
-app.use(cors({
-  origin: (origin, cb) => cb(null, isAllowed(origin))
-}));
+app.use(cors({ origin: (origin, cb) => cb(null, isAllowed(origin)) }));
+app.options('*', cors()); // Preflight
 
 app.use('/api', rateLimit({ windowMs: 60_000, max: 90 }));
 
 // Health
-app.get('/healthz', (_req, res) => res.json({ ok: true, version: '1.4.5' }));
+app.get('/healthz', (_req, res) => res.json({ ok: true, version: '1.4.6' }));
+
+// API diagnostics (keine Secrets)
+app.get('/api/ping', (_req, res) => {
+  res.json({
+    ok: true,
+    tavily: !!process.env.TAVILY_API_KEY,
+    perplexity: !!process.env.PERPLEXITY_API_KEY,
+    allowed: ALLOWED
+  });
+});
 
 // News
 import newsRouter from './news.js';

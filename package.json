@@ -1,17 +1,24 @@
 {
-  "name": "hohl.rocks-api",
-  "version": "1.4.9",
-  "private": true,
+  "name": "hohl.rocks-front",
+  "version": "2.0.0",
+  "description": "Static front + minimal API server for hohl.rocks \u2013 optimized for small, fast background video and simple content.",
   "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18.17"
+  },
   "scripts": {
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "dev": "NODE_ENV=development node server/index.js",
+    "lint": "echo \"Add ESLint/Prettier in your toolchain if needed\""
   },
   "dependencies": {
-    "compression": "^1.7.4",
+    "compression": "^1.7.5",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "express-rate-limit": "^7.3.0",
+    "express-rate-limit": "^7.2.0",
     "helmet": "^7.1.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "rate-limiter-flexible": "^5.0.0"
   }
 }

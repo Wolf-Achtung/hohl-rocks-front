@@ -7,14 +7,12 @@
       {
         "name": "name",
         "label": "Name",
-        "type": "text",
-        "placeholder": "z. B. Mara"
+        "type": "text"
       },
       {
         "name": "jahr",
         "label": "Jahr",
-        "type": "number",
-        "placeholder": "z. B. 2084"
+        "type": "number"
       }
     ],
     "output": "text"
@@ -27,8 +25,7 @@
       {
         "name": "stichworte",
         "label": "Stichworte",
-        "type": "text",
-        "placeholder": "z. B. zwei Monde, Drachen, Handel"
+        "type": "text"
       }
     ],
     "output": "text"
@@ -41,8 +38,7 @@
       {
         "name": "thema",
         "label": "Thema",
-        "type": "text",
-        "placeholder": "z. B. Herbstregen"
+        "type": "text"
       }
     ],
     "output": "html"
@@ -50,19 +46,17 @@
   {
     "id": "bildgenerator",
     "title": "Bild‑Generator (FLUX/SDXL)",
-    "desc": "Erzeuge ein Bild aus Text (nutzt REPLICATE_MODEL_VERSION).",
+    "desc": "Erzeuge ein Bild aus Text (REPLICATE_MODEL_VERSION).",
     "fields": [
       {
         "name": "prompt",
         "label": "Beschreibung",
-        "type": "text",
-        "placeholder": "z. B. Schloss auf schwebendem Felsen bei Sonnenuntergang"
+        "type": "text"
       },
       {
         "name": "seed",
         "label": "Seed (optional)",
-        "type": "number",
-        "placeholder": "zufällig"
+        "type": "number"
       }
     ],
     "output": "image"
@@ -75,8 +69,7 @@
       {
         "name": "beschreibung",
         "label": "Beschreibung",
-        "type": "text",
-        "placeholder": "z. B. fröhliche Klaviermelodie, 10 Sekunden"
+        "type": "text"
       }
     ],
     "output": "audio"
@@ -103,110 +96,12 @@
       {
         "name": "prompt",
         "label": "Prompt",
-        "type": "text",
-        "placeholder": "z. B. Beschreibe eine utopische Stadt."
+        "type": "text"
       },
       {
         "name": "modelle",
         "label": "Modelle (kommagetrennt)",
-        "type": "text",
-        "placeholder": "z. B. claude,gpt,mistral"
-      }
-    ],
-    "output": "text"
-  },
-  {
-    "id": "bibliothek-leben",
-    "title": "Bibliothek ungelebter Leben",
-    "desc": "Wähle ein 'Was‑wäre‑wenn?' und erhalte ein Buch‑Abstract.",
-    "fields": [
-      {
-        "name": "waswaerewenn",
-        "label": "Was‑wäre‑wenn?",
-        "type": "text",
-        "placeholder": "z. B. Ich wäre Astronom statt Texter geworden"
-      }
-    ],
-    "output": "text"
-  },
-  {
-    "id": "gps-bewusstsein",
-    "title": "GPS des Bewusstseins",
-    "desc": "Wegbeschreibung zu einem inneren Ort.",
-    "fields": [
-      {
-        "name": "ziel",
-        "label": "Ziel",
-        "type": "text",
-        "placeholder": "z. B. Kreuzung von Traum & Realität"
-      }
-    ],
-    "output": "text"
-  },
-  {
-    "id": "emotions-alchemist",
-    "title": "Emotions‑Alchemist",
-    "desc": "Verwandle eine Emotion in eine andere – inkl. Rezept.",
-    "fields": [
-      {
-        "name": "von",
-        "label": "Von",
-        "type": "text",
-        "placeholder": "z. B. Frust"
-      },
-      {
-        "name": "zu",
-        "label": "Zu",
-        "type": "text",
-        "placeholder": "z. B. Neugier"
-      }
-    ],
-    "output": "text"
-  },
-  {
-    "id": "surrealismus-generator",
-    "title": "Surrealismus‑Generator (Bild)",
-    "desc": "Mache Alltagsobjekte zu surrealer Kunst.",
-    "fields": [
-      {
-        "name": "objekte",
-        "label": "Objekte",
-        "type": "text",
-        "placeholder": "z. B. Teekanne, Wecker, Schlüssel"
-      },
-      {
-        "name": "stil",
-        "label": "Stil",
-        "type": "text",
-        "placeholder": "z. B. Dalí modern, Neon, fotorealistisch"
-      }
-    ],
-    "output": "image"
-  },
-  {
-    "id": "rueckwaerts-zivilisation",
-    "title": "Rückwärts‑Zivilisation",
-    "desc": "Eine Kultur, die in die Vergangenheit 'aufsteigt'.",
-    "fields": [
-      {
-        "name": "fokus",
-        "label": "Fokus",
-        "type": "text",
-        "placeholder": "z. B. Ernährung, Politik, Architektur"
-      }
-    ],
-    "output": "text"
-  },
-  {
-    "id": "philosophie-mentor",
-    "title": "KI‑Philosophie‑Mentor",
-    "desc": "Sokratischer Impuls mit 3 Fragen.",
-    "fields": [
-      {
-        "name": "thema",
-        "label": "Thema",
-        "type": "text",
-        "placeholder": "z. B. Digitaler Minimalismus"
+        "type": "text"
       }
     ],
     "output": "text"

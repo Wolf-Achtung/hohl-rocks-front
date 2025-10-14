@@ -16,12 +16,12 @@ html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
 /* Background Video */
 .bg-video{
   position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
-  filter:blur(3.25px) brightness(.74) saturate(1.06);
+  filter:blur(3.5px) brightness(.74) saturate(1.06);
   opacity:0; transition:opacity 600ms ease; will-change:opacity,filter; transform:translateZ(0);
 }
 .bg-video.visible{ opacity:.96 }
 
-/* Color tint – bewusst unten, nicht im Logo-Bereich */
+/* Color tint – bewusst nur am unteren Rand, nicht im Logo-Bereich */
 .tint{position:fixed;inset:0;z-index:1;pointer-events:none;
   background:
     radial-gradient(70% 65% at 80% 88%, rgba(193,44,245,.24), transparent 60%),
@@ -35,51 +35,54 @@ html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
   margin:0;
   font-size:clamp(56px,12vw,132px);
   font-weight:900; letter-spacing:.3px;
-  color:#fff;
+  color:#ffffff;
   text-shadow:
     0 0 2px rgba(255,255,255,.95),
-    0 0 12px rgba(190,230,255,.9),
-    0 0 30px rgba(83,171,255,.8),
+    0 0 10px rgba(200,235,255,.95),
+    0 0 28px rgba(83,171,255,.85),
     0 8px 35px rgba(0,0,0,.6);
 }
+/* Schutzfläche für Logo – verhindert, dass Bubbles darüber laufen */
 .logo-guard{
   position:absolute; left:50%; transform:translateX(-50%);
   top:calc(18vh - 18px);
   width:min(92vw, 980px);
-  height:clamp(120px, 15vh, 190px);
+  height:clamp(120px, 15vh, 180px);
   z-index:2; pointer-events:none;
+  /* Visual debug: outline optional */
+  /* outline:1px dashed rgba(255,255,255,.2); */
 }
 
-/* Swarm – neon jellyfish bubbles */
-.swarm{ position:fixed; inset:0; z-index:2; pointer-events:none }
-.nbubble{
-  position:absolute; display:inline-flex; align-items:center; gap:8px; pointer-events:auto;
-  padding:10px 14px; border-radius:999px; color:#f1f7ff; font-weight:800;
-  backdrop-filter:blur(10px) saturate(1.2);
-  border:1px solid rgba(255,255,255,.12);
-  filter:drop-shadow(0 8px 18px rgba(0,0,0,.45));
-  opacity:0; transform:translate3d(0,10px,0) scale(.96);
-  animation: nbFloat var(--dur,10s) ease-in-out forwards;
-  will-change: transform, opacity;
+/* Float-Layer */
+.float-layer{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+.float-chip{
+  position:absolute; display:inline-flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:999px; font-weight:800; letter-spacing:.2px;
+  color:#eaf5ff; backdrop-filter:blur(10px);
+  background: radial-gradient(120% 160% at 30% 20%, rgba(255,255,255,.08), rgba(255,255,255,.02)),
+              linear-gradient(135deg, rgba(90,170,255,.35), rgba(210,80,255,.35));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:
+    0 0 12px rgba(88,188,255,.75),
+    0 0 26px rgba(210,80,255,.6),
+    0 10px 30px rgba(0,0,0,.45);
+  pointer-events:auto;
+  opacity:0; transform:translateY(20px) scale(.96);
+  animation: chip-in .7s ease forwards, jelly var(--jelly,12s) ease-in-out infinite alternate;
 }
-.nbubble::before{ content:''; width:8px; height:8px; border-radius:999px; box-shadow:0 0 14px currentColor; background:currentColor; }
-.nb-c1{ background:linear-gradient(180deg, rgba(13,22,34,.75), rgba(24,12,30,.7)); color:#7dd3fc; }
-.nb-c2{ background:linear-gradient(180deg, rgba(16,20,30,.75), rgba(32,14,32,.7)); color:#e879f9; }
-.nb-c3{ background:linear-gradient(180deg, rgba(16,24,28,.75), rgba(26,14,40,.7)); color:#93c5fd; }
-.nb-c4{ background:linear-gradient(180deg, rgba(12,18,24,.75), rgba(26,16,26,.7)); color:#f0abfc; }
-@keyframes nbFloat{
-  0%{ opacity:0; transform:translate3d(0,12px,0) scale(.96) }
-  8%{ opacity:1; transform:translate3d(0,0,0) scale(1) }
-  70%{ opacity:.96 }
-  100%{ opacity:0; transform:translate3d(0,-24px,0) scale(.98) }
+.float-chip .dot{ width:7px; height:7px; border-radius:999px; background:#34d399; box-shadow:0 0 10px #34d399 }
+@keyframes chip-in{ to{ opacity:.95; transform:translateY(0) scale(1) } }
+@keyframes jelly{
+  0% { transform:translate(var(--xStart,0), var(--yStart,0)) scale(1); }
+  100%{ transform:translate(calc(var(--xStart,0) + var(--xDrift,20px)), calc(var(--yStart,0) - var(--yDrift,120px))) scale(1.06); }
 }
 
-/* Bubble cards grid */
+/* Bubble Grid */
 .bubble-grid{
   position:relative; z-index:3;
   display:grid; gap:16px;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  padding:calc(18vh + clamp(120px, 15vh, 190px) + 32px) 4vw 8vh;
+  padding:calc(18vh + clamp(120px, 15vh, 180px) + 32px) 4vw 10vh;
 }
 .card{
   position:relative; overflow:hidden;
@@ -99,9 +102,9 @@ html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
 .card__tools{ display:flex; gap:6px; align-items:center }
 .card__seed{ width:92px }
 
-/* Modal etc. */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;z-index:40}
-.modal[aria-hidden="false"]{display:flex;align-items:center;justify-content:center}
+/* Modal / Forms / Gallery */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:40}
+.modal[hidden]{display:none}
 .modal__panel{width:min(1080px,92vw);max-height:86vh;overflow:auto;background:rgba(8,12,18,.9);border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.6);padding:0}
 .modal__content{padding:16px}
 .modal__actions{display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px}

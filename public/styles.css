@@ -1,46 +1,93 @@
-
-/* === Video Background === */
-#bg-video{ position:fixed; inset:0; width:100vw; height:100vh; object-fit:cover; z-index:-2; background:#000 }
-/* Farbflächen/Washes */
-.wash{ position:fixed; inset:auto; width:60vw; height:60vw; border-radius:50%; filter:blur(60px); opacity:.55; pointer-events:none; z-index:-1; mix-blend-mode:screen }
-.wash--left{ left:-10vw; bottom:-10vh; background: radial-gradient(closest-side, rgba(255,0,153,.75), rgba(255,0,153,0) 70%); animation: washLeft 16s linear infinite alternate }
-.wash--right{ right:-10vw; bottom:10vh;  background: radial-gradient(closest-side, rgba(0,170,255,.65), rgba(0,170,255,0) 70%); animation: washRight 22s linear infinite alternate }
-@keyframes washLeft{ to{ transform: translate(6vw,-4vh) scale(1.08) } }
-@keyframes washRight{ to{ transform: translate(-6vw,2vh) scale(0.92) } }
-
-/* Overlay-Dunkelung */
-.bg-overlay{ position:fixed; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.45) 40%, rgba(0,0,0,.55)); z-index:0; pointer-events:none }
-
-/* Brand Headline */
-.hero{ padding: 18vh 6vw 8vh }
-.brand{
-  font-weight: 800;
-  letter-spacing:.02em;
-  font-size: clamp(3rem, 8vw, 9rem);
-  margin:0;
-  color: #d9efff;
-  text-shadow: 0 8px 40px rgba(0,0,0,.45), 0 0 24px rgba(120,200,255,.35);
-  filter: drop-shadow(0 0 14px rgba(120,200,255,.2));
+:root{
+  --fg:#e8f1ff;
+  --bg:#0a0f14;
+  --chip:#121a22;
+  --chip-fg:#cfe7ff;
+  --neon:0.86;
+  --hue-primary:200;
+  --hue-accent:320;
 }
-.subline{ font-size: clamp(1rem, 2.2vw, 1.4rem); opacity:.85; margin:.5rem 0 0 }
 
-/* Bubble Layer */
-.bubble-layer{ position:relative; height: calc(100vh - 32vh); margin-top:2vh; overflow:visible }
-.bubble{
-  position:absolute; padding:.45rem .9rem; border-radius:999rem; font-weight:600;
-  background: rgba(10,14,20,.65); border:1px solid rgba(255,255,255,.12); color:#eaf3ff;
-  box-shadow: 0 6px 22px rgba(0,0,0,.35); backdrop-filter: blur(6px);
-  transition: transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
-  white-space:nowrap; user-select:none; cursor:pointer;
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  color:var(--fg);
+  background:#000 radial-gradient(150% 100% at 50% 10%, #4a6375 0%, #0a0f14 55%, #000 100%);
+  font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
+  overflow:hidden;
 }
-.bubble:hover{ transform: translateY(-1px) scale(1.02); background: rgba(10,14,20,.8); border-color: rgba(255,255,255,.18); box-shadow: 0 10px 32px rgba(0,0,0,.45) }
-.bubble::after{ content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06) }
-.bubble[data-hue]{ outline: none; }
-.bubble .dot{ display:inline-block; width:.5rem; height:.5rem; border-radius:50%; margin-right:.45rem; opacity:.9; transform: translateY(-1px) }
 
-/* Modal + UI (ergänzt) bleibt wie gehabt */
-
-@media (prefers-reduced-motion: reduce){
-  #bg-video{ display:none }
-  body.no-motion{ background:url('/videos/road_poster.jpg') center/cover no-repeat fixed #000 }
+/* Video-Hintergrund */
+.bg-video{
+  position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+  filter:blur(4px) brightness(.72) saturate(1.1);
+  opacity:0; transition:opacity 600ms ease;
 }
+.bg-video.visible{ opacity:.92; }
+.tint{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background: radial-gradient(60% 70% at 80% 80%, rgba(193,44,245,.25), transparent 60%),
+              radial-gradient(70% 60% at 20% 85%, rgba(0,169,255,.18), transparent 60%);}
+
+/* Top-Navigation */
+.site-header{position:fixed;top:16px;left:0;right:0;display:flex;justify-content:center;z-index:20}
+.site-nav ul{list-style:none;margin:0;padding:6px 10px;border-radius:20px;background:rgba(10,14,18,.6);backdrop-filter:blur(8px);display:flex;gap:8px}
+.chip{
+  appearance:none;border:0;border-radius:999px;padding:6px 12px;
+  background:var(--chip);color:var(--chip-fg);cursor:pointer;font-weight:600;
+}
+.chip:hover{filter:brightness(1.15)}
+.chip:focus-visible{outline:2px solid hsl(var(--hue-primary) 70% 60% / .8);outline-offset:2px}
+
+/* Logo */
+.logo{
+  position:absolute;left:50%;top:18vh;transform:translateX(-50%);
+  font-size:clamp(44px,11vw,110px);letter-spacing:.5px;margin:0;
+  text-shadow:
+    0 0 12px hsl(var(--hue-primary) 100% 60% / .55),
+    0 0 40px hsl(var(--hue-primary) 100% 60% / .35);
+  z-index:2;
+}
+
+/* Canvas + Label-Layer */
+#bubbles{position:fixed;inset:0;z-index:2}
+.labels{position:fixed;inset:0;pointer-events:none;z-index:3}
+.bubble-label{
+  position:absolute;transform:translate(-50%,-50%);
+  padding:10px 14px;border-radius:16px;
+  background:linear-gradient(180deg, rgba(8,16,24,.64), rgba(8,16,24,.6));
+  backdrop-filter:blur(10px);
+  color:#e7f3ff;font-weight:800;font-size:clamp(12px,2vw,15px);white-space:nowrap;
+  text-shadow:
+    0 0 14px hsl(var(--hue-accent) 100% 70% / var(--neon)),
+    0 2px 4px rgba(0,0,0,.45);
+  pointer-events:auto; /* klickbar */
+  border:1px solid rgba(70,120,180,.4);
+  box-shadow:0 6px 22px rgba(0,0,0,.35), 0 0 30px rgba(140,220,255,.2) inset;
+}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;z-index:40}
+.modal[aria-hidden="false"]{display:flex;align-items:center;justify-content:center}
+.modal__panel{width:min(960px,92vw);max-height:86vh;overflow:auto;background:#0c141c;border:1px solid #223243;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.5);padding:18px}
+.modal__content p{margin:.6rem 0}
+.modal__actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.ui.btn{appearance:none;border:0;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;background:#1f2a33;color:#e7f3ff}
+.ui.btn.ghost{background:transparent;border:1px solid #30424f}
+.ui.btn:focus-visible{outline:2px solid hsl(var(--hue-accent) 70% 60%)}
+
+/* Filter-Chips im Modal */
+.filter-chips{display:flex;gap:8px;margin:.5rem 0 1rem;flex-wrap:wrap}
+.filter-chips .ui.btn.active{background:hsl(var(--hue-primary) 70% 35%)}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;margin:.2rem 0 1rem;flex-wrap:wrap}
+.tabs .ui.btn.active{background:hsl(var(--hue-accent) 70% 35%)}
+
+/* Responsiv */
+@media (max-width:760px){
+  .logo{top:14vh}
+  .chip{padding:6px 10px}
+}
+
+/* perf: hint compositing */
+.bg-video{ will-change: opacity, filter; }

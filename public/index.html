@@ -1,66 +1,48 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>hohl.rocks</title>
-  <meta name="description" content="KI-gestützte Web-Experience – ruhig, klar, magisch‑intuitiv.">
-  <link rel="icon" href="/favicon.svg">
-  <link rel="stylesheet" href="/styles.css">
-  <meta name="x-api-base" content="">
+  <meta name="description" content="KI-gestützte Web-Experience – ruhig, klar, magisch-intuitiv." />
+  <link rel="icon" href="/favicon.svg" />
+  <link rel="preload" href="/styles.css" as="style" />
+  <link rel="stylesheet" href="/styles.css" />
+  <!-- API-Basis (Cross-Origin erlaubt durch CORS) -->
+  <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app">
 </head>
 <body>
-  <!-- Hintergrundvideo -->
-  <video id="bg-video" autoplay muted loop playsinline preload="metadata" poster="/videos/road_poster.jpg">
-    <source src="/videos/road_540p_bg.webm" type="video/webm" media="(max-width: 768px)">
-    <source src="/videos/road_540p_bg.mp4"  type="video/mp4"  media="(max-width: 768px)">
-    <source src="/videos/road_720p_bg.webm" type="video/webm">
-    <source src="/videos/road_720p_bg.mp4"  type="video/mp4">
-  </video>
-
-  <!-- Farbflächen / Washes über dem Video -->
-  <div class="wash wash--left" aria-hidden="true"></div>
-  <div class="wash wash--right" aria-hidden="true"></div>
-  <div class="bg-overlay" aria-hidden="true"></div>
-
-  <!-- Navigation -->
   <header class="site-header" role="banner">
     <nav class="site-nav" aria-label="Hauptnavigation">
       <ul>
         <li><button class="chip" data-action="news">News</button></li>
         <li><button class="chip" data-action="prompts">Prompts</button></li>
         <li><button class="chip" data-action="projekte">Projekte</button></li>
-        <li><a class="chip link" href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
         <li><button class="chip" data-action="impressum">Impressum</button></li>
-        <li><button class="chip" data-action="datenschutz">Datenschutz</button></li>
+        <li><button class="chip" data-action="locale">DE/EN</button></li>
+        <li><button class="chip" data-action="klang">Klang</button></li>
+        <li><button class="chip" data-action="settings" title="Einstellungen">⚙︎</button></li>
       </ul>
     </nav>
   </header>
 
-  <main id="app" class="content" role="main">
-    <section class="hero" aria-label="Intro">
-      <h1 class="brand" aria-label="hohl.rocks">hohl.rocks</h1>
-      <p class="subline">Ruhig. Klar. Magisch‑intuitiv.</p>
-    </section>
+  <!-- Hintergrund-Video (nur wenn vorhanden) -->
+  <video id="bg-video" class="bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+  <div class="tint"></div>
 
-    <!-- Bubble-Layer -->
-    <section id="bubble-layer" class="bubble-layer" aria-label="Ideen und Tools"></section>
-
-    <!-- Cards-Container (optional) -->
-    <section id="cards" class="cards" aria-live="polite"></section>
+  <main id="app" class="app" role="main">
+    <h1 class="logo" aria-label="hohl.rocks">hohl.rocks</h1>
+    <canvas id="bubbles" aria-hidden="true"></canvas>
+    <div id="labels" class="labels" aria-hidden="true"></div>
   </main>
 
-  <!-- Modal -->
-  <section id="modal" class="modal" aria-hidden="true" aria-labelledby="modal-title" role="dialog">
-    <div class="modal__dialog" role="document">
-      <header class="modal__header">
-        <h2 id="modal-title" class="modal__title">Details</h2>
-        <button class="modal__close" id="modal-close" aria-label="Schließen">×</button>
-      </header>
+  <!-- Modal (zugänglich, fokus-gemanagt) -->
+  <section id="modal" class="modal" aria-hidden="true">
+    <div class="modal__panel" tabindex="-1" role="dialog" aria-modal="true" aria-label="Overlay">
       <div class="modal__content" id="modal-content"></div>
       <div class="modal__actions">
         <button class="ui btn ghost" data-copy="modal" title="In Zwischenablage kopieren">Kopieren</button>
-        <button class="ui btn" id="modal-close-2">Schließen</button>
+        <button class="ui btn" type="button" aria-label="Schließen" id="modal-close">Schließen</button>
       </div>
     </div>
   </section>

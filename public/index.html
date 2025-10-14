@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>hohl.rocks</title>
-  <meta name="description" content="KI-gestützte Web-Experience – ruhig, klar, magisch-intuitiv.">
+  <meta name="description" content="KI-gestützte Web-Experience – ruhig, klar, magisch‑intuitiv.">
   <link rel="icon" href="/favicon.svg">
   <link rel="stylesheet" href="/styles.css">
   <meta name="x-api-base" content="">
 </head>
 <body>
-  <!-- Vollflächiger Video-Background -->
+  <!-- Hintergrundvideo -->
   <video id="bg-video" autoplay muted loop playsinline preload="metadata" poster="/videos/road_poster.jpg">
     <source src="/videos/road_540p_bg.webm" type="video/webm" media="(max-width: 768px)">
     <source src="/videos/road_540p_bg.mp4"  type="video/mp4"  media="(max-width: 768px)">
@@ -18,29 +18,35 @@
     <source src="/videos/road_720p_bg.mp4"  type="video/mp4">
   </video>
 
-  <!-- Farbüberschläge über dem Video -->
-  <div class="color-wash" aria-hidden="true"></div>
+  <!-- Farbflächen / Washes über dem Video -->
+  <div class="wash wash--left" aria-hidden="true"></div>
+  <div class="wash wash--right" aria-hidden="true"></div>
   <div class="bg-overlay" aria-hidden="true"></div>
 
+  <!-- Navigation -->
   <header class="site-header" role="banner">
     <nav class="site-nav" aria-label="Hauptnavigation">
       <ul>
         <li><button class="chip" data-action="news">News</button></li>
         <li><button class="chip" data-action="prompts">Prompts</button></li>
         <li><button class="chip" data-action="projekte">Projekte</button></li>
+        <li><a class="chip link" href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><button class="chip" data-action="impressum">Impressum</button></li>
+        <li><button class="chip" data-action="datenschutz">Datenschutz</button></li>
       </ul>
     </nav>
   </header>
 
   <main id="app" class="content" role="main">
-    <section class="hero">
-      <h1 class="logo">hohl.rocks</h1>
-      <p class="tagline">Ruhig. Klar. Magisch‑intuitiv.</p>
+    <section class="hero" aria-label="Intro">
+      <h1 class="brand" aria-label="hohl.rocks">hohl.rocks</h1>
+      <p class="subline">Ruhig. Klar. Magisch‑intuitiv.</p>
     </section>
 
-    <!-- Layer für Bubbles -->
-    <section id="bubbles-layer" aria-label="Themenbläschen"></section>
+    <!-- Bubble-Layer -->
+    <section id="bubble-layer" class="bubble-layer" aria-label="Ideen und Tools"></section>
 
+    <!-- Cards-Container (optional) -->
     <section id="cards" class="cards" aria-live="polite"></section>
   </main>
 

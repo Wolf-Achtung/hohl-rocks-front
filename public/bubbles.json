@@ -1,77 +1,37 @@
 [
   {
-    "title": "Meeting-Klarziehen (5x Warum)",
+    "title": "Pitch‑Storyboard",
     "desc": "",
-    "hue": 242
+    "hue": 316
   },
   {
-    "title": "Pitch 10‑30‑50",
+    "title": "Brainstorm‑Sprint",
     "desc": "",
-    "hue": 137
+    "hue": 208
   },
   {
-    "title": "Anti‑Brainstorm",
+    "title": "Landing‑Page‑Copy",
     "desc": "",
-    "hue": 336
+    "hue": 274
   },
   {
-    "title": "E‑Mail‑Kondensat",
+    "title": "GPS des Bewusstseins",
     "desc": "",
-    "hue": 270
+    "hue": 332
   },
   {
-    "title": "One‑Minute‑Plan",
+    "title": "Rückwärts‑Zivilisation",
     "desc": "",
-    "hue": 341
+    "hue": 218
   },
   {
-    "title": "Prompt‑Linter",
+    "title": "Entscheidungsmatrix",
     "desc": "",
-    "hue": 179
+    "hue": 185
   },
   {
-    "title": "Kontrast‑Paar",
+    "title": "Recursive Story",
     "desc": "",
-    "hue": 73
-  },
-  {
-    "title": "Retro in 15 Min",
-    "desc": "",
-    "hue": 195
-  },
-  {
-    "title": "Storyboard (6 Shots)",
-    "desc": "",
-    "hue": 5
-  },
-  {
-    "title": "FAQ‑Cheatsheet für Stakeholder",
-    "desc": "",
-    "hue": 191
-  },
-  {
-    "title": "Risiko‑Radar",
-    "desc": "",
-    "hue": 247
-  },
-  {
-    "title": "Klartext‑Umschreiben",
-    "desc": "",
-    "hue": 140
-  },
-  {
-    "title": "Meeting‑Minutes in 3 Punkten",
-    "desc": "",
-    "hue": 329
-  },
-  {
-    "title": "Cage‑Match (Modelle)",
-    "desc": "",
-    "hue": 235
-  },
-  {
-    "title": "Research‑Agent (DACH)",
-    "desc": "",
-    "hue": 353
+    "hue": 200
   }
 ]

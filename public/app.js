@@ -2,15 +2,25 @@
 const $=(s,c=document)=>c.querySelector(s); const $$=(s,c=document)=>Array.from(c.querySelectorAll(s));
 const esc=(t)=>{const d=document.createElement('div'); d.textContent=t; return d.innerHTML;};
 const modal=$('#modal'); const modalC=$('#modal-content');
-const openModal=(html)=>{ modalC.innerHTML=html; modal.setAttribute('aria-hidden','false'); $('.modal__panel', modal).focus(); }
-const closeModal=()=>modal.setAttribute('aria-hidden','true');
+const consent=$('#consent');
+
+function openModal(html){
+  // Ensure only one modal is visible (avoid aria warnings)
+  consent.setAttribute('aria-hidden','true');
+  modalC.innerHTML=html;
+  modal.setAttribute('aria-hidden','false');
+  const p=$('.modal__panel', modal); if(p){ setTimeout(()=>p.focus(), 0); }
+}
+function closeModal(){
+  modal.setAttribute('aria-hidden','true');
+  if(document.activeElement) document.activeElement.blur();
+}
 $('#modal-close').addEventListener('click', closeModal);
 modal.addEventListener('click', (e)=>{ if(e.target.classList.contains('modal')) closeModal(); });
 $('[data-copy="modal"]').addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText($('#modal-content').innerText.trim()); alert('Kopiert ✓'); }catch{} });
-$('#modal-share').addEventListener('click', ()=>{ try{ const sel = window.getSelection(); const text = sel && sel.toString().trim(); navigator.share ? navigator.share({text: text||'Schau mal: hohl.rocks'}) : navigator.clipboard.writeText(location.href); }catch{} });
+$('#modal-share').addEventListener('click', ()=>{ try{ const txt=$('#modal-content')?.innerText?.trim(); navigator.share ? navigator.share({text:txt||'Schau mal: hohl.rocks'}) : navigator.clipboard.writeText(location.href); }catch{} });
 
 // Consent
-const consent=$('#consent');
 function ensureConsent(){ if(localStorage.getItem('consent')==='true') return;
   consent.setAttribute('aria-hidden','false'); $('.modal__panel', consent).focus();
   $('#consent-accept').onclick=()=>{ localStorage.setItem('consent','true'); consent.setAttribute('aria-hidden','true'); };
@@ -44,15 +54,31 @@ async function apiJson(method, path, body){
   video.innerHTML=`<source src="${chosen}" type="${type}">`; video.load(); video.play().catch(()=>{}); video.classList.add('visible');
 }catch{}})();
 
-// Bubbles
+// Bubbles (cards) + Swarm
+let allDefs=[];
 async function loadBubbles(){
-  try{ const r=await fetch('/bubbles.json',{cache:'no-store'}); const list=r.ok?await r.json():[];
-    const grid=$('#bubble-grid'); grid.innerHTML=list.map(b=>cardHtml(b)).join('');
-    $$('#bubble-grid [data-run]').forEach(btn=>btn.addEventListener('click',()=>openBubble(list.find(x=>x.id===btn.dataset.run))));
-    // Deep link support (?bubble=ID&input=base64json)
+  try{
+    const r=await fetch('/bubbles.json',{cache:'no-store'}); allDefs=r.ok?await r.json():[];
+    renderCards(allDefs);
+    startSwarm(allDefs);
+    // Deep link
     const params=new URLSearchParams(location.search); const deeplink=params.get('bubble'); const input=params.get('input');
-    if(deeplink){ const def=list.find(x=>x.id===deeplink); if(def){ const data=input?JSON.parse(atob(input)):null; openBubble(def,data); } }
+    if(deeplink){ const def=allDefs.find(x=>x.id===deeplink); if(def){ const data=input?JSON.parse(atob(input)):null; openBubble(def,data); } }
   }catch(e){ console.error('bubbles.json fehlte', e); }
+}
+function renderCards(list){
+  const grid=$('#bubble-grid');
+  grid.innerHTML=list.map(b=>cardHtml(b)).join('');
+  $$('#bubble-grid [data-run]').forEach(btn=>btn.addEventListener('click',()=>openBubble(list.find(x=>x.id===btn.dataset.run))));
+  // Share buttons
+  document.addEventListener('click',(e)=>{
+    const t=e.target.closest('[data-share]'); if(!t) return;
+    const id=t.dataset.share;
+    const last = JSON.parse(localStorage.getItem('bubble_'+id+'_lastInput')||'{}');
+    const url=new URL(location.href); url.searchParams.set('bubble', id);
+    if(Object.keys(last).length) url.searchParams.set('input', btoa(JSON.stringify(last)));
+    navigator.clipboard.writeText(url.toString()).then(()=>alert('Share‑Link kopiert')).catch(()=>{});
+  });
 }
 function cardHtml(b){
   return `<article class="card" data-id="${esc(b.id)}">
@@ -66,6 +92,38 @@ function cardHtml(b){
   </article>`;
 }
 
+// Swarm (neon jellyfish bubbles)
+function startSwarm(list){
+  const swarm = $('#swarm'); if(!swarm) return;
+  const MAX=12; let alive=0;
+  const guard = $('.logo-guard').getBoundingClientRect();
+  const headerH = document.querySelector('.site-header').getBoundingClientRect().height + 8;
+  function spawn(){
+    if(alive>=MAX) return;
+    const def = list[Math.floor(Math.random()*list.length)];
+    const el = document.createElement('div');
+    el.className = 'nbubble nb-c'+(1+Math.floor(Math.random()*4));
+    el.textContent = def.title;
+    el.style.setProperty('--dur', (8 + Math.random()*6).toFixed(2)+'s');
+    // random position avoiding header and logo
+    const vw = window.innerWidth, vh = window.innerHeight;
+    let left, top, tries=0;
+    while(tries++<40){
+      left = Math.random()*(vw*0.86); top = headerH + Math.random()*(vh*0.72);
+      const w = 220 + Math.random()*80, h = 36;
+      if(!(left+w>guard.left && left<guard.right && top+h>guard.top && top<guard.bottom)) break;
+    }
+    el.style.left = Math.max(8, left) + 'px';
+    el.style.top  = Math.max(headerH+4, top) + 'px';
+    el.addEventListener('click', ()=>{ const d=allDefs.find(x=>x.id===def.id); if(d) openBubble(d); });
+    el.addEventListener('animationend', ()=>{ alive--; el.remove(); });
+    swarm.appendChild(el); alive++;
+  }
+  // initial burst + interval
+  for(let i=0;i<6;i++) setTimeout(spawn, i*400);
+  setInterval(spawn, 2200);
+}
+
 // Build form
 function formHtml(fields, preset){
   return (fields||[]).map(f=>{
@@ -75,14 +133,6 @@ function formHtml(fields, preset){
     const t=f.type||'text';
     return `<div class="form-row"><label>${esc(f.label)}</label><input type="${esc(t)}" name="${esc(f.name)}" placeholder="${esc(f.placeholder||'')}" value="${esc(val)}"></div>`;
   }).join('');
-}
-
-function shareBubble(def){
-  const last = JSON.parse(localStorage.getItem('bubble_'+def.id+'_lastInput')||'{}');
-  const url = new URL(location.href);
-  url.searchParams.set('bubble', def.id);
-  if(Object.keys(last).length) url.searchParams.set('input', btoa(JSON.stringify(last)));
-  navigator.clipboard.writeText(url.toString()).then(()=>alert('Share‑Link kopiert')).catch(()=>{});
 }
 
 function openBubble(def, presetInput=null){
@@ -105,7 +155,7 @@ function openBubble(def, presetInput=null){
       if(f.type==='file'){ const file=fd.get(f.name); if(file&&file.size>0){ files[f.name]=await fileToBase64(file); } }
       else out[f.name]=fd.get(f.name);
     }
-    // read optional seed from card
+    // optional seed von der Karte
     const card=$(`.card[data-id="${def.id}"]`); const seedEl=card? $('[data-seed]', card):null;
     if(seedEl && seedEl.value) out.seed = seedEl.value;
     localStorage.setItem('bubble_'+def.id+'_lastInput', JSON.stringify(out));
@@ -121,7 +171,7 @@ function openBubble(def, presetInput=null){
   });
 }
 
-// Spinner/Progress (indefinite pulse)
+// Spinner/Progress
 function showSpinner(sel){
   const el=$(sel); el.innerHTML = `<p>⏳ Erzeuge Ergebnis… <span class="dots">•</span></p>`;
   let i=0; const t=setInterval(()=>{ const d=['•','••','•••','••']; $('.dots', el).textContent=d[i++%d.length]; }, 300);
@@ -129,7 +179,7 @@ function showSpinner(sel){
 }
 function stopSpinner(sel){ const el=$(sel); const t=Number(el?.dataset?.spin||0); if(t) clearInterval(t); }
 
-function renderResult(def, res){
+function renderResult(def,res){
   stopSpinner('#bubble-result');
   const box=$('#bubble-result');
   const type=res.type||def.output||'text';
@@ -200,27 +250,27 @@ function showGallery(){
   openModal(`<h2>Galerie</h2><div class="masonry">${items||'<p>Noch keine Ergebnisse.</p>'}</div>`);
 }
 
+// Prompts modal (gefüllt mit allen Bubbles + Start)
+function showPrompts(){
+  const items = allDefs.map(d=>`<li style="margin:.3rem 0"><strong>${esc(d.title)}</strong> – ${esc(d.desc||'')} <button class="ui btn" data-open="${esc(d.id)}">Start</button></li>`).join('');
+  openModal(`<h2>Prompts</h2><ul>${items}</ul>`);
+  $$('#modal [data-open]').forEach(b=>b.addEventListener('click',()=>{ const def=allDefs.find(x=>x.id===b.dataset.open); closeModal(); if(def) openBubble(def); }));
+}
+
 // Navi
 $$('[data-action="news"]').forEach(b=>b.addEventListener('click', showNews));
-$$('[data-action="prompts"]').forEach(b=>b.addEventListener('click', ()=>openModal('<h2>Prompts</h2><p>Nutze die interaktiven Bubbles auf der Startseite.</p>')));
+$$('[data-action="prompts"]').forEach(b=>b.addEventListener('click', showPrompts));
 $$('[data-action="gallery"]').forEach(b=>b.addEventListener('click', showGallery));
 $$('[data-action="projekte"]').forEach(b=>b.addEventListener('click', ()=>openModal('<h2>Projekte</h2><p>In Arbeit …</p>')));
 $$('[data-action="impressum"]').forEach(b=>b.addEventListener('click', ()=>openModal('<h2>Impressum</h2><p>Bitte hinterlegen.</p>')));
 $$('[data-action="klang"]').forEach(b=>b.addEventListener('click', ()=>alert('Klang: Platzhalter')));
 $$('[data-action="locale"]').forEach(b=>b.addEventListener('click', ()=>{ const cur=localStorage.getItem('locale')||'de'; localStorage.setItem('locale', cur==='de'?'en':'de'); alert('Locale: '+localStorage.getItem('locale')); }));
-$$('[data-action="settings"]').forEach(b=>b.addEventListener('click', ()=>openModal('<h2>Einstellungen</h2><p>Modellwahl folgt dem Server (ENV). Seeds kannst du pro Bubble unten links eingeben.</p>')));
-
-// Share buttons on cards
-document.addEventListener('click', (e)=>{
-  const t=e.target.closest('[data-share]'); if(!t) return;
-  const id=t.dataset.share; const defCard=document.querySelector(`.card[data-id="${id}"]`);
-  const last = JSON.parse(localStorage.getItem('bubble_'+id+'_lastInput')||'{}');
-  const url = new URL(location.href); url.searchParams.set('bubble', id);
-  if(Object.keys(last).length) url.searchParams.set('input', btoa(JSON.stringify(last)));
-  navigator.clipboard.writeText(url.toString()).then(()=>alert('Share‑Link kopiert')).catch(()=>{});
-});
+$$('[data-action="settings"]').forEach(b=>b.addEventListener('click', ()=>openModal('<h2>Einstellungen</h2><p>Modellwahl folgt dem Server (ENV). Seeds pro Karte unten links.</p>')));
 
 // Init
 ensureConsent(); loadBubbles();
+
+// Utils
+async function fileToBase64(file){ const buf=await file.arrayBuffer(); const bin=new Uint8Array(buf); let s=''; for(const b of bin) s+=String.fromCharCode(b); return btoa(s); }
 
 })(); 

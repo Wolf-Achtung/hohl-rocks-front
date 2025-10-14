@@ -8,8 +8,8 @@
   <link rel="icon" href="/favicon.svg" />
   <link rel="preload" href="/styles.css" as="style" />
   <link rel="stylesheet" href="/styles.css" />
-  <!-- API-Basis (Cross-Origin erlaubt durch CORS) -->
-  <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app">
+  <!-- API-Basis: tries /_api (Netlify proxy), then meta, then /api -->
+  <meta name="x-api-base" content="">
 </head>
 <body>
   <header class="site-header" role="banner">
@@ -26,17 +26,16 @@
     </nav>
   </header>
 
-  <!-- Hintergrund-Video (nur wenn vorhanden) -->
   <video id="bg-video" class="bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
   <div class="tint"></div>
 
   <main id="app" class="app" role="main">
     <h1 class="logo" aria-label="hohl.rocks">hohl.rocks</h1>
+    <!-- Canvas is optional (disabled in lite-mode) -->
     <canvas id="bubbles" aria-hidden="true"></canvas>
     <div id="labels" class="labels" aria-hidden="true"></div>
   </main>
 
-  <!-- Modal (zugänglich, fokus-gemanagt) -->
   <section id="modal" class="modal" aria-hidden="true">
     <div class="modal__panel" tabindex="-1" role="dialog" aria-modal="true" aria-label="Overlay">
       <div class="modal__content" id="modal-content"></div>

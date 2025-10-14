@@ -1,56 +1,17 @@
 [
   {
-    "id": "entscheidungsmatrix",
     "title": "Entscheidungsmatrix",
     "category": "Analyse",
-    "content": "Baue eine 2×2- oder gewichtete Entscheidungsmatrix. 1) Liste 4–7 relevante Kriterien. 2) Schlage sinnvolle Gewichte vor (0–10) und begründe sie in einem Satz. 3) Vergib für jede Option pro Kriterium eine Punktzahl (0–10) mit kurzer Begründung (max. 10 Wörter). 4) Summiere zu einem Score und gib die Entscheidung mit 1–2 Risiken und 1 Gegenmaßnahme aus. Format: Tabelle + Fazit."
+    "content": "Baue eine 2x2- oder gewichtete Matrix ..."
   },
   {
-    "id": "pitch-storyboard",
     "title": "Pitch-Storyboard",
     "category": "Pitch",
-    "content": "Erstelle ein 7-Folien-Storyboard: (1) Hook, (2) Problem, (3) Chance, (4) Lösung, (5) Beweise, (6) Nutzen + ROI, (7) Plan & CTA. Gib zu jeder Folie 1 Headline (<8 Wörter) + 2–3 stichpunktartige Bulletpoints (<10 Wörter)."
+    "content": "Erstelle ein 7-Folien-Storyboard ..."
   },
   {
-    "id": "recursive-story",
     "title": "Recursive Story",
     "category": "Schreiben",
-    "content": "Schreibe eine kurze Geschichte über eine Autorin/einen Autor, die/der einen KI-Autor erschafft, der wiederum … – 700–900 Wörter, klare Dramaturgie, emotionale Wendung, starke letzte Zeile."
-  },
-  {
-    "id": "emotions-alchemist",
-    "title": "Emotions-Alchemist",
-    "category": "Branding",
-    "content": "Mappe Ziel-Emotionen (Top 5) auf konkrete Trigger (Wörter, Bilder, Musik, Rhythmus). Liefere eine Tonalitäts- und Stil-Matrix (Achsen: formal ↔ lässig, faktisch ↔ poetisch) mit Beispielsätzen."
-  },
-  {
-    "id": "brainstorm-sprint",
-    "title": "Brainstorm-Sprint",
-    "category": "Ideation",
-    "content": "Generiere 3×10 Ideenblitze in 3 Bahnen: (A) konservativ, (B) 10×, (C) kontraintuitiv. Markiere je Bahn 1 Favorit und skizziere in 3 Schritten Umsetzung & Risiko."
-  },
-  {
-    "id": "landing-page-copy",
-    "title": "Landing-Page-Copy",
-    "category": "Copy",
-    "content": "Schreibe eine Landing-Page für <PRODUKT/ANGEBOT>. Struktur: Hero (Headline + Sub), Trust, Problem, Lösung, Nutzen, Social Proof, Features, Pricing, FAQ, Footer-CTA. Ton: klar, empathisch, prägnant. Maximiere Klarheit und Microcopy."
-  },
-  {
-    "id": "risiko-premortem",
-    "title": "Risiko-PreMortem",
-    "category": "Strategie",
-    "content": "Stell dir vor, das Projekt ist gescheitert. Liste die 10 wahrscheinlichsten Gründe (sortiert nach Impact). Für die Top 5: je 2 Frühwarnindikatoren und 1 Gegenmaßnahme."
-  },
-  {
-    "id": "gps-bewusstsein",
-    "title": "GPS des Bewusstseins",
-    "category": "Reflexion",
-    "content": "Formuliere 7 Fragen, die helfen, den inneren Kompass neu auszurichten (Werte, Ziele, Energie, Fokus). Füge eine 2‑Minuten‑Übung für den Alltag hinzu."
-  },
-  {
-    "id": "rueckwaerts-zivilisation",
-    "title": "Rückwärts-Zivilisation",
-    "category": "Spekulation",
-    "content": "Entwirf ein Szenario, in dem eine Gesellschaft 20 Jahre Technologie rückabwickelt. Chancen, Risiken, neue Kulturtechniken; 5 Prinzipien, 3 Pilotprojekte."
+    "content": "Schreibe eine kurze Geschichte ..."
   }
 ]

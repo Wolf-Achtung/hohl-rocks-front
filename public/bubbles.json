@@ -1,37 +1,22 @@
 [
   {
-    "title": "Pitch‑Storyboard",
-    "desc": "",
-    "hue": 316
-  },
-  {
-    "title": "Brainstorm‑Sprint",
-    "desc": "",
-    "hue": 208
-  },
-  {
-    "title": "Landing‑Page‑Copy",
-    "desc": "",
-    "hue": 274
-  },
-  {
-    "title": "GPS des Bewusstseins",
-    "desc": "",
-    "hue": 332
-  },
-  {
-    "title": "Rückwärts‑Zivilisation",
-    "desc": "",
-    "hue": 218
-  },
-  {
     "title": "Entscheidungsmatrix",
-    "desc": "",
-    "hue": 185
+    "desc": "2x2- oder gewichtete Matrix"
+  },
+  {
+    "title": "Pitch-Storyboard",
+    "desc": "Storyboard in 7 Schritten"
   },
   {
     "title": "Recursive Story",
-    "desc": "",
-    "hue": 200
+    "desc": "Geschichte über eine Autorin/einen Autor"
+  },
+  {
+    "title": "Brainstorm-Sprint",
+    "desc": "Ideen-Sprint"
+  },
+  {
+    "title": "Rückwärts-Zivilisation",
+    "desc": "Kontra-Ideen"
   }
 ]

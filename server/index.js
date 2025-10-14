@@ -1,4 +1,4 @@
-/* hohl.rocks API – v1.4.7 */
+/* hohl.rocks API – v1.4.8 */
 import express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -14,7 +14,7 @@ const app = express();
 const ALLOWED = String(process.env.ALLOWED_ORIGINS || '')
   .split(',').map(s => s.trim().replace(/\/$/, '')).filter(Boolean);
 const isAllowed = (origin) => {
-  if (!origin) return true;
+  if (!origin) return true; // curl, server-to-server
   try {
     const o = new URL(origin).origin;
     return ALLOWED.includes(o);
@@ -23,14 +23,16 @@ const isAllowed = (origin) => {
   }
 };
 
+app.set('trust proxy', 1);
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('combined'));
 app.use(compression());
-app.set('trust proxy', 1);
 
 app.use(cors({
   origin: (origin, cb) => cb(null, isAllowed(origin)),
+  methods: ['GET','HEAD','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
   credentials: false
 }));
 app.use((req,res,next)=>{ res.set('Vary','Origin'); next(); });
@@ -38,8 +40,10 @@ app.options('*', cors());
 
 app.use('/api', rateLimit({ windowMs: 60_000, max: 90 }));
 
-// Health
-app.get('/healthz', (_req, res) => res.json({ ok: true, version: '1.4.7' }));
+// Health (alias unter / und /api/)
+const health = (_req, res) => res.json({ ok: true, version: '1.4.8' });
+app.get('/healthz', health);
+app.get('/api/healthz', health);
 
 // Diagnostics (keine Secrets)
 app.get('/api/ping', (_req, res) => {

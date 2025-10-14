@@ -123,7 +123,6 @@
       if (this.bubbles.length >= settings.maxBubbles) return;
       const r = pick(settings.sizeBuckets);
       let x=0,y=0,ok=false;
-      // einfache Platzierung mit Mindestabstand
       const minSep = r * 0.9;
       for (let tries=0; tries<12 && !ok; tries++) {
         x = rand(r, window.innerWidth - r);
@@ -135,7 +134,6 @@
       const prompt = pick(Math.random()<0.5?BUSINESS_PROMPTS:PROMPTS);
       const b = new Bubble(x, y, r, color, prompt.title);
       this.bubbles.push(b);
-      // Label DOM
       const el = document.createElement('button');
       el.className = 'bubble-label'; el.type = 'button';
       el.textContent = prompt.title;
@@ -171,20 +169,17 @@
         b.x += b.vx + Math.cos(b.osc) * 0.08;
         b.y += b.vy + Math.sin(b.osc * 0.7) * 0.05;
 
-        // Wraparound
         if (b.x < -b.r) b.x = window.innerWidth + b.r;
         if (b.x > window.innerWidth + b.r) b.x = -b.r;
         if (b.y < -b.r) b.y = window.innerHeight + b.r;
         if (b.y > window.innerHeight + b.r) b.y = -b.r;
 
-        // Zeichnen
         const grd = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
         grd.addColorStop(0, `hsla(${b.color}, 100%, 65%, ${0.6*b.alpha})`);
         grd.addColorStop(0.6, `hsla(${b.color}, 100%, 50%, ${0.3*b.alpha})`);
         grd.addColorStop(1, `hsla(${b.color}, 100%, 35%, 0)`);
         ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
 
-        // Label positionieren
         if (b.labelEl) {
           b.labelEl.style.left = `${b.x}px`; b.labelEl.style.top = `${b.y}px`;
           b.labelEl.style.opacity = String(Math.max(0, Math.min(1, b.alpha)));
@@ -406,7 +401,6 @@
     if(a==='settings') return openSettings();
   });
 
-  // Time & URL helpers
   function relTime(iso){
     if(!iso) return '';
     const t = new Date(iso).getTime(); if(!Number.isFinite(t)) return '';
@@ -418,7 +412,6 @@
   }
   function hostOf(u){ try { return new URL(u).hostname.replace(/^www\./,''); } catch { return ''; } }
 
-  // Start
   const field = new BubbleField($('#bubbles'), $('#labels'));
   field.start();
 })();

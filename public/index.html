@@ -7,19 +7,19 @@
   <meta name="description" content="KI-gestützte Web-Experience – ruhig, klar, magisch-intuitiv.">
   <link rel="icon" href="/favicon.svg">
   <link rel="stylesheet" href="/styles.css">
-  <!-- Fallback API-Basis, falls Proxy nicht verfügbar -->
   <meta name="x-api-base" content="">
 </head>
 <body>
-  <!-- Vollflächiger, leiser Video-Background -->
+  <!-- Vollflächiger Video-Background -->
   <video id="bg-video" autoplay muted loop playsinline preload="metadata" poster="/videos/road_poster.jpg">
-    <!-- Mobile first (<= 768px) -->
     <source src="/videos/road_540p_bg.webm" type="video/webm" media="(max-width: 768px)">
     <source src="/videos/road_540p_bg.mp4"  type="video/mp4"  media="(max-width: 768px)">
-    <!-- Desktop -->
     <source src="/videos/road_720p_bg.webm" type="video/webm">
     <source src="/videos/road_720p_bg.mp4"  type="video/mp4">
   </video>
+
+  <!-- Farbüberschläge über dem Video -->
+  <div class="color-wash" aria-hidden="true"></div>
   <div class="bg-overlay" aria-hidden="true"></div>
 
   <header class="site-header" role="banner">
@@ -34,9 +34,12 @@
 
   <main id="app" class="content" role="main">
     <section class="hero">
-      <h1>hohl.rocks</h1>
-      <p>Ruhig. Klar. Magisch‑intuitiv.</p>
+      <h1 class="logo">hohl.rocks</h1>
+      <p class="tagline">Ruhig. Klar. Magisch‑intuitiv.</p>
     </section>
+
+    <!-- Layer für Bubbles -->
+    <section id="bubbles-layer" aria-label="Themenbläschen"></section>
 
     <section id="cards" class="cards" aria-live="polite"></section>
   </main>

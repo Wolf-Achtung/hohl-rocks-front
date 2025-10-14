@@ -1,0 +1,14 @@
+[build]
+  publish = "public"
+
+[[redirects]]
+  from = "/_api/*"
+  to = "https://hohl-rocks-back-production.up.railway.app/:splat"
+  status = 200
+  force = true
+
+# Keep SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

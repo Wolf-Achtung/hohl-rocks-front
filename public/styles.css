@@ -1,3 +1,4 @@
+
 :root{
   --bg:#0b0f14; --fg:#e8f1ff;
   --hue-primary:207; --hue-accent:289; --neon:.7;
@@ -7,15 +8,11 @@
 *{ box-sizing:border-box }
 html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
   font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif }
-
-/* Top-Navigation */
 .site-header{position:fixed;top:16px;left:0;right:0;display:flex;justify-content:center;z-index:20}
 .site-nav ul{list-style:none;margin:0;padding:6px 10px;border-radius:12px;background:rgba(10,14,18,.6);backdrop-filter:blur(8px);display:flex;gap:8px}
 .chip{appearance:none;border:0;border-radius:999px;padding:6px 12px;background:var(--chip);color:var(--chip-fg);cursor:pointer;font-weight:600}
 .chip:hover{filter:brightness(1.15)}
 .chip:focus-visible{outline:2px solid hsl(var(--hue-primary) 70% 60% / .8);outline-offset:2px}
-
-/* Background Video + Tint */
 .bg-video{
   position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
   filter:blur(4px) brightness(.72) saturate(1.08);
@@ -25,8 +22,6 @@ html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
 .tint{position:fixed;inset:0;z-index:1;pointer-events:none;
   background: radial-gradient(60% 70% at 80% 80%, rgba(193,44,245,.25), transparent 60%),
               radial-gradient(70% 60% at 20% 85%, rgba(0,169,255,.18), transparent 60%);}
-
-/* Stage */
 .app{ position:relative; z-index:2; min-height:100svh; }
 .logo{
   position:absolute;left:50%;top:16vh;transform:translateX(-50%);
@@ -35,8 +30,6 @@ html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
   background:linear-gradient(180deg, rgba(240,250,255,.95), rgba(220,235,255,.92));
   -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:900;
 }
-
-/* Bubble Grid (interactive cards) */
 .bubble-grid{
   position:relative; z-index:3;
   display:grid; gap:16px;
@@ -58,8 +51,6 @@ html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
 .card__cta{ display:flex; justify-content:flex-end; padding:12px 14px; gap:8px }
 .card__btn{ cursor:pointer; appearance:none; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:#e8f1ff; border-radius:8px; padding:.5rem .7rem; font-weight:700 }
 .card__btn:hover{ filter:brightness(1.1) }
-
-/* Modal */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);display:none;z-index:40}
 .modal[aria-hidden="false"]{display:flex;align-items:center;justify-content:center}
 .modal__panel{width:min(980px,92vw);max-height:86vh;overflow:auto;background:rgba(8,12,18,.9);border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.6);padding:0}
@@ -68,8 +59,6 @@ html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
 .ui.btn{padding:.55rem .8rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#e8f1ff;cursor:pointer}
 .ui.btn.ghost{background:transparent}
 .ui.btn.active{outline:2px solid hsl(var(--hue-primary) 70% 60% / .5)}
-
-/* Forms */
 .form-row{ display:flex; gap:8px; margin:.4rem 0; flex-wrap:wrap }
 .form-row label{ font-weight:700; min-width:140px }
 .form-row input[type="text"], .form-row input[type="number"], .form-row textarea{
@@ -77,11 +66,8 @@ html,body{ margin:0; padding:0; background:var(--bg); color:var(--fg);
   background:rgba(255,255,255,.05); color:#e8f1ff
 }
 input[type="file"]{ color:#cfe5ff }
-
 .result img{ max-width:100%; height:auto; border-radius:12px; border:1px solid rgba(255,255,255,.12) }
 .result audio{ width:100% }
-
-/* Reduced data/motion */
 @media (prefers-reduced-data: reduce), (prefers-reduced-motion: reduce){
   .bg-video{ filter:blur(3px) brightness(.75) saturate(1.05) }
 }

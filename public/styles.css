@@ -24,3 +24,51 @@ body{color:var(--fg);background:#000 radial-gradient(150% 100% at 50% 10%, #4a63
 .ui.btn{appearance:none;border:0;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;background:#1f2a33;color:#e7f3ff}
 .ui.btn.ghost{background:transparent;border:1px solid #30424f}
 .ui.btn:focus-visible{outline:2px solid hsl(var(--hue-accent) 70% 60%)}
+
+/* ========== Video Background (Gold‑Standard) ========== */
+#bg-video {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+  background: #000; /* placeholder while loading */
+}
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  pointer-events: none;
+  z-index: 0;
+}
+.content { position: relative; z-index: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  #bg-video { display: none; }
+  body.no-motion {
+    background: url('/videos/road_poster.jpg') center / cover no-repeat fixed #000;
+  }
+}
+
+/* Simple content scaffolding */
+.hero { padding: 16vh 6vw 6vh; }
+.hero h1 { font-size: clamp(2rem, 4vw, 4rem); margin: 0 0 .5rem; }
+.hero p { font-size: clamp(1rem, 2vw, 1.5rem); opacity: .9; }
+
+.list { display: grid; gap: 1rem; max-width: 1000px; padding: 1rem; }
+.list article { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem; backdrop-filter: blur(4px); }
+
+.modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 10; }
+.modal.is-open { display: flex; }
+.modal__dialog { width: min(1000px, 92vw); max-height: 88vh; overflow: auto; background: #0b0f14; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+.modal__header { display:flex; align-items:center; justify-content:space-between; padding: .8rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; background: #0b0f14; }
+.modal__title { margin: 0; font-size: 1.15rem; }
+.modal__close { all: unset; cursor: pointer; font-size: 1.4rem; line-height: 1; padding: .2rem .4rem; }
+.modal__content { padding: 1rem; }
+.modal__actions { display:flex; gap:.5rem; justify-content:flex-end; padding: .8rem 1rem 1rem; border-top: 1px solid rgba(255,255,255,0.08); position: sticky; bottom: 0; background: #0b0f14; }
+
+.ui.btn { padding: .6rem .9rem; border-radius: .6rem; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); cursor: pointer; }
+.ui.btn.ghost { background: transparent; }
+.muted { opacity: .75; font-size: .95em; }
+.code { white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace; background: rgba(0,0,0,0.35); padding: .5rem .75rem; border-radius: .6rem; border: 1px solid rgba(255,255,255,0.08); }

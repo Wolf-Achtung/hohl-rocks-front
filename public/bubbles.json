@@ -49,14 +49,20 @@
   },
   {
     "id": "bildgenerator",
-    "title": "Bild‑Generator",
-    "desc": "Erzeuge ein Bild aus Text.",
+    "title": "Bild‑Generator (FLUX/SDXL)",
+    "desc": "Erzeuge ein Bild aus Text (nutzt REPLICATE_MODEL_VERSION).",
     "fields": [
       {
         "name": "prompt",
         "label": "Beschreibung",
         "type": "text",
         "placeholder": "z. B. Schloss auf schwebendem Felsen bei Sonnenuntergang"
+      },
+      {
+        "name": "seed",
+        "label": "Seed (optional)",
+        "type": "number",
+        "placeholder": "zufällig"
       }
     ],
     "output": "image"
@@ -85,6 +91,26 @@
         "label": "Bilddatei",
         "type": "file",
         "accept": "image/*"
+      }
+    ],
+    "output": "text"
+  },
+  {
+    "id": "ab-compare",
+    "title": "Modell‑Vergleich (A/B)",
+    "desc": "Vergleiche 2–3 Modelle mit demselben Prompt.",
+    "fields": [
+      {
+        "name": "prompt",
+        "label": "Prompt",
+        "type": "text",
+        "placeholder": "z. B. Beschreibe eine utopische Stadt."
+      },
+      {
+        "name": "modelle",
+        "label": "Modelle (kommagetrennt)",
+        "type": "text",
+        "placeholder": "z. B. claude,gpt,mistral"
       }
     ],
     "output": "text"

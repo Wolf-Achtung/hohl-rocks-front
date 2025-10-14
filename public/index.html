@@ -16,6 +16,7 @@
       <ul>
         <li><button class="chip" data-action="news">News</button></li>
         <li><button class="chip" data-action="prompts">Prompts</button></li>
+        <li><button class="chip" data-action="gallery">Galerie</button></li>
         <li><button class="chip" data-action="projekte">Projekte</button></li>
         <li><button class="chip" data-action="impressum">Impressum</button></li>
         <li><button class="chip" data-action="locale">DE/EN</button></li>
@@ -25,14 +26,16 @@
     </nav>
   </header>
 
-  <video id="bg-video" class="bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
-  <div class="tint"></div>
+  <video id="bg-video" class="bg-video" autoplay muted loop playsinline preload="auto" aria-hidden="true" poster="/videos/road_poster.jpg"></video>
+  <div class="tint" aria-hidden="true"></div>
 
   <main id="app" class="app" role="main">
     <h1 class="logo" aria-label="hohl.rocks">hohl.rocks</h1>
+    <div class="logo-guard" aria-hidden="true"></div>
     <section id="bubble-grid" class="bubble-grid" aria-label="Interaktive KI-Bubbles"></section>
   </main>
 
+  <!-- DSGVO: Consent Modal -->
   <section id="consent" class="modal" aria-hidden="true">
     <div class="modal__panel" role="dialog" aria-modal="true" aria-label="Datenschutzhinweis" tabindex="-1">
       <div class="modal__content">
@@ -47,11 +50,13 @@
     </div>
   </section>
 
+  <!-- Universal Modal -->
   <section id="modal" class="modal" aria-hidden="true">
     <div class="modal__panel" tabindex="-1" role="dialog" aria-modal="true">
       <div class="modal__content" id="modal-content"></div>
       <div class="modal__actions">
         <button class="ui btn ghost" data-copy="modal">Kopieren</button>
+        <button class="ui btn" id="modal-share">Teilen</button>
         <button class="ui btn" id="modal-close">Schließen</button>
       </div>
     </div>

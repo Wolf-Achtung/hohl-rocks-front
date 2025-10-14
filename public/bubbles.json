@@ -1,22 +1,92 @@
 [
   {
-    "title": "Entscheidungsmatrix",
-    "desc": "2x2- oder gewichtete Matrix"
+    "id": "zeitreise-tagebuch",
+    "title": "Zeitreise‑Tagebuch",
+    "desc": "Schreibe ein Tagebuch aus einer anderen Epoche.",
+    "fields": [
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "text",
+        "placeholder": "z. B. Mara"
+      },
+      {
+        "name": "jahr",
+        "label": "Jahr",
+        "type": "number",
+        "placeholder": "z. B. 2084"
+      }
+    ],
+    "output": "text"
   },
   {
-    "title": "Pitch-Storyboard",
-    "desc": "Storyboard in 7 Schritten"
+    "id": "weltbau",
+    "title": "Weltbau",
+    "desc": "Erschaffe eine fiktive Welt mit Regeln.",
+    "fields": [
+      {
+        "name": "stichworte",
+        "label": "Stichworte",
+        "type": "text",
+        "placeholder": "z. B. zwei Monde, Drachen, Handel"
+      }
+    ],
+    "output": "text"
   },
   {
-    "title": "Recursive Story",
-    "desc": "Geschichte über eine Autorin/einen Autor"
+    "id": "poesie-html",
+    "title": "Bunte Poesie",
+    "desc": "Ein farbig formatiertes Mini‑Gedicht.",
+    "fields": [
+      {
+        "name": "thema",
+        "label": "Thema",
+        "type": "text",
+        "placeholder": "z. B. Herbstregen"
+      }
+    ],
+    "output": "html"
   },
   {
-    "title": "Brainstorm-Sprint",
-    "desc": "Ideen-Sprint"
+    "id": "bildgenerator",
+    "title": "Bild‑Generator",
+    "desc": "Erzeuge ein Bild aus Text.",
+    "fields": [
+      {
+        "name": "prompt",
+        "label": "Beschreibung",
+        "type": "text",
+        "placeholder": "z. B. Schloss auf schwebendem Felsen bei Sonnenuntergang"
+      }
+    ],
+    "output": "image"
   },
   {
-    "title": "Rückwärts-Zivilisation",
-    "desc": "Kontra-Ideen"
+    "id": "musikgen",
+    "title": "Musik‑Generator",
+    "desc": "Kreiere einen kurzen Musik‑Clip.",
+    "fields": [
+      {
+        "name": "beschreibung",
+        "label": "Beschreibung",
+        "type": "text",
+        "placeholder": "z. B. fröhliche Klaviermelodie, 10 Sekunden"
+      }
+    ],
+    "output": "audio"
+  },
+  {
+    "id": "bildbeschreibung",
+    "title": "Bild‑Beschreibung",
+    "desc": "Lass ein Bild automatisch beschreiben.",
+    "fields": [
+      {
+        "name": "bild",
+        "label": "Bilddatei",
+        "type": "file",
+        "accept": "image/*"
+      }
+    ],
+    "output": "text"
   }
 ]

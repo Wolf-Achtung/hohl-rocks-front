@@ -2,13 +2,13 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>hohl.rocks</title>
-  <meta name="description" content="KI-gestützte Web-Experience – ruhig, klar, magisch-intuitiv." />
+  <meta name="description" content="Interaktive KI-Erlebnisse – ruhig, klar, magisch-intuitiv." />
   <link rel="icon" href="/favicon.svg" />
   <link rel="preload" href="/styles.css" as="style" />
   <link rel="stylesheet" href="/styles.css" />
-  <!-- API-Basis: tries /_api (Netlify proxy), then meta, then /api -->
+  <!-- API-Auto-Discovery: /_api (Netlify-Proxy) → meta → /api -->
   <meta name="x-api-base" content="">
 </head>
 <body>
@@ -31,17 +31,31 @@
 
   <main id="app" class="app" role="main">
     <h1 class="logo" aria-label="hohl.rocks">hohl.rocks</h1>
-    <!-- Canvas is optional (disabled in lite-mode) -->
-    <canvas id="bubbles" aria-hidden="true"></canvas>
-    <div id="labels" class="labels" aria-hidden="true"></div>
+    <section id="bubble-grid" class="bubble-grid" aria-label="Interaktive KI-Bubbles"></section>
   </main>
 
+  <!-- DSGVO: Consent Modal -->
+  <section id="consent" class="modal" aria-hidden="true">
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-label="Datenschutzhinweis" tabindex="-1">
+      <div class="modal__content">
+        <h2>Datenschutz & KI‑APIs</h2>
+        <p>Diese Seite sendet deine Eingaben an externe KI‑Dienste (z. B. OpenAI, Anthropic, Mistral, Replicate), um Ergebnisse zu erzeugen. Die Nutzung ist freiwillig. Deine lokalen Eingaben/Ergebnisse werden nur in deinem Browser gespeichert (localStorage) und nicht serverseitig persistiert.</p>
+        <p>Mit Klick auf „Einverstanden“ stimmst du der Verarbeitung gemäß Hinweis zu.</p>
+      </div>
+      <div class="modal__actions">
+        <button class="ui btn ghost" id="consent-decline">Ablehnen</button>
+        <button class="ui btn" id="consent-accept">Einverstanden</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Universal Modal -->
   <section id="modal" class="modal" aria-hidden="true">
-    <div class="modal__panel" tabindex="-1" role="dialog" aria-modal="true" aria-label="Overlay">
+    <div class="modal__panel" tabindex="-1" role="dialog" aria-modal="true">
       <div class="modal__content" id="modal-content"></div>
       <div class="modal__actions">
-        <button class="ui btn ghost" data-copy="modal" title="In Zwischenablage kopieren">Kopieren</button>
-        <button class="ui btn" type="button" aria-label="Schließen" id="modal-close">Schließen</button>
+        <button class="ui btn ghost" data-copy="modal">Kopieren</button>
+        <button class="ui btn" id="modal-close">Schließen</button>
       </div>
     </div>
   </section>

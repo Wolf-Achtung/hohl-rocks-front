@@ -1,57 +1,73 @@
-/* hohl.rocks API – v1.4.9 */
+/* hohl.rocks Front API – v2.0 */
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import compression from 'compression';
-import rateLimit from 'express-rate-limit';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { rateLimiter } from './rate-limit.js';
 import newsRouter from './news.js';
+import { sseRouter } from './sse.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+const PORT = Number(process.env.PORT || 8080);
+const NODE_ENV = String(process.env.NODE_ENV || 'production');
+
+// Trust proxy for correct client IPs when behind reverse proxies
 app.set('trust proxy', 1);
 
-const ALLOWED = String(process.env.ALLOWED_ORIGINS || '')
-  .split(',').map(s => s.trim().replace(/\/$/, '')).filter(Boolean);
-
+// Allowed origins via env (comma separated), fallback to same-origin
+const ALLOWED = String(process.env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
 const isAllowed = (origin) => {
-  if (!origin) return true; // curl / server-to-server
-  try { return ALLOWED.includes(new URL(origin).origin); } catch { return false; }
+  if (!origin) return true; // same-origin
+  try { return ALLOWED.length === 0 ? true : ALLOWED.includes(new URL(origin).origin); }
+  catch { return false; }
 };
 
+// Security, gzip, logging
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(express.json({ limit: '1mb' }));
-app.use(morgan('combined'));
+app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(compression());
 app.use(cors({
   origin: (origin, cb) => cb(null, isAllowed(origin)),
   methods: ['GET','HEAD','OPTIONS'],
   credentials: false
 }));
-app.use((_, res, next) => { res.set('Vary','Origin'); next(); });
+app.use((_, res, next) => { res.set('Vary', 'Origin'); next(); });
 
-// health (root + /api alias)
-const health = (_req, res) => res.json({ ok: true, version: '1.4.9' });
-app.get('/healthz', health);
-app.get('/api/healthz', health);
+// Rate limit everything under /api
+app.use('/api', rateLimiter);
 
-// diagnostics
-app.get('/api/ping', (_req, res) => {
-  res.json({
-    ok: true,
-    tavily: !!process.env.TAVILY_API_KEY,
-    allowed: ALLOWED
-  });
+// Routers
+app.use('/api/news', newsRouter);
+app.use('/api/sse', sseRouter);
+
+// Health/ready
+app.get('/healthz', (_req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
+app.get('/readyz', (_req, res) => res.json({ ready: true }));
+
+// Static assets (cache aggressively except HTML)
+const publicDir = path.join(__dirname, '..', 'public');
+app.use(express.static(publicDir, {
+  etag: true,
+  lastModified: true,
+  maxAge: '1h',
+  setHeaders: (res, p) => {
+    if (p.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
+    else res.setHeader('Cache-Control', 'public, max-age=3600, immutable');
+  }
+}));
+
+// SPA-style fallback to index.html
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(publicDir, 'index.html'));
 });
 
-// rate limit only for api
-app.use('/api', rateLimit({ windowMs: 60_000, max: 90 }));
-app.use('/api', newsRouter);
-
-// final error handler
-app.use((err, _req, res, _next) => {
-  console.error('Unhandled error:', err?.message || err);
-  res.status(500).json({ ok: false, error: 'internal_error' });
+app.listen(PORT, () => {
+  console.log(`[hohl.rocks] ${NODE_ENV} server listening on http://localhost:${PORT}`);
 });
-
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`hohl.rocks API up on :${PORT}`));

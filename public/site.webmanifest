@@ -1,0 +1,9 @@
+{
+  "name": "hohl.rocks",
+  "short_name": "hohl.rocks",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0b0f14",
+  "background_color": "#0b0f14",
+  "icons": [{"src":"/favicon.svg","sizes":"any","type":"image/svg+xml"}]
+}

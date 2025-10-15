@@ -17,7 +17,7 @@ if(!consentStore.get()){
 
 setupToggle($('#toggle-audio'));
 
-$('#toggle-lang').addEventListener('click', ()=> alert('EN in Vorbereitung – der Fokus liegt aktuell auf DE.'));
+$('#toggle-lang').addEventListener('click', ()=> alert('EN in Vorbereitung – Fokus: DE.'));
 
 document.addEventListener('click', (e)=>{
   const target = e.target.closest('.chip[data-open]');

@@ -1,56 +1,32 @@
-export const $ = (s, c=document) => c.querySelector(s);
-export const $$ = (s, c=document) => Array.from(c.querySelectorAll(s));
-export const sleep = (ms)=> new Promise(r=>setTimeout(r,ms));
-
+// js/utils.js
+export const $ = (sel, root=document)=> root.querySelector(sel);
+export const $$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
 export function el(tag, attrs={}, ...children){
-  const node = document.createElement(tag);
-  Object.entries(attrs).forEach(([k,v])=>{
-    if(k==='class') node.className = v;
-    else if(k==='style' && typeof v === 'object') Object.assign(node.style, v);
-    else if(k.startsWith('on') && typeof v === 'function'){ node.addEventListener(k.slice(2), v); }
-    else if(v!==false && v!=null) node.setAttribute(k, String(v));
-  });
-  for(const ch of children){
-    if(ch==null) continue;
-    node.append(ch.nodeType ? ch : document.createTextNode(String(ch)));
+  const n = document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs||{})){
+    if(k==='style' && typeof v==='object'){ Object.assign(n.style, v); continue; }
+    if(v===false || v===null || v===undefined) continue;
+    n.setAttribute(k, String(v));
   }
-  return node;
-}
-
-export function escapeHtml(t){
-  const d=document.createElement('div'); d.textContent=t; return d.innerHTML;
-}
-
-export function formatTime(ts){
-  const d = ts instanceof Date ? ts : new Date(ts);
-  return d.toLocaleString(undefined, {hour:'2-digit',minute:'2-digit', day:'2-digit', month:'2-digit'});
-}
-
-export function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
-
-export function focusTrap(container){
-  const FOCUSABLE = 'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])';
-  const els = $$(FOCUSABLE, container);
-  if(!els.length) return ()=>{};
-  const first = els[0], last = els[els.length-1];
-  function onKey(e){
-    if(e.key!=='Tab') return;
-    if(e.shiftKey && document.activeElement===first){ last.focus(); e.preventDefault(); }
-    else if(!e.shiftKey && document.activeElement===last){ first.focus(); e.preventDefault(); }
+  for(const c of children){
+    if(c==null) continue;
+    n.append(c.nodeType ? c : document.createTextNode(String(c)));
   }
-  container.addEventListener('keydown', onKey);
-  return ()=> container.removeEventListener('keydown', onKey);
+  return n;
 }
-
-export function withTimeout(promise, ms, err='Zeitüberschreitung'){
-  let to; const timer = new Promise((_,rej)=> to=setTimeout(()=>rej(new Error(err)), ms));
-  return Promise.race([promise.finally(()=>clearTimeout(to)), timer]);
-}
-
-export function storage(key){
+export function clamp(x, a, b){ return Math.min(Math.max(x,a), b); }
+export function storage(ns){
+  const key = 'hr.'+ns;
   return {
-    get: ()=>{ try{ const raw=localStorage.getItem(key); return raw? JSON.parse(raw): null; }catch{ return null } },
-    set: (val)=>{ try{ localStorage.setItem(key, JSON.stringify(val)); }catch{} },
-    del: ()=>{ try{ localStorage.removeItem(key); }catch{} }
-  }
+    get(){ try{ return JSON.parse(localStorage.getItem(key)||'null'); }catch{ return null; } },
+    set(v){ localStorage.setItem(key, JSON.stringify(v)); },
+    del(){ localStorage.removeItem(key); }
+  };
+}
+export function withTimeout(promise, ms){
+  const t = new Promise((_,rej)=> setTimeout(()=> rej(new Error('timeout')), ms));
+  return Promise.race([promise, t]);
+}
+export function formatTime(ts){
+  const d = new Date(ts); return d.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
 }

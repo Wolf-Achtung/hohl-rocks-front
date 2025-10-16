@@ -1,9 +1,8 @@
-# Netlify config for hohl.rocks
+# Netlify config for hohl.rocks (public publish)
 [build]
   publish = "public"
 
-# Optional: if you add a build tool later (vite/parcel), set "command" accordingly.
-
+# Proxy to Railway backend
 [[redirects]]
   from = "/_api/*"
   to = "https://hohl-rocks-back-production.up.railway.app/:splat"
@@ -16,7 +15,7 @@
   to = "/index.html"
   status = 200
 
-# Cache headers for static assets
+# Long-lived cache
 [[headers]]
   for = "/videos/*"
   [headers.values]

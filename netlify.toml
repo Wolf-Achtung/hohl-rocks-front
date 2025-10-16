@@ -1,5 +1,8 @@
+# Netlify config for hohl.rocks
 [build]
   publish = "front/public"
+
+# Optional: if you add a build tool later (vite/parcel), set "command" accordingly.
 
 [[redirects]]
   from = "/_api/*"
@@ -7,7 +10,24 @@
   status = 200
   force = true
 
+# SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Cache headers for static assets
+[[headers]]
+  for = "/videos/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

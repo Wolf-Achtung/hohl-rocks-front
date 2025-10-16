@@ -1,7 +1,6 @@
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
-  Referrer-Policy: no-referrer-when-downgrade
-  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; connect-src 'self' https://hohl-rocks-back-production.up.railway.app https://api.openai.com https://api.anthropic.com https://api.tavily.com https://openrouter.ai https://api.perplexity.ai; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; base-uri 'self'; form-action 'none'
+  Referrer-Policy: no-referrer
+  Permissions-Policy: microphone=(), camera=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://hohl-rocks-back-production.up.railway.app; font-src 'self' data:

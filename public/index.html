@@ -2,50 +2,52 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>hohl.rocks – Bibliothek ungelebter Leben</title>
-  <meta name="description" content="hohl.rocks – radikal moderne, immersive KI-Experience von Wolf Hohl.">
-  <link rel="preload" as="video" href="/videos/road_720p_bg.webm" type="video/webm">
-  <link rel="preload" as="video" href="/videos/road_720p_bg.mp4" type="video/mp4">
-  <link rel="preload" href="/styles.css" as="style">
-  <link rel="stylesheet" href="/styles.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>hohl.rocks — Bibliothek ungelebter Leben</title>
+  <link rel="preconnect" href="/" crossorigin>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <nav class="nav">
-      <button class="pill pill--ticker" id="ticker"><span>Heute neu</span><em id="tickerText">lädt …</em></button>
-      <button class="pill" data-open="news">News</button>
-      <button class="pill" data-open="prompts">Prompts</button>
-      <button class="pill" data-open="projects">Projekte</button>
-      <button class="pill" data-open="imprint">Impressum</button>
-      <button class="pill" id="lang">DE/EN</button>
-      <button class="pill" id="sound">Klang</button>
+  <video id="bgvid" class="bgvid" playsinline autoplay muted loop poster="videos/road_poster.jpg">
+    <source src="videos/road_720p_bg.webm" type="video/webm">
+    <source src="videos/road_720p_bg.mp4" type="video/mp4">
+  </video>
+
+  <header class="nav">
+    <div class="brand">hohl.rocks</div>
+    <nav class="chips">
+      <button class="chip chip--ticker" id="chipTicker"><span id="tickerLabel">Heute neu</span><span id="tickerText" class="ticker">– lädt…</span></button>
+      <button class="chip" id="chipNews">News</button>
+      <button class="chip" id="chipPrompts">Prompts</button>
+      <button class="chip" id="chipProjects">Projekte</button>
+      <button class="chip" id="chipImpressum">Impressum</button>
+      <button class="chip" id="chipLang">DE/EN</button>
+      <button class="chip" id="chipSound">Klang</button>
     </nav>
   </header>
 
-  <main id="scene">
-    <video id="bgVideo" class="bg" playsinline autoplay muted loop poster="/videos/road_poster.jpg">
-      <source src="/videos/road_720p_bg.webm" type="video/webm">
-      <source src="/videos/road_720p_bg.mp4" type="video/mp4">
-    </video>
-    <h1 class="logo">hohl.rocks</h1>
-    <canvas id="bubbleCanvas"></canvas>
+  <main>
+    <h1 class="hero" id="hero">hohl.rocks</h1>
+    <section id="bubbleStage" class="stage" aria-label="Interaktive Bubbles"></section>
   </main>
 
-  <section id="modal" hidden>
-    <div class="modal">
-      <header><h2 id="modalTitle">Titel</h2><button id="closeModal" aria-label="Schließen">×</button></header>
+  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__panel" role="document">
+      <div class="modal__head">
+        <h2 id="modalTitle">Titel</h2>
+        <button class="modal__close" id="modalClose" aria-label="Schließen">×</button>
+      </div>
       <div id="modalBody" class="modal__body"></div>
-      <footer class="modal__footer">
-        <button id="copyBtn" class="btn">Kopieren</button>
-        <button id="closeBtn" class="btn btn--ghost">Schließen</button>
-      </footer>
+      <div class="modal__actions">
+        <button id="btnCopy" class="btn btn--ghost">Kopieren</button>
+        <button id="btnClose" class="btn">Schließen</button>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <template id="toastTpl"><div class="toast">Kopiert ✓</div></template>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="/app.js" defer></script>
-  <script src="/bubbles.js" defer></script>
+  <script src="app.js"></script>
+  <script src="bubbles.js"></script>
 </body>
 </html>

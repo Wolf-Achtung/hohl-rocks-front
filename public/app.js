@@ -1,297 +1,129 @@
-// Frontend – Jellyfish Bubbles + SSE + Overlays
-const META_BASE = document.querySelector('meta[name="x-api-base"]')?.content?.trim() || '';
-const API_CANDIDATES = [
-  '/_api',                 // Reverse proxy case
-  META_BASE,               // Explicit backend
-  '/api'                   // Same-origin (dev)
-].filter(Boolean);
+// app.js – Overlays, SSE, Audio, News, Prompts
+const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content?.trim() || window.location.origin;
 
-function bestApi(path){
-  // Build list of candidate URLs
-  return API_CANDIDATES.map(b => b.endsWith('/api') ? b + path : b + (path.startsWith('/api') ? path : '/api' + path));
-}
+const $ = s => document.querySelector(s);
+const modal = $('#modal'), modalTitle=$('#modal-title'), modalBody=$('#modal-body');
 
-async function fetchJsonFallback(paths, opts={}, timeoutMs=5000){
-  for(const url of paths){
-    try{
-      const ctrl = new AbortController();
-      const t = setTimeout(()=>ctrl.abort(), timeoutMs);
-      const r = await fetch(url, { ...opts, signal: ctrl.signal, headers:{'accept':'application/json', ...(opts.headers||{}) } });
-      clearTimeout(t);
-      if(r.ok) return await r.json();
-    }catch(e){ /* try next */ }
-  }
-  throw new Error('API nicht erreichbar. Prüfe Proxy (/_api) oder x-api-base.');
-}
+function openModal(title, html){ modalTitle.textContent=title; modalBody.innerHTML=html; modal.setAttribute('aria-hidden','false'); }
+function closeModal(){ modal.setAttribute('aria-hidden','true'); }
+$('#close-btn').addEventListener('click', closeModal);
+$('#copy-btn').addEventListener('click', ()=> navigator.clipboard.writeText(modalBody.innerText||'').catch(()=>{}));
 
-// ---------- BUBBLE CONTENT ----------
+// Toast
+const toastEl = $('#toast');
+function toast(t){ toastEl.textContent=t; toastEl.classList.add('show'); setTimeout(()=>toastEl.classList.remove('show'),2200); }
 
-// Primary micro-apps (click -> run)
-const CORE = [
-  { id:'zeitreise-tagebuch', title:'Zeitreise‑Tagebuch' },
-  { id:'weltbau', title:'Weltbau' },
-  { id:'poesie-html', title:'Bunte Poesie' },
-  { id:'bild-generator', title:'Bild‑Generator' },
-  { id:'musik-generator', title:'Musik‑Generator' },
-  { id:'bild-beschreibung', title:'Bild‑Beschreibung' }
-];
+// FPS (micro telemetry)
+let last=performance.now(), frames=0;
+setInterval(()=>{ const now=performance.now(); const fps = Math.round((frames*1000)/(now-last) || 0); $('#fps').textContent = String(fps).padStart(2,'0'); frames=0; last=now; }, 1000);
+(function raf(){ frames++; requestAnimationFrame(raf); })();
 
-// 30 creative ideas (ids must match backend)
-const IDEAS = [
-  {id:'idea-zeitreise-editor', title:'Zeitreise‑Editor'},
-  {id:'idea-rueckwaerts-zivilisation', title:'Rückwärts‑Zivilisation'},
-  {id:'idea-bewusstsein-gebaeude', title:'Bewusstsein Gebäude'},
-  {id:'idea-philosophie-mentor', title:'KI‑Philosophie‑Mentor'},
-  {id:'idea-marktplatz-guide', title:'Interdimensionaler Guide'},
-  {id:'idea-npc-leben', title:'NPC Privatleben'},
-  {id:'idea-prompt-archaeologe', title:'Prompt‑Archäologe'},
-  {id:'idea-ki-traeume', title:'KI‑Träume'},
-  {id:'idea-recursive-story', title:'Rekursive Story'},
-  {id:'idea-xenobiologe', title:'Xenobiologe'},
-  {id:'idea-quantentagebuch', title:'Quantentagebuch'},
-  {id:'idea-rueckwaerts-apokalypse', title:'Rückwärts‑Apokalypse'},
-  {id:'idea-farbsynaesthetiker', title:'Farbsynästhetiker'},
-  {id:'idea-museum-verlorene-traeume', title:'Museum verlorene Träume'},
-  {id:'idea-zeitlupen-explosion', title:'Zeitlupen‑Explosion'},
-  {id:'idea-gps-bewusstsein', title:'GPS Bewusstsein'},
-  {id:'idea-biografie-pixel', title:'Biografie eines Pixels'},
-  {id:'idea-rueckwaerts-detektiv', title:'Rückwärts‑Detektiv'},
-  {id:'idea-bewusstsein-internet', title:'Bewusstsein des Internets'},
-  {id:'idea-emotional-alchemist', title:'Emotional‑Alchemist'},
-  {id:'idea-bibliothek-ungelebter-leben', title:'Bibliothek ungelebter Leben'},
-  {id:'idea-realitaets-debugger', title:'Realitäts‑Debugger'},
-  {id:'idea-empathie-tutorial', title:'Empathie‑Tutorial'},
-  {id:'idea-surrealismus-generator', title:'Surrealismus‑Generator'},
-  {id:'idea-vintage-futurist', title:'Vintage‑Futurist'},
-  {id:'idea-synaesthetisches-internet', title:'Synästhetisches Internet'},
-  {id:'idea-code-poet', title:'Code‑Poet'},
-  {id:'idea-kollektiv-gedanke-moderator', title:'Kollektiv‑Moderator'},
-  {id:'idea-paradox-loesungszentrum', title:'Paradox‑Zentrum'},
-  {id:'idea-universums-uebersetzer', title:'Universums‑Übersetzer'}
-];
-
-// Queue: first CORE mixed with IDEAS
-const QUEUE = [...CORE, ...IDEAS];
-
-// ---------- UTIL ----------
-const $ = s=>document.querySelector(s);
-function toast(msg){ const el = $('#toast'); el.textContent = msg; el.classList.add('show'); setTimeout(()=> el.classList.remove('show'), 2200); }
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-// ---------- MODAL ----------
-const modal = $('#modal');
-const modalTitle = $('#modal-title');
-const modalBody = $('#modal-body');
-$('#close-btn').addEventListener('click', ()=> modal.setAttribute('aria-hidden','true'));
-$('#copy-btn').addEventListener('click', ()=> {
-  const txt = modalBody.textContent || modalBody.innerText || '';
-  navigator.clipboard.writeText(txt).then(()=>toast('Kopiert ✓')).catch(()=>toast('Kopieren nicht möglich'));
-});
-function openModal(title, html){ modalTitle.textContent = title; modalBody.innerHTML = html; modal.setAttribute('aria-hidden','false'); }
-
-// ---------- AUDIO ----------
-let audioCtx=null, masterGain=null, isAudioOn=false;
+// Audio
+let ctx=null, gain=null, audioOn=false;
 $('#audio-toggle').addEventListener('click', async (e)=>{
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    masterGain = audioCtx.createGain(); masterGain.gain.value=0.12; masterGain.connect(audioCtx.destination);
-    const osc1 = audioCtx.createOscillator(); const g1 = audioCtx.createGain(); osc1.type='sine'; osc1.frequency.value=140; g1.gain.value=0.05; osc1.connect(g1); g1.connect(masterGain); osc1.start();
-    const osc2 = audioCtx.createOscillator(); const g2 = audioCtx.createGain(); osc2.type='triangle'; osc2.frequency.value=220; g2.gain.value=0.03; osc2.connect(g2); g2.connect(masterGain); osc2.start();
-    const lfo=audioCtx.createOscillator(), lGain=audioCtx.createGain(); lfo.frequency.value=.05; lGain.gain.value=30; lfo.connect(lGain); lGain.connect(osc2.frequency); lfo.start();
+  if(!ctx){ ctx = new (window.AudioContext||window.webkitAudioContext)(); gain=ctx.createGain(); gain.gain.value=.11; gain.connect(ctx.destination);
+    const o1=ctx.createOscillator(), g1=ctx.createGain(); o1.type='sine'; o1.frequency.value=140; g1.gain.value=.05; o1.connect(g1); g1.connect(gain); o1.start();
+    const o2=ctx.createOscillator(), g2=ctx.createGain(); o2.type='triangle'; o2.frequency.value=220; g2.gain.value=.03; o2.connect(g2); g2.connect(gain); o2.start();
+    const lfo=ctx.createOscillator(), lg=ctx.createGain(); lfo.frequency.value=.05; lg.gain.value=30; lfo.connect(lg); lg.connect(o2.frequency); lfo.start();
   }
-  if(audioCtx.state==='suspended') await audioCtx.resume();
-  isAudioOn=!isAudioOn; masterGain.gain.linearRampToValueAtTime(isAudioOn?0.12:0.0, audioCtx.currentTime+.2);
-  e.currentTarget.setAttribute('aria-pressed', String(isAudioOn));
+  if(ctx.state==='suspended') await ctx.resume();
+  audioOn=!audioOn; gain.gain.linearRampToValueAtTime(audioOn?0.11:0.0, ctx.currentTime+.2);
+  e.currentTarget.setAttribute('aria-pressed', String(audioOn));
 });
 
-// ---------- SSE Runner ----------
+// SSE Runner
 async function runBubble(id, input={}, thread=[]){
+  openModal('Assistant', '<pre id="stream-box"></pre>');
+  const box = document.getElementById('stream-box');
   try{
-    openModal('Assistant', '<pre id="stream-box"></pre>');
-    const box = $('#stream-box');
-    const res = await fetchJsonFallback(bestApi('/run'), { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, input, thread }) });
-    // Wenn das Backend JSON (nicht SSE) liefert, erscheint hier bereits Antwort:
-    if(res && typeof res === 'object' && (res.text || res.html)){
-      box.textContent = res.text || (res.html || '');
-      return;
-    }
-  }catch(e){
-    // Fallback: echte SSE streamen (standardpfad)
-    try{
-      const paths = bestApi('/run');
-      const url = paths[0]; // erster Kandidat
-      const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, input, thread }) });
-      if(!resp.ok || !resp.body){ $('#stream-box').textContent = 'Fehler: '+resp.status; return; }
-      const reader = resp.body.getReader(); const dec = new TextDecoder(); let buf='';
-      while(true){
-        const {value, done} = await reader.read(); if(done) break;
-        buf += dec.decode(value, {stream:true});
-        const parts = buf.split('\n\n'); buf = parts.pop() || '';
-        for(const part of parts){
-          if(!part.startsWith('data:')) continue;
-          const payload = part.slice(5).trim(); if(payload==='[DONE]') continue;
-          try{ const j=JSON.parse(payload); if(j.delta) $('#stream-box').textContent += j.delta; if(j.error) $('#stream-box').textContent += '\\n\\n[Fehler] '+j.error; }catch{}
-        }
-      }
-    }catch(err2){
-      openModal('Fehler', `<p>${(e && e.message)||String(e)}<br>${(err2 && err2.message)||String(err2)}</p>`);
-    }
-  }
-}
-
-// ---------- Jellyfish Bubble Engine ----------
-class BubbleEngine{
-  constructor(root){
-    this.root = root;
-    this.items = [...QUEUE]; // feed
-    this.idx = 0;
-    this.nodes = new Set();
-    this.max = window.innerWidth < 820 ? 4 : 7;
-    this.running = false;
-    this.last = performance.now();
-    this.anim = this.anim.bind(this);
-  }
-  nextItem(){
-    const item = this.items[this.idx % this.items.length];
-    this.idx++;
-    if(this.idx >= this.items.length) this.idx = 0; // loop
-    return item;
-  }
-  spawn(){
-    const item = this.nextItem();
-    const rMin = 110, rMax = 160;
-    const r = Math.round(rMin + Math.random()*(rMax-rMin));
-    const node = document.createElement('div');
-    node.className = 'bubble-node';
-    node.style.setProperty('--r', r+'px');
-    node.dataset.id = item.id;
-    node.dataset.title = item.title;
-    node.innerHTML = `<div class="bubble-core"></div>
-      <div class="bubble-label">${item.title}</div>
-      <div class="bubble-actions">
-        <button class="small" data-act="start">Start</button>
-      </div>`;
-    const fieldRect = this.root.getBoundingClientRect();
-    const x = Math.random() * (fieldRect.width - r);
-    const y = Math.random() * (fieldRect.height - r);
-    const v = { x: (Math.random()-.5)*0.08, y: (Math.random()-.5)*0.08 }; // px/ms
-    const life = 14000 + Math.random()*16000;
-    const born = performance.now();
-    const lfo = 0.6 + Math.random()*0.8;
-    node.__b = { x, y, v, r, life, born, lfo };
-    node.style.setProperty('--x', x+'px'); node.style.setProperty('--y', y+'px');
-    this.root.appendChild(node);
-    requestAnimationFrame(()=> node.classList.add('live'));
-    node.addEventListener('mouseenter', ()=> node.__b.v = {x: node.__b.v.x*0.2, y: node.__b.v.y*0.2});
-    node.addEventListener('mouseleave', ()=> node.__b.v = {x: node.__b.v.x*5, y: node.__b.v.y*5});
-    node.addEventListener('click', (e)=>{
-      const act = e.target.closest('[data-act]')?.dataset?.act;
-      if(act==='start'){ runBubble(item.id); }
-    });
-    this.nodes.add(node);
-  }
-  start(){
-    this.running = true;
-    for(let i=0;i<this.max;i++) this.spawn();
-    requestAnimationFrame(this.anim);
-  }
-  stop(){
-    this.running = false;
-  }
-  anim(now){
-    const dt = now - this.last; this.last = now;
-    const rect = this.root.getBoundingClientRect();
-    for(const node of Array.from(this.nodes)){
-      const b = node.__b; if(!b) continue;
-      // position
-      b.x += b.v.x * dt * (1 + 0.15*Math.sin((now-b.born)/1000*b.lfo));
-      b.y += b.v.y * dt * (1 + 0.15*Math.cos((now-b.born)/1200*b.lfo));
-      // bounds (soft bounce)
-      if(b.x < 0 || b.x > rect.width - b.r) b.v.x *= -1;
-      if(b.y < 0 || b.y > rect.height - b.r) b.v.y *= -1;
-      // apply
-      node.style.setProperty('--x', Math.max(0, Math.min(rect.width - b.r, b.x))+'px');
-      node.style.setProperty('--y', Math.max(0, Math.min(rect.height - b.r, b.y))+'px');
-      // lifetime
-      const age = now - b.born;
-      if(age > b.life - 1600 && !node.classList.contains('fading')) node.classList.add('fading');
-      if(age > b.life){
-        node.remove(); this.nodes.delete(node);
-        this.spawn();
+    const res = await fetch(`${API_BASE}/api/run`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, input, thread }) });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const reader = res.body.getReader(); const dec = new TextDecoder(); let buf='';
+    while(true){
+      const {value, done}=await reader.read(); if(done) break;
+      buf += dec.decode(value,{stream:true});
+      const parts = buf.split('\\n\\n'); buf = parts.pop() || '';
+      for(const part of parts){
+        const ln = part.split('\\n').find(x=>x.startsWith('data:')); if(!ln) continue;
+        const payload = ln.slice(5).trim(); if(payload==='[DONE]') continue;
+        try{ const j = JSON.parse(payload); if(j.delta) box.textContent += j.delta; if(j.error) box.textContent += '\\n[Fehler] '+j.error; }catch{}
       }
     }
-    if(this.running) requestAnimationFrame(this.anim);
-  }
+  }catch(err){ box.textContent = 'Fehler beim Stream: '+(err?.message||err); }
 }
 
-const field = document.getElementById('bubble-field');
-const engine = new BubbleEngine(field);
-engine.start();
+window.addEventListener('bubble:run', (e)=> runBubble(e.detail.id));
 
-// ---------- Overlays ----------
-async function renderNews(){
-  try{
-    const data = await fetchJsonFallback(bestApi('/news'));
-    const html = (data.items||[]).map(it=> `<li><a href="${it.url}" target="_blank" rel="noopener">${it.title}</a></li>`).join('');
-    openModal('News', `<ul>${html || '<li>Keine Einträge gefunden.</li>'}</ul>`);
-  }catch(err){
-    openModal('News', `<p>${err.message}</p>`);
-  }
-}
-function renderProjects(){
-  openModal('Projekte', `
-    <ul>
-      <li><strong>Bubble Engine</strong> – Jellyfish Motion (Bewegung, Lebensdauer, sanftes Aus-/Einblenden)</li>
-      <li><strong>SSE‑Runner</strong> – Live‑Streaming von Text (Claude/OpenAI/OpenRouter)</li>
-      <li><strong>Audio‑UX</strong> – dezente Ambient‑Schicht (On‑Demand, DSGVO‑freundlich)</li>
-    </ul>`);
-}
-
-// 20 Büro‑Prompts (kopierbereit)
+// NAV: Prompts (20 Büro‑Prompts)
 const OFFICE_PROMPTS = [
-  ['E-Mail-Klartext', 'Formuliere diese zu lange E-Mail respektvoll, klar und in 5 Sätzen. Erhalte 3 Varianten (direkt, diplomatisch, motivierend).'],
-  ['Meeting-Agenda 30 Min', 'Erstelle eine straffe Agenda für ein 30‑Minuten‑Meeting mit Ziel, 3 Blöcken, Timebox und Entscheidungsfragen.'],
-  ['Protokoll aus Stichpunkten', 'Wandle diese Stichpunkte in ein prägnantes, nummeriertes Protokoll mit Aufgaben (Wer? Bis wann?).'],
-  ['Status-Update wie Exec', 'Verdichte folgende Infos zu einem 120‑Wörter‑Update im Executive‑Ton, mit 3 KPIs und Ampelstatus.'],
-  ['OKR-Feinschliff', 'Überarbeite diese OKRs: klare Metriken, Outcome‑Fokus, keine Aufgabenformulierungen. Max. 5 Key Results.'],
-  ['PR-Statement', 'Schreibe ein kurzes Pressestatement (max. 120 Wörter), neutral, faktisch, ohne Superlative.'],
-  ['Social Copy x3', 'Erzeuge 3 Social‑Posts (LinkedIn), je 280 Zeichen, mit Hook, Nützlichkeit, 1 Hashtag.'],
-  ['Customer E-Mail – heikel', 'Formuliere eine höfliche, klare Antwort auf diese Beschwerde. Ziel: Deeskalation + nächster Schritt.'],
-  ['Sales-Pitch Kurzfassung', 'Erstelle einen 90‑Sekunden‑Pitch mit Nutzen, 3 Belegen, CTA. Zielgruppe: Entscheider.'],
-  ['SWOT in 8 Punkten', 'Erzeuge eine SWOT zu [Thema] mit jeweils 2 kompakten Aussagen pro Quadrant.'],
-  ['Briefing für Designer', 'Fasse diese Anforderungen in ein Design‑Briefing: Ziel, Ton, Pflicht‑Elemente, Nicht‑Ziele, 3 Beispiele.'],
-  ['Roadmap in Meilensteinen', 'Zerlege folgendes Vorhaben in 5 Meilensteine mit Definition of Done und Risiken.'],
-  ['Stakeholder-Map', 'Identifiziere Stakeholder, ordne Power/Interesse ein und schlage Kommunikationsfrequenzen vor.'],
-  ['Kundeninterview-Leitfaden', 'Erstelle 10 Fragen: Problemverständnis, bisherige Lösungen, Entscheidungswege, Budget.'],
-  ['Onboarding-Plan 30 Tage', 'Erstelle einen Plan für neue Mitarbeiter: Woche 1–4, Lernziele, Shadowing, erste Quick Wins.'],
-  ['Fehleranalyse 5‑Why', 'Wende 5‑Why auf dieses Incident an und formuliere 3 präventive Maßnahmen.'],
-  ['Sprechzettel Vorstand', 'Schreibe einen 2‑minütigen Sprechzettel (stichpunktartig) zu [Thema], klar, faktenbasiert.'],
-  ['Produkt-FAQ', 'Erzeuge eine FAQ‑Liste (10 Fragen) inkl. präziser Antworten in Kundensprache.'],
-  ['Newsletter-Snack', 'Schreibe einen 90‑Wörter‑Newsletter‑Teaser mit Hook, Nutzen und Link‑CTA.'],
-  ['Jira-Tickets', 'Zerlege diese User Story in 5–7 umsetzbare Tickets (Akzeptanzkriterien im Given‑When‑Then‑Format).']
+  {title:'E‑Mail präzisieren', prompt:'Formuliere diese E‑Mail klarer, kürzer und mit positiver Tonalität. Erhalte 3 Varianten mit Betreff: \\n<Dein Text>'},
+  {title:'Meeting‑Agenda 30 Min', prompt:'Erstelle eine Agenda (5 Punkte) für ein 30‑Minuten‑Meeting zu: <Thema>. Zielorientiert, mit Zeitbudget je Punkt.'},
+  {title:'LinkedIn‑Post Draft', prompt:'Schreibe einen LinkedIn‑Post (max. 120 Wörter) zu <Thema> in professionellem, freundlichem Ton. 3 Hook‑Vorschläge.'},
+  {title:'Protokoll‑Synthese', prompt:'Fasse dieses Rohprotokoll in 5 Bullets zusammen und extrahiere To‑Dos mit Verantwortlichen: \\n<Notizen>'},
+  {title:'Pitch‑Struktur', prompt:'Baue eine 6‑Slide‑Struktur (Titel der Slides, Kernbotschaft, 1 Visual‑Idee) für einen Pitch zu <Thema>.'},
+  {title:'Projektplan 2 Wochen', prompt:'Erstelle einen zweiwöchigen Mini‑Projektplan inkl. Meilensteine, Abhängigkeiten und Risiken für <Vorhaben>.'},
+  {title:'Kundenmail heikel', prompt:'Formuliere eine diplomatische Antwort auf diese heikle Kundenmail. Ziel: Deeskalation, Lösungsweg, klare nächsten Schritte.'},
+  {title:'Excel‑Formel Coach', prompt:'Erkläre mir anhand von Beispielen die beste Excel‑Formel für: <Problem>. Gib Kopier‑fertige Beispiele.'},
+  {title:'User‑Storys', prompt:'Erzeuge 6 User‑Storys im Format „Als <Rolle> will ich <Wunsch>, um <Nutzen>“ für <Produkt>.'},
+  {title:'Website‑Hero Copy', prompt:'Schreibe 3 Varianten einer Hero‑Zeile (max 10 Wörter) und eines Subheaders (max 18 Wörter) für <Angebot>.'},
+  {title:'Onboarding‑Guide', prompt:'Erstelle einen 7‑Punkte‑Onboarding‑Guide für neue Teammitglieder in <Bereich>. Enthält: Tools, Prozesse, Do/Don’t.'},
+  {title:'Risiko‑Check', prompt:'Liste für <Vorhaben> die Top‑10 Risiken inkl. Eintrittswahrscheinlichkeit und pragmatische Gegenmaßnahmen.'},
+  {title:'Budget‑Schätzung', prompt:'Grobe Kosten‑Schätzung (T‑Shirt‑Sizing S/M/L) für <Projekt>, Annahmen transparent machen, 3 Kostentreiber.'},
+  {title:'Interview‑Leitfaden', prompt:'Erstelle 8 Interviewfragen für ein Kundengespräch zu <Thema>. Ziel: Bedarf, Kaufbarrieren, Entscheiderkriterien.'},
+  {title:'KI‑Policy Light', prompt:'Formuliere eine kurze, praxistaugliche KI‑Nutzungsrichtlinie (10 Punkte) für ein KMU (DSGVO‑konform, EU AI Act‑aware).'},
+  {title:'Change‑Kommunikation', prompt:'Schreibe ein internes Memo zum Change <Thema> mit: Zielbild, 3 Gründen, Zeitplan, „Was ändert sich für mich?“. Max 180 Wörter.'},
+  {title:'Kundensegmente', prompt:'Erzeuge eine 2x2‑Segmentierung der Zielkunden für <Produkt>. Beschreibe Bedürfnisse, Kaufkriterien und Botschaften je Segment.'},
+  {title:'FAQ‑Generator', prompt:'Baue eine FAQ‑Liste (10 Fragen + knappe Antworten) für <Service>. Priorisiere Einwände.'},
+  {title:'Roadmap Quartal', prompt:'Erstelle eine Q‑Roadmap (3 Ziele, 9 Epics, messbare KRs) für <Team>.'},
+  {title:'Workshop‑Design', prompt:'Konzipiere einen 90‑Min‑Workshop zu <Thema> inkl. Ablauf, Übungen, benötigtes Material und erwartete Ergebnisse.'}
 ];
 
 function renderPrompts(){
-  const items = OFFICE_PROMPTS.map(([title, text]) => `
-    <div class="bubble-node live" style="--r: 260px; position:relative; opacity:1; transform:none; pointer-events:auto;">
-      <div class="bubble-core"></div>
-      <div class="bubble-label">${title}</div>
-      <div class="bubble-actions">
-        <button class="small" data-copy='${text.replace(/"/g,"&quot;")}'>Kopieren</button>
+  const items = OFFICE_PROMPTS.map(p=>`
+    <div class="bubble" style="position:relative;opacity:1;transform:none;width:auto;height:auto">
+      <div class="head"><span class="dot"></span><span>${p.title}</span></div>
+      <p class="desc">${p.prompt}</p>
+      <div class="actions">
+        <button class="btn" data-copy='${JSON.stringify(p.prompt)}'>Kopieren</button>
       </div>
-    </div>
-  `).join('');
-  openModal('Prompts (Büroalltag)', `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">${items}</div>`);
-  modalBody.querySelectorAll('[data-copy]').forEach(b=> b.addEventListener('click', ()=> {
-    navigator.clipboard.writeText(b.getAttribute('data-copy')).then(()=>toast('Kopiert ✓'));
-  }));
+    </div>`).join('');
+  openModal('Büro‑Prompts (20)', `<div style="display:grid;gap:12px">${items}</div>`);
+  modalBody.querySelectorAll('[data-copy]').forEach(b=> b.addEventListener('click', ()=> navigator.clipboard.writeText(b.getAttribute('data-copy')).then(()=>toast('Kopiert ✓')) ));
 }
 
+// News
+async function renderNews(){
+  openModal('News', '<p>Lade …</p>');
+  try{
+    const r = await fetch(`${API_BASE}/api/news`, { mode:'cors', headers:{'Accept':'application/json'}});
+    const text = await r.text();
+    if(!r.ok) throw new Error(`HTTP ${r.status} – ${text.slice(0,180)}`);
+    const j = JSON.parse(text);
+    const html = (j.items||[]).map(it=>`<li><a href="${it.url}" target="_blank" rel="noopener">${it.title}</a></li>`).join('');
+    modalBody.innerHTML = `<ul>${html}</ul>`;
+  }catch(err){
+    modalBody.innerHTML = `<p style="color:#ffb4b4"><strong>API‑Fehler:</strong> ${err.message}</p>
+    <p>Bitte prüfe: <code>ALLOWED_ORIGINS</code> im Backend, <code>x-api-base</code> in <code>index.html</code>, und ob <code>/api/news</code> direkt erreichbar ist.</p>`;
+  }
+}
+
+// Projekte
+function renderProjects(){ openModal('Projekte', `
+  <ul>
+    <li><strong>Bubble Engine</strong> – Jellyfish Motion, Fade‑In/Out, sequentielle Rotation</li>
+    <li><strong>SSE‑Streaming</strong> – Live‑Textausgabe aus LLM</li>
+    <li><strong>Audio‑Layer</strong> – dezente, interaktive Ambient‑Schicht</li>
+  </ul>`); }
+
+// Impressum
 function renderImprint(){
   openModal('Rechtliches & Transparenz', `
   <article>
     <h3>Impressum</h3>
-    <p><strong>Verantwortlich für den Inhalt:</strong><br>Wolf Hohl<br>Greifswalder Str. 224a<br>10405 Berlin</p>
+    <p><strong>Verantwortlich für den Inhalt:</strong><br>
+    Wolf Hohl<br>
+    Greifswalder Str. 224a<br>
+    10405 Berlin</p>
     <p><a href="mailto:hello@hohl.rocks">E‑Mail schreiben</a></p>
 
     <h4>Haftungsausschluss</h4>
@@ -304,10 +136,10 @@ function renderImprint(){
     <p>Diese Website informiert über Pflichten, Risiken und Fördermöglichkeiten beim Einsatz von KI nach EU AI Act und DSGVO. Sie ersetzt keine Rechtsberatung.</p>
 
     <h3>Datenschutzerklärung</h3>
-    <p><strong>Der Schutz Ihrer persönlichen Daten ist mir ein besonderes Anliegen.</strong></p>
+    <p>Der Schutz Ihrer persönlichen Daten ist mir ein besonderes Anliegen.</p>
 
     <h4>Kontakt mit mir</h4>
-    <p>Wenn Sie per Formular oder E‑Mail Kontakt aufnehmen, werden Ihre Angaben zur Bearbeitung sechs Monate gespeichert.</p>
+    <p>Wenn Sie per Formular oder E-Mail Kontakt aufnehmen, werden Ihre Angaben zur Bearbeitung sechs Monate gespeichert.</p>
 
     <h4>Cookies</h4>
     <p>Diese Website verwendet keine Cookies zur Nutzerverfolgung oder Analyse.</p>
@@ -322,15 +154,15 @@ function renderImprint(){
   </article>`);
 }
 
-// Nav
-document.querySelector('[data-open="news"]').addEventListener('click', renderNews);
+// Events
 document.querySelector('[data-open="prompts"]').addEventListener('click', renderPrompts);
+document.querySelector('[data-open="news"]').addEventListener('click', renderNews);
 document.querySelector('[data-open="projects"]').addEventListener('click', renderProjects);
 document.querySelector('[data-open="imprint"]').addEventListener('click', renderImprint);
 
-// Sprache Toggle (Placeholder)
+// Sprache Toggle (placeholder)
 document.getElementById('lang-toggle').addEventListener('click', (e)=>{
-  const v = e.currentTarget.getAttribute('aria-pressed') === 'true';
+  const v = e.currentTarget.getAttribute('aria-pressed')==='true';
   e.currentTarget.setAttribute('aria-pressed', String(!v));
   toast(!v ? 'English UI soon' : 'Deutsch');
 });

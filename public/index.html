@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>hohl.rocks — Bibliothek ungelebter Leben</title>
   <meta name="description" content="hohl.rocks — KI-Experiments von Wolf Hohl: Bubbles, Prompts, News, Klang.">
-  <!-- Backend-URL: wird von JS genutzt, zusätzlich gibt es Fallbacks auf /_api und /api -->
   <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -14,13 +13,13 @@
 <body>
   <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
-  <!-- Optionaler Videobackground (Fallback = CSS-Gradient) -->
-  <video id="bg-video" class="bg-video" autoplay muted loop playsinline>
-    <source src="./assets/highway.mp4" type="video/mp4">
+  <video id="bg-video" class="bg-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="videos/road_poster.jpg">
+    <source src="videos/road_720p_bg.webm" type="video/webm">
+    <source src="videos/road_720p_bg.mp4" type="video/mp4">
   </video>
 
   <header class="topbar" role="banner" aria-label="Navigation und Einstellungen">
-    <div class="version-badge" aria-label="Version">1.20</div>
+    <div class="version-badge" aria-label="Version">1.21</div>
     <nav class="nav" aria-label="Hauptnavigation">
       <button class="chip" data-open="news">News</button>
       <button class="chip" data-open="prompts">Prompts</button>
@@ -33,12 +32,9 @@
 
   <main id="main" class="hero" role="main">
     <h1 class="hero-title" aria-label="hohl punkt rocks"><span>hohl.rocks</span></h1>
-
-    <!-- Bubble-Feld: Neon-"Jellyfish" die sich bewegen, ausblenden und neue Inhalte laden -->
     <section id="bubble-field" class="bubble-field" aria-label="Interaktive Neon-Bubbles"></section>
   </main>
 
-  <!-- Modal -->
   <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal__panel" role="document">
       <header class="modal__header">
@@ -55,5 +51,13 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script type="module" src="./app.js"></script>
+  <script>
+  // iOS Autoplay-Fallback: starte Video bei erster User-Interaktion
+  (function(){
+    const v=document.getElementById('bg-video');
+    const kick=()=>{ v && v.play && v.play().catch(()=>{}); window.removeEventListener('pointerdown',kick); };
+    window.addEventListener('pointerdown', kick, { once:true });
+  })();
+  </script>
 </body>
 </html>

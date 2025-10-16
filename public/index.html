@@ -1,93 +1,59 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>hohl.rocks · Bibliothek ungelebter Leben</title>
-  <meta name="description" content="Interaktive KI‑Micro‑Apps – ruhig, klar, magisch‑intuitiv. Eine kuratierte Bibliothek kreativer KI‑Experimente von Wolf Hohl." />
-  <meta name="color-scheme" content="dark light" />
-  <meta name="x-api-base" content="/_api" />
-  <link rel="icon" href="/favicon.svg" />
-  <link rel="preload" href="/styles.css?v=3" as="style" />
-  <link rel="stylesheet" href="/styles.css?v=3" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>hohl.rocks — Bibliothek ungelebter Leben</title>
+  <meta name="description" content="hohl.rocks — KI-Experiments von Wolf Hohl: Bubbles, Prompts, News, Klang.">
+  <!-- Backend-URL: wird von JS genutzt, zusätzlich gibt es Fallbacks auf /_api und /api -->
+  <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
-  <header class="site-header" role="banner">
-    <nav class="site-nav" aria-label="Hauptnavigation">
-      <ul>
-        <li><button class="chip" data-open="news">News</button></li>
-        <li><button class="chip" data-open="prompts">Prompts</button></li>
-        <li><button class="chip" data-open="projects">Projekte</button></li>
-        <li><button class="chip" data-open="impressum">Impressum</button></li>
-        <li class="sep"></li>
-        <li><button class="chip" id="toggle-lang" aria-label="Sprache umschalten">DE/EN</button></li>
-        <li><button class="chip" id="toggle-audio" aria-pressed="false">Klang</button></li>
-      </ul>
+  <!-- Optionaler Videobackground (Fallback = CSS-Gradient) -->
+  <video id="bg-video" class="bg-video" autoplay muted loop playsinline>
+    <source src="./assets/highway.mp4" type="video/mp4">
+  </video>
+
+  <header class="topbar" role="banner" aria-label="Navigation und Einstellungen">
+    <div class="version-badge" aria-label="Version">1.20</div>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <button class="chip" data-open="news">News</button>
+      <button class="chip" data-open="prompts">Prompts</button>
+      <button class="chip" data-open="projects">Projekte</button>
+      <button class="chip" data-open="imprint">Impressum</button>
+      <button class="chip" id="lang-toggle" aria-pressed="false">DE/EN</button>
+      <button class="chip" id="audio-toggle" aria-pressed="false">Klang</button>
     </nav>
   </header>
 
-  <main id="main" class="site-main">
-    <div class="hero-bg" aria-hidden="true">
-      <video id="hero-video" class="hero-video" autoplay loop muted playsinline preload="metadata" poster="/videos/road_poster.jpg">
-        <source src="/videos/road_720p_bg.webm" type="video/webm" />
-        <source src="/videos/road_720p_bg.mp4" type="video/mp4" />
-        <source src="/videos/road_540p_bg.webm" type="video/webm" />
-        <source src="/videos/road_540p_bg.mp4" type="video/mp4" />
-      </video>
-      <div class="hero-tint"></div>
-    </div>
+  <main id="main" class="hero" role="main">
+    <h1 class="hero-title" aria-label="hohl punkt rocks"><span>hohl.rocks</span></h1>
 
-    <header class="hero">
-      <h1 class="brand">
-        <span class="brand__text">hohl.rocks</span>
-        <span class="brand__tag">Bibliothek ungelebter Leben</span>
-      </h1>
-    </header>
-
-    <section id="bubbles" class="bubbles" aria-label="Interaktive KI‑Micro‑Apps">
-      <noscript><p>Für die KI‑Micro‑Apps ist JavaScript erforderlich.</p></noscript>
-    </section>
+    <!-- Bubble-Feld: Neon-"Jellyfish" die sich bewegen, ausblenden und neue Inhalte laden -->
+    <section id="bubble-field" class="bubble-field" aria-label="Interaktive Neon-Bubbles"></section>
   </main>
 
-  <section id="overlay" class="overlay" aria-hidden="true">
-    <div class="overlay__panel" role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="overlay-title">
-      <header class="overlay__header">
-        <h2 id="overlay-title">Overlay</h2>
-        <div class="overlay__actions">
-          <button class="ui btn ghost" data-close="overlay" aria-label="Schließen">Schließen</button>
-        </div>
-      </header>
-      <div class="overlay__content" id="overlay-content"></div>
-    </div>
-  </section>
-
-  <section id="modal" class="modal" aria-hidden="true">
-    <div class="modal__panel" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- Modal -->
+  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__panel" role="document">
       <header class="modal__header">
-        <h2 id="modal-title">Aktion</h2>
-        <div class="modal__actions">
-          <button class="ui btn ghost" data-copy="modal">Kopieren</button>
-          <button class="ui btn" id="modal-share">Teilen</button>
-          <button class="ui btn" id="modal-close">Schließen</button>
-        </div>
+        <h2 id="modal-title">Titel</h2>
       </header>
-      <div class="modal__content" id="modal-content"></div>
+      <div class="modal__body" id="modal-body"></div>
+      <footer class="modal__footer">
+        <button class="btn ghost" id="copy-btn">Kopieren</button>
+        <button class="btn" id="close-btn">Schließen</button>
+      </footer>
     </div>
-  </section>
+  </div>
 
-  <section id="consent" class="consent" aria-hidden="true">
-    <div class="consent__panel" role="dialog" aria-modal="true" tabindex="-1">
-      <p>Diese Seite verwendet lokale Speicherung für Einstellungen (z. B. Klang). Keine Cookies, keine Tracker.</p>
-      <div class="consent__actions">
-        <button class="ui btn" id="consent-accept">Verstanden</button>
-      </div>
-    </div>
-  </section>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-
-  <script type="module" src="/app.js?v=3" defer></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>

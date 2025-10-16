@@ -2,56 +2,50 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>hohl.rocks — Bibliothek ungelebter Leben</title>
-  <meta name="description" content="hohl.rocks — KI-Experimente von Wolf Hohl: Bubbles, Prompts, News, Klang.">
-  <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>hohl.rocks – Bibliothek ungelebter Leben</title>
+  <meta name="description" content="hohl.rocks – radikal moderne, immersive KI-Experience von Wolf Hohl.">
+  <link rel="preload" as="video" href="/videos/road_720p_bg.webm" type="video/webm">
+  <link rel="preload" as="video" href="/videos/road_720p_bg.mp4" type="video/mp4">
+  <link rel="preload" href="/styles.css" as="style">
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Zum Inhalt springen</a>
-
-  <video id="bg-video" class="bg-video" autoplay muted loop playsinline preload="metadata" poster="videos/road_poster.jpg">
-    <source src="videos/road_720p_bg.webm" type="video/webm">
-    <source src="videos/road_720p_bg.mp4" type="video/mp4">
-  </video>
-
-  <header class="topbar" role="banner" aria-label="Navigation und Einstellungen">
-    <div class="version-badge" aria-label="Version">1.24.0</div>
-    <div id="ticker" class="ticker" aria-live="polite"><span class="badge">Heute neu</span><span id="ticker-text">Lade…</span></div>
-    <nav class="nav" aria-label="Hauptnavigation">
-      <button class="chip" data-open="news">News</button>
-      <button class="chip" data-open="prompts">Prompts</button>
-      <button class="chip" data-open="projects">Projekte</button>
-      <button class="chip" data-open="imprint">Impressum</button>
-      <button class="chip" id="lang-toggle" aria-pressed="false">DE/EN</button>
-      <button class="chip" id="audio-toggle" aria-pressed="false">Klang</button>
+  <header class="topbar">
+    <nav class="nav">
+      <button class="pill pill--ticker" id="ticker"><span>Heute neu</span><em id="tickerText">lädt …</em></button>
+      <button class="pill" data-open="news">News</button>
+      <button class="pill" data-open="prompts">Prompts</button>
+      <button class="pill" data-open="projects">Projekte</button>
+      <button class="pill" data-open="imprint">Impressum</button>
+      <button class="pill" id="lang">DE/EN</button>
+      <button class="pill" id="sound">Klang</button>
     </nav>
   </header>
 
-  <main id="main" class="hero" role="main">
-    <h1 class="hero-title" aria-label="hohl punkt rocks"><span>hohl.rocks</span></h1>
-    <section id="bubble-field" class="bubble-field" aria-label="Interaktive Neon-Bubbles"></section>
+  <main id="scene">
+    <video id="bgVideo" class="bg" playsinline autoplay muted loop poster="/videos/road_poster.jpg">
+      <source src="/videos/road_720p_bg.webm" type="video/webm">
+      <source src="/videos/road_720p_bg.mp4" type="video/mp4">
+    </video>
+    <h1 class="logo">hohl.rocks</h1>
+    <canvas id="bubbleCanvas"></canvas>
   </main>
 
-  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="modal__panel" role="document">
-      <header class="modal__header">
-        <h2 id="modal-title">Titel</h2>
-        <button class="modal__close" id="modal-close-x" aria-label="Schließen">×</button>
-      </header>
-      <div class="modal__body" id="modal-body"></div>
+  <section id="modal" hidden>
+    <div class="modal">
+      <header><h2 id="modalTitle">Titel</h2><button id="closeModal" aria-label="Schließen">×</button></header>
+      <div id="modalBody" class="modal__body"></div>
       <footer class="modal__footer">
-        <button class="btn ghost" id="copy-btn">Kopieren</button>
-        <button class="btn" id="close-btn">Schließen</button>
+        <button id="copyBtn" class="btn">Kopieren</button>
+        <button id="closeBtn" class="btn btn--ghost">Schließen</button>
       </footer>
     </div>
-  </div>
+  </section>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <template id="toastTpl"><div class="toast">Kopiert ✓</div></template>
 
-  <script type="module" src="./app.js"></script>
+  <script src="/app.js" defer></script>
+  <script src="/bubbles.js" defer></script>
 </body>
 </html>

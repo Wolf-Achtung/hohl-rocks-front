@@ -1,6 +1,6 @@
 # Netlify config for hohl.rocks
 [build]
-  publish = "front/public"
+  publish = "public"
 
 # Optional: if you add a build tool later (vite/parcel), set "command" accordingly.
 

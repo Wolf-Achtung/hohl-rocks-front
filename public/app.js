@@ -1,4 +1,4 @@
-// hohl.rocks front – Jellyfish Bubbles v1.23
+// Front v1.24 – ticker + robust video + bubble autosize + SSE path fix
 const META_BASE = document.querySelector('meta[name="x-api-base"]')?.content?.trim() || '';
 const API_BASES = ['/_api', META_BASE, '/api'].filter(Boolean);
 
@@ -9,16 +9,13 @@ function toast(msg){ const el=$('#toast'); if(!el) return; el.textContent = msg;
 
 function joinApi(base, path){
   if(!base) return path;
-  // If proxy '/_api' – pass through without adding '/api'
-  if(base === '/_api' || base.endsWith('/_api')) return `${base}${path}`;
-  // If base already ends with '/api' – append path
-  if(base.endsWith('/api')) return `${base}${path}`;
-  // Otherwise assume server root expects '/api'
-  return `${base}/api${path}`;
+  if(base === '/_api' || base.endsWith('/_api')) return `${base}${path}`;       // proxy passthrough
+  if(base.endsWith('/api')) return `${base}${path}`;                            // already /api
+  return `${base}/api${path}`;                                                  // host root
 }
 function bestApi(path){ return API_BASES.map(b => joinApi(b, path)); }
 
-async function fetchJsonFallback(paths, opts={}, timeoutMs=7000){
+async function fetchJsonFallback(paths, opts={}, timeoutMs=8000){
   for(const url of paths){
     try{
       const ctrl = new AbortController(); const t=setTimeout(()=>ctrl.abort(), timeoutMs);
@@ -39,7 +36,6 @@ on(window, 'keydown', (e)=> { if(e.key === 'Escape') closeModal(); });
 function openModal(title, html){ if(modalTitle) modalTitle.textContent = title||''; if(modalBody) modalBody.innerHTML = html||''; modal?.setAttribute('aria-hidden','false'); }
 function closeModal(){ modal?.setAttribute('aria-hidden','true'); if(modalBody) modalBody.innerHTML=''; }
 
-// Copy button copies visible modal's text content (or data-copy targets handle their own copy)
 on($('#copy-btn'), 'click', ()=>{ const txt=modalBody?.textContent||''; navigator.clipboard.writeText(txt).then(()=>toast('Kopiert ✓')).catch(()=>toast('Kopieren nicht möglich')); });
 
 // ---- Audio (gentle)
@@ -59,17 +55,19 @@ on($('#audio-toggle'), 'click', async (e)=>{
   }catch(err){ console.warn('Audio failed', err); }
 });
 
-// ---- BG video readiness + kick (no inline JS)
+// ---- BG video readiness + multi-kick (Safari/iOS safe)
 (function(){
   const v = $('#bg-video'); if(!v) return;
   const markReady = ()=> v.classList.add('ready');
-  v.addEventListener('canplay', markReady, {once:true});
-  v.addEventListener('loadeddata', markReady, {once:true});
-  const kick = ()=>{ v.play?.().catch(()=>{}); window.removeEventListener('pointerdown', kick); };
-  window.addEventListener('pointerdown', kick, { once:true });
+  ['canplay','loadeddata','canplaythrough','loadedmetadata'].forEach(ev => v.addEventListener(ev, markReady, {once:true}));
+  const kick = ()=>{ v.play?.().catch(()=>{}); };
+  window.addEventListener('pointerdown', ()=>{ kick(); }, { once:true });
+  window.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') kick(); });
+  setTimeout(kick, 800); setTimeout(kick, 2500); setTimeout(kick, 5000);
+  v.addEventListener('error', (e)=> console.warn('Video error', e));
 })();
 
-// ---- SSE Runner (Stream or JSON)
+// ---- SSE Runner
 async function runBubble(id, input={}, thread=[]){
   openModal('Assistant', '<pre id="stream-box" style="white-space:pre-wrap;word-wrap:break-word;"></pre>');
   const box = $('#stream-box'); let success=false, lastErr=null;
@@ -99,7 +97,7 @@ async function runBubble(id, input={}, thread=[]){
   if(!success) openModal('Fehler', `<p>${(lastErr && lastErr.message)||'Unbekannter Fehler'}</p>`);
 }
 
-// ---- Bubble Engine (slower, smoother, varied radii, single neon color)
+// ---- Bubbles
 const CORE = [
   { id:'zeitreise-tagebuch', title:'Zeitreise‑Tagebuch' },
   { id:'weltbau', title:'Weltbau' },
@@ -153,7 +151,7 @@ class BubbleEngine{
   nextItem(){ const it=this.items[this.idx % this.items.length]; this.idx=(this.idx+1)%this.items.length; return it; }
   spawn(){
     const it=this.nextItem();
-    const r = Math.round(90 + Math.random()*110); // 90–200px
+    let r = Math.round(90 + Math.random()*110); // 90–200px
     const node=document.createElement('div'); node.className='bubble-node'; node.style.setProperty('--r', r+'px');
     node.dataset.id=it.id; node.dataset.title=it.title;
     const color = NEONS[Math.floor(Math.random()*NEONS.length)];
@@ -162,14 +160,20 @@ class BubbleEngine{
       <div class="bubble-label">${it.title}</div>
       <div class="bubble-actions"><button class="small" data-act="start">Start</button></div>`;
     const rect=this.root.getBoundingClientRect();
+    // Temporary append to measure label width and adjust size if needed
+    this.root.appendChild(node);
+    const label = node.querySelector('.bubble-label');
+    if(label){
+      const labelWidth = label.scrollWidth;
+      const needed = Math.ceil(labelWidth / 0.85); // center space vs label width
+      if(needed > r) { r = Math.min(260, needed + 20); node.style.setProperty('--r', r+'px'); }
+    }
     const x = Math.random()*(rect.width - r), y = Math.random()*(rect.height - r);
-    // Slower base velocity (px/ms). 0.012–0.026 → ~10–22 px/s
-    const v = { x: (Math.random()-.5)*0.014, y: (Math.random()-.5)*0.014 };
-    const life = 16000 + Math.random()*18000; const born = performance.now();
+    const v = { x: (Math.random()-.5)*0.014, y: (Math.random()-.5)*0.014 }; // slow drift
+    const life = 17000 + Math.random()*19000; const born = performance.now();
     const lfo = 0.4 + Math.random()*0.6;
     node.__b = { x, y, v, r, life, born, lfo };
     node.style.setProperty('--x', x+'px'); node.style.setProperty('--y', y+'px');
-    this.root.appendChild(node);
     requestAnimationFrame(()=> node.classList.add('live'));
     on(node, 'click', (e)=>{ if(e.target.closest('[data-act="start"]')) runBubble(it.id); });
     this.nodes.add(node);
@@ -181,7 +185,6 @@ class BubbleEngine{
     const rect=this.root.getBoundingClientRect();
     for(const node of Array.from(this.nodes)){
       const b=node.__b; if(!b) continue;
-      // smooth drift + gentle lfo
       b.x += b.v.x * dt * (1 + 0.12*Math.sin((now-b.born)/1100*b.lfo));
       b.y += b.v.y * dt * (1 + 0.12*Math.cos((now-b.born)/1250*b.lfo));
       if(b.x < 0 || b.x > rect.width - b.r) b.v.x *= -1;
@@ -197,6 +200,18 @@ class BubbleEngine{
 }
 const field = document.getElementById('bubble-field'); if(field){ new BubbleEngine(field).start(); }
 
+// ---- Ticker (Heute neu)
+(async function(){
+  const el = $('#ticker-text'); if(!el) return;
+  try{
+    const data = await fetchJsonFallback(bestApi('/daily'));
+    const items = (data.items||[]).map(x=> x.title || x.text).filter(Boolean);
+    if(!items.length){ el.textContent='—'; return; }
+    let i=0; el.textContent = items[0];
+    setInterval(()=>{ i=(i+1)%items.length; el.textContent = items[i]; }, 6000);
+  }catch{ el.textContent='—'; }
+})();
+
 // ---- Overlays
 async function renderNews(){
   try{
@@ -211,13 +226,14 @@ async function renderNews(){
 function renderProjects(){
   openModal('Projekte', `
     <ul>
-      <li><strong>Bubble Engine</strong> – Jellyfish Motion (Bewegung, Lebensdauer, Fade, Neon‑Palette)</li>
+      <li><strong>Bubble Engine</strong> – Jellyfish Motion (Bewegung, Lebensdauer, Fade, Neon‑Palette, Auto‑Size)</li>
+      <li><strong>Ticker</strong> – 'Heute neu' mit Auto‑Rotation</li>
       <li><strong>SSE‑Runner</strong> – Streaming von Text (Claude/OpenAI/OpenRouter)</li>
-      <li><strong>Audio‑UX</strong> – dezente Ambient‑Schicht (On‑Demand, DSGVO‑freundlich)</li>
+      <li><strong>Audio‑UX</strong> – dezente Ambient‑Schicht (On‑Demand)</li>
     </ul>`);
 }
 
-// Büro-Prompts: benefit only; copy contains full prompt text
+// Büro-Prompts (benefit visible, prompt copied)
 const OFFICE_PROMPTS = [
   { title:'E‑Mail‑Klartext', benefit:'Lange Mails auf 5 Sätze eindampfen – klar, respektvoll, 3 Tonalitäten.', prompt:'Formuliere diese zu lange E‑Mail respektvoll, klar und in 5 Sätzen. Gib 3 Varianten (direkt, diplomatisch, motivierend). Nutze Bulletpoints für To‑dos.' },
   { title:'Meeting‑Agenda 30 Min', benefit:'Strukturierte Kurzmeetings – Ziel, Blöcke, Timebox, Entscheidung.', prompt:'Erstelle eine straffe Agenda für ein 30‑Minuten‑Meeting mit Ziel, 3 Blöcken à 8 Minuten, Timebox, Verantwortlichen und konkreter Entscheidungsfrage.' },

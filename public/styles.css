@@ -22,8 +22,12 @@ body::before{ content:""; position:fixed; inset:0; z-index:-3;
               linear-gradient(180deg, #111827 0%, #0a0f16 65%);
 }
 
-.topbar{ position:fixed; top:10px; left:10px; right:10px; display:flex; gap:10px; align-items:center; z-index:1000; }
+.topbar{ position:fixed; top:10px; left:10px; right:10px; display:flex; gap:10px; align-items:center; z-index:1000; flex-wrap:wrap; }
 .version-badge{ font-size:.8rem; color:#cbd5e1; background:rgba(0,0,0,.45); padding:.25rem .45rem; border-radius:6px; border:1px solid rgba(255,255,255,.08); backdrop-filter: blur(8px); }
+.ticker{ display:flex; gap:8px; align-items:center; min-height:28px; padding:.2rem .5rem; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); }
+.ticker .badge{ font-size:12px; padding:.1rem .4rem; border-radius:999px; background: rgba(0,0,0,.35); color:#cfe7ff; border:1px solid rgba(255,255,255,.08); }
+.ticker #ticker-text{ color:#eaf2ff; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:min(52vw, 680px); }
+
 .nav{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 .chip{ border:none; background:rgba(255,255,255,.06); color:#e5e7eb; padding:.45rem .7rem; border-radius:999px; cursor:pointer; box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 0 0 1px rgba(255,255,255,.08); backdrop-filter: blur(8px); }
 .chip:hover{ background: rgba(255,255,255,.12); }

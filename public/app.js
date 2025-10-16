@@ -1,121 +1,105 @@
-// hohl.rocks front – Jellyfish Bubbles, SSE, Overlays (no inline JS)
+// hohl.rocks front – Jellyfish Bubbles v1.23
 const META_BASE = document.querySelector('meta[name="x-api-base"]')?.content?.trim() || '';
-const API_CANDIDATES = [
-  '/_api',                 // Proxy path on Netlify
-  META_BASE,               // Explicit backend (Railway)
-  '/api'                   // same-origin (dev)
-].filter(Boolean);
+const API_BASES = ['/_api', META_BASE, '/api'].filter(Boolean);
 
 const $ = (s, r=document)=> r.querySelector(s);
 const $$ = (s, r=document)=> Array.from(r.querySelectorAll(s));
 function on(el, ev, fn, opts){ el && el.addEventListener(ev, fn, opts); }
-function toast(msg){
-  const el = $('#toast'); if(!el) { console.warn('toast container missing'); return; }
-  el.textContent = msg; el.classList.add('show'); setTimeout(()=> el.classList.remove('show'), 2200);
-}
+function toast(msg){ const el=$('#toast'); if(!el) return; el.textContent = msg; el.classList.add('show'); setTimeout(()=> el.classList.remove('show'), 2200); }
 
-function bestApi(path){
-  return API_CANDIDATES.map(b => b.endsWith('/api') ? (b + path) : (b + (path.startsWith('/api') ? path : '/api' + path)));
+function joinApi(base, path){
+  if(!base) return path;
+  // If proxy '/_api' – pass through without adding '/api'
+  if(base === '/_api' || base.endsWith('/_api')) return `${base}${path}`;
+  // If base already ends with '/api' – append path
+  if(base.endsWith('/api')) return `${base}${path}`;
+  // Otherwise assume server root expects '/api'
+  return `${base}/api${path}`;
 }
+function bestApi(path){ return API_BASES.map(b => joinApi(b, path)); }
 
 async function fetchJsonFallback(paths, opts={}, timeoutMs=7000){
   for(const url of paths){
     try{
-      const ctrl = new AbortController(); const t = setTimeout(()=>ctrl.abort(), timeoutMs);
-      const r = await fetch(url, { ...opts, signal: ctrl.signal, headers: {'accept':'application/json', ...(opts.headers||{}) }});
+      const ctrl = new AbortController(); const t=setTimeout(()=>ctrl.abort(), timeoutMs);
+      const r = await fetch(url, { ...opts, signal: ctrl.signal, headers: {'accept':'application/json', ...(opts.headers||{}) } });
       clearTimeout(t);
       if(r.ok) return await r.json();
-    }catch(e){ /* try next */ }
+    }catch{}
   }
   throw new Error('API nicht erreichbar. Prüfe Proxy (/_api) oder x-api-base.');
 }
 
-// ---- Modal
-const modal = $('#modal');
-const modalTitle = $('#modal-title');
-const modalBody = $('#modal-body');
-const modalPanel = $('.modal__panel');
+// ---- Modal wiring
+const modal = $('#modal'), modalTitle = $('#modal-title'), modalBody = $('#modal-body');
 on($('#close-btn'), 'click', closeModal);
 on($('#modal-close-x'), 'click', closeModal);
 on(modal, 'click', (e)=> { if(e.target === modal) closeModal(); });
 on(window, 'keydown', (e)=> { if(e.key === 'Escape') closeModal(); });
+function openModal(title, html){ if(modalTitle) modalTitle.textContent = title||''; if(modalBody) modalBody.innerHTML = html||''; modal?.setAttribute('aria-hidden','false'); }
+function closeModal(){ modal?.setAttribute('aria-hidden','true'); if(modalBody) modalBody.innerHTML=''; }
 
-function openModal(title, html){
-  if(modalTitle) modalTitle.textContent = title || '';
-  if(modalBody) modalBody.innerHTML = html || '';
-  modal?.setAttribute('aria-hidden','false');
-}
-function closeModal(){
-  modal?.setAttribute('aria-hidden','true');
-  if(modalBody) modalBody.innerHTML = '';
-}
+// Copy button copies visible modal's text content (or data-copy targets handle their own copy)
+on($('#copy-btn'), 'click', ()=>{ const txt=modalBody?.textContent||''; navigator.clipboard.writeText(txt).then(()=>toast('Kopiert ✓')).catch(()=>toast('Kopieren nicht möglich')); });
 
-// Copy button (contextual)
-on($('#copy-btn'), 'click', ()=> {
-  const txt = modalBody?.textContent || '';
-  navigator.clipboard.writeText(txt).then(()=>toast('Kopiert ✓')).catch(()=>toast('Kopieren nicht möglich'));
-});
-
-// ---- Audio (on demand)
+// ---- Audio (gentle)
 let audioCtx=null, masterGain=null, isAudioOn=false;
 on($('#audio-toggle'), 'click', async (e)=>{
   try{
     if(!audioCtx){
       audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-      masterGain = audioCtx.createGain(); masterGain.gain.value=0.12; masterGain.connect(audioCtx.destination);
-      const mkOsc = (type, freq, gain)=>{ const o = audioCtx.createOscillator(); o.type=type; o.frequency.value=freq; const g=audioCtx.createGain(); g.gain.value=gain; o.connect(g); g.connect(masterGain); o.start(); return [o,g]; };
-      const [osc1] = mkOsc('sine', 140, 0.05);
-      const [osc2] = mkOsc('triangle', 220, 0.03);
-      const lfo=audioCtx.createOscillator(), lGain=audioCtx.createGain(); lfo.frequency.value=.05; lGain.gain.value=30; lfo.connect(lGain); lGain.connect(osc2.frequency); lfo.start();
+      masterGain = audioCtx.createGain(); masterGain.gain.value=0.1; masterGain.connect(audioCtx.destination);
+      const mkOsc=(type,f,g)=>{const o=audioCtx.createOscillator();o.type=type;o.frequency.value=f;const ga=audioCtx.createGain();ga.gain.value=g;o.connect(ga);ga.connect(masterGain);o.start();return [o,ga];};
+      const [o1]=mkOsc('sine',135,0.05); const [o2]=mkOsc('triangle',205,0.03);
+      const lfo=audioCtx.createOscillator(), lg=audioCtx.createGain(); lfo.frequency.value=.035; lg.gain.value=25; lfo.connect(lg); lg.connect(o2.frequency); lfo.start();
     }
     if(audioCtx.state==='suspended') await audioCtx.resume();
-    isAudioOn=!isAudioOn; masterGain.gain.linearRampToValueAtTime(isAudioOn?0.12:0.0, audioCtx.currentTime+.2);
+    isAudioOn=!isAudioOn; masterGain.gain.linearRampToValueAtTime(isAudioOn?0.1:0.0, audioCtx.currentTime+.25);
     e.currentTarget?.setAttribute('aria-pressed', String(isAudioOn));
   }catch(err){ console.warn('Audio failed', err); }
 });
 
-// ---- BG video play on first interaction (no inline script required)
+// ---- BG video readiness + kick (no inline JS)
 (function(){
-  const v = $('#bg-video');
-  if(!v) return;
+  const v = $('#bg-video'); if(!v) return;
+  const markReady = ()=> v.classList.add('ready');
+  v.addEventListener('canplay', markReady, {once:true});
+  v.addEventListener('loadeddata', markReady, {once:true});
   const kick = ()=>{ v.play?.().catch(()=>{}); window.removeEventListener('pointerdown', kick); };
   window.addEventListener('pointerdown', kick, { once:true });
 })();
 
-// ---- SSE Runner
+// ---- SSE Runner (Stream or JSON)
 async function runBubble(id, input={}, thread=[]){
   openModal('Assistant', '<pre id="stream-box" style="white-space:pre-wrap;word-wrap:break-word;"></pre>');
-  const box = $('#stream-box');
-  const paths = bestApi('/run');
-  let success=false, lastErr=null;
-  for(const url of paths){
+  const box = $('#stream-box'); let success=false, lastErr=null;
+  for(const url of bestApi('/run')){
     try{
       const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, input, thread }) });
       if(!resp.ok) { lastErr = new Error('HTTP '+resp.status); continue; }
-      if(!resp.body){ // maybe JSON
+      if(resp.body){
+        const reader = resp.body.getReader(); const dec = new TextDecoder(); let buf='';
+        while(true){
+          const {value, done} = await reader.read(); if(done) break;
+          buf += dec.decode(value, {stream:true});
+          const parts = buf.split('\n\n'); buf = parts.pop() || '';
+          for(const part of parts){
+            if(!part.startsWith('data:')) continue;
+            const payload = part.slice(5).trim(); if(payload === '[DONE]') continue;
+            try{ const j=JSON.parse(payload); if(j.delta && box) box.textContent += j.delta; if(j.error && box) box.textContent += '\n\n[Fehler] '+j.error; }catch{}
+          }
+        }
+        success=true; break;
+      }else{
         const data = await resp.json().catch(()=>null);
         if(data?.text || data?.html){ box && (box.textContent = data.text || data.html); success=true; break; }
-        lastErr = new Error('Kein Stream/Body'); continue;
       }
-      const reader = resp.body.getReader(); const dec = new TextDecoder(); let buf='';
-      while(true){
-        const {value, done} = await reader.read(); if(done) break;
-        buf += dec.decode(value, {stream:true});
-        const parts = buf.split('\n\n'); buf = parts.pop() || '';
-        for(const part of parts){
-          if(!part.startsWith('data:')) continue;
-          const payload = part.slice(5).trim();
-          if(payload === '[DONE]') continue;
-          try { const j = JSON.parse(payload); if(j.delta && box) box.textContent += j.delta; if(j.error && box) box.textContent += '\n\n[Fehler] '+j.error; } catch {}
-        }
-      }
-      success=true; break;
-    }catch(e){ lastErr = e; }
+    }catch(e){ lastErr=e; }
   }
   if(!success) openModal('Fehler', `<p>${(lastErr && lastErr.message)||'Unbekannter Fehler'}</p>`);
 }
 
-// ---- Bubble Engine
+// ---- Bubble Engine (slower, smoother, varied radii, single neon color)
 const CORE = [
   { id:'zeitreise-tagebuch', title:'Zeitreise‑Tagebuch' },
   { id:'weltbau', title:'Weltbau' },
@@ -157,49 +141,49 @@ const IDEAS = [
   {id:'idea-universums-uebersetzer', title:'Universums‑Übersetzer'}
 ];
 const QUEUE = [...CORE, ...IDEAS];
+const NEONS = ['#82f6ff','#8cffc2','#a0a7ff','#ffd166','#ff7bd5','#9dff6a','#8df','#f0f','#4dfcff','#ff9d5b'];
 
 class BubbleEngine{
   constructor(root){
-    this.root = root;
-    this.items = [...QUEUE];
-    this.idx = 0;
-    this.nodes = new Set();
+    this.root=root; this.items=[...QUEUE]; this.idx=0; this.nodes=new Set();
     this.max = window.innerWidth < 820 ? 4 : 7;
-    this.running = false;
-    this.last = performance.now();
-    this.anim = this.anim.bind(this);
+    this.running=false; this.last=performance.now();
+    this.anim=this.anim.bind(this);
   }
-  nextItem(){ const item = this.items[this.idx % this.items.length]; this.idx++; if(this.idx>=this.items.length) this.idx=0; return item; }
+  nextItem(){ const it=this.items[this.idx % this.items.length]; this.idx=(this.idx+1)%this.items.length; return it; }
   spawn(){
-    const item = this.nextItem();
-    const rMin = 110, rMax = 160; const r = Math.round(rMin + Math.random()*(rMax-rMin));
-    const node = document.createElement('div'); node.className = 'bubble-node'; node.style.setProperty('--r', r+'px');
-    node.dataset.id=item.id; node.dataset.title=item.title;
-    node.innerHTML = `<div class="bubble-core"></div>
-      <div class="bubble-label">${item.title}</div>
+    const it=this.nextItem();
+    const r = Math.round(90 + Math.random()*110); // 90–200px
+    const node=document.createElement('div'); node.className='bubble-node'; node.style.setProperty('--r', r+'px');
+    node.dataset.id=it.id; node.dataset.title=it.title;
+    const color = NEONS[Math.floor(Math.random()*NEONS.length)];
+    node.style.setProperty('--c', color);
+    node.innerHTML = `<div class="bubble-core"></div><div class="bubble-halo"></div>
+      <div class="bubble-label">${it.title}</div>
       <div class="bubble-actions"><button class="small" data-act="start">Start</button></div>`;
-    const rect = this.root.getBoundingClientRect();
-    const x = Math.random() * (rect.width - r); const y = Math.random() * (rect.height - r);
-    const v = { x: (Math.random()-.5)*0.08, y: (Math.random()-.5)*0.08 };
-    const life = 14000 + Math.random()*16000; const born = performance.now(); const lfo = 0.6 + Math.random()*0.8;
+    const rect=this.root.getBoundingClientRect();
+    const x = Math.random()*(rect.width - r), y = Math.random()*(rect.height - r);
+    // Slower base velocity (px/ms). 0.012–0.026 → ~10–22 px/s
+    const v = { x: (Math.random()-.5)*0.014, y: (Math.random()-.5)*0.014 };
+    const life = 16000 + Math.random()*18000; const born = performance.now();
+    const lfo = 0.4 + Math.random()*0.6;
     node.__b = { x, y, v, r, life, born, lfo };
     node.style.setProperty('--x', x+'px'); node.style.setProperty('--y', y+'px');
     this.root.appendChild(node);
     requestAnimationFrame(()=> node.classList.add('live'));
-    on(node, 'mouseenter', ()=> node.__b.v = {x: node.__b.v.x*0.2, y: node.__b.v.y*0.2});
-    on(node, 'mouseleave', ()=> node.__b.v = {x: node.__b.v.x*5, y: node.__b.v.y*5});
-    on(node, 'click', (e)=>{ if(e.target.closest('[data-act="start"]')) runBubble(item.id); });
+    on(node, 'click', (e)=>{ if(e.target.closest('[data-act="start"]')) runBubble(it.id); });
     this.nodes.add(node);
   }
-  start(){ if(this.running) return; this.running = true; for(let i=0;i<this.max;i++) this.spawn(); requestAnimationFrame(this.anim); }
+  start(){ if(this.running) return; this.running=true; for(let i=0;i<this.max;i++) this.spawn(); requestAnimationFrame(this.anim); }
   stop(){ this.running=false; }
   anim(now){
     const dt = now - this.last; this.last = now;
-    const rect = this.root.getBoundingClientRect();
+    const rect=this.root.getBoundingClientRect();
     for(const node of Array.from(this.nodes)){
-      const b = node.__b; if(!b) continue;
-      b.x += b.v.x * dt * (1 + 0.15*Math.sin((now-b.born)/1000*b.lfo));
-      b.y += b.v.y * dt * (1 + 0.15*Math.cos((now-b.born)/1200*b.lfo));
+      const b=node.__b; if(!b) continue;
+      // smooth drift + gentle lfo
+      b.x += b.v.x * dt * (1 + 0.12*Math.sin((now-b.born)/1100*b.lfo));
+      b.y += b.v.y * dt * (1 + 0.12*Math.cos((now-b.born)/1250*b.lfo));
       if(b.x < 0 || b.x > rect.width - b.r) b.v.x *= -1;
       if(b.y < 0 || b.y > rect.height - b.r) b.v.y *= -1;
       node.style.setProperty('--x', Math.max(0, Math.min(rect.width - b.r, b.x))+'px');
@@ -211,61 +195,64 @@ class BubbleEngine{
     if(this.running) requestAnimationFrame(this.anim);
   }
 }
-
-const field = document.getElementById('bubble-field');
-if(field){ const engine = new BubbleEngine(field); engine.start(); }
+const field = document.getElementById('bubble-field'); if(field){ new BubbleEngine(field).start(); }
 
 // ---- Overlays
 async function renderNews(){
   try{
     const data = await fetchJsonFallback(bestApi('/news'));
-    const html = (data.items||[]).map(it=> `<li><a href="${it.url}" target="_blank" rel="noopener">${it.title}</a></li>`).join('');
-    openModal('News', `<ul>${html || '<li>Keine Einträge gefunden.</li>'}</ul>`);
+    const html = (data.items||[]).map(it=>{
+      let domain=''; try{ domain=new URL(it.url).hostname.replace('www.',''); }catch{}
+      return `<li><a href="${it.url}" target="_blank" rel="noopener noreferrer nofollow"><span>${it.title}</span><span class="badge">${domain}</span></a></li>`;
+    }).join('');
+    openModal('News', `<ul class="newslist">${html || '<li>Keine Einträge gefunden.</li>'}</ul>`);
   }catch(err){ openModal('News', `<p>${err.message}</p>`); }
 }
 function renderProjects(){
   openModal('Projekte', `
     <ul>
-      <li><strong>Bubble Engine</strong> – Jellyfish Motion (Bewegung, Lebensdauer, Fade)</li>
+      <li><strong>Bubble Engine</strong> – Jellyfish Motion (Bewegung, Lebensdauer, Fade, Neon‑Palette)</li>
       <li><strong>SSE‑Runner</strong> – Streaming von Text (Claude/OpenAI/OpenRouter)</li>
       <li><strong>Audio‑UX</strong> – dezente Ambient‑Schicht (On‑Demand, DSGVO‑freundlich)</li>
     </ul>`);
 }
-// Büro-Prompts (20)
+
+// Büro-Prompts: benefit only; copy contains full prompt text
 const OFFICE_PROMPTS = [
-  ['E-Mail-Klartext', 'Formuliere diese zu lange E-Mail respektvoll, klar und in 5 Sätzen. Erhalte 3 Varianten (direkt, diplomatisch, motivierend).'],
-  ['Meeting-Agenda 30 Min', 'Erstelle eine straffe Agenda für ein 30‑Minuten‑Meeting mit Ziel, 3 Blöcken, Timebox und Entscheidungsfragen.'],
-  ['Protokoll aus Stichpunkten', 'Wandle diese Stichpunkte in ein prägnantes, nummeriertes Protokoll mit Aufgaben (Wer? Bis wann?).'],
-  ['Status-Update wie Exec', 'Verdichte folgende Infos zu einem 120‑Wörter‑Update im Executive‑Ton, mit 3 KPIs und Ampelstatus.'],
-  ['OKR-Feinschliff', 'Überarbeite diese OKRs: klare Metriken, Outcome‑Fokus, keine Aufgabenformulierungen. Max. 5 Key Results.'],
-  ['PR-Statement', 'Schreibe ein kurzes Pressestatement (max. 120 Wörter), neutral, faktisch, ohne Superlative.'],
-  ['Social Copy x3', 'Erzeuge 3 Social‑Posts (LinkedIn), je 280 Zeichen, mit Hook, Nützlichkeit, 1 Hashtag.'],
-  ['Customer E-Mail – heikel', 'Formuliere eine höfliche, klare Antwort auf diese Beschwerde. Ziel: Deeskalation + nächster Schritt.'],
-  ['Sales-Pitch Kurzfassung', 'Erstelle einen 90‑Sekunden‑Pitch mit Nutzen, 3 Belegen, CTA. Zielgruppe: Entscheider.'],
-  ['SWOT in 8 Punkten', 'Erzeuge eine SWOT zu [Thema] mit jeweils 2 kompakten Aussagen pro Quadrant.'],
-  ['Briefing für Designer', 'Fasse diese Anforderungen in ein Design‑Briefing: Ziel, Ton, Pflicht‑Elemente, Nicht‑Ziele, 3 Beispiele.'],
-  ['Roadmap in Meilensteinen', 'Zerlege folgendes Vorhaben in 5 Meilensteine mit Definition of Done und Risiken.'],
-  ['Stakeholder-Map', 'Identifiziere Stakeholder, ordne Power/Interesse ein und schlage Kommunikationsfrequenzen vor.'],
-  ['Kundeninterview-Leitfaden', 'Erstelle 10 Fragen: Problemverständnis, bisherige Lösungen, Entscheidungswege, Budget.'],
-  ['Onboarding-Plan 30 Tage', 'Erstelle einen Plan für neue Mitarbeiter: Woche 1–4, Lernziele, Shadowing, erste Quick Wins.'],
-  ['Fehleranalyse 5‑Why', 'Wende 5‑Why auf dieses Incident an und formuliere 3 präventive Maßnahmen.'],
-  ['Sprechzettel Vorstand', 'Schreibe einen 2‑minütigen Sprechzettel (stichpunktartig) zu [Thema], klar, faktenbasiert.'],
-  ['Produkt-FAQ', 'Erzeuge eine FAQ‑Liste (10 Fragen) inkl. präziser Antworten in Kundensprache.'],
-  ['Newsletter-Snack', 'Schreibe einen 90‑Wörter‑Newsletter‑Teaser mit Hook, Nutzen und Link‑CTA.'],
-  ['Jira-Tickets', 'Zerlege diese User Story in 5–7 umsetzbare Tickets (Akzeptanzkriterien im Given‑When‑Then‑Format).']
+  { title:'E‑Mail‑Klartext', benefit:'Lange Mails auf 5 Sätze eindampfen – klar, respektvoll, 3 Tonalitäten.', prompt:'Formuliere diese zu lange E‑Mail respektvoll, klar und in 5 Sätzen. Gib 3 Varianten (direkt, diplomatisch, motivierend). Nutze Bulletpoints für To‑dos.' },
+  { title:'Meeting‑Agenda 30 Min', benefit:'Strukturierte Kurzmeetings – Ziel, Blöcke, Timebox, Entscheidung.', prompt:'Erstelle eine straffe Agenda für ein 30‑Minuten‑Meeting mit Ziel, 3 Blöcken à 8 Minuten, Timebox, Verantwortlichen und konkreter Entscheidungsfrage.' },
+  { title:'Protokoll aus Stichpunkten', benefit:'Schnelles, sauberes Protokoll inkl. Aufgaben (Wer? Bis wann?).', prompt:'Wandle diese Stichpunkte in ein prägnantes, nummeriertes Protokoll mit Aufgaben. Nenne pro Aufgabe Verantwortlichen und Frist (TT.MM.).' },
+  { title:'Status‑Update wie Exec', benefit:'Executive‑Summary in 120 Wörtern, mit 3 KPIs und Ampel.', prompt:'Verdichte folgende Infos zu einem 120‑Wörter‑Update im Executive‑Ton. Füge 3 KPIs mit Ziel/Ist + Ampel (grün/gelb/rot) hinzu.' },
+  { title:'OKR‑Feinschliff', benefit:'Saubere OKRs – Outcome‑fokussiert, messbar, ohne Aufgaben.', prompt:'Überarbeite diese OKRs: klare Metriken, Outcome‑Fokus, keine Aufgabenformulierungen. Maximal 5 Key Results, je eine präzise Metrik.' },
+  { title:'PR‑Statement', benefit:'Kurze, faktenbasierte Presse‑Statements ohne Superlative.', prompt:'Schreibe ein Pressestatement (max. 120 Wörter), neutral, faktisch, ohne Superlative. Verwende die wichtigsten 3 Fakten und die nächste Maßnahme.' },
+  { title:'Social Copy ×3', benefit:'Drei LinkedIn‑Posts – Hook, Nützlichkeit, ein Hashtag.', prompt:'Erzeuge 3 LinkedIn‑Posts à 280 Zeichen, jeweils mit Hook, einem praktischen Tipp und genau einem Hashtag.' },
+  { title:'Heikle Kundenmail', benefit:'Deeskalation + nächster Schritt, empathisch und klar.', prompt:'Formuliere eine höfliche, klare Antwort auf diese Beschwerde. Zeige Verständnis, fasse das Problem kurz, biete 2 Lösungsschritte mit Zeitplan an.' },
+  { title:'Sales‑Pitch Kurz', benefit:'90‑Sekunden‑Pitch – Nutzen, 3 Belege, CTA.', prompt:'Erstelle einen 90‑Sekunden‑Pitch mit Kundennutzen, 3 Belegen (Zahl/Beispiel/Zitat) und klarer Handlungsaufforderung.' },
+  { title:'SWOT kompakt', benefit:'Schnelle SWOT mit je 2 Aussagen pro Quadrant.', prompt:'Erzeuge eine SWOT zu [Thema] mit je 2 kompakten Aussagen pro Quadrant, in Alltagssprache.' },
+  { title:'Briefing für Designer', benefit:'Klares Design‑Briefing: Ziel, Ton, Pflicht‑Elemente, No‑Gos.', prompt:'Fasse diese Anforderungen in ein Design‑Briefing: Ziel, Ton/Look, Pflicht‑Elemente, Nicht‑Ziele, 3 Inspirationsbeispiele (mit kurzer Begründung).' },
+  { title:'Roadmap in Meilensteinen', benefit:'Vorhaben in 5 Milestones mit DoD und Risiken.', prompt:'Zerlege folgendes Vorhaben in 5 Meilensteine. Für jeden: Definition of Done, Risiko, Abhängigkeit, grobe Dauer.' },
+  { title:'Stakeholder‑Map', benefit:'Stakeholder + Kommunikationsplan nach Power/Interesse.', prompt:'Erstelle eine Stakeholder‑Map (Power/Interesse). Schlage Frequenzen, Kanäle und Eigentümer für Updates vor.' },
+  { title:'Kundeninterview‑Leitfaden', benefit:'10 Fragen, die wirklich Entscheidungswege & Budget klären.', prompt:'Erstelle 10 Interviewfragen: Problemverständnis, bisherige Lösungen, Auswahlkriterien, Entscheidungswege, Budgetrahmen.' },
+  { title:'Onboarding 30 Tage', benefit:'Strukturiertes Onboarding (Woche 1–4) mit Quick Wins.', prompt:'Erstelle einen Onboarding‑Plan für 30 Tage: Woche 1–4, Lernziele, Shadowing, erste Quick Wins, Check‑ins (Tag 3/10/20/30).' },
+  { title:'5‑Why Analyse', benefit:'Root‑Cause schnell finden + 3 Präventionsmaßnahmen.', prompt:'Wende 5‑Why auf dieses Incident an. Fasse die Root‑Cause und 3 präventive Maßnahmen klar zusammen.' },
+  { title:'Sprechzettel Vorstand', benefit:'2‑Minuten‑Sprechzettel, stichpunktartig & faktenbasiert.', prompt:'Schreibe einen 2‑minütigen Sprechzettel (Stichpunkte) zu [Thema]. Fokussiere auf Fakten, Wirkung, Risiken, klare Bitte/Entscheidung.' },
+  { title:'Produkt‑FAQ', benefit:'10 häufige Fragen + präzise Antworten in Kundensprache.', prompt:'Erzeuge eine FAQ‑Liste (10 Fragen) inkl. präziser, kurzer Antworten in Kundensprache. Kein Marketing‑Jargon.' },
+  { title:'Newsletter‑Snack', benefit:'90‑Wörter‑Teaser mit Hook, Nutzen, Link‑CTA.', prompt:'Schreibe einen 90‑Wörter‑Teaser für den Newsletter: Hook, Nutzen für Leser, klare Link‑CTA.' },
+  { title:'Jira‑Tickets', benefit:'Story in umsetzbare Tickets (GWT‑Akzeptanzkriterien).', prompt:'Zerlege diese User Story in 5–7 Tickets. Formuliere Akzeptanzkriterien im Given‑When‑Then‑Format.' }
 ];
 function renderPrompts(){
-  const items = OFFICE_PROMPTS.map(([title, text])=>`
+  const items = OFFICE_PROMPTS.map(it=>`
     <div class="card">
-      <h4>${title}</h4>
-      <p>${text}</p>
-      <button class="small" data-copy="${text.replace(/"/g,'&quot;')}">Kopieren</button>
+      <h4>${it.title}</h4>
+      <p>${it.benefit}</p>
+      <button class="small" data-copy="${it.prompt.replace(/"/g,'&quot;')}">Kopieren</button>
     </div>`).join('');
   openModal('Prompts (Büroalltag)', `<div class="cards">${items}</div>`);
   $$('#modal [data-copy]').forEach(b=> on(b,'click', ()=>{
     navigator.clipboard.writeText(b.getAttribute('data-copy')||'').then(()=>toast('Kopiert ✓'));
   }));
 }
+
 function renderImprint(){
   openModal('Rechtliches & Transparenz', `
   <article>
@@ -294,13 +281,13 @@ function renderImprint(){
   </article>`);
 }
 
-// Nav wiring (with guards)
+// Nav
 on(document.querySelector('[data-open="news"]'), 'click', renderNews);
 on(document.querySelector('[data-open="prompts"]'), 'click', renderPrompts);
 on(document.querySelector('[data-open="projects"]'), 'click', renderProjects);
 on(document.querySelector('[data-open="imprint"]'), 'click', renderImprint);
 
-// Language toggle placeholder
+// Lang toggle placeholder
 on(document.getElementById('lang-toggle'), 'click', (e)=>{
   const v = e.currentTarget.getAttribute('aria-pressed') === 'true';
   e.currentTarget.setAttribute('aria-pressed', String(!v));

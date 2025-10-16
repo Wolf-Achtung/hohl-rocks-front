@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>hohl.rocks — Bibliothek ungelebter Leben</title>
-  <meta name="description" content="hohl.rocks — KI-Experiments von Wolf Hohl: Bubbles, Prompts, News, Klang.">
+  <meta name="description" content="hohl.rocks — KI-Experimente von Wolf Hohl: Bubbles, Prompts, News, Klang.">
   <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -13,13 +13,13 @@
 <body>
   <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
-  <video id="bg-video" class="bg-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" poster="videos/road_poster.jpg">
+  <video id="bg-video" class="bg-video" autoplay muted loop playsinline preload="metadata" poster="videos/road_poster.jpg">
     <source src="videos/road_720p_bg.webm" type="video/webm">
     <source src="videos/road_720p_bg.mp4" type="video/mp4">
   </video>
 
   <header class="topbar" role="banner" aria-label="Navigation und Einstellungen">
-    <div class="version-badge" aria-label="Version">1.21</div>
+    <div class="version-badge" aria-label="Version">1.22</div>
     <nav class="nav" aria-label="Hauptnavigation">
       <button class="chip" data-open="news">News</button>
       <button class="chip" data-open="prompts">Prompts</button>
@@ -39,6 +39,7 @@
     <div class="modal__panel" role="document">
       <header class="modal__header">
         <h2 id="modal-title">Titel</h2>
+        <button class="modal__close" id="modal-close-x" aria-label="Schließen">×</button>
       </header>
       <div class="modal__body" id="modal-body"></div>
       <footer class="modal__footer">
@@ -51,13 +52,5 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script type="module" src="./app.js"></script>
-  <script>
-  // iOS Autoplay-Fallback: starte Video bei erster User-Interaktion
-  (function(){
-    const v=document.getElementById('bg-video');
-    const kick=()=>{ v && v.play && v.play().catch(()=>{}); window.removeEventListener('pointerdown',kick); };
-    window.addEventListener('pointerdown', kick, { once:true });
-  })();
-  </script>
 </body>
 </html>

@@ -1,21 +1,27 @@
-# Netlify config for hohl.rocks (public publish)
+
 [build]
   publish = "public"
 
-# Proxy to Railway backend
 [[redirects]]
   from = "/_api/*"
   to = "https://hohl-rocks-back-production.up.railway.app/:splat"
   status = 200
   force = true
 
-# SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Long-lived cache
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "default-src 'self' https: data: blob:; img-src 'self' data: blob: https:; media-src 'self' https: blob: data:; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://hohl-rocks-back-production.up.railway.app https:; frame-ancestors 'none'"
+
 [[headers]]
   for = "/videos/*"
   [headers.values]

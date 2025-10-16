@@ -2,18 +2,13 @@
   publish = "public"
 
 [[redirects]]
-  from = "/_api/*"
-  to = "https://hohl-rocks-back-production.up.railway.app/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "/api/*"
-  to = "https://hohl-rocks-back-production.up.railway.app/:splat"
+  to = "https://hohl-rocks-back-production.up.railway.app/api/:splat"
   status = 200
   force = true
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/_api/*"
+  to = "https://hohl-rocks-back-production.up.railway.app/_api/:splat"
   status = 200
+  force = true

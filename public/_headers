@@ -2,9 +2,6 @@
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-
-# Keep CSP moderate to avoid blocking dynamic JS/CSS; videos allowed from self
-/* 
-  Content-Security-Policy: default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: data:; script-src 'self'; style-src 'self'; font-src 'self' data:; connect-src 'self' https://hohl-rocks-back-production.up.railway.app
+  Content-Security-Policy: default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://hohl-rocks-back-production.up.railway.app

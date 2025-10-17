@@ -1,96 +1,129 @@
-// Jellyfish bubble engine with rotation queue, neon monochrome
+/**
+ * Neon bubble engine with "jellyfish" motion.
+ * - Monochrome neon fill, soft aura glow
+ * - Different sizes (s,m,l) based on label length
+ * - Queue rotation: as one fades out, a new one fades in (cycle)
+ * - no external deps
+ */
 (function(){
-  const stage = document.getElementById("bubbleStage");
-  const W = () => window.innerWidth;
-  const H = () => window.innerHeight;
+  const canvas = document.getElementById('bubble-canvas');
+  const ctx = canvas.getContext('2d');
+  let W=0, H=0, DPR = Math.max(1, window.devicePixelRatio || 1);
 
-  const COLORS = [
-    "#ff00d4","#00f0ff","#ffd800","#5bff9f","#8c7bff","#ff7aa2","#7dffea","#ffad66"
+  const palette = [
+    '#ff6ec7', '#9bf6ff', '#ffd166', '#caffbf', '#bdb2ff', '#fcb0f3', '#80ffdb', '#ffd6a5', '#72efdd', '#a0c4ff'
   ];
 
-  const DATA = [
-    { id:"zeitreise-tagebuch", title:"Zeitreise‑Tagebuch" },
-    { id:"weltbau", title:"Weltbau" },
-    { id:"poesie-html", title:"Bunte Poesie" },
-    { id:"bild-generator", title:"Bild‑Generator" },
-    { id:"briefing-assistant", title:"Briefing‑Assistent" },
-    { id:"root-cause-5why", title:"5‑Why‑Analyse" },
-    { id:"perspective-simulator", title:"Perspektiven‑Simulator" },
-    { id:"emotion-visualizer", title:"Emotion‑Visualizer" },
-    { id:"idea-surrealismus-generator", title:"Surrealismus‑Generator" },
-    { id:"idea-realitaets-debugger", title:"Realitäts‑Debugger" },
-    { id:"idea-bibliothek-ungelebter-leben", title:"Bibliothek ungelebter Leben" },
-    { id:"idea-vintage-futurist", title:"Vintage‑Futurist" },
-    { id:"idea-ki-traeume", title:"KI‑Träume" }
+  const ITEMS = [
+    { id:'zeitreise', label:'Zeitreise-Tagebuch' },
+    { id:'bibliothek', label:'Bibliothek ungelebter Leben' },
+    { id:'surreal', label:'Surrealismus-Generator' },
+    { id:'debug', label:'Realitäts-Debugger' },
+    { id:'futurist', label:'Vintage-Futurist' },
+    { id:'brief', label:'Briefing-Assistent' },
+    { id:'bunt', label:'Bunte Poesie' },
+    { id:'bild', label:'Bild-Generator' },
+    { id:'xeno', label:'Xenobiologe' },
+    { id:'why', label:'5-Why-Analyse' },
   ];
 
+  const active = [];
   let queueIndex = 0;
-  function nextData(){
-    const d = DATA[queueIndex];
-    queueIndex = (queueIndex + 1) % DATA.length;
-    return d;
+  const MAX_BUBBLES = 7;
+
+  function resize(){
+    W = canvas.clientWidth = window.innerWidth;
+    H = canvas.clientHeight = window.innerHeight;
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function sizeForLabel(len){
+    if(len < 12) return 90 + Math.random()*20;
+    if(len < 20) return 120 + Math.random()*30;
+    return 150 + Math.random()*40;
   }
 
-  function makeBubble(){
-    const d = nextData();
-    const el = document.createElement("div");
-    el.className = "bubble";
-    const color = COLORS[Math.floor(Math.random()*COLORS.length)];
-    const size = Math.min(240, Math.max(120, d.title.length*7 + 80)); // dynamisch
-    el.style.width = el.style.height = size + "px";
-    el.style.left = Math.round(Math.random()*(W()-size))+"px";
-    el.style.top = Math.round(Math.random()*(H()-size))+"px";
-    el.style.background = `radial-gradient(circle at 30% 30%, ${hexA(color, .85)}, ${hexA(color,.45)} 60%, ${hexA(color,.25)} 70%, ${hexA(color, .1)} 100%)`;
-    el.style.boxShadow = `0 0 ${Math.round(size*.6)}px ${hexA(color,.35)}, inset 0 0 ${Math.round(size*.25)}px ${hexA("#ffffff",.25)}`;
-    el.innerHTML = `<div class="bubble__title">${d.title}</div><div class="bubble__start">Start</div>`;
-    stage.appendChild(el);
-
-    let vx = (Math.random() * 0.25 + 0.05) * (Math.random()<.5? -1:1);
-    let vy = (Math.random() * 0.25 + 0.05) * (Math.random()<.5? -1:1);
-    let x = el.offsetLeft, y = el.offsetTop;
-    const born = performance.now();
-    const TTL = 22000 + Math.random()*8000;
-
-    function tick(t){
-      const dt = 16; // approx
-      x += vx * dt; y += vy * dt;
-      if(x<0){ x=0; vx*=-1 } else if(x>W()-size){ x=W()-size; vx*=-1 }
-      if(y<80){ y=80; vy*=-1 } else if(y>H()-size){ y=H()-size; vy*=-1 }
-      el.style.transform = `translate(${Math.round(x-el.offsetLeft)}px,${Math.round(y-el.offsetTop)}px)`;
-      if(t-born>TTL){ fadeOut(); return; }
-      el._raf = requestAnimationFrame(tick);
-    }
-
-    function fadeOut(){
-      cancelAnimationFrame(el._raf);
-      el.style.transition = "opacity .8s ease, transform .8s ease";
-      el.style.opacity = "0";
-      el.style.transform += " scale(.92)";
-      setTimeout(()=> { el.remove(); makeBubble(); }, 820);
-    }
-
-    el.addEventListener("click", ()=> window.runBubble(d.id, d.title));
-    el._raf = requestAnimationFrame(tick);
-    return el;
+  function spawnOne(item){
+    const color = palette[Math.floor(Math.random()*palette.length)];
+    const r = sizeForLabel(item.label);
+    const x = Math.random() * (W - 2*r) + r;
+    const y = Math.random() * (H - 2*r) + r;
+    const vx = (Math.random()-0.5) * 0.25;
+    const vy = (Math.random()-0.5) * 0.25;
+    const bubble = { ...item, x,y,r, vx,vy, color, alpha:0, life: 0, ready:false };
+    active.push(bubble);
   }
 
-  function hexA(hex, a){
-    const c = hex.replace("#","");
-    const bigint = parseInt(c,16);
-    const r=(bigint>>16)&255,g=(bigint>>8)&255,b=bigint&255;
+  function ensurePopulation(){
+    while(active.length < MAX_BUBBLES){
+      spawnOne(ITEMS[queueIndex % ITEMS.length]);
+      queueIndex++;
+    }
+  }
+
+  function step(dt){
+    ctx.clearRect(0,0,W,H);
+    ensurePopulation();
+    for(const b of active){
+      // Motion
+      b.x += b.vx;
+      b.y += b.vy;
+      // edge bounce
+      if(b.x < b.r || b.x > W-b.r) b.vx *= -1;
+      if(b.y < b.r || b.y > H-b.r) b.vy *= -1;
+      // alpha
+      b.life += dt;
+      b.alpha = Math.min(1, b.alpha + 0.01);
+      // draw aura
+      const g = ctx.createRadialGradient(b.x, b.y, b.r*0.3, b.x, b.y, b.r*1.25);
+      g.addColorStop(0, hexWithAlpha(b.color, 0.25*b.alpha));
+      g.addColorStop(1, hexWithAlpha(b.color, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r*1.25, 0, Math.PI*2); ctx.fill();
+      // draw body
+      ctx.fillStyle = hexWithAlpha(b.color, 0.85*b.alpha);
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+      // text
+      ctx.fillStyle = '#0b0f14aa';
+      ctx.font = '600 13px system-ui';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(b.label, b.x, b.y-6);
+      ctx.fillStyle = '#0b0f14bb';
+      ctx.font = '10px system-ui';
+      ctx.fillText('Start', b.x, b.y+10);
+    }
+  }
+
+  let last=performance.now();
+  function loop(ts){
+    const dt = Math.min(33, ts-last); last=ts;
+    step(dt);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // Pointer picking
+  canvas.addEventListener('click', (ev)=>{
+    const rect = canvas.getBoundingClientRect();
+    const px = ev.clientX - rect.left, py = ev.clientY - rect.top;
+    // find topmost bubble hit
+    for(let i=active.length-1;i>=0;i--){
+      const b = active[i];
+      const dx = px-b.x, dy=py-b.y;
+      if(dx*dx+dy*dy <= b.r*b.r){
+        window.dispatchEvent(new CustomEvent('bubble:open', { detail:{ id:b.id, label:b.label } }));
+        break;
+      }
+    }
+  });
+
+  function hexWithAlpha(hex, a){
+    // hex like #RRGGBB
+    const [r,g,b] = [hex.slice(1,3), hex.slice(3,5), hex.slice(5,7)].map(h=>parseInt(h,16));
     return `rgba(${r},${g},${b},${a})`;
   }
-
-  // Spawn initial set
-  for(let i=0;i<7;i++) makeBubble();
-
-  // Resize: keep within stage
-  window.addEventListener("resize", ()=>{
-    document.querySelectorAll(".bubble").forEach(el=>{
-      const size = el.offsetWidth;
-      const left = Math.min(parseFloat(el.style.left||"0"), W()-size);
-      const top = Math.min(parseFloat(el.style.top||"0"), H()-size);
-      el.style.left = left+"px"; el.style.top = top+"px";
-    });
-  });
 })();

@@ -1,52 +1,54 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>hohl.rocks — Bibliothek ungelebter Leben</title>
-  <link rel="stylesheet" href="/styles.css">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>hohl.rocks – Bibliothek ungelebter Leben</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css"/>
 </head>
 <body>
-  <header class="topbar" aria-label="Navigation">
+  <header class="topnav" role="navigation">
     <div class="brand">hohl.rocks</div>
-    <nav class="nav">
-      <button id="btnTicker" class="pill" aria-live="polite">Heute neu – lädt …</button>
-      <button id="btnNews" class="pill">News</button>
-      <button id="btnPrompts" class="pill">Prompts</button>
-      <button id="btnProjekte" class="pill">Projekte</button>
-      <button id="btnImpressum" class="pill">Impressum</button>
-      <button id="btnLang" class="pill">DE/EN</button>
-      <button id="btnKlang" class="pill" aria-pressed="false" aria-label="Klang an/aus">Klang</button>
+    <nav class="nav-buttons">
+      <button data-action="daily" class="chip"><span id="dailyLabel">Heute neu – lädt…</span></button>
+      <button data-action="news" class="chip">News</button>
+      <button data-action="prompts" class="chip">Prompts</button>
+      <button data-action="projects" class="chip">Projekte</button>
+      <button data-action="imprint" class="chip">Impressum</button>
+      <button data-action="lang" class="chip">DE/EN</button>
+      <button data-action="sound" class="chip" id="soundBtn">Klang</button>
     </nav>
   </header>
 
-  <main>
-    <div id="heroTitle">hohl.rocks</div>
-    <div id="bubble-root" aria-live="polite"></div>
+  <main id="app">
+    <video id="bgVideo" class="bg-video" autoplay muted playsinline loop poster="./videos/road_poster.jpg">
+      <source src="./videos/road_720p_bg.webm" type="video/webm"/>
+      <source src="./videos/road_720p_bg.mp4" type="video/mp4"/>
+    </video>
+
+    <h1 class="hero-title">hohl.rocks</h1>
+    <div id="bubbleLayer" aria-live="off"></div>
   </main>
 
-  <div class="modal-backdrop" id="modalBackdrop" hidden>
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <header class="modal-header">
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal__panel" tabindex="-1">
+      <div class="modal__header">
         <h2 id="modalTitle">Titel</h2>
-        <button id="modalClose" class="icon-btn" aria-label="Schließen">×</button>
-      </header>
-      <div class="modal-body" id="modalBody"></div>
-      <footer class="modal-footer">
-        <button id="btnCopy" class="pill">Kopieren</button>
-        <button id="btnClose" class="pill">Schließen</button>
-      </footer>
-    </section>
+        <button class="x" data-action="close" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal__body" id="modalBody"></div>
+      <div class="modal__footer">
+        <button id="copyBtn" class="btn">Kopieren</button>
+        <button id="closeBtn" class="btn btn--ghost">Schließen</button>
+      </div>
+    </div>
   </div>
 
-  <div id="toast" role="status" aria-live="polite" hidden>✓ Kopiert</div>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <video id="bgvid" class="bgvid" poster="/videos/road_poster.jpg" autoplay muted playsinline loop preload="auto">
-    <source src="/videos/road_720p_bg.webm" type="video/webm" />
-    <source src="/videos/road_720p_bg.mp4" type="video/mp4" />
-  </video>
-
-  <script src="/bubbles.js"></script>
-  <script src="/app.js"></script>
+  <script src="./app.js" type="module"></script>
 </body>
 </html>

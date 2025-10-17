@@ -1,228 +1,328 @@
-/* === HOHL.ROCKS Front – robustes Modal & API-Guard ===
-   - Verhindert „Unexpected token '<'“ bei HTML-Antworten
-   - Modals zuverlässig schließbar (auch bei API-Fail)
-   - Ambient-Sound mit Toggle
-*/
-const API_BASE = '/api';
+// Simple helpers
+const qs = (s, el=document)=> el.querySelector(s);
+const qsa = (s, el=document)=> [...el.querySelectorAll(s)];
+const byId = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const qs = (s) => document.querySelector(s);
-const modalBackdrop = qs('#modalBackdrop');
-const modalTitle     = qs('#modalTitle');
-const modalBody      = qs('#modalBody');
-const toastEl        = qs('#toast');
-
-const btnTicker    = qs('#btnTicker');
-const btnNews      = qs('#btnNews');
-const btnPrompts   = qs('#btnPrompts');
-const btnImpressum = qs('#btnImpressum');
-const btnKlang     = qs('#btnKlang');
-
-let lastCopy = '';
-
-/* ---------- Ambient-Audio (dezent) ---------- */
-const AudioMod = {
-  ctx:null, enabled:false,
-  async start(){
-    try{
-      if(!this.ctx){
-        this.ctx = new (window.AudioContext||window.webkitAudioContext)();
-        const master = this.ctx.createGain(); master.gain.value = 0.05;
-
-        const filt = this.ctx.createBiquadFilter(); // sanfter Lowpass
-        filt.type='lowpass'; filt.frequency.value=1200;
-
-        const lfo = this.ctx.createOscillator();
-        const lfoG = this.ctx.createGain();
-        lfo.frequency.value = 0.06; lfoG.gain.value = 400;
-        lfo.connect(lfoG).connect(filt.frequency);
-
-        const o1 = this.ctx.createOscillator(); o1.type='sine'; o1.frequency.value=110;
-        const o2 = this.ctx.createOscillator(); o2.type='sine'; o2.frequency.value=147;
-        o1.connect(filt); o2.connect(filt); filt.connect(master).connect(this.ctx.destination);
-        o1.start(); o2.start(); lfo.start();
-      }
-      if(this.ctx.state==='suspended') await this.ctx.resume();
-      this.enabled = true;
-      btnKlang?.setAttribute('aria-pressed','true');
-    }catch{ /* ignore */ }
-  },
-  async stop(){
-    if(!this.ctx) return;
-    await this.ctx.suspend();
-    this.enabled = false;
-    btnKlang?.setAttribute('aria-pressed','false');
-  },
-  toggle(){ this.enabled ? this.stop() : this.start(); }
+// ----- Telemetry (local only) -----
+const logEvent = (type, detail={}) => {
+  const key = 'hrx_events';
+  const arr = JSON.parse(localStorage.getItem(key) || '[]');
+  arr.push({ t: Date.now(), type, ...detail });
+  if (arr.length > 500) arr.shift();
+  localStorage.setItem(key, JSON.stringify(arr));
 };
-btnKlang?.addEventListener('click', ()=>AudioMod.toggle());
-window.addEventListener('pointerdown', ()=>{ if(!AudioMod.enabled) AudioMod.start(); }, { once:true });
 
-/* ---------- Modal Helpers ---------- */
-function openModal(title, html, copyText){
-  modalTitle && (modalTitle.textContent = title || 'Info');
-  if(modalBody) modalBody.innerHTML = html || '';
-  lastCopy = copyText || stripHtml(html || '');
-  if(modalBackdrop) modalBackdrop.hidden = false;
+// ----- Audio Engine (starts on first user gesture) -----
+let audioCtx = null, masterGain=null, filter=null;
+let audioEnabled = false;
+function initAudio(){
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.value = 0.12;
+  filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 1200;
+  const o1 = audioCtx.createOscillator(); o1.type='sine'; o1.frequency.value = 80;
+  const o2 = audioCtx.createOscillator(); o2.type='triangle'; o2.frequency.value = 160;
+  const o3 = audioCtx.createOscillator(); o3.type='sine'; o3.frequency.value = 320;
+  o1.connect(filter); o2.connect(filter); o3.connect(filter);
+  filter.connect(masterGain); masterGain.connect(audioCtx.destination);
+  o1.start(); o2.start(); o3.start();
+  audioEnabled = true;
+}
+function updateAudioByPointer(xNorm=0.5, yNorm=0.5){
+  if (!audioEnabled) return;
+  const freq = 800 + yNorm * 2400; // tiefe->hoch mit scroll/pos
+  filter.frequency.setTargetAtTime(freq, audioCtx.currentTime, .2);
+  const pan = (xNorm - .5) * .6; // not using PannerNode for simplicity; emulate via gain
+  masterGain.gain.setTargetAtTime(0.08 + (1 - yNorm)*0.08, audioCtx.currentTime, .2);
+}
+
+// ----- Modal with focus trap -----
+const modal = byId('modal');
+const modalBody = byId('modalBody');
+const modalTitle = byId('modalTitle');
+const btnCopy = byId('copyBtn');
+const btnClose = byId('closeBtn');
+let lastFocus=null;
+let copiedPayload='';
+
+function openModal({title='Info', html='', copy=''}){
+  copiedPayload = copy || '';
+  modalTitle.textContent = title || 'Info';
+  modalBody.innerHTML = html || '<p></p>';
+  modal.classList.remove('hidden');
+  lastFocus = document.activeElement;
+  const fEl = qs('.modal__panel', modal);
+  fEl && fEl.focus();
+  document.addEventListener('keydown', escClose);
 }
 function closeModal(){
-  if(modalBackdrop) modalBackdrop.hidden = true;
+  modal.classList.add('hidden');
+  document.removeEventListener('keydown', escClose);
+  lastFocus && lastFocus.focus();
 }
-qs('#btnClose')?.addEventListener('click', closeModal);
-qs('#modalClose')?.addEventListener('click', closeModal);
-document.addEventListener('keydown', (e)=>{
-  if(!modalBackdrop?.hidden && e.key === 'Escape') closeModal();
+function escClose(e){ if (e.key === 'Escape') closeModal(); }
+modal.addEventListener('click', (e)=>{
+  if (e.target === modal) closeModal();
 });
-qs('#btnCopy')?.addEventListener('click', async ()=>{
-  try{ await navigator.clipboard.writeText(lastCopy||''); showToast('Kopiert ✓'); }
-  catch{ showToast('Kopieren nicht möglich'); }
-});
-
-/* ---------- UI Utils ---------- */
-function showToast(msg){
-  if(!toastEl) return;
-  toastEl.textContent = msg;
-  toastEl.hidden = false;
-  setTimeout(()=> toastEl.hidden = true, 1200);
-}
-function stripHtml(s){ const d=document.createElement('div'); d.innerHTML=s; return d.textContent||''; }
-function escapeHTML(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-
-/* ---------- API Guard: parse JSON nur bei content-type ---------- */
-async function apiJSON(path){
+btnClose.addEventListener('click', closeModal);
+qs('.x', modal).addEventListener('click', closeModal);
+btnCopy.addEventListener('click', async ()=>{
   try{
-    const r = await fetch(API_BASE+path, { headers:{ 'x-proxy':'netlify' } });
-    if(!r.ok) throw 0;
-    const ct = (r.headers.get('content-type')||'').toLowerCase();
-    if(!ct.includes('application/json')) return null; // HTML? -> kein JSON
-    return await r.json();
-  }catch{
-    return null;
-  }
-}
-
-/* ---------- News ---------- */
-btnNews?.addEventListener('click', async ()=>{
-  openModal('News','<p>Lade…</p>');
-  const j = await apiJSON('/news');
-  if(!j || !j.items){
-    openModal('News','<p>News-Service nicht erreichbar.</p>');
-    return;
-  }
-  const lis = j.items.map(i=>`<li><a href="${i.url}" target="_blank" rel="noopener">${escapeHTML(i.title)}</a></li>`).join('');
-  openModal('News', `<ul class="news-list">${lis}</ul>`, j.items.map(i=>i.url).join('\n'));
+    await navigator.clipboard.writeText(copiedPayload || '');
+    showToast('Kopiert ✓');
+    logEvent('copy', { len: (copiedPayload||'').length });
+  }catch{ showToast('Kopieren fehlgeschlagen'); }
 });
+function showToast(t){ const el = byId('toast'); el.textContent = t; el.classList.add('show'); setTimeout(()=> el.classList.remove('show'), 1200); }
 
-/* ---------- Ticker (Heute neu) ---------- */
-async function initTicker(){
-  if(!btnTicker) return;
-  const j = await apiJSON('/daily');
-  if(!j || !j.items || !j.items.length){
-    btnTicker.textContent = 'Heute neu – offline';
-    return;
+// ----- Bubbles (jellyfish drift) -----
+const bubbleLayer = byId('bubbleLayer');
+const COLORS = [
+  ['#ff9ef2','#72ffd8'], ['#7ad7ff','#ffd66b'], ['#9effa8','#7abfff'],
+  ['#ffb3a7','#b395ff'], ['#ffd06e','#84ffd1'], ['#ff82c9','#7eeeff']
+];
+
+const ITEMS = [
+  { id:'zeitreise_tagebuch', title:'Zeitreise‑Tagebuch', short:'Schreibe einen Eintrag aus einer anderen Epoche.', kind:'prompt' },
+  { id:'briefing_assistant', title:'Briefing‑Assistent', short:'Erzeugt ein kompaktes Creative‑Briefing.', kind:'prompt' },
+  { id:'surrealismus_generator', title:'Surrealismus‑Generator', short:'Alltagsobjekte → surreale Kunst.', kind:'prompt' },
+  { id:'image_gen', title:'Bild‑Generator', short:'Erzeuge ein Bild aus Text.', kind:'module' },
+  { id:'advisor', title:'LLM‑Berater', short:'Welcher Dienst passt zu mir?', kind:'module' }
+];
+
+function makeBubble(item, idx){
+  const el = document.createElement('div');
+  el.className = 'bubble';
+  const [c1,c2] = COLORS[idx % COLORS.length];
+  el.style.setProperty('--c1', c1);
+  el.style.setProperty('--c2', c2);
+  el.style.setProperty('--glow', `${c1}55`);
+  const size = 120 + (idx%5)*40 + Math.random()*30;
+  el.style.width = `${size}px`; el.style.height = `${size}px`;
+  el.style.left = `${10 + Math.random()*80}%`;
+  el.style.top = `${8 + Math.random()*40}%`;
+  el.innerHTML = `<h3>${item.title}</h3><small>${item.short||''}</small><div class="cta">Start</div>`;
+  el.tabIndex = 0;
+  el.addEventListener('click', ()=> handleBubble(item));
+  el.addEventListener('keydown', (e)=>{ if (e.key==='Enter') handleBubble(item); });
+  bubbleLayer.appendChild(el);
+  // drift animation
+  const driftX = (Math.random()*.6+ .2) * (Math.random()>.5?1:-1);
+  const driftY = (Math.random()*.4+ .2) * (Math.random()>.5?1:-1);
+  let t=0;
+  function tick(){
+    t+=0.0025;
+    const dx = Math.sin(t*1.2) * driftX;
+    const dy = Math.cos(t*0.9) * driftY;
+    el.style.transform = `translate(${dx}rem, ${dy}rem)`;
+    requestAnimationFrame(tick);
   }
-  let i = 0;
-  const tick = ()=>{
-    btnTicker.textContent = 'Heute neu – ' + j.items[i % j.items.length].title;
-    i++;
-  };
   tick();
-  setInterval(tick, 6000);
 }
-initTicker();
 
-/* ---------- Prompts (Büroalltag) ---------- */
-btnPrompts?.addEventListener('click', ()=>{
-  const cards = officePrompts().map(p=>`
-    <div class="prompt-card">
-      <div class="prompt-title">${escapeHTML(p.title)}</div>
-      <div class="prompt-desc">${escapeHTML(p.desc)}</div>
-      <div class="prompt-actions">
-        <button class="copy-btn" data-id="${p.id}">Kopieren</button>
-      </div>
-    </div>`).join('');
+function renderBubbles(){
+  bubbleLayer.innerHTML='';
+  ITEMS.forEach((it, i)=> makeBubble(it, i));
+}
 
-  openModal('Prompts (Büroalltag)', `<div class="prompts-grid">${cards}</div>`, '');
+// ----- Nav actions -----
+document.addEventListener('click', (e)=>{
+  const b = e.target.closest('button.chip');
+  if (!b) return;
+  const a = b.dataset.action;
+  if (a === 'news') openNews();
+  if (a === 'prompts') openPrompts();
+  if (a === 'imprint') openImprint();
+  if (a === 'sound') toggleSound();
+  if (a === 'daily') {/* noop - label rotates automatically */}
+});
 
-  // Delegation für Copy-Buttons
-  modalBody?.addEventListener('click', (e)=>{
-    const b = e.target.closest('.copy-btn');
-    if(!b) return;
-    const p = officePrompts().find(x=>x.id===b.dataset.id);
-    if(p){
-      navigator.clipboard.writeText(p.prompt).then(()=>showToast('Kopiert ✓'));
+function toggleSound(){
+  if (!audioCtx){
+    initAudio();
+    byId('soundBtn').textContent = 'Klang • an';
+    showToast('Klang an');
+  } else {
+    if (audioCtx.state === 'running'){
+      audioCtx.suspend(); showToast('Klang aus'); byId('soundBtn').textContent='Klang';
+    }else{
+      audioCtx.resume(); showToast('Klang an'); byId('soundBtn').textContent='Klang • an';
     }
-  }, { once:true });
-});
-
-btnImpressum?.addEventListener('click', ()=>{
-  openModal(
-    'Impressum',
-    '<p><strong>Verantwortlich:</strong> Wolf Hohl · Greifswalder Str. 224a · 10405 Berlin</p>' +
-    '<p>Diese Website dient ausschließlich der Information. Keine Haftung für externe Links. '+
-    'Alle Inhalte unterliegen dem deutschen Urheberrecht; Bilder teils KI-generiert. '+
-    'Keine Tracking-Cookies; Kontaktanfragen werden zur Bearbeitung gespeichert (bis zu 6 Monate).</p>'+
-    '<p><strong>EU AI Act / DSGVO:</strong> Hinweise ohne Rechtsberatung.</p>'
-  );
-});
-
-/* ---------- Prompt-Vorlagen ---------- */
-function officePrompts(){
-  return [
-    {id:'mail-klartext', title:'E‑Mail Klartext', desc:'Lange Mail → 5 klare Sätze, 3 Stile.',
-     prompt:'Formuliere die folgende Mail jeweils in 5 Sätzen, in drei Varianten: diplomatisch, direkt, motivierend. Text:\\n<<<TEXT>>>\\n'},
-    {id:'agenda-30', title:'Meeting‑Agenda 30 min', desc:'3 Blöcke, Timebox, Entscheidung.',
-     prompt:'Erstelle eine Agenda für ein 30-Minuten-Meeting mit 3 Blöcken, Timebox, Ziel und Entscheidungsfrage.'},
-    {id:'protokoll-stichpunkte', title:'Protokoll aus Stichpunkten', desc:'Stichpunkte → Aufgabenprotokoll.',
-     prompt:'Wandle Stichpunkte in ein kompaktes Protokoll mit Aufgabenliste (Wer? Bis wann?).'},
-    {id:'status-exec', title:'Status Update wie Exec', desc:'120 Wörter, 3 KPIs + Ampel.',
-     prompt:'Verdichte die Infos in 120 Wörtern im Executive-Ton, mit 3 KPIs und Ampelstatus.'},
-    {id:'okr-feinschliff', title:'OKR‑Feinschliff', desc:'Metriken schärfen, Outcome‑Fokus.',
-     prompt:'Überarbeite die OKRs: klare Metriken, Outcome-Fokus, max. 5 Key Results.'},
-    {id:'pr-statement', title:'PR‑Statement', desc:'Kurz, neutral, ohne Superlative.',
-     prompt:'Schreibe ein kurzes neutrales Pressestatement (max. 120 Wörter).'},
-    {id:'social-copy', title:'Social Copy ×3', desc:'3 LinkedIn‑Posts je 280 Zeichen.',
-     prompt:'Erzeuge 3 LinkedIn-Posts à 280 Zeichen (Hook, Nutzen, 1 Hashtag).'},
-    {id:'kundenmail', title:'Kundenmail heikel', desc:'Höflich deeskalieren + Next Step.',
-     prompt:'Formuliere eine höfliche, klare Antwort auf diese Beschwerde. Ziel: Deeskalation + nächster Schritt.'},
-    {id:'sales-pitch', title:'Sales‑Pitch 90s', desc:'Nutzen + 2 Belege + CTA.',
-     prompt:'Erstelle einen 90-Sekunden-Pitch mit Nutzen, zwei Belegen und CTA.'},
-    {id:'swot', title:'SWOT in 8 Punkten', desc:'Je 2 Punkte pro Quadrant.',
-     prompt:'SWOT zu [THEMA] – je Quadrant zwei prägnante Punkte.'},
-  ];
+  }
 }
 
-/* ---------- Run (SSE/Stream) für Bubble-Klick ---------- */
-window.app = {
-  openRunModal(item){
-    openModal(item.title || 'Modul', '<p class="small">Starte …</p>');
-    fetchRun(item.id);
-  }
-};
+// ----- API helpers -----
+const API_BASE = '/api'; // netlify proxy to railway
 
-async function fetchRun(id){
-  let res = null;
+async function apiGet(path){
+  const r = await fetch(API_BASE + path);
+  if (!r.ok) throw new Error('http_'+r.status);
+  return r.json();
+}
+
+async function apiStreamRun({prompt, system, provider, model}){
+  const ctrl = new AbortController();
+  const r = await fetch(API_BASE + '/run', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify({ prompt, system, provider, model }),
+    signal: ctrl.signal
+  });
+  if (!r.ok) throw new Error('http_'+r.status);
+  const reader = r.body.getReader();
+  const decoder = new TextDecoder();
+  return {
+    async *chunks(){
+      while(true){
+        const {done, value} = await reader.read();
+        if (done) break;
+        const text = decoder.decode(value);
+        for (const block of text.split('\n\n')){
+          const line = block.trim();
+          if (!line) continue;
+          const evLine = line.split('\n').find(l=> l.startsWith('data:'));
+          if (!evLine) continue;
+          const payload = evLine.slice(5).trim();
+          yield payload;
+        }
+      }
+    },
+    cancel(){ ctrl.abort(); }
+  }
+}
+
+// ----- Features -----
+async function openNews(){
   try{
-    res = await fetch(API_BASE+'/run', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ id })
-    });
+    const j = await apiGet('/news');
+    const list = (j.items||[]).map(x => `<li><a href="${x.url}" target="_blank" rel="noopener">${x.title}</a></li>`).join('');
+    openModal({ title:'News', html:`<ul>${list}</ul>` });
   }catch{
-    res = null;
-  }
-  if(!res || !res.ok){
-    openModal('Fehler','<p>Service nicht erreichbar.</p>');
-    return;
-  }
-  const reader = res.body.getReader();
-  const dec = new TextDecoder();
-  let acc = '';
-  if(modalBody) modalBody.textContent = '';
-  while(true){
-    const { value, done } = await reader.read();
-    if(done) break;
-    acc += dec.decode(value, { stream:true });
-    if(modalBody) modalBody.textContent = acc;
-    lastCopy = acc;
+    openModal({ title:'News', html:'<p>News‑Service nicht erreichbar.</p>' });
   }
 }
+
+async function openPrompts(){
+  try{
+    const j = await apiGet('/prompts');
+    const items = j.items || [];
+    const cards = items.map(p => `
+      <div class="card">
+        <div class="card__title">${p.title}</div>
+        <div class="card__desc">${p.short||''}</div>
+        <button class="btn btn--ghost" data-copy="${encodeURIComponent(p.copy)}">Kopieren</button>
+      </div>
+    `).join('');
+    openModal({ title:'Prompts (Büroalltag)', html:`<div class="grid">${cards}</div>` });
+    // delegate copy
+    byId('modalBody').addEventListener('click', (e)=>{
+      const b = e.target.closest('button[data-copy]');
+      if (!b) return;
+      copiedPayload = decodeURIComponent(b.dataset.copy);
+      btnCopy.click(); // reuse copy + toast
+    }, { once:true });
+  }catch{
+    openModal({ title:'Prompts', html:'<p>Service nicht erreichbar.</p>' });
+  }
+}
+
+function openImprint(){
+  openModal({ title:'Impressum', html:`
+    <p><strong>Wolf Hohl</strong><br/>Greifswalder Str. 224a<br/>10405 Berlin</p>
+    <p>E‑Mail: bitte über Kontakt</p>
+    <p>Diese Website informiert über Pflichten, Risiken und Fördermöglichkeiten beim Einsatz von KI nach EU AI Act und DSGVO. Sie ersetzt keine Rechtsberatung.</p>
+    <p>Keine Cookies, keine Tracker. Telemetrie nur lokal (anonym).</p>
+  `});
+}
+
+async function handleBubble(item){
+  logEvent('bubble', { id: item.id });
+  if (item.kind === 'prompt'){
+    // fetch prompt text from server
+    try{
+      const j = await apiGet('/prompts');
+      const found = (j.items||[]).find(x => x.id === item.id);
+      if (!found) return openModal({title:item.title, html:'<p>Nicht gefunden.</p>'});
+      openModal({ title:item.title, html:`<p>${found.short||''}</p>`, copy: found.copy });
+    }catch{
+      openModal({ title:item.title, html:'<p>Service nicht erreichbar.</p>' });
+    }
+  } else if (item.id === 'advisor'){
+    openModal({ title:'LLM‑Berater', html:`
+      <p>Kurze Orientierungshilfe:</p>
+      <ul>
+        <li><strong>Claude (Anthropic)</strong>: sehr gut in Deutsch, reflektiert, sicherheitsbewusst, langes Kontextfenster.</li>
+        <li><strong>GPT (OpenAI)</strong>: sehr kreativ, viel Tool‑Ökosystem, solide Bild‑/Codefähigkeiten.</li>
+        <li><strong>OpenRouter</strong>: Meta‑Plattform – Zugriff auf viele Modelle (inkl. Claude/GPT); flexibel, Anbieterwahl.</li>
+      </ul>
+      <p>Tipp: Für sensible Daten EU‑Hosting bevorzugen; bei Kreativ‑Tasks Modelle vergleichen.</p>
+    `});
+  } else if (item.id === 'image_gen'){
+    openModal({ title:'Bild‑Generator', html:`
+      <p>Gib eine Bildbeschreibung ein (z.B. „Futuristische Straße im Nebel, cinematisch“):</p>
+      <textarea id="imgPrompt" rows="3" style="width:100%;"></textarea>
+      <div style="margin-top:10px"><button id="goImg" class="btn">Generieren</button></div>
+      <div id="imgOut" style="margin-top:12px"></div>
+    `});
+    byId('goImg').addEventListener('click', async ()=>{
+      const txt = byId('imgPrompt').value.trim();
+      if (!txt) return;
+      // Placeholder: For now, demo with LLM text stream instead of real image call (keep it simple).
+      const stream = await apiStreamRun({ prompt: `Beschreibe eindrücklich ein Bild zu: ${txt}`, system:'Du bist ein poetischer Bildbeschreiber.', provider:'anthropic' });
+      const box = byId('imgOut'); box.innerHTML='<pre></pre>';
+      let acc='';
+      for await (const ch of stream.chunks()){
+        try{
+          const obj = JSON.parse(ch);
+          if (obj.ok) continue;
+        }catch{
+          acc += ch;
+          box.firstChild.textContent = acc;
+        }
+      }
+    });
+  }
+}
+
+// ----- Daily ticker rotation -----
+async function initTicker(){
+  try{
+    const j = await apiGet('/daily');
+    const items = j.items || [];
+    const lbl = byId('dailyLabel');
+    let i=0;
+    function step(){
+      const it = items[i % items.length];
+      lbl.textContent = it?.title ? it.title : 'Heute neu – …';
+      i++; setTimeout(step, 7000);
+    }
+    step();
+  }catch{
+    byId('dailyLabel').textContent = 'Heute neu – n/a';
+  }
+}
+
+// Events to kick audio mapping
+window.addEventListener('mousemove', (e)=>{
+  const x = e.clientX / innerWidth; const y = e.clientY / innerHeight;
+  updateAudioByPointer(x,y);
+});
+window.addEventListener('scroll', ()=>{
+  const y = window.scrollY / Math.max(1, (document.body.scrollHeight - innerHeight));
+  updateAudioByPointer(.5, y);
+}, { passive:true });
+
+// First user gesture to start audio
+['click','keydown','pointerdown','touchstart'].forEach(ev => {
+  window.addEventListener(ev, ()=> initAudio(), { once:true, passive:true });
+});
+
+// Boot
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderBubbles();
+  initTicker();
+});

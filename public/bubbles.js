@@ -1,129 +1,107 @@
 /**
- * Neon bubble engine with "jellyfish" motion.
- * - Monochrome neon fill, soft aura glow
- * - Different sizes (s,m,l) based on label length
- * - Queue rotation: as one fades out, a new one fades in (cycle)
- * - no external deps
+ * Neon Jellyfish Bubble Engine (DOM + rAF)
+ * - Each bubble drifts gently and oscillates in size
+ * - Queue replaces faded bubbles with the next items
+ * - Click triggers runPrompt(id)
  */
-(function(){
-  const canvas = document.getElementById('bubble-canvas');
-  const ctx = canvas.getContext('2d');
-  let W=0, H=0, DPR = Math.max(1, window.devicePixelRatio || 1);
 
-  const palette = [
-    '#ff6ec7', '#9bf6ff', '#ffd166', '#caffbf', '#bdb2ff', '#fcb0f3', '#80ffdb', '#ffd6a5', '#72efdd', '#a0c4ff'
-  ];
+const BUBBLE_COLORS = [
+  "#ff43b6", "#8bff7a", "#67d1ff", "#ffd166", "#a78bfa", "#ff8fab", "#5eead4", "#b0f", "#f59e0b"
+];
 
-  const ITEMS = [
-    { id:'zeitreise', label:'Zeitreise-Tagebuch' },
-    { id:'bibliothek', label:'Bibliothek ungelebter Leben' },
-    { id:'surreal', label:'Surrealismus-Generator' },
-    { id:'debug', label:'Realitäts-Debugger' },
-    { id:'futurist', label:'Vintage-Futurist' },
-    { id:'brief', label:'Briefing-Assistent' },
-    { id:'bunt', label:'Bunte Poesie' },
-    { id:'bild', label:'Bild-Generator' },
-    { id:'xeno', label:'Xenobiologe' },
-    { id:'why', label:'5-Why-Analyse' },
-  ];
+// Define initial catalog of interactive experiences (id matches backend prompts)
+const BUBBLE_ITEMS = [
+  { id: "zeitreise-tagebuch", title: "Zeitreise‑Tagebuch" },
+  { id: "weltbau", title: "Weltbau" },
+  { id: "bunte-poesie", title: "Bunte Poesie" },
+  { id: "bild-beschreibung", title: "Bild‑Beschreibung" },
+  { id: "realitaets-debugger", title: "Realitäts‑Debugger" },
+  { id: "briefing-assistent", title: "Briefing‑Assistent" },
+  { id: "fuenf-why", title: "5‑Why‑Analyse" },
+  { id: "surrealismus-generator", title: "Surrealismus‑Generator" },
+  { id: "bibliothek-leben", title: "Bibliothek ungelebter Leben" },
+  { id: "emotion-visualizer", title: "Emotion‑Visualizer" }
+];
 
-  const active = [];
-  let queueIndex = 0;
-  const MAX_BUBBLES = 7;
+const root = document.getElementById("bubble-root");
 
-  function resize(){
-    W = canvas.clientWidth = window.innerWidth;
-    H = canvas.clientHeight = window.innerHeight;
-    canvas.width = Math.floor(W * DPR);
-    canvas.height = Math.floor(H * DPR);
-    ctx.setTransform(DPR,0,0,DPR,0,0);
-  }
-  window.addEventListener('resize', resize);
-  resize();
+function createBubbleEl(item, idx){
+  const el = document.createElement("div");
+  el.className = "bubble";
+  const size = 120 + Math.min(220, Math.max(0, item.title.length * 6));
+  el.style.width = el.style.height = size + "px";
 
-  function sizeForLabel(len){
-    if(len < 12) return 90 + Math.random()*20;
-    if(len < 20) return 120 + Math.random()*30;
-    return 150 + Math.random()*40;
-  }
+  const color = BUBBLE_COLORS[idx % BUBBLE_COLORS.length];
+  el.style.background = `radial-gradient(60% 60% at 30% 25%, rgba(255,255,255,.85), ${color})`;
+  el.style.boxShadow = `0 0 80px ${hexToRgba(color, .45)}, inset 0 0 22px rgba(255,255,255,.18)`;
 
-  function spawnOne(item){
-    const color = palette[Math.floor(Math.random()*palette.length)];
-    const r = sizeForLabel(item.label);
-    const x = Math.random() * (W - 2*r) + r;
-    const y = Math.random() * (H - 2*r) + r;
-    const vx = (Math.random()-0.5) * 0.25;
-    const vy = (Math.random()-0.5) * 0.25;
-    const bubble = { ...item, x,y,r, vx,vy, color, alpha:0, life: 0, ready:false };
-    active.push(bubble);
-  }
+  const label = document.createElement("div");
+  label.className = "label";
+  label.textContent = item.title;
+  el.appendChild(label);
 
-  function ensurePopulation(){
-    while(active.length < MAX_BUBBLES){
-      spawnOne(ITEMS[queueIndex % ITEMS.length]);
-      queueIndex++;
-    }
-  }
+  // starting position
+  const pad = 60;
+  const x = pad + Math.random()*(root.clientWidth - size - pad*2);
+  const y = pad + Math.random()*(root.clientHeight - size - pad*2);
+  el.style.transform = `translate(${x}px, ${y}px)`;
 
-  function step(dt){
-    ctx.clearRect(0,0,W,H);
-    ensurePopulation();
-    for(const b of active){
-      // Motion
-      b.x += b.vx;
-      b.y += b.vy;
-      // edge bounce
-      if(b.x < b.r || b.x > W-b.r) b.vx *= -1;
-      if(b.y < b.r || b.y > H-b.r) b.vy *= -1;
-      // alpha
-      b.life += dt;
-      b.alpha = Math.min(1, b.alpha + 0.01);
-      // draw aura
-      const g = ctx.createRadialGradient(b.x, b.y, b.r*0.3, b.x, b.y, b.r*1.25);
-      g.addColorStop(0, hexWithAlpha(b.color, 0.25*b.alpha));
-      g.addColorStop(1, hexWithAlpha(b.color, 0));
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(b.x, b.y, b.r*1.25, 0, Math.PI*2); ctx.fill();
-      // draw body
-      ctx.fillStyle = hexWithAlpha(b.color, 0.85*b.alpha);
-      ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
-      // text
-      ctx.fillStyle = '#0b0f14aa';
-      ctx.font = '600 13px system-ui';
-      ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(b.label, b.x, b.y-6);
-      ctx.fillStyle = '#0b0f14bb';
-      ctx.font = '10px system-ui';
-      ctx.fillText('Start', b.x, b.y+10);
-    }
-  }
+  // physics
+  el.__vx = (Math.random()*0.2+0.05)* (Math.random()<.5?-1:1);
+  el.__vy = (Math.random()*0.2+0.05)* (Math.random()<.5?-1:1);
+  el.__x = x; el.__y = y; el.__size = size;
+  el.__scalePhase = Math.random()*Math.PI*2;
+  el.__item = item;
 
-  let last=performance.now();
-  function loop(ts){
-    const dt = Math.min(33, ts-last); last=ts;
-    step(dt);
-    requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
-
-  // Pointer picking
-  canvas.addEventListener('click', (ev)=>{
-    const rect = canvas.getBoundingClientRect();
-    const px = ev.clientX - rect.left, py = ev.clientY - rect.top;
-    // find topmost bubble hit
-    for(let i=active.length-1;i>=0;i--){
-      const b = active[i];
-      const dx = px-b.x, dy=py-b.y;
-      if(dx*dx+dy*dy <= b.r*b.r){
-        window.dispatchEvent(new CustomEvent('bubble:open', { detail:{ id:b.id, label:b.label } }));
-        break;
-      }
-    }
+  el.addEventListener("click",(e)=>{
+    e.preventDefault();
+    window.app && window.app.openRunModal(item);
   });
 
-  function hexWithAlpha(hex, a){
-    // hex like #RRGGBB
-    const [r,g,b] = [hex.slice(1,3), hex.slice(3,5), hex.slice(5,7)].map(h=>parseInt(h,16));
-    return `rgba(${r},${g},${b},${a})`;
+  root.appendChild(el);
+  return el;
+}
+
+function step(){
+  const children = Array.from(root.children);
+  const w = root.clientWidth, h = root.clientHeight;
+
+  for(const el of children){
+    let {__x:x, __y:y, __vx:vx, __vy:vy, __size:size} = el;
+    x += vx; y += vy;
+
+    // bounce softly at edges
+    if(x < 8 || x > (w - size - 8)) el.__vx = vx = -vx;
+    if(y < 80 || y > (h - size - 8)) el.__vy = vy = -vy;
+
+    el.__x = x; el.__y = y;
+    el.__scalePhase += 0.01;
+    const scale = 1 + Math.sin(el.__scalePhase)*0.015;
+    el.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
   }
-})();
+  requestAnimationFrame(step);
+}
+
+function mount(){
+  root.innerHTML = "";
+  const max = Math.min(9, BUBBLE_ITEMS.length);
+  for(let i=0;i<max;i++){
+    createBubbleEl(BUBBLE_ITEMS[i], i);
+  }
+  requestAnimationFrame(step);
+}
+
+function hexToRgba(hex, alpha){
+  const v = hex.replace('#','');
+  const bigint = parseInt(v, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+window.addEventListener("resize", ()=>{
+  // Re-center a bit on resize (optional)
+});
+
+mount();

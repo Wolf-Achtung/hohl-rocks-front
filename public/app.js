@@ -1,220 +1,248 @@
-(function(){
-  const API_BASE = ''; // relative -> Netlify proxy handles to Railway
+/**
+ * App glue: API calls, modal, copy, audio, ticker, news, prompts-grid.
+ */
 
-  const modalEl = document.getElementById('modal');
-  const modalTitle = document.getElementById('modal-title');
-  const modalBody = document.getElementById('modal-body');
-  const modalClose = document.getElementById('modal-close');
-  const btnCopy = document.getElementById('btn-copy');
-  const btnClose = document.getElementById('btn-close');
-  const toast = document.getElementById('toast');
+const API_BASE = "/api";
 
-  const chipNews = document.getElementById('chip-news');
-  const chipPrompts = document.getElementById('chip-prompts');
-  const chipImpressum = document.getElementById('chip-impressum');
-  const chipTicker = document.getElementById('chip-ticker');
-  const chipSound = document.getElementById('chip-sound');
-  const tickerLabel = document.getElementById('ticker-label');
+const qs = sel => document.querySelector(sel);
+const qsa = sel => Array.from(document.querySelectorAll(sel));
 
-  // Focus trap
-  let lastActive = null;
-  function openModal(title, html, copyText){
-    lastActive = document.activeElement;
-    modalTitle.textContent = title || 'Info';
-    modalBody.innerHTML = html || '';
-    modalEl.hidden = false;
-    modalEl.setAttribute('data-copy', copyText || '');
-    setTimeout(()=>{
-      modalClose.focus();
-    }, 0);
+const modalBackdrop = qs("#modalBackdrop");
+const modalTitle = qs("#modalTitle");
+const modalBody  = qs("#modalBody");
+const btnCopy    = qs("#btnCopy");
+const btnClose   = qs("#btnClose");
+const btnModalClose = qs("#modalClose");
+const toastEl    = qs("#toast");
+
+const btnTicker  = qs("#btnTicker");
+const btnNews    = qs("#btnNews");
+const btnPrompts = qs("#btnPrompts");
+const btnImpressum = qs("#btnImpressum");
+const btnKlang   = qs("#btnKlang");
+
+let lastModalCopyText = "";
+
+/** ---------- AUDIO (WebAudio) ---------- */
+const AudioMod = {
+  ctx: null,
+  nodes: null,
+  enabled: false,
+  ensure(){
+    if(this.ctx) return;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const master = ctx.createGain(); master.gain.value = 0.05;
+    master.connect(ctx.destination);
+
+    // pad + gentle shimmer
+    const osc1 = ctx.createOscillator(); osc1.type = "sine"; osc1.frequency.value = 120;
+    const osc2 = ctx.createOscillator(); osc2.type = "sine"; osc2.frequency.value = 203;
+    const lfo  = ctx.createOscillator(); lfo.type = "sine"; lfo.frequency.value = 0.05;
+
+    const filt = ctx.createBiquadFilter(); filt.type = "lowpass"; filt.frequency.value = 1200;
+
+    const lfoGain = ctx.createGain(); lfoGain.gain.value = 400;
+    lfo.connect(lfoGain).connect(filt.frequency);
+
+    const mix = ctx.createGain(); mix.gain.value = 0.9;
+    osc1.connect(mix); osc2.connect(mix); mix.connect(filt).connect(master);
+
+    osc1.start(); osc2.start(); lfo.start();
+
+    this.ctx = ctx;
+    this.nodes = {master, osc1, osc2, lfo, filt, mix};
+  },
+  async start(){
+    this.ensure();
+    if(this.ctx.state === "suspended") await this.ctx.resume();
+    this.enabled = true; btnKlang.setAttribute("aria-pressed","true");
+  },
+  async stop(){
+    if(!this.ctx) return;
+    await this.ctx.suspend();
+    this.enabled = false; btnKlang.setAttribute("aria-pressed","false");
+  },
+  toggle(){ this.enabled ? this.stop() : this.start(); }
+};
+
+btnKlang.addEventListener("click", ()=> AudioMod.toggle());
+// Any first user gesture starts audio softly (if not explicitly toggled)
+window.addEventListener("pointerdown", ()=>{ if(!AudioMod.enabled) AudioMod.start(); }, {once:true});
+
+/** ---------- MODAL ---------- */
+function openModal(title, html, copyText=""){
+  modalTitle.textContent = title;
+  modalBody.innerHTML = html;
+  lastModalCopyText = copyText || stripHtml(html);
+  modalBackdrop.hidden = false;
+  // focus trap
+  setTimeout(()=> btnClose.focus(), 0);
+}
+function closeModal(){ modalBackdrop.hidden = true; }
+btnClose.addEventListener("click", closeModal);
+btnModalClose.addEventListener("click", closeModal);
+document.addEventListener("keydown", (e)=>{
+  if(!modalBackdrop.hidden && e.key === "Escape") closeModal();
+});
+
+btnCopy.addEventListener("click", async()=>{
+  try{
+    await navigator.clipboard.writeText(lastModalCopyText || "");
+    showToast("✓ Kopiert");
+  }catch(e){ showToast("Kopieren fehlgeschlagen"); }
+});
+function showToast(text){
+  toastEl.textContent = text;
+  toastEl.hidden = false;
+  setTimeout(()=> toastEl.hidden = true, 1500);
+}
+function stripHtml(s){ const div = document.createElement("div"); div.innerHTML = s; return div.textContent || ""; }
+
+/** ---------- API HELPERS (with graceful errors) ---------- */
+async function apiGet(path){
+  try{
+    const res = await fetch(`${API_BASE}${path}`, {headers:{'x-api-base':'netlify-proxy'}});
+    if(!res.ok) throw new Error(res.status + "");
+    return await res.json();
+  }catch(err){
+    return {ok:false, error: err.message || "offline"};
   }
-  function closeModal(){
-    modalEl.hidden = true;
-    modalEl.removeAttribute('data-copy');
-    if(lastActive && lastActive.focus) lastActive.focus();
+}
+
+async function apiRun(id, userInput=""){
+  const res = await fetch(`${API_BASE}/run`, {
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({id, input:userInput})
+  }).catch(()=>null);
+
+  if(!res || !res.ok){
+    openModal("Fehler", "<p>Service nicht erreichbar.</p>");
+    return;
   }
-  document.getElementById('modal-close').addEventListener('click', closeModal);
-  document.getElementById('btn-close').addEventListener('click', closeModal);
-  modalEl.addEventListener('click', (e)=>{
-    if(e.target.hasAttribute('data-close')) closeModal();
-  });
-  window.addEventListener('keydown', (e)=>{
-    if(!modalEl.hidden && e.key === 'Escape') closeModal();
-  });
-  btnCopy.addEventListener('click', async ()=>{
-    const txt = modalEl.getAttribute('data-copy') || '';
-    if(!txt) return;
-    try{
-      await navigator.clipboard.writeText(txt);
-      showToast('✓ Kopiert');
-      incTelemetry('copy');
-    }catch(err){
-      console.error(err);
-      showToast('⚠️ Kopieren nicht möglich');
-    }
-  });
-
-  function showToast(msg){
-    toast.textContent = msg;
-    toast.hidden = false;
-    setTimeout(()=> toast.hidden = true, 1200);
-  }
-
-  function errorCard(message){
-    return `<div class="card muted">${message}</div>`;
-  }
-
-  function incTelemetry(key){
-    try{
-      const k = 'telemetry:'+key;
-      const n = Number(localStorage.getItem(k) || '0') + 1;
-      localStorage.setItem(k, String(n));
-    }catch{}
-  }
-
-  // News
-  chipNews.addEventListener('click', async ()=>{
-    openModal('News', '<p>Lade…</p>');
-    try{
-      const data = await fetchJSON('/api/news');
-      if(!data || !data.items) throw new Error('invalid');
-      const links = data.items.map(it=>`<li><a href="${it.url}" target="_blank" rel="noopener">${escapeHTML(it.title)}</a></li>`).join('');
-      modalBody.innerHTML = `<ul class="list">${links}</ul>`;
-      modalEl.setAttribute('data-copy', data.items.map(x=>x.url).join('\n'));
-    }catch(e){
-      modalBody.innerHTML = errorCard('News‑Service nicht erreichbar.');
-    }
-  });
-
-  // Prompts (office)
-  const OFFICE = [
-    { title:'E‑Mail‑Klartext', hint:'3 Varianten respektvoll & klar, je 5 Sätze', prompt:'Formuliere diese zu lange E‑Mail respektvoll, klar und in 5 Sätzen. Gib 3 Varianten (direkt, diplomatisch, motivierend):\n\n[TEXT]' },
-    { title:'Meeting‑Agenda 30 Min', hint:'3 Blöcke, Timebox, Fragen', prompt:'Erstelle für ein 30‑Minuten‑Meeting eine Agenda mit Ziel, 3 Blöcken, Timebox je Block und klugen Entscheidungsfragen am Ende.' },
-    { title:'Protokoll kurz', hint:'Stichpunkte + Aufgaben', prompt:'Wandle diese Stichpunkte in ein prägnantes, nummeriertes Protokoll mit Aufgaben (Wer? Bis wann?):\n\n[STICHWORTE]' },
-    { title:'OKR‑Feinschliff', hint:'Metriken & Outcome', prompt:'Überarbeite diese OKRs: klare Metriken, Outcome‑Fokus, keine Aktivitäten. Max. 5 Key Results je Objective.\n\n[OKRS]' },
-    { title:'PR‑Statement', hint:'neutral, faktisch', prompt:'Schreibe ein kurzes Pressestatement, neutral und faktenbasiert, ohne Superlative, 100 Wörter.' },
-    { title:'Social Copy x3', hint:'3x LinkedIn 280 Zeichen', prompt:'Erzeuge 3 LinkedIn‑Posts zu [THEMA], je 280 Zeichen, mit Hook, Nutzen, 1 Hashtag.' },
-    { title:'Kundendienst heikel', hint:'höflich, deeskalierend', prompt:'Formuliere eine höfliche, klare Antwort auf diese Beschwerde. Ziel: Deeskalation, Lösungsweg + nächster Schritt.' },
-    { title:'Sales‑Pitch 90s', hint:'Nutzen + 3 Belege', prompt:'Erstelle einen 90‑Sekunden‑Pitch mit Nutzen, 3 konkreten Belegen, CTA; Zielgruppe: Entscheider.' },
-    { title:'SWOT in 8 Punkten', hint:'kompakt, je Quadrant', prompt:'Liste SWOT zu [THEMA] – je Quadrant 2 komprimierte Aussagen. Knappe Bulletpoints.' },
-    { title:'Onboarding‑Plan 30 Tage', hint:'Woche 1‑4', prompt:'Erstelle einen kompakten 30‑Tage‑Plan für neue Mitarbeitende (Woche 1‑4: Lernziele, Shadowing, erste Deliverables).' }
-  ];
-
-  document.getElementById('chip-prompts').addEventListener('click', ()=>{
-    const html = '<div class="grid">'+OFFICE.map(p=>`
-      <article class="card">
-        <h3>${escapeHTML(p.title)}</h3>
-        <p class="muted">${escapeHTML(p.hint)}</p>
-        <div class="right"><button class="btn btn-ghost" data-copy="${encodeURIComponent(p.prompt)}">Kopieren</button></div>
-      </article>
-    `).join('')+'</div>';
-    openModal('Prompts (Büroalltag)', html);
-    modalBody.querySelectorAll('button[data-copy]').forEach(btn=>{
-      btn.addEventListener('click', async (e)=>{
-        const txt = decodeURIComponent(e.currentTarget.getAttribute('data-copy'));
-        try{ await navigator.clipboard.writeText(txt); showToast('✓ Kopiert'); incTelemetry('copy'); }catch{ showToast('⚠️ Kopieren nicht möglich');}
-      });
-    });
-  });
-
-  // Impressum
-  document.getElementById('chip-impressum').addEventListener('click', ()=>{
-    openModal('Impressum', `
-      <p><strong>Verantwortlich:</strong><br>Wolf Hohl<br>Greifswalder Str. 224a<br>10405 Berlin<br><a href="mailto:info@hohl.rocks">E‑Mail schreiben</a></p>
-      <p><strong>Haftungsausschluss:</strong> Diese Website dient ausschließlich der Information. Trotz sorgfältiger Prüfung keine Haftung für Inhalte externer Links.</p>
-      <p><strong>Urheberrecht:</strong> Inhalte unterliegen deutschem Urheberrecht. Bilder via KI erzeugt.</p>
-      <p><strong>EU AI Act:</strong> Hinweise zu Pflichten & Risiken beim KI‑Einsatz. Keine Rechtsberatung.</p>
-      <p><strong>Datenschutz:</strong> Keine Tracking‑Cookies. Bei Kontakt per Mail werden Angaben zwecks Bearbeitung gespeichert (6 Monate). Rechte gemäß DSGVO: Auskunft, Berichtigung, Löschung, Widerruf, Beschwerde.</p>
-    `);
-  });
-
-  // Bubble handling
-  window.addEventListener('bubble:open', (ev)=>{
-    const { id, label } = ev.detail;
-    incTelemetry('bubble');
-    // For demo: show a short description + provide a ready-to-run prompt copied on demand.
-    const prompt = `Du bist das Tool "${label}". Arbeite prägnant, strukturiert, mit Zwischenüberschriften. Beginne mit einer kompakten Zusammenfassung (max. 3 Sätze).`;
-    openModal(label, `<p class="muted">Service wird gestartet …</p>`, prompt);
-    runLLM(label, prompt).catch(()=>{
-      modalBody.innerHTML = '<p class="muted">Service nicht erreichbar.</p>';
-    });
-  });
-
-  async function runLLM(title, prompt){
-    // call /api/run (SSE-like). We chunk-append to the modal body.
-    const res = await fetch('/api/run', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ title, prompt })
-    });
-    if(!res.ok) throw new Error('http '+res.status);
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    modalBody.innerHTML = '<div id="stream" class="stream"></div>';
-    const streamEl = document.getElementById('stream');
-    let buf='';
+  // pseudo streaming (read chunks)
+  const reader = res.body.getReader();
+  const utf8 = new TextDecoder("utf-8");
+  let acc = "";
+  openModal("Antwort", "<div class='small'>läuft …</div>");
+  (async function pump(){
     while(true){
       const {value, done} = await reader.read();
       if(done) break;
-      buf += decoder.decode(value, {stream:true});
-      streamEl.innerHTML = mdToHTML(buf);
-      streamEl.scrollTop = streamEl.scrollHeight;
+      acc += utf8.decode(value, {stream:true});
+      modalBody.textContent = acc;
+      lastModalCopyText = acc;
     }
-  }
+  })().catch(()=>{});
+}
 
-  // Ticker
-  async function initTicker(){
-    try{
-      const data = await fetchJSON('/api/daily');
-      const items = data.items || [];
-      if(items.length === 0) throw 0;
-      let i=0;
-      function show(){ tickerLabel.textContent = items[i % items.length].title; i++; }
-      show(); setInterval(show, 6000);
-    }catch{
-      tickerLabel.textContent = 'Heute neu – offline';
+/** ---------- NAV: News, Ticker, Prompts, Impressum ---------- */
+btnNews.addEventListener("click", async()=>{
+  const data = await apiGet("/news");
+  if(!data || !data.ok || !data.items) return openModal("News", "<p>News‑Service nicht erreichbar.</p>");
+  const list = data.items.map(i=>`<li><a href="${i.url}" target="_blank" rel="noopener">${i.title}</a></li>`).join("");
+  openModal("News", `<ul class="news-list">${list}</ul>`, data.items.map(i=>`${i.title} – ${i.url}`).join("\n"));
+});
+
+// Heute-Neu ticker (auto-rotation)
+let tickerTimer = 0;
+async function refreshTicker(){
+  const data = await apiGet("/daily");
+  if(!data || !data.ok){ btnTicker.textContent = "Heute neu – offline"; return; }
+  let idx = 0;
+  const rotate = () => {
+    const item = data.items[idx % data.items.length];
+    btnTicker.textContent = `Heute neu – ${item.title}`;
+    idx++;
+  };
+  rotate();
+  clearInterval(tickerTimer);
+  tickerTimer = setInterval(rotate, 6000);
+}
+refreshTicker();
+btnTicker.addEventListener("click", ()=> btnNews.click()); // opens news/daily modal could be extended
+
+// Prompts Grid (Office)
+btnPrompts.addEventListener("click", ()=>{
+  const prompts = officePrompts();
+  const cards = prompts.map(p=>`<div class="prompt-card"><div class="prompt-title">${p.title}</div><div class="prompt-desc">${p.desc}</div><div class="prompt-actions"><button class="copy-btn" data-id="${p.id}">Kopieren</button></div></div>`).join("");
+  openModal("Prompts (Büroalltag)", `<div class="prompts-grid">${cards}</div>`, "");
+  modalBody.addEventListener("click", (e)=>{
+    const btn = e.target.closest(".copy-btn");
+    if(!btn) return;
+    const p = prompts.find(x=>x.id === btn.dataset.id);
+    if(p){
+      navigator.clipboard.writeText(p.prompt).then(()=> showToast("✓ Kopiert"));
     }
-  }
-  initTicker();
+  }, {once:false});
+});
 
-  // Sound layer
-  let audioCtx = null, master=null, oscA=null, oscB=null, lfo=null, filter=null;
-  function initSound(){
-    if(audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    master = audioCtx.createGain(); master.gain.value = 0.05;
-    filter = audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1200;
-    lfo = audioCtx.createOscillator(); lfo.frequency.value=0.08;
-    const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 600;
-    lfo.connect(lfoGain).connect(filter.frequency);
-    oscA = audioCtx.createOscillator(); oscA.type='sine'; oscA.frequency.value=110;
-    oscB = audioCtx.createOscillator(); oscB.type='sine'; oscB.frequency.value=147;
-    oscA.connect(filter); oscB.connect(filter);
-    filter.connect(master).connect(audioCtx.destination);
-    lfo.start(); oscA.start(); oscB.start();
-  }
-  chipSound.addEventListener('click', async ()=>{
-    initSound();
-    await audioCtx.resume();
-    showToast('Klang aktiv');
-  });
-  window.addEventListener('pointerdown', ()=>{
-    if(!audioCtx) initSound();
-  }, {once:true});
+btnImpressum.addEventListener("click", ()=>{
+  openModal("Impressum", `
+  <p><strong>Verantwortlich für den Inhalt:</strong><br>
+  Wolf Hohl · Greifswalder Str. 224a · 10405 Berlin · <a href="mailto:mail@wolf-hohl.de">E‑Mail schreiben</a></p>
+  <p><strong>Haftungsausschluss:</strong> Diese Website dient ausschließlich der Information. Trotz sorgfältiger Prüfung übernehme ich keine Haftung für Inhalte externer Links.</p>
+  <p><strong>Urheberrecht:</strong> Alle Inhalte unterliegen dem deutschen Urheberrecht, Bilder teils KI-generiert (Midjourney).</p>
+  <p><strong>Hinweis zum EU AI Act:</strong> Informationen ohne Gewähr; keine Rechtsberatung.</p>
+  <p><strong>Datenschutz:</strong> Keine Tracking‑Cookies; Kontaktanfragen werden zur Bearbeitung bis zu sechs Monate gespeichert.</p>
+  `);
+});
 
-  // Utilities
-  async function fetchJSON(path){
-    const res = await fetch(path, { headers:{ 'x-api-base':'' } });
-    if(!res.ok) throw new Error('http '+res.status);
-    return res.json();
+/** ---------- PUBLIC API ---------- */
+window.app = {
+  openRunModal(item){
+    openModal(item.title, "<p class='small'>Starte …</p>");
+    apiRun(item.id);
   }
-  function escapeHTML(s){ return s.replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
-  function mdToHTML(md){
-    // very tiny markdown subset (bold, italic, code, br)
-    return escapeHTML(md)
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/`(.+?)`/g, '<code>$1</code>')
-      .replace(/\n/g, '<br/>');
-  }
-})();
+};
+
+/** ---------- OFFICE PROMPTS ---------- */
+function officePrompts(){
+  // 20 kurze, nutzwertige Prompts – Beschreibung sichtbar, Prompt nur via Copy
+  return [
+    {id:"mail-klartext", title:"E‑Mail‑Klartext", desc:"Eine zu lange Mail in 5 klare Sätze verdichten (diplomatisch / direkt / motivierend).", prompt:"Du bist mein Klartext-Editor. Verdichte die folgende E-Mail in 5 Sätze in drei Varianten: (1) diplomatisch, (2) direkt, (3) motivierend. Bewahre Intention & Höflichkeit. Text:
+<<<TEXT>>>
+"},
+    {id:"agenda-30", title:"Meeting‑Agenda 30 min", desc:"3 Blöcke, Timebox, Entscheidungsfragen – schlanke Agenda.", prompt:"Erstelle eine knappe Agenda für ein 30‑Minuten‑Meeting: 3 Blöcke, Timebox (in Minuten), Ziel, Entscheidungsfragen, benötigte Vorarbeit."},
+    {id:"protokoll-stichpunkte", title:"Protokoll aus Stichpunkten", desc:"Bullet‑Stichpunkte → kompaktes Aufgabenprotokoll (Wer? Bis wann?).", prompt:"Wandle die Stichpunkte in ein nummeriertes, kompaktes Protokoll um: Aufgabenliste (Wer? Bis wann?), Entscheidungen, Risiken mit Ampel."},
+    {id:"status-exec", title:"Status‑Update wie Exec", desc:"120‑Wörter‑Update mit 3 KPIs & Ampelstatus.", prompt:"Verdichte die folgenden Infos in ein 120‑Wörter‑Update im Executive‑Ton, mit 3 KPIs und Ampelstatus:
+<<<INPUT>>>
+"},
+    {id:"okr-feinschliff", title:"OKR‑Feinschliff", desc:"Metrik‑klar, Outcome‑Fokus, max. 5 KRs.", prompt:"Überarbeite diese OKRs: klare Metriken, Outcome‑Fokus, keine Aufgabenformulierungen. Maximal 5 Key Results, jedes messbar:
+<<<OKRS>>>
+"},
+    {id:"pr-statement", title:"PR‑Statement", desc:"Kurzes, neutrales Pressestatement ohne Superlative.", prompt:"Schreibe ein kurzes Pressestatement (max. 120 Wörter), neutral, faktenbasiert, ohne Superlative. Baue 1–2 belegbare Zahlen ein, falls vorhanden."},
+    {id:"social-copy", title:"Social Copy ×3", desc:"3 LinkedIn‑Posts à 280 Zeichen (Hook, Nutzen, Hashtag).", prompt:"Erzeuge 3 LinkedIn‑Posts à 280 Zeichen mit: Hook, kleinem Nutzenversprechen und 1 passendem Hashtag. Thema:
+<<<THEMA>>>
+"},
+    {id:"kundenmail-heikel", title:"Kundenmail – heikel", desc:"Höfliche Deeskalation + nächster Schritt.", prompt:"Formuliere eine höfliche, klare Antwort auf diese Beschwerde. Ziel: Deeskalation, Lösungsvorschlag, nächster Schritt. Text:
+<<<MAIL>>>
+"},
+    {id:"sales-pitch", title:"Sales‑Pitch Kurzfassung", desc:"90‑Sekunden‑Pitch mit Nutzen, 2 Belegen & CTA.", prompt:"Erstelle einen 90‑Sekunden‑Pitch mit: Zielgruppe, Nutzen in 2 Sätzen, zwei glaubwürdigen Belegen (z.B. Zahlen/Referenzen) und einem klaren Call‑to‑Action."},
+    {id:"swot", title:"SWOT in 8 Punkten", desc:"SWOT kompakt je Quadrant 2 Aussagen.", prompt:"Erstelle eine SWOT‑Analyse mit je zwei prägnanten Punkten für Stärken, Schwächen, Chancen, Risiken. Thema:
+<<<THEMA>>>
+"},
+    {id:"briefing-designer", title:"Briefing für Designer", desc:"1‑Seiten‑Briefing aus Anforderungen & Beispielen.", prompt:"Fasse die folgenden Anforderungen in ein 1‑Seiten‑Design‑Briefing: Ziel, Ton/Look, Pflicht‑Elemente, Nicht‑Ziele, 3 Referenzbeispiele.
+<<<ANFORDERUNGEN>>>
+"},
+    {id:"roadmap", title:"Roadmap in Meilensteinen", desc:"Vorhaben in 5 Milestones mit Done‑Definition.", prompt:"Zerlege das Vorhaben in 5 Meilensteine. Für jeden: Ziel, Deliverables, Definition of Done, Hauptrisiken mit Gegenmaßnahme."},
+    {id:"stakeholder-map", title:"Stakeholder‑Map", desc:"Interessen/Einfluss einschätzen + Umgangsstrategie.", prompt:"Erzeuge eine Stakeholder‑Map: Liste mit Rolle, Interesse (low/med/high), Einfluss (low/med/high) und Strategie. Thema:
+<<<THEMA>>>
+"},
+    {id:"interview-leitfaden", title:"Interview‑Leitfaden", desc:"8 Fragen: Bedarf, Barrieren, Kaufkriterien.", prompt:"Erstelle 8 Interviewfragen für ein Kundengespräch: Bedarf, bisherige Lösungen, Kaufbarrieren, Entscheiderkriterien. Produkt:
+<<<PRODUKT>>>
+"},
+    {id:"ki-policy", title:"KI‑Policy Light", desc:"Praxisnahe, kurze KI‑Nutzungsrichtlinie (10 Punkte).", prompt:"Schreibe eine kurze KI‑Nutzungsrichtlinie (10 Punkte) für ein KMU: sichere Tools, Datenklassifizierung, Prompts, Qualitätssicherung, EU AI Act‑Awareness."},
+    {id:"faq-bot", title:"FAQ‑Bot Wissen", desc:"Eingabetexte → FAQ‑Katalog mit Antwortbausteinen.", prompt:"Wandle die folgenden Infos in einen FAQ‑Katalog um (Fragen + kurze Baustein‑Antworten). Markiere unsichere Stellen mit [?].
+<<<WISSEN>>>
+"},
+    {id:"meeting-minutes", title:"Meeting‑Minutes", desc:"Prägnantes Protokoll mit Actions & Ownern.", prompt:"Verarbeite die Meeting‑Notizen zu einem prägnanten Protokoll: Entscheidungen, offene Punkte, Action Items (Owner, Fällig, Priorität)."},
+    {id:"release-notes", title:"Release Notes", desc:"Änderungsliste → Nutzerfreundliche Notes.", prompt:"Formuliere aus der Änderungsliste kurze, verständliche Release Notes, mit 3 Highlights oben und klarer Struktur."},
+    {id:"risk-check", title:"Risiko‑Check", desc:"Top‑Risiken + Eintrittswahrscheinlichkeit + Gegenmaßnahme.", prompt:"Liste die Top‑10 Risiken inkl. Eintrittswahrscheinlichkeit, Auswirkung und pragmatischen Gegenmaßnahmen. Kontext:
+<<<KONTEXT>>>
+"},
+    {id:"excel-formel", title:"Excel‑Formel Coach", desc:"Beste Formel für das Ziel inkl. kurzer Erklärung.", prompt:"Schlage eine Excel‑Formel für folgendes Ziel vor und erkläre kurz, warum: 
+<<<ZIEL>>>
+"}
+  ];
+}

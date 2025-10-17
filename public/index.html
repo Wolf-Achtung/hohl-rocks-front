@@ -1,59 +1,55 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>hohl.rocks – Bibliothek ungelebter Leben</title>
-  <link rel="preload" as="video" href="/videos/road_720p_bg.webm" type="video/webm" />
-  <link rel="preload" as="video" href="/videos/road_720p_bg.mp4" type="video/mp4" />
-  <link rel="preload" as="image" href="/videos/road_poster.jpg" />
-  <link rel="stylesheet" href="/styles.css" />
-</head>
-<body>
-  <header class="topbar" role="banner">
-    <div class="brand">hohl.rocks</div>
-    <nav aria-label="Hauptnavigation">
-      <button class="chip" id="chip-ticker"><span id="ticker-label">Heute neu – lädt …</span></button>
-      <button class="chip" id="chip-news">News</button>
-      <button class="chip" id="chip-prompts">Prompts</button>
-      <button class="chip" id="chip-projects">Projekte</button>
-      <button class="chip" id="chip-impressum">Impressum</button>
-      <button class="chip" id="chip-lang">DE/EN</button>
-      <button class="chip" id="chip-sound">Klang</button>
-    </nav>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>hohl.rocks</title>
+    <meta name="description" content="hohl.rocks – Bibliothek ungelebter Leben & KI-Spielwiese." />
+    <link rel="preload" href="/videos/road_720p_bg.webm" as="video" type="video/webm">
+    <link rel="preload" href="/videos/road_720p_bg.mp4" as="video" type="video/mp4">
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar" aria-label="Navigation">
+      <div class="brand">hohl.rocks</div>
+      <nav class="nav">
+        <button id="btnTicker" class="pill" aria-live="polite">Heute neu – lädt …</button>
+        <button id="btnNews" class="pill">News</button>
+        <button id="btnPrompts" class="pill">Prompts</button>
+        <button id="btnProjekte" class="pill">Projekte</button>
+        <button id="btnImpressum" class="pill">Impressum</button>
+        <button id="btnLang" class="pill">DE/EN</button>
+        <button id="btnKlang" class="pill" aria-pressed="false" aria-label="Klang an/aus">Klang</button>
+      </nav>
+    </header>
 
-  <main id="app" role="main">
-    <div class="video-bg" aria-hidden="true">
-      <video id="bgvid" class="bgvid" poster="/videos/road_poster.jpg" playsinline muted autoplay loop preload="auto">
-        <source src="/videos/road_720p_bg.webm" type="video/webm" />
-        <source src="/videos/road_720p_bg.mp4" type="video/mp4" />
-      </video>
+    <main>
+      <div id="heroTitle">hohl.rocks</div>
+      <div id="bubble-root" aria-live="polite"></div>
+    </main>
+
+    <div class="modal-backdrop" id="modalBackdrop" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header class="modal-header">
+          <h2 id="modalTitle">Titel</h2>
+          <button id="modalClose" class="icon-btn" aria-label="Schließen">×</button>
+        </header>
+        <div class="modal-body" id="modalBody"></div>
+        <footer class="modal-footer">
+          <button id="btnCopy" class="pill">Kopieren</button>
+          <button id="btnClose" class="pill">Schließen</button>
+        </footer>
+      </section>
     </div>
 
-    <h1 class="hero">hohl.rocks</h1>
-    <canvas id="bubble-canvas" aria-hidden="true"></canvas>
-  </main>
+    <div id="toast" role="status" aria-live="polite" hidden>✓ Kopiert</div>
 
-  <!-- Modal -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
-    <div class="modal-backdrop" data-close></div>
-    <div class="modal-panel" role="document">
-      <div class="modal-head">
-        <h2 id="modal-title">Titel</h2>
-        <button class="icon-btn" id="modal-close" aria-label="Schließen">×</button>
-      </div>
-      <div id="modal-body" class="modal-body"></div>
-      <div class="modal-actions">
-        <button id="btn-copy" class="btn">Kopieren</button>
-        <button id="btn-close" class="btn btn-ghost">Schließen</button>
-      </div>
-    </div>
-  </div>
+    <video id="bgvid" class="bgvid" poster="/videos/road_poster.jpg" autoplay muted playsinline loop preload="auto">
+      <source src="/videos/road_720p_bg.webm" type="video/webm" />
+      <source src="/videos/road_720p_bg.mp4" type="video/mp4" />
+    </video>
 
-  <div id="toast" class="toast" role="status" aria-live="polite" hidden>✓ Kopiert</div>
-
-  <script src="/bubbles.js"></script>
-  <script src="/app.js"></script>
-</body>
+    <script src="/bubbles.js"></script>
+    <script src="/app.js"></script>
+  </body>
 </html>

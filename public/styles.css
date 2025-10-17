@@ -1,14 +1,118 @@
-:root{--bg:#0c1116;--fg:#e6eef7;--fg-dim:#9fb3c8;--card:#111821;--pill:#1b2430}
-*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:#0c1116;color:var(--fg);font:500 16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;overflow:hidden}
-.topbar{position:fixed;left:0;right:0;top:0;display:flex;gap:.75rem;padding:.5rem .75rem;align-items:center;z-index:20;background:rgba(10,14,18,.45);backdrop-filter:blur(8px)}
-.brand{font-weight:700;letter-spacing:.3px;opacity:.9}.nav{display:flex;gap:.5rem;flex-wrap:wrap}.pill{border:0;background:var(--pill);color:var(--fg);padding:.35rem .65rem;border-radius:999px;cursor:pointer}
-#heroTitle{position:absolute;top:90px;left:50%;transform:translateX(-50%);font-size:clamp(48px,7vw,120px);font-weight:800;text-shadow:0 0 28px rgba(255,255,255,.35),0 0 6px rgba(255,255,255,.75);z-index:5}
-main{position:relative;height:100vh;width:100vw;overflow:hidden}#bubble-root{position:absolute;inset:0;z-index:10;pointer-events:auto}
-.bgvid{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(.55) saturate(1.1) contrast(1.05)}
-.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,10,.55);backdrop-filter:blur(6px);z-index:30;display:grid;place-items:center}
-.modal{width:min(900px,92vw);background:var(--card);border-radius:14px;box-shadow:0 20px 80px rgba(0,0,0,.35);padding:1rem}
-.modal-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.25rem .25rem .75rem}.icon-btn{border:0;background:transparent;color:var(--fg);font-size:1.25rem;cursor:pointer}
-.modal-body{min-height:140px;max-height:56vh;overflow:auto;padding:.25rem .25rem .75rem}.modal-footer{display:flex;gap:.5rem;justify-content:flex-end}
-#toast{position:fixed;inset:auto auto 16px 50%;transform:translateX(-50%);background:#0aa35b;color:#fff;padding:.5rem .75rem;border-radius:999px;z-index:50}
-.bubble{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:50%;color:#0c0f13;font-weight:700;cursor:pointer;user-select:none;transition:transform .25s ease-out,filter .25s ease-out}
-.bubble .label{position:relative;z-index:2;filter:drop-shadow(0 1px 0 rgba(255,255,255,.25));padding:0 .5rem;line-height:1.2;font-size:clamp(12px,1.2vw,16px)}
+:root{
+  --bg:#0c1116;
+  --fg:#e6eef7;
+  --fg-dim:#9fb3c8;
+  --card:#111821;
+  --pill:#1b2430;
+}
+
+/* Safety: Alles mit [hidden] ist garantiert unsichtbar – auch wenn JS ausfällt */
+*[hidden]{ display:none !important; }
+
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0;
+  background:#0c1116;
+  color:var(--fg);
+  font:500 16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
+  overflow:hidden;
+}
+
+/* Top-Navigation */
+.topbar{
+  position:fixed; left:0; right:0; top:0;
+  display:flex; gap:.75rem; padding:.5rem .75rem; align-items:center;
+  z-index:20;
+  background:rgba(10,14,18,.45);
+  backdrop-filter:blur(8px);
+}
+.brand{ font-weight:700; letter-spacing:.3px; opacity:.9 }
+.nav{ display:flex; gap:.5rem; flex-wrap:wrap }
+.pill{
+  border:0; background:var(--pill); color:var(--fg);
+  padding:.35rem .65rem; border-radius:999px; cursor:pointer;
+}
+
+/* Hero */
+#heroTitle{
+  position:absolute; top:90px; left:50%; transform:translateX(-50%);
+  font-size:clamp(48px,7vw,120px); font-weight:800;
+  text-shadow:0 0 28px rgba(255,255,255,.35),0 0 6px rgba(255,255,255,.75);
+  z-index:5;
+}
+
+/* Stage */
+main{ position:relative; height:100vh; width:100vw; overflow:hidden }
+#bubble-root{ position:absolute; inset:0; z-index:10; pointer-events:auto }
+
+.bgvid{
+  position:fixed; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:0;
+  filter:brightness(.55) saturate(1.1) contrast(1.05);
+}
+
+/* Modal */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(2,6,10,.55);
+  backdrop-filter:blur(6px); z-index:30;
+  display:grid; place-items:center;
+}
+.modal{
+  width:min(900px,92vw); background:var(--card);
+  border-radius:14px; box-shadow:0 20px 80px rgba(0,0,0,.35); padding:1rem;
+}
+.modal:focus{ outline:none }
+.modal a{ color:#cfe3ff }
+
+.modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem; padding:.25rem .25rem .75rem;
+}
+.icon-btn{ border:0; background:transparent; color:var(--fg); font-size:1.25rem; cursor:pointer }
+
+.modal-body{ min-height:140px; max-height:56vh; overflow:auto; padding:.25rem .25rem .75rem }
+.modal-footer{ display:flex; gap:.5rem; justify-content:flex-end }
+
+/* Toast */
+#toast{
+  position:fixed; inset:auto auto 16px 50%; transform:translateX(-50%);
+  background:#0aa35b; color:#fff; padding:.5rem .75rem; border-radius:999px; z-index:50;
+}
+
+/* Bubbles */
+.bubble{
+  position:absolute; display:flex; align-items:center; justify-content:center;
+  text-align:center; border-radius:50%; color:#0c0f13; font-weight:700; cursor:pointer; user-select:none;
+  transition:transform .25s ease-out, filter .25s ease-out;
+}
+.bubble .label{
+  position:relative; z-index:2; filter:drop-shadow(0 1px 0 rgba(255,255,255,.25));
+  padding:0 .5rem; line-height:1.2; font-size:clamp(12px,1.2vw,16px);
+}
+
+/* News-List – bessere Lesbarkeit */
+.news-list{
+  margin:.25rem 0 0 0; padding-left:1.2rem;
+}
+.news-list li{ margin:.25rem 0 }
+.news-list a{ color:#dce9ff; text-decoration:none }
+.news-list a:hover{ text-decoration:underline }
+
+/* Prompt-Grid (Büroalltag) */
+.prompts-grid{
+  display:grid; gap:.75rem;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+}
+.prompt-card{
+  background:#0f1620; border:1px solid rgba(255,255,255,.06);
+  border-radius:12px; padding:.75rem;
+}
+.prompt-title{ font-weight:700; margin-bottom:.35rem }
+.prompt-desc{ color:var(--fg-dim); font-size:.92rem; margin-bottom:.5rem }
+.prompt-actions{ display:flex; justify-content:flex-end }
+.copy-btn{
+  border:0; border-radius:999px; padding:.35rem .65rem; cursor:pointer;
+  background:#263142; color:#eaf3ff;
+}
+.copy-btn:hover{ filter:brightness(1.1) }

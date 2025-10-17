@@ -1,4 +1,4 @@
-// Minimal, performant 'Jellyfish' bubble engine
+// Jellyfish bubble engine with rotation queue, neon monochrome
 (function(){
   const stage = document.getElementById("bubbleStage");
   const W = () => window.innerWidth;
@@ -13,11 +13,14 @@
     { id:"weltbau", title:"Weltbau" },
     { id:"poesie-html", title:"Bunte Poesie" },
     { id:"bild-generator", title:"Bild‑Generator" },
-    { id:"idea-bibliothek-ungelebter-leben", title:"Bibliothek ungelebter Leben" },
+    { id:"briefing-assistant", title:"Briefing‑Assistent" },
+    { id:"root-cause-5why", title:"5‑Why‑Analyse" },
+    { id:"perspective-simulator", title:"Perspektiven‑Simulator" },
+    { id:"emotion-visualizer", title:"Emotion‑Visualizer" },
     { id:"idea-surrealismus-generator", title:"Surrealismus‑Generator" },
-    { id:"idea-vintage-futurist", title:"Vintage‑Futurist" },
-    { id:"idea-emotional-alchemist", title:"Emotional‑Alchemist" },
     { id:"idea-realitaets-debugger", title:"Realitäts‑Debugger" },
+    { id:"idea-bibliothek-ungelebter-leben", title:"Bibliothek ungelebter Leben" },
+    { id:"idea-vintage-futurist", title:"Vintage‑Futurist" },
     { id:"idea-ki-traeume", title:"KI‑Träume" }
   ];
 
@@ -33,7 +36,7 @@
     const el = document.createElement("div");
     el.className = "bubble";
     const color = COLORS[Math.floor(Math.random()*COLORS.length)];
-    const size = Math.min(220, Math.max(120, d.title.length*7 + 80)); // dynamisch
+    const size = Math.min(240, Math.max(120, d.title.length*7 + 80)); // dynamisch
     el.style.width = el.style.height = size + "px";
     el.style.left = Math.round(Math.random()*(W()-size))+"px";
     el.style.top = Math.round(Math.random()*(H()-size))+"px";
@@ -83,14 +86,11 @@
 
   // Resize: keep within stage
   window.addEventListener("resize", ()=>{
-    $$(".bubble", stage).forEach(el=>{
+    document.querySelectorAll(".bubble").forEach(el=>{
       const size = el.offsetWidth;
       const left = Math.min(parseFloat(el.style.left||"0"), W()-size);
       const top = Math.min(parseFloat(el.style.top||"0"), H()-size);
       el.style.left = left+"px"; el.style.top = top+"px";
     });
   });
-
-  // helpers
-  function $$(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
 })();

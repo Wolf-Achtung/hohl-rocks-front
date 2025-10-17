@@ -87,7 +87,7 @@ body{
 
 .bubble:hover{ transform:scale(1.03) }
 
-/* Modal */
+/* Modal + A11y */
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,.35);
   opacity:0; pointer-events:none; transition:opacity .18s ease; display:flex; align-items:flex-end; justify-content:center; padding:24px;
 }
@@ -109,3 +109,10 @@ body{
   background:#0e1a21; color:#cde6f4; padding:8px 12px; border-radius:10px; opacity:0; transition:all .2s ease; border:1px solid rgba(255,255,255,.08)
 }
 .toast.is-on{ opacity:1; transform:translateX(-50%) translateY(0) }
+
+/* Cards */
+.cardgrid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:12px }
+.card{ background:linear-gradient(180deg,#0e1a21,#0c161b); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:12px }
+.card h4{ margin:0 0 6px 0 }
+.card p{ margin:0 0 10px 0; color:#a8b6bf }
+.card .actions{ display:flex; justify-content:flex-end }

@@ -1,19 +1,20 @@
 [build]
-  publish = "public"
-
-[[redirects]]
-  from = "/api/*"
-  to = "https://hohl-rocks-back-production.up.railway.app/:splat"
-  status = 200
-  force = true
+  publish = "."
 
 [[redirects]]
   from = "/_api/*"
-  to = "https://hohl-rocks-back-production.up.railway.app/:splat"
+  to   = "https://hohl-rocks-back-production.up.railway.app/:splat"
   status = 200
-  force = true
+  force  = true
 
 [[redirects]]
+  from = "/api/*"
+  to   = "https://hohl-rocks-back-production.up.railway.app/:splat"
+  status = 200
+  force  = true
+
+# Single Page App fallback
+[[redirects]]
   from = "/*"
-  to = "/index.html"
+  to   = "/index.html"
   status = 200

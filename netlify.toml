@@ -1,6 +1,7 @@
 [build]
-  publish = "."
+  publish = "public"
 
+# Proxy to the fixed Railway host (both prefixes supported)
 [[redirects]]
   from = "/_api/*"
   to   = "https://hohl-rocks-back-production.up.railway.app/:splat"
@@ -13,7 +14,7 @@
   status = 200
   force  = true
 
-# Single Page App fallback
+# SPA fallback must come last
 [[redirects]]
   from = "/*"
   to   = "/index.html"

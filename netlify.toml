@@ -1,20 +1,33 @@
 [build]
   publish = "public"
 
-# Proxy to the fixed Railway host (both prefixes supported)
-[[redirects]]
-  from = "/_api/*"
-  to   = "https://hohl-rocks-back-production.up.railway.app/:splat"
-  status = 200
-  force  = true
-
+# --- API proxies (prefix preserved) ---
 [[redirects]]
   from = "/api/*"
-  to   = "https://hohl-rocks-back-production.up.railway.app/:splat"
+  to   = "https://hohl-rocks-back-production.up.railway.app/api/:splat"
   status = 200
   force  = true
 
-# SPA fallback must come last
+[[redirects]]
+  from = "/_api/*"
+  to   = "https://hohl-rocks-back-production.up.railway.app/api/:splat"
+  status = 200
+  force  = true
+
+# --- Health endpoints (for monitoring or manual checks) ---
+[[redirects]]
+  from = "/healthz"
+  to   = "https://hohl-rocks-back-production.up.railway.app/healthz"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from = "/readyz"
+  to   = "https://hohl-rocks-back-production.up.railway.app/readyz"
+  status = 200
+  force  = true
+
+# --- SPA fallback (must be last) ---
 [[redirects]]
   from = "/*"
   to   = "/index.html"

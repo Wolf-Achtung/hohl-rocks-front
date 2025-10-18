@@ -4,57 +4,48 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>hohl.rocks</title>
-  <meta name="color-scheme" content="dark light"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="./styles.css"/>
+  <meta name="color-scheme" content="dark"/>
+  <meta name="x-api-base" content="/api"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-<header class="nav">
+<header class="nav" role="banner">
   <div class="brand">hohl.rocks</div>
-  <nav class="pills" aria-label="Hauptnavigation">
-    <button data-action="daily">Heute neu</button>
-    <button data-action="news">News</button>
-    <button data-action="prompts">Prompts</button>
-    <button data-action="projekte">Projekte</button>
-    <button data-action="impressum">Impressum</button>
-    <button data-action="lang">DE/EN</button>
-    <button data-action="sound" aria-pressed="false" aria-label="Klang umschalten">Klang</button>
-  </nav>
+  <div class="pills" role="group" aria-label="Aktionen">
+    <button id="btn-refresh" type="button">Neu laden</button>
+    <button id="btn-health" type="button">Check</button>
+  </div>
 </header>
 
-<video id="bgVideo" class="bg-video" autoplay muted loop playsinline poster="./videos/road_poster.jpg">
-  <source src="./videos/road_720p_bg.webm" type="video/webm">
-  <source src="./videos/road_720p_bg.mp4" type="video/mp4">
-</video>
-
 <main>
-  <h1 class="hero">hohl.rocks</h1>
-  <canvas id="bubbleCanvas" class="bubble-canvas" aria-hidden="true"></canvas>
+  <section class="panel" aria-labelledby="sec-status">
+    <h2 id="sec-status">Status</h2>
+    <div class="status" id="status">
+      <span class="tag">Frontend ✓</span>
+      <span class="tag" id="tag-api">API …</span>
+      <span class="tag" id="tag-news">News …</span>
+      <span class="tag" id="tag-daily">Daily …</span>
+    </div>
+  </section>
+
+  <div class="grid" style="margin-top: 16px">
+    <section class="panel" aria-labelledby="sec-news">
+      <h2 id="sec-news">Aktuelle KI‑News</h2>
+      <small class="muted">Quelle: Tavily</small>
+      <ul class="news" id="news"></ul>
+    </section>
+
+    <section class="panel" aria-labelledby="sec-daily">
+      <h2 id="sec-daily">Daily</h2>
+      <ul class="news" id="daily"></ul>
+    </section>
+  </div>
 </main>
 
-<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
-  <div class="modal-card" role="document">
-    <div class="modal-head">
-      <h2 id="modalTitle">Titel</h2>
-      <button class="icon" data-close aria-label="Schließen">×</button>
-    </div>
-    <div id="modalBody" class="modal-body"></div>
-    <div class="modal-actions">
-      <button data-copy>Kopieren</button>
-      <button data-close>Schließen</button>
-    </div>
-  </div>
-</div>
-
-<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-
-<script>
-/* global variables */
-window.API_BASE = "/_api";
-</script>
-<script type="module" src="./bubbleEngine.js"></script>
-<script type="module" src="./app.js"></script>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="./js/app.js"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="dark" />
     <meta name="x-api-base" content="/api"/>
     <title>hohl.rocks — KI‑gestützte Web‑Experience</title>
-    <meta name="description" content="Neon‑Bubbles, Prompts & KI‑News. Ruhig, klar, magisch‑intuitiv." />
+    <meta name="description" content="Neon‑Bubbles, Prompts, KI‑Tipps & KI‑News. Ruhig, klar, magisch‑intuitiv." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -23,6 +23,7 @@
 
     <header class="site-header">
       <nav class="site-nav" aria-label="Hauptnavigation">
+        <button class="nav-btn" data-action="tips" type="button">KI‑Tipps</button>
         <button class="nav-btn" data-action="news" type="button">KI‑News</button>
         <button class="nav-btn" data-action="prompts" type="button">Prompts</button>
         <button class="nav-btn" data-action="projekte" type="button">Projekte</button>
@@ -35,25 +36,29 @@
 
     <main class="hero" role="main" id="main"><h1>hohl.rocks</h1></main>
 
+    <!-- KI-Tipps -->
+    <div id="ov-tips" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close="1"></div>
+      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-tips-title">
+        <header><h2 id="ov-tips-title">KI‑Tipps</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
+        <div class="tags"><span class="tag" id="tag-tips">Tipps …</span></div>
+        <div class="small">Fokus: **How‑to**, Praxis, Prompting, Produktivität (DE/DACH)</div>
+        <ul class="list" id="tips"></ul>
+      </div>
+    </div>
+
+    <!-- KI-News -->
     <div id="ov-news" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-news-title">
         <header><h2 id="ov-news-title">KI‑News</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
         <div class="tags"><span class="tag" id="tag-api">API …</span><span class="tag" id="tag-news">News …</span></div>
-        <div class="small">DE‑Fokus: Sicherheit · Praxis · Tool‑Tipps · Quelle: Tavily</div>
+        <div class="small">DE‑Fokus: Regulierung · Releases · Sicherheit · Wirtschaft</div>
         <ul class="list" id="news"></ul>
       </div>
     </div>
 
-    <div id="ov-daily" class="overlay" aria-hidden="true">
-      <div class="backdrop" data-close="1"></div>
-      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-daily-title">
-        <header><h2 id="ov-daily-title">Daily</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
-        <div class="tags"><span class="tag" id="tag-daily">Daily …</span></div>
-        <ul class="list" id="daily"></ul>
-      </div>
-    </div>
-
+    <!-- Prompts -->
     <div id="ov-prompts" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-prompts-title">
@@ -69,6 +74,7 @@
       </div>
     </div>
 
+    <!-- Impressum -->
     <div id="ov-impressum" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-impressum-title">
@@ -77,6 +83,7 @@
       </div>
     </div>
 
+    <!-- Run -->
     <div id="ov-run" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-run-title">
@@ -87,18 +94,18 @@
       </div>
     </div>
 
+    <!-- Modal & Tour anchors -->
     <section id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Overlay">
       <div class="modal__panel" tabindex="-1">
         <div class="modal__toolbar"><button class="ui btn" data-copy="modal" type="button">Kopieren</button><button class="ui btn ghost modal__close" aria-label="Schließen" type="button">Schließen</button></div>
         <div id="modal-content"></div>
       </div>
     </section>
-
     <section id="tour" class="tour" aria-hidden="true" aria-label="Onboarding">
       <div class="tour__panel" role="dialog" aria-modal="true" tabindex="-1">
         <ol>
           <li><strong>Bubbles</strong>: Klicke eine Bubble – du erhältst einen sofort nutzbaren Prompt.</li>
-          <li><strong>Shortcuts</strong>: <kbd>N</kbd> KI‑News · <kbd>P</kbd> Prompts · <kbd>Esc</kbd> Schließen.</li>
+          <li><strong>Shortcuts</strong>: <kbd>N</kbd> KI‑News · <kbd>T</kbd> KI‑Tipps · <kbd>P</kbd> Prompts.</li>
           <li><strong>Feintuning</strong>: Drücke <kbd>S</kbd> für Einstellungen (Größe, Dichte, Tempo).</li>
         </ol>
         <div class="tour__actions"><button class="ui btn" data-tour="done" type="button">Verstanden</button><button class="ui btn ghost" data-tour="skip" type="button">Überspringen</button></div>

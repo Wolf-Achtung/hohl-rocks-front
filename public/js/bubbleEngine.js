@@ -1,4 +1,3 @@
-// js/bubbleEngine.js
 import { $, el, clamp, storage } from './utils.js';
 import { openModal, modalHtmlForForm, toast } from './modal.js';
 import { runBubble } from './api.js';
@@ -8,10 +7,10 @@ const container = $('#bubbles');
 // Motion + life cycle
 const MAX_SPEED = 22;       // px/s
 const MIN_SPEED = 6;
-const BREATHE   = 0.24;     // size oscillation
-const MAX_ACTIVE = 12;      // simultaneously visible bubbles
-const TTL_MIN = 14000;      // min lifetime (ms)
-const TTL_MAX = 26000;      // max lifetime (ms)
+const BREATHE   = 0.24;
+const MAX_ACTIVE = 12;
+const TTL_MIN = 14000;
+const TTL_MAX = 26000;
 
 const bubbles = [];
 let itemsQueue = [];
@@ -31,11 +30,12 @@ function computeRect(){
 function makeBubble(item){
   const size = pick(['s','m','l','xl']);
   const node = el('button', {class:'bubble', 'data-size':size, 'data-id': item.id, 'aria-label': item.title, style:'opacity:0'});
-  node.style.setProperty('--h', String(Math.floor(rand(180,330))));
+  node.style.setProperty('--h', String(Math.floor(rand(0,360)))); // volle Neon-Palette
   node.append(el('span', {class:'bubble__title'}, item.title));
   container.append(node);
 
-  const sMap = {s:140, m:200, l:280, xl:360};
+  // Größen mit CSS abgestimmt (px)
+  const sMap = {s:110, m:160, l:210, xl:260};
   const baseSize = sMap[size];
   const x = rand(0, rect.w - baseSize);
   const y = rand(0, rect.h - baseSize);
@@ -60,13 +60,13 @@ function removeBubble(b){
   if(b.fading) return;
   b.fading = true;
   b.node.style.opacity = '0';
-  b.node.style.transform = `translate(${b.x}px, ${b.y}px) scale(0.8)`;
+  b.node.style.transform = `translate(${b.x}px, ${b.y}px) scale(0.88)`;
   setTimeout(()=>{
     b.node.remove();
     const i = bubbles.indexOf(b);
     if(i>=0) bubbles.splice(i,1);
     spawnNext();
-  }, 600);
+  }, 480);
 }
 
 function openItem(item){
@@ -135,56 +135,28 @@ function step(dt){
   const tNow = performance.now();
   const speedFactor = dt/1000;
   for(const b of [...bubbles]){
-    if(!b.fading && (tNow - b.born) > b.ttl){
-      removeBubble(b);
-      continue;
-    }
+    if(!b.fading && (tNow - b.born) > b.ttl){ removeBubble(b); continue; }
     b.phase += dt*0.001;
     const breathe = 1 + Math.sin(b.phase*BREATHE)*0.05;
     const px = clamp(b.x + b.vx*speedFactor, 0, rect.w - b.base*breathe);
     const py = clamp(b.y + b.vy*speedFactor, 0, rect.h - b.base*breathe);
-
     if(px===0 || px===rect.w - b.base*breathe) b.vx *= -1;
     if(py===0 || py===rect.h - b.base*breathe) b.vy *= -1;
-
     b.x = px; b.y = py;
     b.node.style.transform = `translate(${px}px, ${py}px) scale(${breathe})`;
   }
-
-  // Keep population
-  while(bubbles.length < Math.min(MAX_ACTIVE, itemsQueue.length)){
-    spawnNext();
-  }
+  while(bubbles.length < Math.min(MAX_ACTIVE, itemsQueue.length)){ spawnNext(); }
 }
 
-function spawnNext(){
-  if(!itemsQueue.length) return;
-  const item = itemsQueue[queueIdx % itemsQueue.length];
-  queueIdx++;
-  makeBubble(item);
-}
-
-function raf(ts){
-  if(!running){ lastTs = ts; return requestAnimationFrame(raf); }
-  if(!lastTs) lastTs = ts;
-  const dt = Math.min(48, ts - lastTs);
-  lastTs = ts;
-  step(dt);
-  requestAnimationFrame(raf);
-}
+function spawnNext(){ if(!itemsQueue.length) return; const item = itemsQueue[queueIdx % itemsQueue.length]; queueIdx++; makeBubble(item); }
+function raf(ts){ if(!running){ lastTs = ts; return requestAnimationFrame(raf); } if(!lastTs) lastTs = ts; const dt = Math.min(48, ts - lastTs); lastTs = ts; step(dt); requestAnimationFrame(raf); }
 
 export async function initBubbleEngine(items){
   computeRect();
-  // shuffle for variety
   itemsQueue = items.slice();
   for(let i=itemsQueue.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [itemsQueue[i],itemsQueue[j]] = [itemsQueue[j],itemsQueue[i]]; }
-  // initial population
   for(let i=0; i<Math.min(MAX_ACTIVE, itemsQueue.length); i++) spawnNext();
   requestAnimationFrame(raf);
 }
-
 window.addEventListener('resize', ()=>{ computeRect(); });
-document.addEventListener('visibilitychange', ()=>{
-  running = document.visibilityState === 'visible';
-  if(running) lastTs = 0;
-});
+document.addEventListener('visibilitychange', ()=>{ running = document.visibilityState === 'visible'; if(running) lastTs = 0; });

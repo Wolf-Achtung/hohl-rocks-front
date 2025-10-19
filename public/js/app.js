@@ -1,14 +1,14 @@
 import { $, el, fmtUrl, toast, copy, storage } from './utils.js';
-import { api, selfCheck, streamRun } from './api.js';
+import { api, selfCheck, streamRun, getJson } from './api.js';
 import { initBubbleEngine } from './bubbleEngine.js';
 
 /* EU toggle */
-const pref = storage('prefs'); const prefs = pref.get() || { eu:false };
+const pref = storage('prefs'); const prefs = pref.get() || { eu:false, lastNewsPrefetch: 0 };
 const btnEU = $('#btn-eu'); function renderEU(){ if(!btnEU) return; btnEU.setAttribute('aria-pressed', prefs.eu ? 'true':'false'); btnEU.textContent = 'EU: ' + (prefs.eu ? 'an' : 'aus'); }
 btnEU?.addEventListener('click', ()=>{ prefs.eu = !prefs.eu; pref.set(prefs); renderEU(); toast('EU‑only: ' + (prefs.eu?'an':'aus')); });
 renderEU();
 
-/* Overlays */
+/* Overlays (unchanged) */
 const lastFocus = new Map();
 function firstFocusable(root){ return root.querySelector('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'); }
 function openOverlay(id){ const ov = $(id); if(!ov) return; lastFocus.set(id, document.activeElement); ov.dataset.open = "1"; ov.setAttribute('aria-hidden','false'); (ov.querySelector('.close') || firstFocusable(ov) || document.body)?.focus(); const esc = (e)=>{ if(e.key==='Escape'){ closeOverlay(id); window.removeEventListener('keydown', esc);} }; window.addEventListener('keydown', esc); ov.addEventListener('keydown', trapTab); }
@@ -40,11 +40,11 @@ function mark(el, ok){ if(!el) return; el.className = 'tag ' + (ok ? 'ok' : '');
 
 /* KI-News */
 const ulNews = $('#news');
-async function loadNews(){ try{ const j = await api.news(); const items = Array.isArray(j?.items) ? j.items : []; ulNews.innerHTML = ''; if (!items.length){ ulNews.append(el('li',{}, 'Keine Ergebnisse.')); mark(tagNews, true); return; } for (const it of items.slice(0, 16)){ const a = el('a', { href: it.url, target:'_blank', rel:'noopener noreferrer' }, it.title || it.url); a.addEventListener('click', ()=> api.metrics('news_click', { url: it.url })); ulNews.append(el('li',{}, a, el('div',{}, el('small',{class:'small'}, (new URL(it.url)).hostname.replace(/^www\./,''))))); } mark(tagNews, true); } catch(e){ console.error(e); toast('News: Backend nicht erreichbar'); mark(tagNews, false); } }
+async function loadNews(){ try{ const j = await api.news(); const items = Array.isArray(j?.items) ? j.items : []; ulNews.innerHTML = ''; if (!items.length){ ulNews.append(el('li',{}, 'Keine Ergebnisse.')); mark(tagNews, true); return; } for (const it of items.slice(0, 18)){ const a = el('a', { href: it.url, target:'_blank', rel:'noopener noreferrer' }, it.title || it.url); a.addEventListener('click', ()=> api.metrics('news_click', { url: it.url })); ulNews.append(el('li',{}, a, el('div',{}, el('small',{class:'small'}, (new URL(it.url)).hostname.replace(/^www\./,''))))); } mark(tagNews, true); }catch(e){ console.error(e); toast('News-Fehler'); mark(tagNews, false); } }
 
 /* Daily */
 const ulDaily = $('#daily');
-async function loadDaily(){ try { const j = await api.daily(); const items = Array.isArray(j?.items) ? j.items : []; ulDaily.innerHTML=''; if(!items.length){ ulDaily.append(el('li',{}, 'Nichts für heute.')); mark(tagDaily, true); return; } for (const it of items.slice(0,6)){ const a = it.url ? el('a',{href:it.url,target:'_blank',rel:'noopener noreferrer'},'Öffnen') : null; if (a) a.addEventListener('click', ()=> api.metrics('daily_click', { url: it.url })); ulDaily.append(el('li',{}, el('strong',{}, it.title || 'Tipp'), a ? el('div',{}, a) : null)); } mark(tagDaily, true); } catch(e){ console.error(e); toast('Daily: Backend nicht erreichbar'); mark(tagDaily, false); } }
+async function loadDaily(){ try { const j = await api.daily(); const items = Array.isArray(j?.items) ? j.items : []; ulDaily.innerHTML=''; if(!items.length){ ulDaily.append(el('li',{}, 'Nichts für heute.')); mark(tagDaily, true); return; } for (const it of items.slice(0,6)){ const a = it.url ? el('a',{href:it.url,target:'_blank',rel:'noopener noreferrer'},'Öffnen') : null; if (a) a.addEventListener('click', ()=> api.metrics('daily_click', { url: it.url })); ulDaily.append(el('li',{}, el('strong',{}, it.title || 'Tipp'), a ? el('div',{}, a) : null)); } mark(tagDaily, true); } catch(e){ console.error(e); toast('Daily-Fehler'); mark(tagDaily, false); } }
 
 /* Prompt-Galerie */
 let PROMPTS = []; async function loadPrompts(){ if (PROMPTS.length) return PROMPTS; const r = await fetch('./data/prompts.json', { cache:'no-store' }); PROMPTS = r.ok ? await r.json() : []; return PROMPTS; }
@@ -94,4 +94,10 @@ function startStream(q){ if (closeStream) try{ closeStream(); } catch {} runOut.
 runForm?.addEventListener('submit', (e)=>{ e.preventDefault(); const q = $('#run-input').value.trim(); if(!q) return; startStream(q); });
 
 /* Init */
-(async function init(){ const ok = await selfCheck(); mark(tagApi, ok); try { const r = await fetch('./data/bubbles.json', { cache:'no-store' }); if (r.ok){ const items = await r.json(); await initBubbleEngine(items); } } catch (err) { console.warn('bubbles init failed', err); } })();
+(async function init(){
+  const ok = await selfCheck(); mark(tagApi, ok);
+  // 1x pro Tag automatisch vorladen (SWR)
+  const now = Date.now(); if (!prefs.lastNewsPrefetch || (now - prefs.lastNewsPrefetch) > 23*60*60*1000){ prefs.lastNewsPrefetch = now; pref.set(prefs); try{ await getJson('/news?prefetch=1'); } catch {} }
+  // Bubbles laden
+  try { const r = await fetch('./data/bubbles.json', { cache:'no-store' }); if (r.ok){ const items = await r.json(); await initBubbleEngine(items); } } catch (err) { console.warn('bubbles init failed', err); }
+})();

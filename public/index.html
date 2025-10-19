@@ -1,88 +1,132 @@
 <!doctype html>
 <html lang="de">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>hohl.rocks</title>
-  <meta name="color-scheme" content="dark"/>
-  <meta name="x-api-base" content="/api"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-  <div class="bg-wrap" aria-hidden="true">
-    <video id="bgvid" autoplay muted playsinline loop poster="./videos/road_poster.jpg">
-      <source src="./videos/road_720p_bg.webm" type="video/webm"/>
-      <source src="./videos/road_720p_bg.mp4" type="video/mp4"/>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="x-api-base" content="/api"/>
+    <title>hohl.rocks — KI‑gestützte Web‑Experience</title>
+    <meta name="description" content="Neon‑Bubbles, Prompts & KI‑News. Ruhig, klar, magisch‑intuitiv." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <video class="bg" autoplay muted loop playsinline aria-hidden="true" poster="./videos/road_poster.jpg">
+      <source src="./videos/road_720p_bg.webm" type="video/webm" />
+      <source src="./videos/road_720p_bg.mp4" type="video/mp4" />
     </video>
-  </div>
 
-  <canvas id="bubble-canvas"></canvas>
+    <!-- Legacy bubbles markup -->
+    <canvas id="bubbles" aria-hidden="true"></canvas>
+    <ul id="bubble-labels" aria-hidden="true"></ul>
 
-  <nav class="nav" id="top-nav" role="navigation" aria-label="Hauptnavigation">
-    <!-- will be replaced by /partials/nav.html at runtime -->
-  </nav>
+    <!-- Legacy header/nav (1:1 markup) -->
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <button class="nav-btn" data-action="news" type="button">News</button>
+        <button class="nav-btn" data-action="prompts" type="button">Prompts</button>
+        <button class="nav-btn" data-action="projekte" type="button">Projekte</button>
+        <button class="nav-btn" data-action="impressum" type="button">Impressum</button>
+        <button class="nav-btn" data-action="locale" type="button">DE/EN</button>
+        <button class="nav-btn" data-action="klang" type="button">Klang</button>
+        <button class="nav-btn gear" data-action="settings" aria-label="Einstellungen" title="Einstellungen (S)" type="button">⚙︎</button>
+      </nav>
+    </header>
 
-  <section class="hero" aria-label="Einführung">
-    <div class="hero-card">
+    <main class="hero" role="main" id="main">
       <h1>hohl.rocks</h1>
-      <p>Eine entspannte KI‑Experience mit Bubbles, Klang &amp; aktuellen Impulsen. Öffne <strong>News</strong> oder <strong>Daily</strong> oben rechts.</p>
+    </main>
+
+    <!-- Legacy footer dock (1:1 markup) -->
+    <footer class="dock">
+      <button class="chip" data-action="about">Über</button>
+      <button class="chip" data-action="news">News</button>
+      <button class="chip" data-action="prompts">Prompts</button>
+      <button class="chip" data-action="favoriten">Favoriten</button>
+      <button class="chip" data-action="projekte">Projekte</button>
+      <button class="chip" data-action="impressum">Impressum</button>
+      <button class="chip" data-action="settings">⚙︎</button>
+    </footer>
+
+    <!-- Legacy modal/tour containers (keine Logik geändert) -->
+    <section id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Overlay">
+      <div class="modal__panel" tabindex="-1">
+        <div class="modal__toolbar">
+          <button class="ui btn" data-copy="modal" type="button">Kopieren</button>
+          <button class="ui btn ghost modal__close" aria-label="Schließen" type="button">Schließen</button>
+        </div>
+        <div id="modal-content"></div>
+      </div>
+    </section>
+
+    <section id="tour" class="tour" aria-hidden="true" aria-label="Onboarding">
+      <div class="tour__panel" role="dialog" aria-modal="true" tabindex="-1">
+        <ol>
+          <li><strong>Bubbles</strong>: Klicke eine Bubble – du erhältst einen sofort nutzbaren Prompt.</li>
+          <li><strong>Shortcuts</strong>: <kbd>N</kbd> News · <kbd>P</kbd> Prompts · <kbd>Esc</kbd> Schließen.</li>
+          <li><strong>Feintuning</strong>: Drücke <kbd>S</kbd> für Einstellungen (Größe, Dichte, Tempo).</li>
+        </ol>
+        <div class="tour__actions">
+          <button class="ui btn" data-tour="done" type="button">Verstanden</button>
+          <button class="ui btn ghost" data-tour="skip" type="button">Überspringen</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="shortcut-hint" aria-hidden="true">N: News · P: Prompts · Esc: Schließen</div>
+    <div class="helper" id="helper" role="note">Was kann ich hier tun? – Bewege die Maus, klicke Bubbles, nutze N/P/Esc.</div>
+
+    <!-- Overlays (News/Daily/Run) – verborgen bis klick -->
+    <div id="ov-news" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close="1"></div>
+      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-news-title">
+        <header>
+          <h2 id="ov-news-title">Aktuelle KI‑News</h2>
+          <button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button>
+        </header>
+        <div class="tags"><span class="tag" id="tag-api">API …</span><span class="tag" id="tag-news">News …</span></div>
+        <div class="small">Quelle: Tavily</div>
+        <ul class="list" id="news"></ul>
+      </div>
     </div>
-  </section>
 
-  <!-- Overlays -->
-  <div id="ov-news" class="overlay" aria-hidden="true">
-    <div class="backdrop" data-close="1"></div>
-    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-news-title">
-      <header>
-        <h2 id="ov-news-title">Aktuelle KI‑News</h2>
-        <button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button>
-      </header>
-      <div class="tags"><span class="tag" id="tag-api">API …</span><span class="tag" id="tag-news">News …</span></div>
-      <div class="small">Quelle: Tavily</div>
-      <ul class="list" id="news"></ul>
+    <div id="ov-daily" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close="1"></div>
+      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-daily-title">
+        <header>
+          <h2 id="ov-daily-title">Daily</h2>
+          <button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button>
+        </header>
+        <div class="tags"><span class="tag" id="tag-daily">Daily …</span></div>
+        <ul class="list" id="daily"></ul>
+      </div>
     </div>
-  </div>
 
-  <div id="ov-daily" class="overlay" aria-hidden="true">
-    <div class="backdrop" data-close="1"></div>
-    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-daily-title">
-      <header>
-        <h2 id="ov-daily-title">Daily</h2>
-        <button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button>
-      </header>
-      <div class="tags"><span class="tag" id="tag-daily">Daily …</span></div>
-      <ul class="list" id="daily"></ul>
+    <div id="ov-run" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close="1"></div>
+      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-run-title">
+        <header>
+          <h2 id="ov-run-title">Run</h2>
+          <button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button>
+        </header>
+        <div class="small">Sende einen kurzen Prompt an /api/run</div>
+        <form id="run-form">
+          <textarea id="run-input" rows="4" style="width:100%;margin:8px 0" placeholder="Frag mich etwas …"></textarea>
+          <button type="submit">Absenden</button>
+        </form>
+        <pre id="run-out" style="white-space:pre-wrap"></pre>
+      </div>
     </div>
-  </div>
 
-  <div id="ov-run" class="overlay" aria-hidden="true">
-    <div class="backdrop" data-close="1"></div>
-    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-run-title">
-      <header>
-        <h2 id="ov-run-title">Run</h2>
-        <button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button>
-      </header>
-      <div class="small">Sende einen kurzen Prompt an /api/run</div>
-      <form id="run-form">
-        <textarea id="run-input" rows="4" style="width:100%;margin:8px 0" placeholder="Frag mich etwas …"></textarea>
-        <button type="submit">Absenden</button>
-      </form>
-      <pre id="run-out" style="white-space:pre-wrap"></pre>
-    </div>
-  </div>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <!-- JS -->
-  <script type="module" src="./js/utils.js"></script>
-  <script type="module" src="./js/api.js"></script>
-  <script type="module" src="./js/app.js"></script>
-  <script defer src="./js/audio.js"></script>
-  <script defer src="./js/bubbleEngine.js"></script>
-  <script defer src="./js/overlay.js"></script>
-  <script defer src="./js/modal.js"></script>
-</body>
+    <!-- Scripts -->
+    <script type="module" src="./js/utils.js"></script>
+    <script type="module" src="./js/api.js"></script>
+    <script type="module" src="./js/app.js"></script>
+    <script defer src="./js/audio.js"></script>
+    <script defer src="./js/bubbleEngine.js"></script>
+    <script defer src="./js/overlay.js"></script>
+    <script defer src="./js/modal.js"></script>
+  </body>
 </html>

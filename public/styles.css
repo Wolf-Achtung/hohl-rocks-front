@@ -2,25 +2,33 @@
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);line-height:1.45;overflow-x:hidden}
+a{color:#9fd6ff;text-decoration:none} a:hover{text-decoration:underline}
 
 /* Background video */
-.bg-wrap{position:fixed;inset:0;z-index:-2;overflow:hidden;background:#000}
-.bg-wrap video{width:100%;height:100%;object-fit:cover;filter:blur(0px) brightness(.42);transform:scale(1.02)}
+.bg{position:fixed;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:brightness(.43) contrast(1.05) saturate(1.1)}
 
-/* Nav (replaceable by partial) */
-.nav{position:fixed;inset-inline:0;top:0;z-index:30;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(6,10,16,.55);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.06)}
-.nav .brand{font-weight:800;letter-spacing:.2px}
-.nav .menu{display:flex;gap:8px;align-items:center}
-.nav a,.nav button{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(18,24,32,.7);color:var(--fg);padding:8px 12px;border-radius:10px;text-decoration:none;cursor:pointer}
-.nav a:hover,.nav button:hover{background:rgba(25,33,45,.9)}
+/* Bubbles */
+#bubbles{position:fixed;inset:0;z-index:-1;pointer-events:none}
+#bubble-labels{position:fixed;inset:0;z-index:4;list-style:none;margin:0;padding:0;pointer-events:none}
+#bubble-labels li{position:absolute;transform:translate(-50%,-50%);padding:2px 6px;border-radius:8px;background:rgba(10,16,24,.66);border:1px solid rgba(255,255,255,.12);font-size:12px;color:#d9e6f2}
 
-/* Hero area */
+/* Legacy header nav */
+.site-header{position:fixed;inset-inline:0;top:0;z-index:30}
+.site-nav{display:flex;gap:8px;justify-content:flex-end;padding:12px 16px;background:rgba(6,10,16,.55);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.06)}
+.site-nav .nav-btn{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(18,24,32,.7);color:var(--fg);padding:8px 12px;border-radius:10px;cursor:pointer}
+.site-nav .nav-btn:hover{background:rgba(25,33,45,.9)}
+.site-nav .nav-btn.gear{font-family:ui-monospace,monospace}
+
+/* Hero */
 .hero{margin-top:90px;display:flex;justify-content:center}
-.hero-card{max-width:860px;width:100%;background:rgba(10,16,24,.50);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px}
-.hero h1{margin:0 0 6px 0;font-size:28px}
-.hero p{margin:0;color:var(--muted)}
+.hero h1{margin:16px 0 0 0;font-size:32px;text-shadow:0 2px 18px rgba(0,0,0,.6)}
 
-/* Overlays (hidden by default) */
+/* Dock footer */
+.dock{position:fixed;inset-inline:0;bottom:8px;z-index:30;display:flex;gap:8px;justify-content:center}
+.dock .chip{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(18,24,32,.7);color:var(--fg);padding:6px 12px;border-radius:999px;cursor:pointer}
+.dock .chip:hover{background:rgba(25,33,45,.9)}
+
+/* Overlays */
 .overlay{position:fixed;inset:0;display:none;z-index:40}
 .overlay[data-open="1"]{display:block}
 .overlay .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
@@ -35,9 +43,14 @@ body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,s
 .tag.ok{border-color:#1f4732;background:#0c1510;color:#92e7b1}
 ul.list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 ul.list li{background:rgba(6,10,16,.6);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
-ul.list a{color:#9fd6ff;text-decoration:none}
+ul.list a{color:#9fd6ff}
 ul.list a:hover{text-decoration:underline}
 
-/* Toast */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(10,16,24,.85);border:1px solid rgba(255,255,255,.12);padding:10px 14px;border-radius:10px;display:none;z-index:50}
-.toast[data-show="1"]{display:block}
+/* Modal & Tour containers from legacy (visual baseline) */
+.modal,.tour{position:fixed;inset:0;display:none;z-index:45}
+.modal[data-open="1"],.tour[data-open="1"]{display:block}
+.modal__panel,.tour__panel{position:absolute;inset-inline:0;top:80px;margin-inline:auto;width:min(100%,920px);background:rgba(10,16,24,.94);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px}
+.modal__toolbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px}
+.ui.btn{appearance:none;border:1px solid rgba(255,255,255,.18);background:#16202c;color:var(--fg);padding:6px 10px;border-radius:10px;cursor:pointer}
+.ui.btn.ghost{background:transparent}
+.shortcut-hint{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);opacity:.7}

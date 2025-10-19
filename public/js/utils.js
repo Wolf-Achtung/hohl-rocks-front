@@ -23,11 +23,6 @@ export function storage(ns){
   };
 }
 export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-
-export function toast(msg, ms=1800){
-  const t = document.getElementById('toast'); if (!t) { console.warn('toast container missing'); return; }
-  t.textContent = msg; t.dataset.show = "1";
-  setTimeout(()=> { delete t.dataset.show; }, ms);
-}
+export function toast(msg, ms=1800){ const t = document.getElementById('toast'); if(!t) return; t.textContent = msg; t.dataset.show = "1"; setTimeout(()=>{ delete t.dataset.show; }, ms); }
 export function fmtUrl(u){ try { return new URL(u).hostname.replace(/^www\./,""); } catch { return u; } }
 export async function copy(text){ try { await navigator.clipboard.writeText(text); toast('Kopiert'); } catch { toast('Kopieren fehlgeschlagen'); } }

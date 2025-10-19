@@ -22,4 +22,14 @@ export const api = {
 };
 export function apiBase(){ return API_BASE; }
 export function setApiBase(b){ API_BASE = (b||'/api').replace(/\/+$/,''); }
+
+/** Non-streaming helper compatible with bubbleEngine's API */
+export async function runBubble(bubbleId, payload, opts={}){
+  const input = `[Bubble ${bubbleId}]\n` + JSON.stringify(payload, null, 2);
+  const j = await api.run(input);
+  const text = j?.result || '';
+  if (typeof opts.onToken === 'function') opts.onToken(text);
+  return text;
+}
+
 export async function selfCheck(){ const ok = await api.health(); if(!ok) toast('Backend nicht erreichbar'); return ok; }

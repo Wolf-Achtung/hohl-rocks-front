@@ -1,3 +1,4 @@
+// public/js/app.js
 import { $, el, fmtUrl, toast, copy, storage } from './utils.js';
 import { api, selfCheck, streamRun, getJson } from './api.js';
 import { initBubbleEngine } from './bubbleEngine.js';
@@ -89,8 +90,20 @@ async function loadNews(){
 /* Prompt-Galerie */
 let PROMPTS = []; async function loadPrompts(){ if (PROMPTS.length) return PROMPTS; const r = await fetch('./data/prompts.json', { cache:'no-store' }); PROMPTS = r.ok ? await r.json() : []; return PROMPTS; }
 const grid = $('#prompt-grid'); const searchBox = $('#prompt-search'); let currentFilter = 'Alle';
-function renderPrompts(){ loadPrompts().then(()=>{ const q = (searchBox?.value||'').toLowerCase().trim(); const list = PROMPTS.filter(p => (currentFilter==='Alle' || (p.tags||[]).includes(currentFilter)) && (p.title.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q))); grid.innerHTML = ''; for (const it of list){ const card = el('div',{class:'card'}, el('h3',{}, it.title), el('p',{}, it.desc || ''), el('div',{class:'actions'}, el('button',{type:'button','data-copy':it.prompt},'Kopieren'), el('button',{type:'button','data-run':it.prompt},'Im Run öffnen') )); grid.append(card);} }); }
-document.addEventListener('click', async (e)=>{ if (e.target?.dataset?.copy){ await copy(e.target.dataset.copy); api.metrics('prompt_copy', { title: e.target.closest('.card')?.querySelector('h3')?.textContent || '' }); } if (e.target?.dataset?.run){ openOverlay('#ov-run'); const box = $('#run-input'); box.value = e.target.dataset.run; box.focus(); api.metrics('prompt_run', { title: e.target.closest('.card')?.querySelector('h3')?.textContent || '' }); } });
+function renderPrompts(){ loadPrompts().then(()=>{ const q = (searchBox?.value||'').toLowerCase().trim(); const list = PROMPTS.filter(p => (currentFilter==='Alle' || (p.tags||[]).includes(currentFilter)) && (p.question.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q))); grid.innerHTML = ''; for (const it of list){ const card = el('div',{class:'card'}, el('h3',{}, it.question), el('p',{}, it.desc || ''), el('div',{class:'actions'}, el('button',{type:'button','data-copy':it.prompt},'Kopieren'), el('button',{type:'button','data-run':it.prompt},'Im Run öffnen'))); grid.append(card); } }); }
+document.addEventListener('click', async (e)=>{
+  const dc = e.target?.dataset?.copy;
+  if (dc){
+    if (dc === 'modal'){
+      const p = document.querySelector('#modal .prompt-text')?.innerText?.trim();
+      if (p){ await copy(p); toast('Prompt kopiert'); }
+    } else {
+      await copy(dc); toast('Kopiert');
+    }
+  }
+  const run = e.target?.dataset?.run;
+  if (run){ openOverlay('#ov-run'); const box = $('#run-input'); box.value = run; box.focus(); api.metrics('prompt_run', {}); }
+});
 document.addEventListener('click', (e)=>{ const f = e.target?.dataset?.filter; if (!f) return; currentFilter = f; document.querySelectorAll('.tools .chip').forEach(ch => ch.toggleAttribute('data-active', ch.dataset.filter === f)); renderPrompts(); });
 searchBox?.addEventListener('input', ()=> renderPrompts());
 
@@ -128,11 +141,6 @@ Widerruf erteilter Einwilligungen
 Beschwerde bei der Datenschutzbehörde`;
 function renderImpressum(){ const elHost = $('#impressum-body'); elHost.innerHTML = IMPRESSUM.split('\n\n').map(p => '<p>'+p.replace(/\n/g,'<br>')+'</p>').join(''); }
 
-/* Run (SSE + reconnect) */
-const runForm = $('#run-form'); const runOut = $('#run-out'); let closeStream = null, retry = 0;
-function startStream(q){ if (closeStream) try{ closeStream(); } catch {} runOut.textContent = ''; closeStream = streamRun(q, { eu: !!prefs.eu, onToken: (t)=> { runOut.textContent += t; }, onDone: ()=> { toast('Fertig'); closeStream = null; retry = 0; }, onError: ()=> { if (retry < 2){ const backoff = (retry+1)*600; retry++; setTimeout(()=> startStream(q), backoff); } else { toast('Stream-Fehler'); closeStream = null; retry = 0; } } }); }
-runForm?.addEventListener('submit', (e)=>{ e.preventDefault(); const q = $('#run-input').value.trim(); if(!q) return; startStream(q); });
-
 /* Init */
 (async function init(){
   const ok = await selfCheck(); if(tagApi) mark(tagApi, ok);
@@ -140,6 +148,6 @@ runForm?.addEventListener('submit', (e)=>{ e.preventDefault(); const q = $('#run
   const now = Date.now();
   if (!prefs.lastNewsPrefetch || (now - prefs.lastNewsPrefetch) > 23*60*60*1000){ prefs.lastNewsPrefetch = now; pref.set(prefs); try{ await getJson('/news?prefetch=1'); } catch {} }
   if (!prefs.lastTipsPrefetch || (now - prefs.lastTipsPrefetch) > 23*60*60*1000){ prefs.lastTipsPrefetch = now; pref.set(prefs); try{ await getJson('/tips?prefetch=1'); } catch {} }
-  // Bubbles laden
-  try { const r = await fetch('./data/bubbles.json', { cache:'no-store' }); if (r.ok){ const items = await r.json(); await initBubbleEngine(items); } } catch (err) { console.warn('bubbles init failed', err); }
+  // Bubbles direkt aus prompts.json
+  try { const items = await loadPrompts(); await initBubbleEngine(items); } catch (err) { console.warn('bubbles init failed', err); }
 })();

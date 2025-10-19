@@ -1,3 +1,4 @@
+// public/js/bubbleEngine.js
 import { $, el, clamp, storage } from './utils.js';
 import { openModal, modalHtmlForForm, toast } from './modal.js';
 import { runBubble } from './api.js';
@@ -25,10 +26,10 @@ function computeRect(){ rect = { w: container.clientWidth || window.innerWidth, 
 
 function makeBubble(item){
   const size = pick(['s','m','l','xl']);
-  const node = el('button', {class:'bubble', 'data-size':size, 'data-id': item.id, 'aria-label': item.title, style:'opacity:0'});
-  node.style.setProperty('--h', String(Math.floor(rand(0,360))));  // bunter
-  node.style.setProperty('--alpha', '.32');                        // durchsichtig
-  node.append(el('span', {class:'bubble__title'}, item.title));
+  const node = el('button', {class:'bubble', 'data-size':size, 'data-id': item.id, 'aria-label': item.question||item.title||'Bubble', style:'opacity:0'});
+  node.style.setProperty('--h', String(Math.floor(rand(0,360))));
+  node.style.setProperty('--alpha', '.32');
+  node.append(el('span', {class:'bubble__title'}, item.question || item.title || ''));
   container.append(node);
 
   const baseSize = SIZE_MAP[size];
@@ -42,12 +43,12 @@ function makeBubble(item){
   const ttl = rand(TTL_MIN, TTL_MAX);
   const born = performance.now();
 
-  const obj = { node, id: item.id, title: item.title, base: baseSize, x, y, vx, vy, phase, born, ttl, fading:false, angle: rand(0, Math.PI*2), radius: rand(Math.min(rect.w,rect.h)*0.18, Math.min(rect.w,rect.h)*0.36), av: rand(0.15, 0.42) * (Math.random()<.5?-1:1) };
+  const obj = { node, id: item.id, title: item.question || item.title, base: baseSize, x, y, vx, vy, phase, born, ttl, fading:false, angle: rand(0, Math.PI*2), radius: rand(Math.min(rect.w,rect.h)*0.18, Math.min(rect.w,rect.h)*0.36), av: rand(0.15, 0.42) * (Math.random()<.5?-1:1), item };
   node.style.transform = `translate(${x}px, ${y}px) scale(0.92)`;
   node.style.transition = 'opacity .6s ease, transform .6s ease, box-shadow .2s ease, filter .2s ease';
   requestAnimationFrame(()=> node.style.opacity = '1');
 
-  node.addEventListener('click', ()=> openItem(item));
+  node.addEventListener('click', ()=> openItem(obj.item));
   bubbles.push(obj);
 }
 
@@ -66,9 +67,9 @@ function removeBubble(b){
 
 function openItem(item){
   const html = modalHtmlForForm(item) + `<div class="form-row"><button class="ui btn ghost" id="reset-thread">Kontext zurücksetzen</button></div>`;
-  openModal({title: item.title, html});
+  openModal({title: item.question || item.title, html});
   const form = document.querySelector('[data-form="'+item.id+'"]');
-  const resultBox = document.querySelector('.modal .result');
+  const resultBox = document.querySelector('#modal .result');
   const resetBtn = document.getElementById('reset-thread');
   const old = getThread(item.id);
   if(old.length){
@@ -85,8 +86,7 @@ function openItem(item){
     resultBox.innerHTML = '<p>⏳ Läuft…</p>';
     const fd = new FormData(form);
     const payload = {};
-    const entries = Array.from(fd.entries());
-    for (const [k,v] of entries){
+    for (const [k,v] of fd.entries()){
       if(v instanceof File){
         if(v.size===0){ payload[k] = null; continue; }
         const data = await new Promise((resolve,reject)=>{
@@ -160,8 +160,9 @@ function spawnNext(){ if(!itemsQueue.length) return; const item = itemsQueue[que
 function raf(ts){ if(!running){ lastTs = ts; return requestAnimationFrame(raf); } if(!lastTs) lastTs = ts; const dt = Math.min(48, ts - lastTs); lastTs = ts; step(dt); requestAnimationFrame(raf); }
 
 export async function initBubbleEngine(items){
+  // ensure ids
+  itemsQueue = (items||[]).map((it, idx)=> ({ id: it.id!=null? it.id : idx+1, ...it }));
   computeRect();
-  itemsQueue = items.slice();
   for(let i=itemsQueue.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [itemsQueue[i],itemsQueue[j]] = [itemsQueue[j],itemsQueue[i]]; }
   for(let i=0; i<Math.min(MAX_ACTIVE, itemsQueue.length); i++) spawnNext();
   requestAnimationFrame(raf);

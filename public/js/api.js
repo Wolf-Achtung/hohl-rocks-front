@@ -1,5 +1,4 @@
 import { toast } from './utils.js';
-
 const META = document.querySelector('meta[name="x-api-base"]');
 let API_BASE = (META?.content || '/api').replace(/\/+$/,'');
 
@@ -23,7 +22,6 @@ export const health = async () => { try { const r = await fetch('/healthz'); if(
 export const metrics = async (type, meta={}) => { try { await postJson('/metrics', { type, meta }); } catch {} };
 
 export const api = { health, news, daily, run, metrics };
-
 export function apiBase(){ return API_BASE; }
 export function setApiBase(b){ API_BASE = (b||'/api').replace(/\/+$/,''); }
 
@@ -38,13 +36,10 @@ export function streamRun(input, { onToken, onDone, onError, eu } = {}){
   es.onerror = (e)=>{ onError?.(e); es.close(); };
   return () => { try{ es.close(); } catch {} };
 }
-
-/** Streaming helper consumed by bubbleEngine.js */
 export async function runBubble(bubbleId, payload, { thread=[], onToken, eu } = {}){
   const header = `[Bubble ${bubbleId} | ${new Date().toISOString()}]`;
   const input = header + "\n" + JSON.stringify({ payload, thread }, null, 2);
   if (typeof onToken === 'function'){
-    // stream
     return new Promise((resolve,reject)=>{
       const stop = streamRun(input, {
         eu,
@@ -52,12 +47,10 @@ export async function runBubble(bubbleId, payload, { thread=[], onToken, eu } = 
         onDone: ()=> resolve(),
         onError: (e)=> reject(e||new Error('stream_error'))
       });
-      // allow caller to cancel by returning stop? not needed for now
     });
   } else {
     const j = await run(input, { eu });
     return j?.result || '';
   }
 }
-
 export async function selfCheck(){ const ok = await health(); if(!ok) toast('Backend nicht erreichbar'); return ok; }

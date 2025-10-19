@@ -2,15 +2,15 @@ import { $, el, fmtUrl, toast, copy, storage } from './utils.js';
 import { api, selfCheck, streamRun } from './api.js';
 import { initBubbleEngine } from './bubbleEngine.js';
 
-/* ---------- EU toggle ---------- */
+/* EU toggle */
 const pref = storage('prefs');
 const prefs = pref.get() || { eu:false };
 const btnEU = $('#btn-eu');
-function renderEU(){ btnEU.setAttribute('aria-pressed', prefs.eu ? 'true':'false'); btnEU.textContent = 'EU: ' + (prefs.eu ? 'an' : 'aus'); }
+function renderEU(){ if(!btnEU) return; btnEU.setAttribute('aria-pressed', prefs.eu ? 'true':'false'); btnEU.textContent = 'EU: ' + (prefs.eu ? 'an' : 'aus'); }
 btnEU?.addEventListener('click', ()=>{ prefs.eu = !prefs.eu; pref.set(prefs); renderEU(); toast('EU‑only: ' + (prefs.eu?'an':'aus')); });
 renderEU();
 
-/* ---------- Overlay focus management ---------- */
+/* Overlays: focus-trap */
 const lastFocus = new Map();
 function firstFocusable(root){ return root.querySelector('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'); }
 function openOverlay(id){
@@ -20,7 +20,6 @@ function openOverlay(id){
   (ov.querySelector('.close') || firstFocusable(ov) || document.body)?.focus();
   const esc = (e)=>{ if(e.key==='Escape'){ closeOverlay(id); window.removeEventListener('keydown', esc);} };
   window.addEventListener('keydown', esc);
-  // Focus trap
   ov.addEventListener('keydown', trapTab);
 }
 function closeOverlay(id){
@@ -44,7 +43,7 @@ document.addEventListener('click', (e)=>{
   if (e.target?.matches('.overlay .backdrop')){ const p = e.target.closest('.overlay'); if(p) closeOverlay('#'+p.id); }
 });
 
-/* ---------- NAV actions ---------- */
+/* NAV actions */
 function onAction(action){
   switch(action){
     case 'news': openOverlay('#ov-news'); loadNews(); break;
@@ -66,13 +65,11 @@ window.addEventListener('keydown', (e)=>{
   if (e.key==='Escape'){ document.querySelectorAll('.overlay[data-open="1"]').forEach(el=> closeOverlay('#'+el.id)); }
 });
 
-/* ---------- Status tags ---------- */
-const tagApi = $('#tag-api');
-const tagNews = $('#tag-news');
-const tagDaily = $('#tag-daily');
+/* Status tags */
+const tagApi = $('#tag-api'), tagNews = $('#tag-news'), tagDaily = $('#tag-daily');
 function mark(el, ok){ if(!el) return; el.className = 'tag ' + (ok ? 'ok' : ''); el.textContent = (el.textContent.split(' ')[0] || '') + ' ' + (ok ? '✓' : ''); }
 
-/* ---------- KI-News ---------- */
+/* KI-News */
 const ulNews = $('#news');
 async function loadNews(){
   try{
@@ -83,13 +80,13 @@ async function loadNews(){
     for (const it of items.slice(0, 16)){
       const a = el('a', { href: it.url, target:'_blank', rel:'noopener noreferrer' }, it.title || it.url);
       a.addEventListener('click', ()=> api.metrics('news_click', { url: it.url }));
-      ulNews.append(el('li',{}, a, el('div',{}, el('small',{class:'small'}, fmtUrl(it.url)))));
+      ulNews.append(el('li',{}, a, el('div',{}, el('small',{class:'small'}, (new URL(it.url)).hostname.replace(/^www\./,'')))));
     }
     mark(tagNews, true);
   }catch(e){ console.error(e); toast('News-Fehler'); mark(tagNews, false); }
 }
 
-/* ---------- Daily ---------- */
+/* Daily */
 const ulDaily = $('#daily');
 async function loadDaily(){
   try {
@@ -106,20 +103,13 @@ async function loadDaily(){
   } catch(e){ console.error(e); toast('Daily-Fehler'); mark(tagDaily, false); }
 }
 
-/* ---------- Prompt-Galerie ---------- */
+/* Prompt-Galerie */
 let PROMPTS = [];
-async function loadPrompts(){
-  if (PROMPTS.length) return PROMPTS;
-  const r = await fetch('./data/prompts.json', { cache:'no-store' });
-  PROMPTS = r.ok ? await r.json() : [];
-  return PROMPTS;
-}
-const grid = $('#prompt-grid');
-const searchBox = $('#prompt-search');
-let currentFilter = 'Alle';
+async function loadPrompts(){ if (PROMPTS.length) return PROMPTS; const r = await fetch('./data/prompts.json', { cache:'no-store' }); PROMPTS = r.ok ? await r.json() : []; return PROMPTS; }
+const grid = $('#prompt-grid'); const searchBox = $('#prompt-search'); let currentFilter = 'Alle';
 function renderPrompts(){
   loadPrompts().then(()=>{
-    const q = (searchBox.value||'').toLowerCase().trim();
+    const q = (searchBox?.value||'').toLowerCase().trim();
     const list = PROMPTS.filter(p => (currentFilter==='Alle' || (p.tags||[]).includes(currentFilter)) && (p.title.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)));
     grid.innerHTML = '';
     for (const it of list){
@@ -140,15 +130,12 @@ document.addEventListener('click', async (e)=>{
   if (e.target?.dataset?.run){ openOverlay('#ov-run'); const box = $('#run-input'); box.value = e.target.dataset.run; box.focus(); api.metrics('prompt_run', { title: e.target.closest('.card')?.querySelector('h3')?.textContent || '' }); }
 });
 document.addEventListener('click', (e)=>{
-  const f = e.target?.dataset?.filter;
-  if (!f) return;
-  currentFilter = f;
-  document.querySelectorAll('.tools .chip').forEach(ch => ch.toggleAttribute('data-active', ch.dataset.filter === f));
-  renderPrompts();
+  const f = e.target?.dataset?.filter; if (!f) return;
+  currentFilter = f; document.querySelectorAll('.tools .chip').forEach(ch => ch.toggleAttribute('data-active', ch.dataset.filter === f)); renderPrompts();
 });
 searchBox?.addEventListener('input', ()=> renderPrompts());
 
-/* ---------- Impressum ---------- */
+/* Impressum */
 const IMPRESSUM = `Rechtliches & Transparenz
 Impressum
 Verantwortlich für den Inhalt:
@@ -180,15 +167,10 @@ Auskunft, Berichtigung oder Löschung Ihrer Daten
 Datenübertragbarkeit
 Widerruf erteilter Einwilligungen
 Beschwerde bei der Datenschutzbehörde`;
-function renderImpressum(){
-  const elHost = $('#impressum-body');
-  elHost.innerHTML = IMPRESSUM.split('\n\n').map(p => '<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
-}
+function renderImpressum(){ const elHost = $('#impressum-body'); elHost.innerHTML = IMPRESSUM.split('\n\n').map(p => '<p>'+p.replace(/\n/g,'<br>')+'</p>').join(''); }
 
-/* ---------- Run form (SSE with reconnect) ---------- */
-const runForm = $('#run-form');
-const runOut = $('#run-out');
-let closeStream = null, retry = 0;
+/* Run (SSE + reconnect) */
+const runForm = $('#run-form'); const runOut = $('#run-out'); let closeStream = null, retry = 0;
 function startStream(q){
   if (closeStream) try{ closeStream(); } catch {}
   runOut.textContent = '';
@@ -201,24 +183,14 @@ function startStream(q){
         const backoff = (retry+1)*600;
         retry++;
         setTimeout(()=> startStream(q), backoff);
-      } else {
-        toast('Stream-Fehler'); closeStream = null; retry = 0;
-      }
+      } else { toast('Stream-Fehler'); closeStream = null; retry = 0; }
     }
   });
 }
-runForm?.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  const q = $('#run-input').value.trim();
-  if(!q) return;
-  startStream(q);
-});
+runForm?.addEventListener('submit', (e)=>{ e.preventDefault(); const q = $('#run-input').value.trim(); if(!q) return; startStream(q); });
 
-/* ---------- Init ---------- */
+/* Init */
 (async function init(){
   const ok = await selfCheck(); mark(tagApi, ok);
-  try {
-    const r = await fetch('./data/bubbles.json', { cache:'no-store' });
-    if (r.ok){ const items = await r.json(); await initBubbleEngine(items); }
-  } catch (err) { console.warn('bubbles init failed', err); }
+  try { const r = await fetch('./data/bubbles.json', { cache:'no-store' }); if (r.ok){ const items = await r.json(); await initBubbleEngine(items); } } catch (err) { console.warn('bubbles init failed', err); }
 })();

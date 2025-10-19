@@ -1,23 +1,10 @@
 import { $, el, fmtUrl, toast } from './utils.js';
 import { api, selfCheck } from './api.js';
 
-/* ---------- NAV: load from partial (1:1 restore supported) ---------- */
-async function loadNav(){
-  const wrap = $('#top-nav');
-  try {
-    const res = await fetch('./partials/nav.html', { cache: 'no-store' });
-    wrap.innerHTML = await res.text();
-  } catch {
-    wrap.innerHTML = '<div class="brand">hohl.rocks</div><div class="menu"><button id="btn-sound" type="button">Sound</button><a href="#" id="btn-open-news">News</a><a href="#" id="btn-open-daily">Daily</a><a href="#" id="btn-open-run">Run</a><button id="btn-health" type="button">Check</button></div>';
-  }
-}
-await loadNav();
-
 /* ---------- Overlay helpers ---------- */
 function openOverlay(id){
   const ov = $(id); if (!ov) return;
   ov.dataset.open = "1"; ov.setAttribute('aria-hidden', 'false');
-  // Esc to close
   const esc = (e)=> { if (e.key === 'Escape'){ closeOverlay(id); window.removeEventListener('keydown', esc);} };
   window.addEventListener('keydown', esc);
 }
@@ -25,55 +12,56 @@ function closeOverlay(id){
   const ov = $(id); if (!ov) return;
   delete ov.dataset.open; ov.setAttribute('aria-hidden', 'true');
 }
+document.body.addEventListener('click', (e)=>{
+  if (e.target.matches('[data-close]')){
+    const p = e.target.closest('.overlay'); if (p) closeOverlay('#'+p.id);
+  }
+  if (e.target.matches('.overlay .backdrop')){
+    const p = e.target.closest('.overlay'); if (p) closeOverlay('#'+p.id);
+  }
+});
 
-/* ---------- Elements ---------- */
-const ovNews = '#ov-news';
-const ovDaily = '#ov-daily';
-const ovRun = '#ov-run';
+/* ---------- Actions via legacy data-action ---------- */
+function onAction(action){
+  switch (action) {
+    case 'news': openOverlay('#ov-news'); loadNews(); break;
+    case 'prompts': openOverlay('#ov-run'); break; // placeholder: could open an own prompts overlay
+    case 'projekte': toast('Projekte folgt'); break;
+    case 'impressum': toast('Impressum folgt'); break;
+    case 'about': toast('Über folgt'); break;
+    case 'favoriten': toast('Favoriten folgt'); break;
+    case 'settings': toast('Einstellungen: S'); break;
+    case 'klang':
+      if (window.AudioController){
+        try {
+          const on = window.AudioController.toggle();
+          // Optional: reflect somewhere
+          toast(on ? 'Sound: an' : 'Sound: aus');
+        } catch { toast('Audio-Fehler'); }
+      } else toast('Audio-Modul nicht geladen');
+      break;
+    case 'locale': toast('Sprachumschaltung folgt'); break;
+    default: break;
+  }
+}
+document.addEventListener('click', (e)=> {
+  const act = e.target?.dataset?.action;
+  if (act){ e.preventDefault(); onAction(act); }
+});
+
+/* ---------- Status tags ---------- */
 const tagApi = $('#tag-api');
 const tagNews = $('#tag-news');
 const tagDaily = $('#tag-daily');
-const ulNews = $('#news');
-const ulDaily = $('#daily');
-
-document.body.addEventListener('click', (e)=>{
-  const t = e.target;
-  if (t.matches('[data-close]')){
-    const p = t.closest('.overlay');
-    if (p) closeOverlay('#'+p.id);
-  }
-});
-
-/* ---------- Feature: Sound toggle (if audio.js defines AudioController) ---------- */
-document.addEventListener('click', (e)=>{
-  if (e.target && e.target.id === 'btn-sound'){
-    if (window.AudioController){
-      const on = window.AudioController.toggle();
-      e.target.setAttribute('aria-pressed', on ? 'true':'false');
-      e.target.textContent = on ? 'Sound: an' : 'Sound';
-    } else {
-      toast('Audio-Modul nicht geladen');
-    }
-  }
-});
-
-/* ---------- Bind nav buttons ---------- */
-document.addEventListener('click', (e)=>{
-  if (e.target?.id === 'btn-open-news'){ e.preventDefault(); openOverlay(ovNews); loadNews(); }
-  if (e.target?.id === 'btn-open-daily'){ e.preventDefault(); openOverlay(ovDaily); loadDaily(); }
-  if (e.target?.id === 'btn-open-run'){ e.preventDefault(); openOverlay(ovRun); }
-  if (e.target?.id === 'btn-health'){ e.preventDefault(); doHealth(); }
-});
-
-/* ---------- Loaders ---------- */
-function mark(el, ok){ if (!el) return; el.className = 'tag ' + (ok ? 'ok' : ''); el.textContent = (el.textContent.split(' ')[0] || '') + ' ' + (ok ? '✓' : ''); }
-
-async function doHealth(){
-  const ok = await selfCheck();
-  toast(ok ? 'Backend OK' : 'Backend nicht erreichbar');
-  mark(tagApi, ok);
+function mark(el, ok){
+  if (!el) return;
+  el.className = 'tag ' + (ok ? 'ok' : '');
+  el.textContent = (el.textContent.split(' ')[0] || '') + ' ' + (ok ? '✓' : '');
 }
 
+/* ---------- Loaders ---------- */
+const ulNews = $('#news');
+const ulDaily = $('#daily');
 async function loadNews(){
   try {
     const j = await api.news();
@@ -89,7 +77,6 @@ async function loadNews(){
     mark(tagNews, true);
   } catch (e){ console.error(e); toast('News-Fehler'); mark(tagNews, false); }
 }
-
 async function loadDaily(){
   try {
     const j = await api.daily();
@@ -122,12 +109,19 @@ runForm?.addEventListener('submit', async (e)=>{
 
 /* ---------- Init ---------- */
 (async function init(){
-  await doHealth(); // updates API tag
-  // Bubbles hook (if available)
+  const ok = await selfCheck(); mark(tagApi, ok);
+
+  // bubble engine compatibility: call if any known entrypoints exist
+  const canvas = document.getElementById('bubbles');
   try {
-    if (window.Bubbles?.init){
-      const canvas = document.getElementById('bubble-canvas');
-      window.Bubbles.init(canvas, { speed:.4, density:.6 });
+    if (window.Bubbles?.init) {
+      window.Bubbles.init(canvas, { speed:.4, density:.6, labelsEl: document.getElementById('bubble-labels') });
+    } else if (window.initBubbles) {
+      window.initBubbles(canvas, document.getElementById('bubble-labels'));
+    } else if (window.BubbleEngine?.init) {
+      window.BubbleEngine.init(canvas, { labels: '#bubble-labels' });
     }
-  } catch {}
+  } catch (err) {
+    console.warn('Bubble engine init failed:', err);
+  }
 })();

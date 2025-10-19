@@ -15,7 +15,8 @@ export function el(tag, attrs={}, ...children){
   return n;
 }
 export function toast(msg, ms=1800){
-  const t = document.getElementById('toast'); t.textContent = msg; t.dataset.show = "1";
+  const t = document.getElementById('toast'); if (!t) { console.warn('toast container missing'); return; }
+  t.textContent = msg; t.dataset.show = "1";
   setTimeout(()=> { delete t.dataset.show; }, ms);
 }
 export function fmtUrl(u){ try { return new URL(u).hostname.replace(/^www\./,""); } catch { return u; } }

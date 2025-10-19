@@ -1,7 +1,6 @@
 [build]
   publish = "public"
 
-# --- API proxies (prefix preserved) ---
 [[redirects]]
   from = "/api/*"
   to   = "https://hohl-rocks-back-production.up.railway.app/api/:splat"
@@ -14,7 +13,6 @@
   status = 200
   force  = true
 
-# --- Health endpoints (for monitoring or manual checks) ---
 [[redirects]]
   from = "/healthz"
   to   = "https://hohl-rocks-back-production.up.railway.app/healthz"
@@ -27,7 +25,6 @@
   status = 200
   force  = true
 
-# --- SPA fallback (must be last) ---
 [[redirects]]
   from = "/*"
   to   = "/index.html"

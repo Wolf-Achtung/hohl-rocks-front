@@ -36,14 +36,14 @@
 
     <main class="hero" role="main" id="main"><h1>hohl.rocks</h1></main>
 
-    <!-- KI-Tipps -->
+    <!-- KI-Tipps (Cards) -->
     <div id="ov-tips" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-tips-title">
         <header><h2 id="ov-tips-title">KI‑Tipps</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
         <div class="tags"><span class="tag" id="tag-tips">Tipps …</span></div>
-        <div class="small">Fokus: **How‑to**, Praxis, Prompting, Produktivität (DE/DACH)</div>
-        <ul class="list" id="tips"></ul>
+        <div class="small">Fokus: How‑to · Praxis · Prompting · Produktivität (DE/DACH)</div>
+        <div class="grid-tips" id="tips-grid"></div>
       </div>
     </div>
 
@@ -105,8 +105,8 @@
       <div class="tour__panel" role="dialog" aria-modal="true" tabindex="-1">
         <ol>
           <li><strong>Bubbles</strong>: Klicke eine Bubble – du erhältst einen sofort nutzbaren Prompt.</li>
-          <li><strong>Shortcuts</strong>: <kbd>N</kbd> KI‑News · <kbd>T</kbd> KI‑Tipps · <kbd>P</kbd> Prompts.</li>
-          <li><strong>Feintuning</strong>: Drücke <kbd>S</kbd> für Einstellungen (Größe, Dichte, Tempo).</li>
+          <li><strong>Shortcuts</strong>: <kbd>T</kbd> Tipps · <kbd>N</kbd> News · <kbd>P</kbd> Prompts.</li>
+          <li><strong>Layout</strong>: Drücke <kbd>O</kbd> für Orbit‑Layout.</li>
         </ol>
         <div class="tour__actions"><button class="ui btn" data-tour="done" type="button">Verstanden</button><button class="ui btn ghost" data-tour="skip" type="button">Überspringen</button></div>
       </div>

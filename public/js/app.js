@@ -3,7 +3,7 @@ import { api, selfCheck, streamRun, getJson } from './api.js';
 import { initBubbleEngine } from './bubbleEngine.js';
 
 /* EU toggle */
-const pref = storage('prefs'); const prefs = pref.get() || { eu:false, lastNewsPrefetch: 0, lastTipsPrefetch: 0 };
+const pref = storage('prefs'); const prefs = pref.get() || { eu:false, lastNewsPrefetch: 0, lastTipsPrefetch: 0, layout:'drift' };
 const btnEU = $('#btn-eu'); function renderEU(){ if(!btnEU) return; btnEU.setAttribute('aria-pressed', prefs.eu ? 'true':'false'); btnEU.textContent = 'EU: ' + (prefs.eu ? 'an' : 'aus'); }
 btnEU?.addEventListener('click', ()=>{ prefs.eu = !prefs.eu; pref.set(prefs); renderEU(); toast('EU‑only: ' + (prefs.eu?'an':'aus')); });
 renderEU();
@@ -37,25 +37,33 @@ window.addEventListener('keydown', (e)=>{
   if (e.key==='t' || e.key==='T'){ e.preventDefault(); onAction('tips'); }
   if (e.key==='n' || e.key==='N'){ e.preventDefault(); onAction('news'); }
   if (e.key==='p' || e.key==='P'){ e.preventDefault(); onAction('prompts'); }
+  if (e.key==='o' || e.key==='O'){ e.preventDefault(); prefs.layout = (prefs.layout==='drift'?'orbit':'drift'); pref.set(prefs); window.dispatchEvent(new CustomEvent('layout:toggle', { detail: { layout:prefs.layout } })); toast('Layout: ' + (prefs.layout==='orbit'?'Orbit':'Drift')); }
   if (e.key==='Escape'){ document.querySelectorAll('.overlay[data-open="1"]').forEach(el=> closeOverlay('#'+el.id)); }
 });
 
 /* Tags */
-const tagApi = $('#tag-api'), tagNews = $('#tag-news'), tagDaily = $('#tag-daily'), tagTips = $('#tag-tips');
+const tagApi = $('#tag-api'), tagNews = $('#tag-news'), tagTips = $('#tag-tips');
 function mark(el, ok){ if(!el) return; el.className = 'tag ' + (ok ? 'ok' : ''); el.textContent = (el.textContent.split(' ')[0] || '') + ' ' + (ok ? '✓' : ''); }
 
-/* KI-Tipps */
-const ulTips = $('#tips');
+/* KI-Tipps (Cards) */
+const tipsGrid = $('#tips-grid');
 async function loadTips(){
   try{
     const j = await api.tips();
     const items = Array.isArray(j?.items) ? j.items : [];
-    ulTips.innerHTML = '';
-    if (!items.length){ ulTips.append(el('li',{}, 'Keine Ergebnisse.')); mark(tagTips, true); return; }
+    tipsGrid.innerHTML = '';
+    if (!items.length){ tipsGrid.innerHTML = '<p>Keine Ergebnisse.</p>'; mark(tagTips, true); return; }
     for (const it of items.slice(0, 20)){
-      const a = el('a', { href: it.url, target:'_blank', rel:'noopener noreferrer' }, it.title || it.url);
-      a.addEventListener('click', ()=> api.metrics('tips_click', { url: it.url }));
-      ulTips.append(el('li',{}, a, el('div',{}, el('small',{class:'small'}, (new URL(it.url)).hostname.replace(/^www\./,'')))));
+      const host = new URL(it.url).hostname.replace(/^www\./,'');
+      const card = el('article', { class:'tip' },
+        el('h3', {}, it.title || host),
+        el('div', { class:'meta' }, el('span', { class:'why' }, it.why || 'Praxis'), el('span', { class:'host' }, host)),
+        el('div', { class:'actions' },
+          el('a', { href: it.url, target:'_blank', rel:'noopener noreferrer' }, 'Öffnen'),
+          el('button', { type:'button', 'data-copy': it.url }, 'Link kopieren')
+        )
+      );
+      tipsGrid.append(card);
     }
     mark(tagTips, true);
   }catch(e){ console.error(e); toast('Tipps-Fehler'); mark(tagTips, false); }
@@ -78,20 +86,10 @@ async function loadNews(){
   }catch(e){ console.error(e); toast('News-Fehler'); mark(tagNews, false); }
 }
 
-/* Daily */
-const ulDaily = $('#daily'); // (Optional overlay; falls vorhanden)
-async function loadDaily(){
-  try {
-    const j = await api.daily();
-    const items = Array.isArray(j?.items) ? j.items : [];
-    if(ulDaily){ ulDaily.innerHTML=''; if(!items.length){ ulDaily.append(el('li',{}, 'Nichts für heute.')); mark(tagDaily, true); return; } for (const it of items.slice(0,6)){ const a = it.url ? el('a',{href:it.url,target:'_blank',rel:'noopener noreferrer'},'Öffnen') : null; if (a) a.addEventListener('click', ()=> api.metrics('daily_click', { url: it.url })); ulDaily.append(el('li',{}, el('strong',{}, it.title || 'Tipp'), a ? el('div',{}, a) : null)); } mark(tagDaily, true); }
-  } catch(e){ console.error(e); if(tagDaily) mark(tagDaily, false); }
-}
-
 /* Prompt-Galerie */
 let PROMPTS = []; async function loadPrompts(){ if (PROMPTS.length) return PROMPTS; const r = await fetch('./data/prompts.json', { cache:'no-store' }); PROMPTS = r.ok ? await r.json() : []; return PROMPTS; }
 const grid = $('#prompt-grid'); const searchBox = $('#prompt-search'); let currentFilter = 'Alle';
-function renderPrompts(){ loadPrompts().then(()=>{ const q = (searchBox?.value||'').toLowerCase().trim(); const list = PROMPTS.filter(p => (currentFilter==='Alle' || (p.tags||[]).includes(currentFilter)) && (p.title.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q))); grid.innerHTML = ''; for (const it of list){ const card = el('div',{class:'card'}, el('h3',{}, it.title), el('p',{}, it.desc || ''), el('div',{class:'actions'}, el('button',{type:'button','data-copy':it.prompt},'Kopieren'), el('button',{type:'button','data-run':it.prompt,class:'ghost'},'In Run öffnen') ) ); grid.append(card); } }); }
+function renderPrompts(){ loadPrompts().then(()=>{ const q = (searchBox?.value||'').toLowerCase().trim(); const list = PROMPTS.filter(p => (currentFilter==='Alle' || (p.tags||[]).includes(currentFilter)) && (p.title.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q))); grid.innerHTML = ''; for (const it of list){ const card = el('div',{class:'card'}, el('h3',{}, it.title), el('p',{}, it.desc || ''), el('div',{class:'actions'}, el('button',{type:'button','data-copy':it.prompt},'Kopieren'), el('button',{type:'button','data-run':it.prompt},'Im Run öffnen') )); grid.append(card);} }); }
 document.addEventListener('click', async (e)=>{ if (e.target?.dataset?.copy){ await copy(e.target.dataset.copy); api.metrics('prompt_copy', { title: e.target.closest('.card')?.querySelector('h3')?.textContent || '' }); } if (e.target?.dataset?.run){ openOverlay('#ov-run'); const box = $('#run-input'); box.value = e.target.dataset.run; box.focus(); api.metrics('prompt_run', { title: e.target.closest('.card')?.querySelector('h3')?.textContent || '' }); } });
 document.addEventListener('click', (e)=>{ const f = e.target?.dataset?.filter; if (!f) return; currentFilter = f; document.querySelectorAll('.tools .chip').forEach(ch => ch.toggleAttribute('data-active', ch.dataset.filter === f)); renderPrompts(); });
 searchBox?.addEventListener('input', ()=> renderPrompts());

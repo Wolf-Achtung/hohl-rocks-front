@@ -3,15 +3,12 @@ import { toast } from './utils.js';
 const META = document.querySelector('meta[name="x-api-base"]');
 let API_BASE = (META?.content || '/api').replace(/\/+$/,'');
 
-/** GET helper returning JSON */
 export async function getJson(path){
   const url = `${API_BASE}${path.startsWith('/') ? path : '/'+path}`;
   const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
   return res.json();
 }
-
-/** POST helper returning JSON */
 export async function postJson(path, body){
   const url = `${API_BASE}${path.startsWith('/') ? path : '/'+path}`;
   const res = await fetch(url, {
@@ -23,20 +20,12 @@ export async function postJson(path, body){
   return res.json();
 }
 
-// High-level calls
 export const api = {
   async health(){ try { const r = await fetch('/healthz'); if(!r.ok) return false; const j = await r.json(); return j?.ok !== false; } catch { return false; } },
   async news(){ return getJson('/news'); },
   async daily(){ return getJson('/daily'); },
-  async run(input){ return postJson('/api/run', { input }); }
+  async run(input){ return postJson('/run', { input }); }
 };
-
 export function setApiBase(b){ API_BASE = (b||'/api').replace(/\/+$/,''); }
 export function apiBase(){ return API_BASE; }
-
-// quick self-check (optional)
-export async function selfCheck(){
-  const ok = await api.health();
-  if (!ok) toast('Backend nicht erreichbar');
-  return ok;
-}
+export async function selfCheck(){ const ok = await api.health(); if(!ok) toast('Backend nicht erreichbar'); return ok; }

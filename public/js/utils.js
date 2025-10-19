@@ -14,18 +14,8 @@ export function el(tag, attrs={}, ...children){
   }
   return n;
 }
-export function storage(ns){
-  const key = `hr.${ns}`;
-  return {
-    get(){ try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; } },
-    set(v){ localStorage.setItem(key, JSON.stringify(v)); },
-    del(){ localStorage.removeItem(key); }
-  };
-}
 export function toast(msg, ms=1800){
-  const t = $("#toast"); t.textContent = msg; t.dataset.show = "1";
+  const t = document.getElementById('toast'); t.textContent = msg; t.dataset.show = "1";
   setTimeout(()=> { delete t.dataset.show; }, ms);
 }
 export function fmtUrl(u){ try { return new URL(u).hostname.replace(/^www\./,""); } catch { return u; } }
-export const sleep = (ms)=> new Promise(r=> setTimeout(r, ms));
-export function safeHtml(s=""){ return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }

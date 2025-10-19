@@ -1,59 +1,67 @@
 [
   {
-    "title": "Zeit sparen im Alltag",
+    "id": 1,
+    "question": "Wo verlierst du im Alltag Zeit?",
     "desc": "To‑Dos in 3 Stufen + Reihenfolge.",
-    "prompt": "Sortiere diese Aufgaben in drei Stufen (Sofort/Heute/Kann warten). Erstelle daraus eine 5-Punkte-Reihenfolge mit kurzer Begründung je Schritt. Aufgaben: ",
+    "prompt": "Sortiere diese Aufgaben in drei Stufen (Sofort/Heute/Kann warten). Erstelle daraus eine 5‑Punkte‑Reihenfolge mit kurzer Begründung je Schritt. Aufgaben: ",
     "tags": [
       "Alltag"
     ]
   },
   {
-    "title": "Koch‑Ko‑Pilot",
-    "desc": "3 Zutaten → Gericht, Einkaufsliste, 20‑Min‑Plan.",
-    "prompt": "Ich habe diese Zutaten: [ZUTATEN]. Schlage ein Gericht (1 Portion) vor, mit Einkaufsliste (fehlende Zutaten) und 20-Minuten-Schrittplan.",
+    "id": 2,
+    "question": "Was kochst du aus 3 Zutaten?",
+    "desc": "3 Zutaten → Gericht, Einkaufsliste, 20‑Minuten‑Plan.",
+    "prompt": "Ich habe diese Zutaten: [ZUTATEN]. Schlage ein Gericht (1 Portion) vor, mit Einkaufsliste (fehlende Zutaten) und 20‑Minuten‑Schrittplan.",
     "tags": [
       "Alltag",
       "Kreativ"
     ]
   },
   {
-    "title": "Fokus‑Reframing",
-    "desc": "Nerviges Problem neu framen + Mini‑Handlung.",
-    "prompt": "Formuliere 3 neue Blickwinkel (Reframing) für dieses Problem und gib je eine konkrete Mini-Handlung: ",
+    "id": 3,
+    "question": "Wie kannst du ein nerviges Problem neu framen?",
+    "desc": "Nerviges Problem neu rahmen + Mini‑Handlung.",
+    "prompt": "Formuliere 3 neue Blickwinkel (Reframing) für dieses Problem und gib je eine konkrete Mini‑Handlung: ",
     "tags": [
       "Alltag",
       "Mindset"
     ]
   },
   {
-    "title": "Mini‑Coach Schlaf",
-    "desc": "7‑Tage‑„Schlaf‑Routine light“ ohne Gadgets.",
-    "prompt": "Entwerfe eine minimalistische 7-Tage-Schlaf-Routine. Vorgaben: 3 Kernregeln, 1 Abendritual, 1 Notfallplan bei schlechtem Schlaf.",
+    "id": 4,
+    "question": "Wie schläfst du nächste Woche besser?",
+    "desc": "„7‑Tage‑Schlaf‑Routine Light“ ohne Gadgets.",
+    "prompt": "Entwirf eine minimalistische 7‑Tage‑Schlaf‑Routine. Vorgaben: 3 Kernregeln, 1 Abendritual, 1 Notfallplan bei schlechtem Schlaf.",
     "tags": [
       "Alltag",
       "Gesundheit"
     ]
   },
   {
-    "title": "Lern‑Sprint 30′",
+    "id": 5,
+    "question": "Was willst du in 30 Minuten verstehen?",
     "desc": "Thema in 30 Minuten kapieren – Plan + Quiz.",
-    "prompt": "Leite mich durch einen Lern-Sprint (30 Minuten) für das Thema: [THEMA]. Gib mir einen Blockplan und 5 Quizfragen mit Lösungen.",
+    "prompt": "Leite mich durch einen Lern‑Sprint (30 Minuten) für das Thema: [THEMA]. Gib mir einen Blockplan und 5 Quizfragen mit Lösungen.",
     "tags": [
       "Kreativ",
-      "Arbeit"
+      "Arbeit",
+      "Lernen"
     ]
   },
   {
-    "title": "Foto‑Caption Pro",
+    "id": 6,
+    "question": "Welche 3 Captions funktionieren am besten?",
     "desc": "Drei Captions (seriös/freundlich/spielerisch).",
-    "prompt": "Erzeuge 3 Captions in verschiedenen Tönen (seriös, freundlich, spielerisch) für ein Foto, Thema: [KONTEXT].",
+    "prompt": "Erzeuge 3 Captions in verschiedenen Tönen (seriös, freundlich, spielerisch) für ein Foto. Thema/Kontext: [KONTEXT].",
     "tags": [
       "Kreativ",
       "Social"
     ]
   },
   {
-    "title": "Explain‑Like‑I’m‑5 (ELI5)",
+    "id": 7,
+    "question": "Kannst du es einem 5‑Jährigen erklären?",
     "desc": "Klare, bildhafte Erklärung – max. 140 Wörter.",
     "prompt": "Erkläre mir [THEMA] so, dass es ein Kind (5) versteht. Benutze ein greifbares Bild/Analogien und max. 140 Wörter.",
     "tags": [
@@ -62,20 +70,100 @@
     ]
   },
   {
-    "title": "Schnell‑Briefing für Chefs",
-    "desc": "6 Punkte, keine Floskeln, Entscheidungsvorlage.",
-    "prompt": "Gib mir ein Chef-Briefing in 6 Bulletpoints. Struktur: Kontext · Zahlen · Risiko · Option A/B · Empfehlung · Nächste Schritte. Thema: ",
+    "id": 8,
+    "question": "Wie triffst du heute eine gute Entscheidung?",
+    "desc": "6 Punkte, keine Floskeln: Entscheidungsvorlage.",
+    "prompt": "Gib mir ein Chef‑Briefing in 6 Bulletpoints. Struktur: Kontext · Zahlen · Risiko · Optionen A/B · Empfehlung · Nächste Schritte. Thema: ",
     "tags": [
       "Arbeit"
     ]
   },
   {
-    "title": "Gesprächs‑Vorbereitung",
+    "id": 9,
+    "question": "Wie bereitest du ein heikles Gespräch vor?",
     "desc": "Heikle Gespräche ohne Aggro – Fragen & Ich‑Botschaften.",
-    "prompt": "Hilf mir, ein heikles Gespräch vorzubereiten. Gib 5 Fragen und 5 Ich-Botschaften. Kontext: ",
+    "prompt": "Hilf mir, ein heikles Gespräch vorzubereiten. Gib 5 Fragen und 5 Ich‑Botschaften. Kontext: ",
     "tags": [
       "Alltag",
       "Arbeit"
+    ]
+  },
+  {
+    "id": 10,
+    "question": "Wie pitchst du deine Idee in 60 Sekunden?",
+    "desc": "60‑Sekunden‑Pitch – klar, merkfähig, menschlich.",
+    "prompt": "Erzeuge einen 60‑Sekunden‑Pitch für: ",
+    "tags": [
+      "Arbeit",
+      "Kreativ"
+    ]
+  },
+  {
+    "id": 11,
+    "question": "Was sind heute deine 3 wichtigsten Aufgaben?",
+    "desc": "Täglicher Fokus in 12 Minuten.",
+    "prompt": "Gib mir die 3 wichtigsten Aufgaben für heute und je die ersten 2 Schritte. Kontext: ",
+    "tags": [
+      "Alltag",
+      "Arbeit"
+    ]
+  },
+  {
+    "id": 12,
+    "question": "Welche Formel löst dein Tabellenproblem?",
+    "desc": "Excel/Sheets‑Formelhilfe inkl. Beispiel.",
+    "prompt": "Welche Excel/Google‑Sheets‑Formel löst dieses Problem? Kontext: ",
+    "tags": [
+      "Arbeit",
+      "Kreativ"
+    ]
+  },
+  {
+    "id": 13,
+    "question": "Wie sähe eine straffe 30‑Minuten‑Agenda aus?",
+    "desc": "Meeting‑Agenda (30’) – Ergebnisorientiert.",
+    "prompt": "Plane eine 30‑Minuten‑Agenda. Thema/Teilnehmende: ",
+    "tags": [
+      "Arbeit"
+    ]
+  },
+  {
+    "id": 14,
+    "question": "Wo lauern hier die 3 größten Risiken?",
+    "desc": "Risiko‑Analyse mit Impact‑Bewertung.",
+    "prompt": "Analysiere die 3 größten Risiken, gib Eintrittswahrscheinlichkeit (Low/Med/High) und Gegenmaßnahme. Kontext: ",
+    "tags": [
+      "Arbeit",
+      "Mindset"
+    ]
+  },
+  {
+    "id": 15,
+    "question": "Kannst du aus diesem Link ein Chef‑Briefing machen?",
+    "desc": "Artikel → 8 Bulletpoints, neutral & präzise.",
+    "prompt": "Fasse den verlinkten Artikel stichpunktartig als Entscheidungsbriefing (max. 8 Bulletpoints) zusammen. Gliedere in: Kontext · Kernaussagen · Auswirkungen · Risiken · Nächste Schritte. Link/URL: ",
+    "tags": [
+      "Arbeit"
+    ]
+  },
+  {
+    "id": 16,
+    "question": "Was sagt dein zukünftiges Ich in 12 Monaten?",
+    "desc": "Zeitreise‑Tagebuch – Optimistisch‑realistisch, 130 Wörter.",
+    "prompt": "Schreibe einen kurzen Tagebucheintrag aus der Sicht meines zukünftigen Ichs in 12 Monaten. Stichworte: KI im Alltag, gesunde Gewohnheiten, Fokus aufs Wesentliche.",
+    "tags": [
+      "Mindset",
+      "Alltag"
+    ]
+  },
+  {
+    "id": 17,
+    "question": "Welche 5 Hebel bringen dein Projekt schneller voran?",
+    "desc": "KI‑Berater – 5 Hebel + Next Steps (48h).",
+    "prompt": "Analysiere mein Vorhaben und liste die 5 größten Hebel. Gib zu jedem Hebel konkrete nächste Schritte für die nächsten 48 Stunden mit Aufwand/Nutzen‑Skala (1‑5). Vorhaben: ",
+    "tags": [
+      "Arbeit",
+      "Mindset"
     ]
   }
 ]

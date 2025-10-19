@@ -19,7 +19,7 @@
       <source src="./videos/road_720p_bg.mp4" type="video/mp4" />
     </video>
 
-    <!-- Bubbles (DIV, not canvas) -->
+    <!-- Bubbles container (div, not canvas) -->
     <div id="bubbles" aria-hidden="true"></div>
     <ul id="bubble-labels" aria-hidden="true"></ul>
 
@@ -30,7 +30,7 @@
         <button class="nav-btn" data-action="prompts" type="button">Prompts</button>
         <button class="nav-btn" data-action="projekte" type="button">Projekte</button>
         <button class="nav-btn" data-action="impressum" type="button">Impressum</button>
-        <button class="nav-btn" data-action="locale" type="button">DE/EN</button>
+        <button class="nav-btn toggle" id="btn-eu" type="button" aria-pressed="false" title="EU‑only Provider">EU: aus</button>
         <button class="nav-btn" data-action="klang" type="button">Klang</button>
         <button class="nav-btn gear" data-action="settings" aria-label="Einstellungen" title="Einstellungen (S)" type="button">⚙︎</button>
       </nav>
@@ -50,7 +50,7 @@
           <button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button>
         </header>
         <div class="tags"><span class="tag" id="tag-api">API …</span><span class="tag" id="tag-news">News …</span></div>
-        <div class="small">Deutschland‑Fokus: Sicherheit, Praxis, Tipps · Quelle: Tavily</div>
+        <div class="small">DE‑Fokus: Sicherheit · Praxis · Tool‑Tipps · Quelle: Tavily</div>
         <ul class="list" id="news"></ul>
       </div>
     </div>
@@ -74,6 +74,13 @@
           <h2 id="ov-prompts-title">Prompt‑Galerie</h2>
           <button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button>
         </header>
+        <div class="tools">
+          <input type="search" id="prompt-search" placeholder="Suchen…" aria-label="Prompts durchsuchen"/>
+          <button class="chip" data-filter="Alle" data-active="1">Alle</button>
+          <button class="chip" data-filter="Alltag">Alltag</button>
+          <button class="chip" data-filter="Arbeit">Arbeit</button>
+          <button class="chip" data-filter="Kreativ">Kreativ</button>
+        </div>
         <div class="grid-prompts" id="prompt-grid"></div>
       </div>
     </div>

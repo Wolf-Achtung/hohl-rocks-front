@@ -1,0 +1,81 @@
+[
+  {
+    "title": "Zeit sparen im Alltag",
+    "desc": "To‑Dos in 3 Stufen + Reihenfolge.",
+    "prompt": "Sortiere diese Aufgaben in drei Stufen (Sofort/Heute/Kann warten). Erstelle daraus eine 5-Punkte-Reihenfolge mit kurzer Begründung je Schritt. Aufgaben: ",
+    "tags": [
+      "Alltag"
+    ]
+  },
+  {
+    "title": "Koch‑Ko‑Pilot",
+    "desc": "3 Zutaten → Gericht, Einkaufsliste, 20‑Min‑Plan.",
+    "prompt": "Ich habe diese Zutaten: [ZUTATEN]. Schlage ein Gericht (1 Portion) vor, mit Einkaufsliste (fehlende Zutaten) und 20-Minuten-Schrittplan.",
+    "tags": [
+      "Alltag",
+      "Kreativ"
+    ]
+  },
+  {
+    "title": "Fokus‑Reframing",
+    "desc": "Nerviges Problem neu framen + Mini‑Handlung.",
+    "prompt": "Formuliere 3 neue Blickwinkel (Reframing) für dieses Problem und gib je eine konkrete Mini-Handlung: ",
+    "tags": [
+      "Alltag",
+      "Mindset"
+    ]
+  },
+  {
+    "title": "Mini‑Coach Schlaf",
+    "desc": "7‑Tage‑„Schlaf‑Routine light“ ohne Gadgets.",
+    "prompt": "Entwerfe eine minimalistische 7-Tage-Schlaf-Routine. Vorgaben: 3 Kernregeln, 1 Abendritual, 1 Notfallplan bei schlechtem Schlaf.",
+    "tags": [
+      "Alltag",
+      "Gesundheit"
+    ]
+  },
+  {
+    "title": "Lern‑Sprint 30′",
+    "desc": "Thema in 30 Minuten kapieren – Plan + Quiz.",
+    "prompt": "Leite mich durch einen Lern-Sprint (30 Minuten) für das Thema: [THEMA]. Gib mir einen Blockplan und 5 Quizfragen mit Lösungen.",
+    "tags": [
+      "Kreativ",
+      "Arbeit"
+    ]
+  },
+  {
+    "title": "Foto‑Caption Pro",
+    "desc": "Drei Captions (seriös/freundlich/spielerisch).",
+    "prompt": "Erzeuge 3 Captions in verschiedenen Tönen (seriös, freundlich, spielerisch) für ein Foto, Thema: [KONTEXT].",
+    "tags": [
+      "Kreativ",
+      "Social"
+    ]
+  },
+  {
+    "title": "Explain‑Like‑I’m‑5 (ELI5)",
+    "desc": "Klare, bildhafte Erklärung – max. 140 Wörter.",
+    "prompt": "Erkläre mir [THEMA] so, dass es ein Kind (5) versteht. Benutze ein greifbares Bild/Analogien und max. 140 Wörter.",
+    "tags": [
+      "Alltag",
+      "Lernen"
+    ]
+  },
+  {
+    "title": "Schnell‑Briefing für Chefs",
+    "desc": "6 Punkte, keine Floskeln, Entscheidungsvorlage.",
+    "prompt": "Gib mir ein Chef-Briefing in 6 Bulletpoints. Struktur: Kontext · Zahlen · Risiko · Option A/B · Empfehlung · Nächste Schritte. Thema: ",
+    "tags": [
+      "Arbeit"
+    ]
+  },
+  {
+    "title": "Gesprächs‑Vorbereitung",
+    "desc": "Heikle Gespräche ohne Aggro – Fragen & Ich‑Botschaften.",
+    "prompt": "Hilf mir, ein heikles Gespräch vorzubereiten. Gib 5 Fragen und 5 Ich-Botschaften. Kontext: ",
+    "tags": [
+      "Alltag",
+      "Arbeit"
+    ]
+  }
+]

@@ -5,12 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <meta name="x-api-base" content="/api"/>
-    <title>hohl.rocks — KI‑gestützte Web‑Experience</title>
-    <meta name="description" content="Neon‑Bubbles, Prompts, KI‑Tipps & KI‑News. Ruhig, klar, magisch‑intuitiv." />
+    <title>hohl.rocks – KI-gestützte Web-Experience</title>
+    <meta name="description" content="Neon-Bubbles, Prompts, KI-Tipps & KI-News. Ruhig, klar, magisch-intuitiv." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css" />
+    <style>
+      /* Bubble-spezifische Styles */
+      #bubbles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+      }
+      
+      .bubble {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.9);
+        animation: float 6s ease-in-out infinite;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      }
+      
+      .bubble:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+      }
+      
+      /* Bubble-Modal für Antworten */
+      #bubble-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        z-index: 2000;
+      }
+      
+      #bubble-modal[style*="display: block"] {
+        display: block !important;
+      }
+      
+      #bubble-modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(20, 20, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        color: #fff;
+      }
+      
+      #bubble-modal-close {
+        float: right;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 2rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+        margin: -10px -10px 0 0;
+      }
+      
+      .be-stream {
+        padding: 1rem 0;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+      }
+    </style>
   </head>
   <body>
     <video class="bg" autoplay muted loop playsinline aria-hidden="true" poster="./videos/road_poster.jpg">
@@ -18,17 +113,46 @@
       <source src="./videos/road_720p_bg.mp4" type="video/mp4" />
     </video>
 
-    <div id="bubbles" aria-hidden="false"></div>
+    <!-- Bubbles Container mit vordefinierten Bubbles -->
+    <div id="bubbles" aria-hidden="false">
+      <div class="bubble" data-bubble="briefing" style="width: 140px; height: 140px; top: 20%; left: 10%; animation-delay: 0s;">
+        Briefing-Assistent
+      </div>
+      <div class="bubble" data-bubble="agenda" style="width: 130px; height: 130px; top: 25%; right: 15%; animation-delay: 1s;">
+        Meeting-Agenda
+      </div>
+      <div class="bubble" data-bubble="pitch" style="width: 120px; height: 120px; top: 50%; left: 8%; animation-delay: 2s;">
+        60s Pitch
+      </div>
+      <div class="bubble" data-bubble="risks" style="width: 135px; height: 135px; top: 55%; right: 12%; animation-delay: 3s;">
+        Risiko-Analyse
+      </div>
+      <div class="bubble" data-bubble="excel" style="width: 125px; height: 125px; top: 75%; left: 15%; animation-delay: 4s;">
+        Excel-Formeln
+      </div>
+      <div class="bubble" data-bubble="daily" style="width: 140px; height: 140px; top: 70%; right: 20%; animation-delay: 5s;">
+        Täglicher Fokus
+      </div>
+    </div>
+    
     <ul id="bubble-labels" aria-hidden="true"></ul>
+
+    <!-- Bubble Modal -->
+    <div id="bubble-modal">
+      <div id="bubble-modal-content">
+        <button id="bubble-modal-close" aria-label="Schließen">×</button>
+        <div class="be-stream"></div>
+      </div>
+    </div>
 
     <header class="site-header">
       <nav class="site-nav" aria-label="Hauptnavigation">
-        <button class="nav-btn" data-action="tips" type="button">KI‑Tipps</button>
-        <button class="nav-btn" data-action="news" type="button">KI‑News</button>
+        <button class="nav-btn" data-action="tips" type="button">KI-Tipps</button>
+        <button class="nav-btn" data-action="news" type="button">KI-News</button>
         <button class="nav-btn" data-action="prompts" type="button">Prompts</button>
         <button class="nav-btn" data-action="projekte" type="button">Projekte</button>
         <button class="nav-btn" data-action="impressum" type="button">Impressum</button>
-        <button class="nav-btn toggle" id="btn-eu" type="button" aria-pressed="false" title="EU‑only Provider">EU: aus</button>
+        <button class="nav-btn toggle" id="btn-eu" type="button" aria-pressed="false" title="EU-only Provider">EU: aus</button>
         <button class="nav-btn" data-action="klang" type="button">Klang</button>
         <button class="nav-btn gear" data-action="settings" aria-label="Einstellungen" title="Einstellungen (S)" type="button">⚙︎</button>
       </nav>
@@ -40,9 +164,9 @@
     <div id="ov-tips" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-tips-title">
-        <header><h2 id="ov-tips-title">KI‑Tipps</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
+        <header><h2 id="ov-tips-title">KI-Tipps</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
         <div class="tags"><span class="tag" id="tag-tips">Tipps …</span></div>
-        <div class="small">Fokus: How‑to · Praxis · Prompting · Produktivität (DE/DACH)</div>
+        <div class="small">Fokus: How-to · Praxis · Prompting · Produktivität (DE/DACH)</div>
         <div class="grid-tips" id="tips-grid"></div>
       </div>
     </div>
@@ -51,9 +175,9 @@
     <div id="ov-news" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-news-title">
-        <header><h2 id="ov-news-title">KI‑News</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
+        <header><h2 id="ov-news-title">KI-News</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
         <div class="tags"><span class="tag" id="tag-api">API …</span><span class="tag" id="tag-news">News …</span></div>
-        <div class="small">DE‑Fokus: Regulierung · Releases · Sicherheit · Wirtschaft</div>
+        <div class="small">DE-Fokus: Regulierung · Releases · Sicherheit · Wirtschaft</div>
         <ul class="list" id="news"></ul>
       </div>
     </div>
@@ -62,7 +186,7 @@
     <div id="ov-prompts" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-prompts-title">
-        <header><h2 id="ov-prompts-title">Prompt‑Galerie</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
+        <header><h2 id="ov-prompts-title">Prompt-Galerie</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
         <div class="tools">
           <input type="search" id="prompt-search" placeholder="Suchen…" aria-label="Prompts durchsuchen"/>
           <button class="chip" data-filter="Alle" data-active="1">Alle</button>
@@ -106,7 +230,7 @@
         <ol>
           <li><strong>Bubbles</strong>: Klicke eine Bubble – du erhältst einen sofort nutzbaren Prompt.</li>
           <li><strong>Shortcuts</strong>: <kbd>T</kbd> Tipps · <kbd>N</kbd> News · <kbd>P</kbd> Prompts.</li>
-          <li><strong>Layout</strong>: Drücke <kbd>O</kbd> für Orbit‑Layout.</li>
+          <li><strong>Layout</strong>: Drücke <kbd>O</kbd> für Orbit-Layout.</li>
         </ol>
         <div class="tour__actions"><button class="ui btn" data-tour="done" type="button">Verstanden</button><button class="ui btn ghost" data-tour="skip" type="button">Überspringen</button></div>
       </div>

@@ -165,5 +165,59 @@
       "Arbeit",
       "Mindset"
     ]
+  },
+  {
+    "id": 18,
+    "question": "Wie würde dein Bild aussehen?",
+    "desc": "Beschreibe ein Bild – KI erstellt es.",
+    "prompt": "[BESCHREIBUNG]",
+    "tags": [
+      "Kreativ",
+      "Medien"
+    ],
+    "file": false,
+    "category": "Kreativ",
+    "level": "Mittel",
+    "language": "de"
+  },
+  {
+    "id": 19,
+    "question": "Was siehst du auf dem Bild?",
+    "desc": "Bildanalyse: KI beschreibt hochgeladenes Bild.",
+    "prompt": "Bitte lade ein Bild hoch: [BILD]",
+    "tags": [
+      "Medien"
+    ],
+    "file": true,
+    "category": "Medien",
+    "level": "Mittel",
+    "language": "de"
+  },
+  {
+    "id": 20,
+    "question": "Willst du einen KI‑Witz hören?",
+    "desc": "Ja/Nein‑Entscheidung mit kurzer Antwort.",
+    "prompt": "Antwort (Ja/Nein): [ANTWORT]",
+    "tags": [
+      "Alltag"
+    ],
+    "file": false,
+    "category": "Alltag",
+    "level": "Einfach",
+    "language": "de"
+  },
+  {
+    "id": 21,
+    "question": "Welcher Sound passt dazu?",
+    "desc": "Erzeuge eine kurze Musik‑Skizze zu deiner Szene.",
+    "prompt": "Beschreibe kurz die Stimmung/Szene: [BESCHREIBUNG]",
+    "tags": [
+      "Medien",
+      "Kreativ"
+    ],
+    "file": false,
+    "category": "Medien",
+    "level": "Mittel",
+    "language": "de"
   }
 ]

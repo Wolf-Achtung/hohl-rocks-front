@@ -108,9 +108,29 @@ function openItem(item){
     try{
       await runBubble(item.id, payload, {
         thread: getThread(item.id),
-        onToken: (tok)=>{
-          acc += tok;
-          textBox.innerHTML = acc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+        onToken: (tok) => {
+          if (typeof tok === 'string' && tok.startsWith('__HTML__')) {
+            const raw = tok.slice(8);
+            if (acc) {
+              textBox.innerHTML = acc
+                .replace(/&/g,'&amp;')
+                .replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;')
+                .replace(/
+/g,'<br>');
+              acc = '';
+            }
+            // Insert raw HTML (trusted from backend). Keep it simple: allow img/audio tags.
+            textBox.insertAdjacentHTML('beforeend', raw);
+          } else {
+            acc += tok;
+            textBox.innerHTML = acc
+              .replace(/&/g,'&amp;')
+              .replace(/</g,'&lt;')
+              .replace(/>/g,'&gt;')
+              .replace(/
+/g,'<br>');
+          }
         }
       });
       if(!acc) textBox.textContent = 'Fertig.';

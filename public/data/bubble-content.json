@@ -1,0 +1,264 @@
+{
+  "version": "1.0.0",
+  "description": "Bubble-Konfiguration für hohl.rocks KI-Assistenten",
+  "lastUpdate": "2024",
+  "author": "Wolf Hohl",
+  
+  "settings": {
+    "maxBubbles": 4,
+    "minLifetime": 12000,
+    "maxLifetime": 18000,
+    "fadeInTime": 2000,
+    "fadeOutTime": 2000,
+    "generationInterval": 3500,
+    "animationSpeed": 15
+  },
+  
+  "bubbles": [
+    {
+      "id": "briefing",
+      "text": "Briefing-Assistent",
+      "minSize": 120,
+      "maxSize": 160,
+      "color": "cyan",
+      "prompt": "Erstelle ein strukturiertes Executive Briefing mit 7 Punkten: Situation, Kernzahlen, Chance, Risiko, Option A, Option B, Empfehlung.",
+      "userPrompt": "Für welches Thema möchten Sie ein Executive Briefing?",
+      "examples": ["Digitalisierung", "KI-Strategie", "Marktexpansion", "Produktlaunch"],
+      "category": "business",
+      "enabled": true
+    },
+    {
+      "id": "agenda",
+      "text": "Meeting-Agenda",
+      "minSize": 110,
+      "maxSize": 150,
+      "color": "magenta",
+      "prompt": "Erstelle eine effiziente 30-Minuten Meeting-Agenda mit Zeitblöcken und erwarteten Ergebnissen.",
+      "userPrompt": "Worum geht es in dem Meeting?",
+      "examples": ["Sprint Planning", "Quartalsreview", "Strategie-Workshop", "Team-Update"],
+      "category": "business",
+      "enabled": true
+    },
+    {
+      "id": "pitch",
+      "text": "60s Pitch",
+      "minSize": 100,
+      "maxSize": 140,
+      "color": "yellow",
+      "prompt": "Schreibe einen überzeugenden 60-Sekunden Elevator Pitch mit Hook, Problem, Lösung, Beweis und Call-to-Action.",
+      "userPrompt": "Was möchten Sie pitchen?",
+      "examples": ["Startup-Idee", "Projektvorschlag", "Produktfeature", "Investmentcase"],
+      "category": "communication",
+      "enabled": true
+    },
+    {
+      "id": "risks",
+      "text": "Risiko-Analyse",
+      "minSize": 115,
+      "maxSize": 155,
+      "color": "orange",
+      "prompt": "Führe eine professionelle Risikoanalyse durch mit TOP 3 Risiken, Wahrscheinlichkeit, Impact und Gegenmaßnahmen.",
+      "userPrompt": "Welches Projekt/Vorhaben soll analysiert werden?",
+      "examples": ["Cloud-Migration", "Neue Software", "Expansion", "Reorganisation"],
+      "category": "analysis",
+      "enabled": true
+    },
+    {
+      "id": "excel",
+      "text": "Excel-Formeln",
+      "minSize": 105,
+      "maxSize": 145,
+      "color": "green",
+      "prompt": "Löse Excel-Probleme mit exakten Formeln, Schritt-für-Schritt Erklärungen und Power-User Tipps.",
+      "userPrompt": "Beschreiben Sie Ihr Excel-Problem:",
+      "examples": ["SVERWEIS", "Pivot-Tabelle", "Bedingte Formatierung", "Makros"],
+      "category": "technical",
+      "enabled": true
+    },
+    {
+      "id": "daily",
+      "text": "Täglicher Fokus",
+      "minSize": 120,
+      "maxSize": 160,
+      "color": "purple",
+      "prompt": "Erstelle einen personalisierten Tagesplan mit TOP 3 Prioritäten, Zeitblöcken und Energie-Management.",
+      "userPrompt": "Was ist heute Ihr Hauptfokus?",
+      "examples": ["3 Deadlines", "Präsentation", "Deep Work", "Meetings"],
+      "category": "productivity",
+      "enabled": true
+    },
+    {
+      "id": "email",
+      "text": "E-Mail Profi",
+      "minSize": 110,
+      "maxSize": 150,
+      "color": "teal",
+      "prompt": "Schreibe professionelle E-Mails mit perfekter Struktur, Tonalität und Call-to-Action.",
+      "userPrompt": "Welche Art von E-Mail benötigen Sie?",
+      "examples": ["Angebot", "Absage", "Follow-up", "Entschuldigung"],
+      "category": "communication",
+      "enabled": true
+    },
+    {
+      "id": "strategy",
+      "text": "Strategie-Coach",
+      "minSize": 125,
+      "maxSize": 165,
+      "color": "indigo",
+      "prompt": "Entwickle strategische Analysen mit SWOT, Porter's Five Forces oder Business Model Canvas.",
+      "userPrompt": "Welche strategische Herausforderung haben Sie?",
+      "examples": ["Wettbewerb", "Markteinführung", "Transformation", "Innovation"],
+      "category": "strategy",
+      "enabled": true
+    },
+    {
+      "id": "data",
+      "text": "Daten-Analyst",
+      "minSize": 105,
+      "maxSize": 145,
+      "color": "coral",
+      "prompt": "Analysiere Daten, erstelle Insights und schlage Visualisierungen vor.",
+      "userPrompt": "Welche Daten möchten Sie analysieren?",
+      "examples": ["Verkaufszahlen", "KPIs", "Trends", "Kundenverhalten"],
+      "category": "analysis",
+      "enabled": true
+    },
+    {
+      "id": "creative",
+      "text": "Kreativ-Booster",
+      "minSize": 115,
+      "maxSize": 155,
+      "color": "pink",
+      "prompt": "Generiere kreative Ideen, Konzepte und unkonventionelle Lösungsansätze.",
+      "userPrompt": "Wobei brauchen Sie kreative Unterstützung?",
+      "examples": ["Kampagne", "Produktname", "Content-Ideen", "Workshop"],
+      "category": "creative",
+      "enabled": true
+    },
+    {
+      "id": "legal",
+      "text": "Vertrags-Check",
+      "minSize": 110,
+      "maxSize": 150,
+      "color": "red",
+      "prompt": "Prüfe Verträge auf kritische Klauseln und erstelle Zusammenfassungen wichtiger Punkte.",
+      "userPrompt": "Welchen Vertragstyp möchten Sie prüfen?",
+      "examples": ["AGB", "Arbeitsvertrag", "SLA", "NDA"],
+      "category": "legal",
+      "enabled": true
+    },
+    {
+      "id": "learn",
+      "text": "Lern-Turbo",
+      "minSize": 100,
+      "maxSize": 140,
+      "color": "lime",
+      "prompt": "Erstelle effiziente Lernpläne mit Methoden wie Feynman-Technik oder Spaced Repetition.",
+      "userPrompt": "Was möchten Sie lernen?",
+      "examples": ["Neue Sprache", "Programmieren", "Fachthema", "Soft Skills"],
+      "category": "learning",
+      "enabled": true
+    },
+    {
+      "id": "social",
+      "text": "Social Media",
+      "minSize": 105,
+      "maxSize": 145,
+      "color": "violet",
+      "prompt": "Erstelle engaging Social Media Content mit Hooks, Hashtags und Call-to-Actions.",
+      "userPrompt": "Für welche Plattform und welches Thema?",
+      "examples": ["LinkedIn Post", "Twitter Thread", "Instagram Caption", "TikTok Script"],
+      "category": "marketing",
+      "enabled": true
+    },
+    {
+      "id": "present",
+      "text": "Präsentations-Hilfe",
+      "minSize": 120,
+      "maxSize": 160,
+      "color": "gold",
+      "prompt": "Strukturiere überzeugende Präsentationen mit Storytelling und visuellen Konzepten.",
+      "userPrompt": "Worüber präsentieren Sie?",
+      "examples": ["Projektupdate", "Salespitch", "Keynote", "Workshop"],
+      "category": "communication",
+      "enabled": true
+    },
+    {
+      "id": "problem",
+      "text": "Problem-Löser",
+      "minSize": 110,
+      "maxSize": 150,
+      "color": "crimson",
+      "prompt": "Löse komplexe Probleme mit strukturierten Methoden wie Root Cause Analysis oder 5-Why.",
+      "userPrompt": "Welches Problem möchten Sie lösen?",
+      "examples": ["Prozessfehler", "Teamkonflikt", "Performance", "Technik"],
+      "category": "problem-solving",
+      "enabled": true
+    }
+  ],
+  
+  "categories": {
+    "business": {
+      "name": "Business",
+      "icon": "📊",
+      "description": "Geschäftliche Assistenten"
+    },
+    "communication": {
+      "name": "Kommunikation",
+      "icon": "💬",
+      "description": "Kommunikation und Präsentation"
+    },
+    "analysis": {
+      "name": "Analyse",
+      "icon": "📈",
+      "description": "Daten und Analysen"
+    },
+    "technical": {
+      "name": "Technik",
+      "icon": "⚙️",
+      "description": "Technische Hilfe"
+    },
+    "productivity": {
+      "name": "Produktivität",
+      "icon": "✅",
+      "description": "Effizienz und Fokus"
+    },
+    "creative": {
+      "name": "Kreativ",
+      "icon": "🎨",
+      "description": "Kreative Lösungen"
+    },
+    "strategy": {
+      "name": "Strategie",
+      "icon": "🎯",
+      "description": "Strategische Planung"
+    },
+    "learning": {
+      "name": "Lernen",
+      "icon": "📚",
+      "description": "Bildung und Entwicklung"
+    },
+    "marketing": {
+      "name": "Marketing",
+      "icon": "📱",
+      "description": "Marketing und Social Media"
+    },
+    "legal": {
+      "name": "Rechtliches",
+      "icon": "⚖️",
+      "description": "Rechtliche Unterstützung"
+    },
+    "problem-solving": {
+      "name": "Problemlösung",
+      "icon": "🔧",
+      "description": "Systematische Problemlösung"
+    }
+  },
+  
+  "prompts": {
+    "systemPrompt": "Du bist ein professioneller KI-Assistent von hohl.rocks. Deine Antworten sind präzise, kreativ und sofort umsetzbar. Verwende klare Strukturen und konkrete Beispiele.",
+    "responseFormat": "Strukturiere deine Antworten mit klaren Überschriften, Bulletpoints und konkreten Handlungsempfehlungen. Sei professionell aber zugänglich.",
+    "language": "de-DE",
+    "tone": "professional-friendly"
+  }
+}

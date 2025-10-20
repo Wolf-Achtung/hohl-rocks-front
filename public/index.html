@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="dark" />
     <meta name="x-api-base" content="/api"/>
     <title>hohl.rocks – KI-gestützte Web-Experience</title>
-    <meta name="description" content="Erleben Sie die Kraft der KI: Neon-Bubbles mit intelligenten Assistenten für Ihren Arbeitsalltag." />
+    <meta name="description" content="Erleben Sie die Kraft der KI: Organische Neon-Bubbles mit intelligenten Assistenten." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -23,85 +23,136 @@
         z-index: 5;
       }
       
-      /* Basis Bubble Style */
+      /* Organische Bubble-Formen */
       .bubble {
         position: absolute;
-        backdrop-filter: blur(10px);
-        border-radius: 50%;
+        backdrop-filter: blur(12px);
         cursor: pointer;
         pointer-events: auto;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 1.2rem;
+        padding: 1.5rem;
         font-size: 0.85rem;
         color: rgba(255, 255, 255, 0.95);
         font-weight: 500;
         opacity: 0;
         transition: opacity 2s ease, transform 0.3s ease;
-        text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        text-shadow: 0 0 15px rgba(255,255,255,0.6);
+        /* Organische Form durch border-radius */
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        animation: morph 8s ease-in-out infinite, drift 15s ease-in-out infinite;
+      }
+      
+      /* Morphing Animation für organische Bewegung */
+      @keyframes morph {
+        0%, 100% {
+          border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+          transform: scale(1);
+        }
+        25% {
+          border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+          transform: scale(1.1);
+        }
+        50% {
+          border-radius: 70% 30% 40% 60% / 70% 40% 60% 30%;
+          transform: scale(0.95);
+        }
+        75% {
+          border-radius: 30% 70% 60% 40% / 30% 60% 40% 70%;
+          transform: scale(1.05);
+        }
+      }
+      
+      /* Sanfte Bewegung über den Bildschirm */
+      @keyframes drift {
+        0%, 100% {
+          transform: translate(0, 0);
+        }
+        25% {
+          transform: translate(40px, -30px);
+        }
+        50% {
+          transform: translate(-30px, 20px);
+        }
+        75% {
+          transform: translate(20px, 40px);
+        }
       }
       
       .bubble:hover {
-        transform: scale(1.15);
+        transform: scale(1.2);
+        filter: brightness(1.3);
       }
       
       /* Neon-Farben für verschiedene Bubble-Typen */
       .bubble[data-bubble="briefing"] {
-        background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 200, 255, 0.1));
-        border: 2px solid rgba(0, 255, 255, 0.6);
-        box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(0, 255, 255, 0.2);
+        background: radial-gradient(ellipse at center, rgba(0, 255, 255, 0.25), rgba(0, 200, 255, 0.1));
+        border: 2px solid rgba(0, 255, 255, 0.7);
+        box-shadow: 0 0 40px rgba(0, 255, 255, 0.5), inset 0 0 30px rgba(0, 255, 255, 0.3);
       }
       
       .bubble[data-bubble="agenda"] {
-        background: linear-gradient(135deg, rgba(255, 0, 255, 0.15), rgba(200, 0, 255, 0.1));
-        border: 2px solid rgba(255, 0, 255, 0.6);
-        box-shadow: 0 0 30px rgba(255, 0, 255, 0.4), inset 0 0 20px rgba(255, 0, 255, 0.2);
+        background: radial-gradient(ellipse at center, rgba(255, 0, 255, 0.25), rgba(200, 0, 255, 0.1));
+        border: 2px solid rgba(255, 0, 255, 0.7);
+        box-shadow: 0 0 40px rgba(255, 0, 255, 0.5), inset 0 0 30px rgba(255, 0, 255, 0.3);
       }
       
       .bubble[data-bubble="pitch"] {
-        background: linear-gradient(135deg, rgba(255, 255, 0, 0.15), rgba(255, 200, 0, 0.1));
-        border: 2px solid rgba(255, 255, 0, 0.6);
-        box-shadow: 0 0 30px rgba(255, 255, 0, 0.4), inset 0 0 20px rgba(255, 255, 0, 0.2);
+        background: radial-gradient(ellipse at center, rgba(255, 255, 0, 0.25), rgba(255, 200, 0, 0.1));
+        border: 2px solid rgba(255, 255, 0, 0.7);
+        box-shadow: 0 0 40px rgba(255, 255, 0, 0.5), inset 0 0 30px rgba(255, 255, 0, 0.3);
       }
       
       .bubble[data-bubble="risks"] {
-        background: linear-gradient(135deg, rgba(255, 100, 0, 0.15), rgba(255, 50, 0, 0.1));
-        border: 2px solid rgba(255, 100, 0, 0.6);
-        box-shadow: 0 0 30px rgba(255, 100, 0, 0.4), inset 0 0 20px rgba(255, 100, 0, 0.2);
+        background: radial-gradient(ellipse at center, rgba(255, 100, 0, 0.25), rgba(255, 50, 0, 0.1));
+        border: 2px solid rgba(255, 100, 0, 0.7);
+        box-shadow: 0 0 40px rgba(255, 100, 0, 0.5), inset 0 0 30px rgba(255, 100, 0, 0.3);
       }
       
       .bubble[data-bubble="excel"] {
-        background: linear-gradient(135deg, rgba(0, 255, 100, 0.15), rgba(0, 200, 50, 0.1));
-        border: 2px solid rgba(0, 255, 100, 0.6);
-        box-shadow: 0 0 30px rgba(0, 255, 100, 0.4), inset 0 0 20px rgba(0, 255, 100, 0.2);
+        background: radial-gradient(ellipse at center, rgba(0, 255, 100, 0.25), rgba(0, 200, 50, 0.1));
+        border: 2px solid rgba(0, 255, 100, 0.7);
+        box-shadow: 0 0 40px rgba(0, 255, 100, 0.5), inset 0 0 30px rgba(0, 255, 100, 0.3);
       }
       
       .bubble[data-bubble="daily"] {
-        background: linear-gradient(135deg, rgba(150, 100, 255, 0.15), rgba(100, 50, 255, 0.1));
-        border: 2px solid rgba(150, 100, 255, 0.6);
-        box-shadow: 0 0 30px rgba(150, 100, 255, 0.4), inset 0 0 20px rgba(150, 100, 255, 0.2);
+        background: radial-gradient(ellipse at center, rgba(150, 100, 255, 0.25), rgba(100, 50, 255, 0.1));
+        border: 2px solid rgba(150, 100, 255, 0.7);
+        box-shadow: 0 0 40px rgba(150, 100, 255, 0.5), inset 0 0 30px rgba(150, 100, 255, 0.3);
       }
       
-      /* Bewegungs-Animation */
-      @keyframes drift {
-        0%, 100% { 
-          transform: translate(0, 0) rotate(0deg); 
-        }
-        33% { 
-          transform: translate(30px, -30px) rotate(120deg); 
-        }
-        66% { 
-          transform: translate(-20px, 20px) rotate(240deg); 
-        }
+      /* Sound Button Style */
+      .sound-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        transition: all 0.3s;
       }
       
-      .bubble.active {
-        animation: drift 20s ease-in-out infinite;
+      .sound-toggle:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
       }
       
-      /* Modal Styles */
+      .sound-toggle.active {
+        border-color: rgba(0, 255, 255, 0.8);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      }
+      
+      /* Modal bleibt gleich */
       #bubble-modal {
         display: none;
         position: fixed;
@@ -146,12 +197,6 @@
       #bubble-modal-close:hover {
         transform: scale(1.2);
       }
-      
-      .be-stream {
-        padding: 1rem 0;
-        color: rgba(255, 255, 255, 0.95);
-        line-height: 1.8;
-      }
     </style>
   </head>
   <body>
@@ -162,6 +207,17 @@
 
     <!-- Dynamischer Bubbles Container -->
     <div id="bubbles" aria-hidden="false"></div>
+    
+    <!-- Sound Toggle Button -->
+    <button class="sound-toggle" id="sound-toggle" aria-label="Sound an/aus">
+      <span id="sound-icon">🔇</span>
+    </button>
+    
+    <!-- Audio Element für Ambient Sound -->
+    <audio id="ambient-audio" loop>
+      <source src="./audio/ambient_loop.mp3" type="audio/mpeg">
+      <source src="./audio/ambient_loop.ogg" type="audio/ogg">
+    </audio>
     
     <!-- KI-Modal für Bubble-Antworten -->
     <div id="bubble-modal">
@@ -186,7 +242,7 @@
 
     <main class="hero" role="main" id="main"><h1>hohl.rocks</h1></main>
 
-    <!-- Overlays (bleiben gleich) -->
+    <!-- Overlays bleiben gleich -->
     <div id="ov-tips" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-tips-title">
@@ -232,53 +288,77 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-    <!-- Bubble-Engine Script direkt eingebettet -->
-    <script src="./js/bubble-config.js"></script>
+    <!-- Bubble-Engine Script -->
     <script>
-    // Dynamische Bubble-Engine
-    (function() {
+    // Lade Konfiguration aus externer Datei
+    fetch('./data/bubble-content.json')
+      .then(response => response.json())
+      .then(config => {
+        window.BUBBLE_CONFIG = config.bubbles;
+        window.BUBBLE_SETTINGS = config.settings;
+        initBubbleEngine();
+      })
+      .catch(error => {
+        console.error('Fehler beim Laden der Bubble-Konfiguration:', error);
+        // Fallback-Konfiguration
+        window.BUBBLE_CONFIG = [
+          { id: 'briefing', text: 'Briefing-Assistent', minSize: 120, maxSize: 160 },
+          { id: 'agenda', text: 'Meeting-Agenda', minSize: 110, maxSize: 150 },
+          { id: 'pitch', text: '60s Pitch', minSize: 100, maxSize: 140 },
+          { id: 'risks', text: 'Risiko-Analyse', minSize: 115, maxSize: 155 },
+          { id: 'excel', text: 'Excel-Formeln', minSize: 105, maxSize: 145 },
+          { id: 'daily', text: 'Täglicher Fokus', minSize: 120, maxSize: 160 }
+        ];
+        initBubbleEngine();
+      });
+    
+    function initBubbleEngine() {
       const container = document.getElementById('bubbles');
       const modal = document.getElementById('bubble-modal');
       const closeBtn = document.getElementById('bubble-modal-close');
       const streamBox = document.querySelector('.be-stream');
       
-      // Bubble-Definitionen (können aus bubble-config.js kommen)
-      const bubbleTypes = window.BUBBLE_CONFIG || [
-        { id: 'briefing', text: 'Briefing-Assistent', size: 140 },
-        { id: 'agenda', text: 'Meeting-Agenda', size: 130 },
-        { id: 'pitch', text: '60s Pitch', size: 120 },
-        { id: 'risks', text: 'Risiko-Analyse', size: 135 },
-        { id: 'excel', text: 'Excel-Formeln', size: 125 },
-        { id: 'daily', text: 'Täglicher Fokus', size: 140 }
-      ];
-      
       let activeBubbles = [];
-      const maxBubbles = 4; // Maximal 4 gleichzeitig sichtbar
+      const maxBubbles = window.BUBBLE_SETTINGS?.maxBubbles || 4;
       
-      // Zufällige Position generieren
+      // Zufällige Position
       function getRandomPosition(size) {
-        const margin = size / 2 + 50;
+        const margin = size + 50;
         return {
           x: margin + Math.random() * (window.innerWidth - margin * 2),
           y: margin + Math.random() * (window.innerHeight - margin * 2)
         };
       }
       
+      // Zufällige organische Form generieren
+      function getRandomShape() {
+        const shapes = [
+          '60% 40% 30% 70% / 60% 30% 70% 40%',
+          '40% 60% 70% 30% / 40% 70% 30% 60%',
+          '70% 30% 40% 60% / 70% 40% 60% 30%',
+          '30% 70% 60% 40% / 30% 60% 40% 70%',
+          '50% 50% 30% 70% / 50% 30% 70% 50%',
+          '45% 55% 65% 35% / 55% 45% 35% 65%'
+        ];
+        return shapes[Math.floor(Math.random() * shapes.length)];
+      }
+      
       // Bubble erstellen
       function createBubble() {
-        const type = bubbleTypes[Math.floor(Math.random() * bubbleTypes.length)];
-        const pos = getRandomPosition(type.size);
+        const type = window.BUBBLE_CONFIG[Math.floor(Math.random() * window.BUBBLE_CONFIG.length)];
+        const size = type.minSize + Math.random() * (type.maxSize - type.minSize);
+        const pos = getRandomPosition(size);
         
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
         bubble.dataset.bubble = type.id;
         bubble.textContent = type.text;
-        bubble.style.width = type.size + 'px';
-        bubble.style.height = type.size + 'px';
+        bubble.style.width = size + 'px';
+        bubble.style.height = (size * (0.8 + Math.random() * 0.4)) + 'px'; // Variierende Höhe
         bubble.style.left = pos.x + 'px';
         bubble.style.top = pos.y + 'px';
+        bubble.style.borderRadius = getRandomShape();
         
-        // Click-Handler
         bubble.addEventListener('click', handleBubbleClick);
         
         container.appendChild(bubble);
@@ -287,15 +367,16 @@
         // Einblenden
         setTimeout(() => {
           bubble.style.opacity = '1';
-          bubble.classList.add('active');
         }, 100);
         
-        // Nach 10-15 Sekunden ausblenden
-        const lifetime = 10000 + Math.random() * 5000;
+        // Nach 12-18 Sekunden ausblenden
+        const lifetime = 12000 + Math.random() * 6000;
         setTimeout(() => {
           bubble.style.opacity = '0';
           setTimeout(() => {
-            container.removeChild(bubble);
+            if (container.contains(bubble)) {
+              container.removeChild(bubble);
+            }
             activeBubbles = activeBubbles.filter(b => b !== bubble);
           }, 2000);
         }, lifetime);
@@ -315,29 +396,21 @@
           </div>
         `;
         
-        // Optional: Kontext abfragen
-        let userContext = '';
-        if (bubbleId === 'briefing' || bubbleId === 'pitch') {
-          userContext = prompt(`Für welches Thema möchten Sie ${bubbleText === 'Briefing-Assistent' ? 'ein Briefing' : 'einen Pitch'}?`) || '';
-        }
-        
         try {
           const response = await fetch('/api/run', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               input: `[Bubble ${bubbleId}]`,
-              payload: { context: userContext }
+              payload: {}
             })
           });
           
           const data = await response.json();
-          
           if (data.result) {
             let formatted = data.result
               .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #4fc3f7;">$1</strong>')
               .replace(/\n/g, '<br>');
-            
             streamBox.innerHTML = `<div>${formatted}</div>`;
           }
         } catch (error) {
@@ -346,44 +419,55 @@
       }
       
       // Modal schließen
-      function closeModal() {
-        modal.style.display = 'none';
-      }
-      
-      closeBtn?.addEventListener('click', closeModal);
-      modal?.addEventListener('click', function(e) {
-        if (e.target === modal) closeModal();
-      });
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.style.display === 'block') {
-          closeModal();
-        }
+      closeBtn?.addEventListener('click', () => modal.style.display = 'none');
+      modal?.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
       });
       
       // Bubble-Generator starten
       function startBubbleGeneration() {
-        // Initial 2 Bubbles
         createBubble();
         setTimeout(createBubble, 2000);
         
-        // Kontinuierlich neue Bubbles
         setInterval(() => {
           if (activeBubbles.length < maxBubbles) {
             createBubble();
           }
-        }, 3000);
+        }, 3500);
       }
       
-      // Start nach Seite geladen
-      window.addEventListener('load', startBubbleGeneration);
-    })();
+      startBubbleGeneration();
+    }
+    
+    // Sound-Controller
+    document.addEventListener('DOMContentLoaded', function() {
+      const soundToggle = document.getElementById('sound-toggle');
+      const soundIcon = document.getElementById('sound-icon');
+      const ambientAudio = document.getElementById('ambient-audio');
+      
+      let soundEnabled = false;
+      
+      soundToggle?.addEventListener('click', function() {
+        soundEnabled = !soundEnabled;
+        
+        if (soundEnabled) {
+          ambientAudio.volume = 0.3;
+          ambientAudio.play().catch(e => console.log('Audio play failed:', e));
+          soundIcon.textContent = '🔊';
+          soundToggle.classList.add('active');
+        } else {
+          ambientAudio.pause();
+          soundIcon.textContent = '🔇';
+          soundToggle.classList.remove('active');
+        }
+      });
+    });
     </script>
 
     <!-- Module laden -->
     <script type="module" src="./js/utils.js"></script>
     <script type="module" src="./js/api.js"></script>
     <script type="module" src="./js/app.js"></script>
-    <script type="module" src="./js/audio.js"></script>
     <script type="module" src="./js/overlay.js"></script>
     <script type="module" src="./js/modal.js"></script>
   </body>

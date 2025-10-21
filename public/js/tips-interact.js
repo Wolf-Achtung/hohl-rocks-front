@@ -1,99 +1,122 @@
 /**
- * tips-interact.js
- * - Makes KI-Tipps cards interactive.
- * - On click 'Öffnen', shows Problem/Situation + Lösung + copyable Prompt.
- * - Provides a global 'showTipModal(idOrTitle)' function for manual calls.
+ * tips-interact.js v2
+ * - Reliable handling of KI-Tipps overlay:
+ *   - Buttons 'Öffnen' öffnen Modal mit Problem/Situation + Lösung + Prompt (copy).
+ *   - 'Link kopieren' kopiert Prompt-Text sofort (Fallback inklusive).
  */
 (function(){
-  function $$(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
-  function $(sel, root=document){ return root.querySelector(sel); }
+  const root = document;
+
+  function $$(sel, ctx=root){ return Array.from(ctx.querySelectorAll(sel)); }
+  function $(sel, ctx=root){ return ctx.querySelector(sel); }
   function h(tag, attrs={}, children=[]){
-    const el = document.createElement(tag);
-    Object.entries(attrs).forEach(([k,v])=>{
-      if(v==null) return;
+    const el = root.createElement(tag);
+    for (const [k,v] of Object.entries(attrs||{})){
+      if(v==null) continue;
       if(k==="class") el.className = v;
       else if(k==="html") el.innerHTML = v;
       else el.setAttribute(k, v);
-    });
-    for(const c of [].concat(children)) if(c!=null){
-      if(typeof c === "string") el.appendChild(document.createTextNode(c));
-      else el.appendChild(c);
+    }
+    for (const c of [].concat(children||[])){
+      if(c==null) continue;
+      el.appendChild(typeof c === "string" ? root.createTextNode(c) : c);
     }
     return el;
   }
-  function getTipByTitleOrId(txt){
+
+  function getTip(titleOrId){
     if(!window.TIPS_DATA) return null;
-    const norm = (txt||"").trim().toLowerCase();
-    return window.TIPS_DATA.find(t => t.id===txt || (t.title||"").trim().toLowerCase()===norm) || null;
+    const norm = (titleOrId||"").trim().toLowerCase();
+    return window.TIPS_DATA.find(t => t.id===titleOrId || (t.title||"").trim().toLowerCase() === norm) || null;
   }
-  function buildModal(tip){
-    const backdrop = h("div", {class:"modal-backdrop", role:"presentation"});
+
+  function closeModal(b,m){
+    b?.remove(); m?.remove();
+    root.removeEventListener("keydown", onKey);
+  }
+  function onKey(e){
+    if(e.key === "Escape"){
+      const b = $(".modal-backdrop"); const m = $(".modal");
+      closeModal(b,m);
+    }
+  }
+
+  function openTipModal(tip){
+    const backdrop = h("div", {class:"modal-backdrop"});
     const modal = h("div", {class:"modal", role:"dialog", "aria-modal":"true"});
     const header = h("header", {}, [
-      h("h2", {html: tip.title}),
-      h("button", {class:"btn", "aria-label":"Schließen", title:"Schließen"}, ["×"])
+      h("h2", {html: tip.title || "KI‑Tipp"}),
+      h("button", {class:"btn", "aria-label":"Schließen"}, ["×"])
     ]);
-    const lead = h("p", {class:"lead"}, [`Problem/Situation: `, tip.problem || "—"]);
-    const body = h("div", {class:"body"}, [
+    const lead = h("p", {class:"lead"}, ["Problem/Situation: ", tip.problem || "—"]);
+    const content = h("div", {}, [
       h("p", {}, [h("strong", {}, ["Lösung mit KI: "]), tip.solution || "—"]),
-      h("div", {class:"copy-box", "data-tip-id":tip.id}, [
-        h("button", {class:"btn copy", "data-action":"copy-prompt", title:"Prompt kopieren"}, ["Link kopieren"]),
+      h("div", {class:"copy-box"}, [
+        h("button", {class:"btn copy", "data-action":"copy"}, ["Prompt kopieren"]),
         h("pre", {}, [tip.prompt || ""])
       ])
     ]);
     const actions = h("div", {class:"actions"}, [
       h("button", {class:"btn secondary", "data-action":"close"}, ["Schließen"])
     ]);
-    modal.append(header, lead, body, actions);
-    function close(){ backdrop.remove(); modal.remove(); document.removeEventListener("keydown", onKey); }
-    function onKey(e){ if(e.key==="Escape") close(); }
-    header.querySelector("button").addEventListener("click", close);
-    actions.querySelector("[data-action='close']").addEventListener("click", close);
-    document.addEventListener("keydown", onKey);
-    document.body.append(backdrop, modal);
-    // Focus trap start
-    setTimeout(()=> { modal.querySelector("button")?.focus(); }, 0);
-    // Copy handler
-    modal.addEventListener("click", (ev)=>{
-      const btn = ev.target.closest("[data-action='copy-prompt']");
-      if(!btn) return;
-      const text = tip.prompt || "";
-      navigator.clipboard?.writeText(text).then(()=>{
-        btn.textContent = "Kopiert ✓";
-        setTimeout(()=> btn.textContent="Link kopieren", 1200);
-      }).catch(()=>{
-        // fallback
-        const ta = h("textarea", {style:"position:fixed;left:-9999px;top:-9999px;"}); 
-        ta.value = text; document.body.appendChild(ta); ta.select();
-        try{ document.execCommand("copy"); btn.textContent="Kopiert ✓"; }catch{ btn.textContent="Kopieren fehlgeschlagen"; }
-        ta.remove(); setTimeout(()=> btn.textContent="Link kopieren", 1400);
-      });
-    });
-  }
-  function showTipModal(idOrTitle){
-    const tip = getTipByTitleOrId(idOrTitle);
-    if(!tip){ console.warn("Tip nicht gefunden:", idOrTitle); return; }
-    buildModal(tip);
-  }
-  // Expose for other modules
-  window.showTipModal = showTipModal;
-
-  function findTipTitleFromCard(el){
-    // Heuristics: first heading in card
-    const hEl = el.querySelector("h3,h2,h4,.title,[data-title]");
-    return hEl?.textContent?.trim() || el.getAttribute("data-title") || "";
+    modal.append(header, lead, content, actions);
+    function bind(){
+      modal.addEventListener("click", (ev)=>{
+        if(ev.target.closest("[data-action='close']")){ closeModal(backdrop,modal); }
+        const cp = ev.target.closest("[data-action='copy']");
+        if(cp){
+          const text = modal.querySelector("pre")?.textContent || "";
+          (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+            .then(()=>{ cp.textContent="Kopiert ✓"; setTimeout(()=> cp.textContent="Prompt kopieren", 1200); })
+            .catch(()=>{
+              const ta = h("textarea",{style:"position:fixed;left:-9999px;top:-9999px;"}); ta.value = text; root.body.appendChild(ta); ta.select();
+              try{ root.execCommand("copy"); cp.textContent="Kopiert ✓"; } catch { cp.textContent="Kopieren fehlgeschlagen"; }
+              ta.remove(); setTimeout(()=> cp.textContent="Prompt kopieren", 1400);
+            });
+        }
+      }, { passive:true });
+      header.querySelector("button").addEventListener("click", ()=> closeModal(backdrop,modal), { passive:true });
+      root.addEventListener("keydown", onKey, { passive:true });
     }
+    root.body.append(backdrop, modal);
+    bind();
+    setTimeout(()=> modal.querySelector("button")?.focus(), 0);
+  }
 
-  function onGlobalClick(e){
-    // Open via 'Öffnen' buttons in tips area
+  function titleFromCard(card){
+    // Heuristics for the tips grid cards
+    const hEl = card.querySelector("h3,h2,h4,.title,[data-title]");
+    return (hEl?.textContent || card.getAttribute("data-title") || "").trim();
+  }
+
+  // Global delegation for Tips overlay
+  root.addEventListener("click", (e)=>{
+    const ov = e.target.closest("#ov-tips, .tips-overlay");
+    if(!ov) return;
+
+    // 'Öffnen' button
     const openBtn = e.target.closest("button,a");
-    if(openBtn && /^(öffnen)$/i.test((openBtn.textContent||'').trim())){
-      const card = openBtn.closest(".tip-card, .card, li, article, section");
-      if(card){
-        const title = findTipTitleFromCard(card);
-        if(title) { e.preventDefault(); showTipModal(title); return; }
-      }
+    const text = (openBtn?.textContent || "").trim().toLowerCase();
+    if(text === "öffnen"){
+      const card = openBtn.closest(".tip-card, .card, li, article, section") || ov;
+      const title = titleFromCard(card);
+      const tip = getTip(title) || getTip(card?.dataset?.id || "");
+      if(tip){ e.preventDefault(); openTipModal(tip); }
+      return;
     }
-  }
-  document.addEventListener("click", onGlobalClick);
+
+    // 'Link kopieren' in grid -> copy prompt directly
+    if(text === "link kopieren"){
+      const card = openBtn.closest(".tip-card, .card, li, article, section") || ov;
+      const title = titleFromCard(card);
+      const tip = getTip(title) || getTip(card?.dataset?.id || "");
+      if(tip){
+        e.preventDefault();
+        (navigator.clipboard ? navigator.clipboard.writeText(tip.prompt || "") : Promise.reject())
+          .then(()=>{ openBtn.textContent="Kopiert ✓"; setTimeout(()=> openBtn.textContent="Link kopieren", 1200); })
+          .catch(()=>{ openBtn.textContent="Kopieren fehlgeschlagen"; setTimeout(()=> openBtn.textContent="Link kopieren", 1400); });
+      }
+      return;
+    }
+  });
 })();

@@ -22,6 +22,7 @@ export async function postJson(path, body){
 }
 
 export const tips  = async () => getJson('/tips');
+export const summarize = async (text, max=2) => postJson('/summarize', { text, max });
 export const news  = async () => getJson('/news');
 export const daily = async () => getJson('/daily');
 export const run   = async (input, { eu } = {}) => postJson(`/run?eu=${eu?'1':'0'}`, { input });

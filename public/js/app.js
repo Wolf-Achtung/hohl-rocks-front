@@ -72,6 +72,7 @@ async function loadTips(){
 
 /* KI-News */
 const ulNews = $('#news');
+
 async function loadNews(){
   try{
     const j = await api.news();
@@ -79,12 +80,21 @@ async function loadNews(){
     ulNews.innerHTML = '';
     if (!items.length){ ulNews.append(el('li',{}, 'Keine Ergebnisse.')); mark(tagNews, true); return; }
     for (const it of items.slice(0, 20)){
+      const li = el('li', {});
       const a = el('a', { href: it.url, target:'_blank', rel:'noopener noreferrer' }, it.title || it.url);
       a.addEventListener('click', ()=> api.metrics('news_click', { url: it.url }));
-      ulNews.append(el('li',{}, a, el('div',{}, el('small',{class:'small'}, (new URL(it.url)).hostname.replace(/^www\./,'')))));
+      const host = (()=>{
+        try { return (new URL(it.url)).hostname.replace(/^www\./,''); } catch { return it.source || ''; }
+      })();
+      li.append(a);
+      if (it.summary) li.append(el('div', { class:'small' }, it.summary));
+      li.append(el('div',{}, el('small',{class:'small'}, host)));
+      ulNews.append(li);
     }
     mark(tagNews, true);
   }catch(e){ console.error(e); toast('News-Fehler'); mark(tagNews, false); }
+}
+
 }
 
 /* Prompt-Galerie */

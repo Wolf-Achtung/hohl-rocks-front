@@ -95,8 +95,6 @@ async function loadNews(){
   }catch(e){ console.error(e); toast('News-Fehler'); mark(tagNews, false); }
 }
 
-}
-
 /* Prompt-Galerie */
 let PROMPTS = []; async function loadPrompts(){ if (PROMPTS.length) return PROMPTS; const r = await fetch('./data/prompts.json', { cache:'no-store' }); PROMPTS = r.ok ? await r.json() : []; return PROMPTS; }
 const grid = $('#prompt-grid'); const searchBox = $('#prompt-search'); let currentFilter = 'Alle';

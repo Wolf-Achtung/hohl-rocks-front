@@ -1,14 +1,16 @@
 /**
- * tips-interact.js v2
- * - Reliable handling of KI-Tipps overlay:
- *   - Buttons 'Öffnen' öffnen Modal mit Problem/Situation + Lösung + Prompt (copy).
- *   - 'Link kopieren' kopiert Prompt-Text sofort (Fallback inklusive).
+ * tips-interact.js v3 - VERBESSERT
+ * - Zuverlässige Behandlung von KI-Tipps Overlay
+ * - 'Öffnen' öffnet Modal mit Problem/Lösung + Prompt (copy)
+ * - 'Prompt kopieren' kopiert direkt
+ * - Funktioniert mit statischen TIPS_DATA
  */
 (function(){
   const root = document;
 
   function $$(sel, ctx=root){ return Array.from(ctx.querySelectorAll(sel)); }
   function $(sel, ctx=root){ return ctx.querySelector(sel); }
+  
   function h(tag, attrs={}, children=[]){
     const el = root.createElement(tag);
     for (const [k,v] of Object.entries(attrs||{})){
@@ -24,99 +26,287 @@
     return el;
   }
 
-  function getTip(titleOrId){
-    if(!window.TIPS_DATA) return null;
-    const norm = (titleOrId||"").trim().toLowerCase();
-    return window.TIPS_DATA.find(t => t.id===titleOrId || (t.title||"").trim().toLowerCase() === norm) || null;
+  // Hilfsfunktion: Escape HTML
+  function esc(s){ 
+    return String(s||'')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;'); 
   }
 
-  function closeModal(b,m){
-    b?.remove(); m?.remove();
-    root.removeEventListener("keydown", onKey);
-  }
-  function onKey(e){
-    if(e.key === "Escape"){
-      const b = $(".modal-backdrop"); const m = $(".modal");
-      closeModal(b,m);
+  // Tip aus TIPS_DATA holen
+  function getTip(idOrTitle){
+    if(!window.TIPS_DATA) {
+      console.warn('[tips-interact] TIPS_DATA not available');
+      return null;
     }
+    
+    const norm = (idOrTitle||"").trim().toLowerCase();
+    const tip = window.TIPS_DATA.find(t => 
+      t.id === idOrTitle || 
+      (t.title||"").trim().toLowerCase() === norm
+    );
+    
+    if(!tip) {
+      console.warn('[tips-interact] Tip not found:', idOrTitle);
+    }
+    
+    return tip || null;
   }
 
+  // Modal schließen
+  let currentModal = null;
+  let currentBackdrop = null;
+  
+  function closeModal(){
+    if(currentBackdrop) currentBackdrop.remove();
+    if(currentModal) currentModal.remove();
+    currentBackdrop = null;
+    currentModal = null;
+    root.removeEventListener("keydown", onEscKey);
+  }
+  
+  function onEscKey(e){
+    if(e.key === "Escape") closeModal();
+  }
+
+  // Tip-Modal öffnen
   function openTipModal(tip){
-    const backdrop = h("div", {class:"modal-backdrop"});
-    const modal = h("div", {class:"modal", role:"dialog", "aria-modal":"true"});
+    console.log('[tips-interact] Opening modal for:', tip.title);
+    
+    // Vorheriges Modal schließen
+    closeModal();
+    
+    // Backdrop
+    currentBackdrop = h("div", {class:"modal-backdrop"});
+    
+    // Modal
+    currentModal = h("div", {
+      class:"modal tip-modal", 
+      role:"dialog", 
+      "aria-modal":"true",
+      "aria-labelledby":"tip-modal-title"
+    });
+    
+    // Header
     const header = h("header", {}, [
-      h("h2", {html: tip.title || "KI‑Tipp"}),
-      h("button", {class:"btn", "aria-label":"Schließen"}, ["×"])
+      h("h2", {id:"tip-modal-title"}, [tip.title || "KI‑Tipp"]),
+      h("button", {
+        class:"btn close-btn", 
+        "aria-label":"Schließen",
+        "data-action":"close"
+      }, ["×"])
     ]);
-    const lead = h("p", {class:"lead"}, ["Problem/Situation: ", tip.problem || "—"]);
-    const content = h("div", {}, [
-      h("p", {}, [h("strong", {}, ["Lösung mit KI: "]), tip.solution || "—"]),
+    
+    // Kategorie/Tags
+    const meta = h("div", {class:"tip-meta"}, [
+      tip.category ? h("span", {class:"category-badge"}, [tip.category]) : null,
+      tip.tags?.length ? h("span", {class:"tags"}, [tip.tags.join(', ')]) : null
+    ].filter(Boolean));
+    
+    // Problem/Situation
+    const problemSection = h("div", {class:"tip-section"}, [
+      h("h3", {class:"section-title"}, ["Problem/Situation"]),
+      h("p", {class:"section-text"}, [tip.problem || "—"])
+    ]);
+    
+    // Lösung
+    const solutionSection = h("div", {class:"tip-section"}, [
+      h("h3", {class:"section-title"}, ["Lösung mit KI"]),
+      h("p", {class:"section-text"}, [tip.solution || "—"])
+    ]);
+    
+    // Prompt
+    const promptSection = h("div", {class:"tip-section prompt-section"}, [
+      h("h3", {class:"section-title"}, ["Prompt zum Kopieren"]),
       h("div", {class:"copy-box"}, [
-        h("button", {class:"btn copy", "data-action":"copy"}, ["Prompt kopieren"]),
-        h("pre", {}, [tip.prompt || ""])
+        h("button", {
+          class:"btn copy-btn", 
+          "data-action":"copy",
+          "aria-label":"Prompt in Zwischenablage kopieren"
+        }, ["📋 Prompt kopieren"]),
+        h("pre", {class:"prompt-code"}, [tip.prompt || ""])
       ])
     ]);
-    const actions = h("div", {class:"actions"}, [
-      h("button", {class:"btn secondary", "data-action":"close"}, ["Schließen"])
+    
+    // Footer Actions
+    const footer = h("div", {class:"modal-actions"}, [
+      h("button", {
+        class:"btn secondary", 
+        "data-action":"close"
+      }, ["Schließen"])
     ]);
-    modal.append(header, lead, content, actions);
-    function bind(){
-      modal.addEventListener("click", (ev)=>{
-        if(ev.target.closest("[data-action='close']")){ closeModal(backdrop,modal); }
-        const cp = ev.target.closest("[data-action='copy']");
-        if(cp){
-          const text = modal.querySelector("pre")?.textContent || "";
-          (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
-            .then(()=>{ cp.textContent="Kopiert ✓"; setTimeout(()=> cp.textContent="Prompt kopieren", 1200); })
-            .catch(()=>{
-              const ta = h("textarea",{style:"position:fixed;left:-9999px;top:-9999px;"}); ta.value = text; root.body.appendChild(ta); ta.select();
-              try{ root.execCommand("copy"); cp.textContent="Kopiert ✓"; } catch { cp.textContent="Kopieren fehlgeschlagen"; }
-              ta.remove(); setTimeout(()=> cp.textContent="Prompt kopieren", 1400);
-            });
+    
+    // Zusammenbauen
+    currentModal.append(header, meta, problemSection, solutionSection, promptSection, footer);
+    
+    // Event Handlers
+    function bindEvents(){
+      currentModal.addEventListener("click", (ev)=>{
+        // Schließen
+        if(ev.target.closest("[data-action='close']")){ 
+          closeModal(); 
+          return;
+        }
+        
+        // Kopieren
+        const copyBtn = ev.target.closest("[data-action='copy']");
+        if(copyBtn){
+          const text = currentModal.querySelector("pre")?.textContent || "";
+          copyToClipboard(text, copyBtn);
         }
       }, { passive:true });
-      header.querySelector("button").addEventListener("click", ()=> closeModal(backdrop,modal), { passive:true });
-      root.addEventListener("keydown", onKey, { passive:true });
+      
+      // Escape Key
+      root.addEventListener("keydown", onEscKey, { passive:true });
+      
+      // Backdrop Click
+      currentBackdrop.addEventListener("click", closeModal, { passive:true });
     }
-    root.body.append(backdrop, modal);
-    bind();
-    setTimeout(()=> modal.querySelector("button")?.focus(), 0);
+    
+    // Zum DOM hinzufügen
+    root.body.append(currentBackdrop, currentModal);
+    bindEvents();
+    
+    // Focus Management
+    setTimeout(()=> {
+      const firstFocusable = currentModal.querySelector("button, a, input, [tabindex]:not([tabindex='-1'])");
+      if(firstFocusable) firstFocusable.focus();
+    }, 0);
   }
 
-  function titleFromCard(card){
-    // Heuristics for the tips grid cards
-    const hEl = card.querySelector("h3,h2,h4,.title,[data-title]");
+  // Clipboard Copy mit Fallback
+  function copyToClipboard(text, button){
+    const originalText = button.textContent;
+    
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text)
+        .then(()=>{
+          button.textContent = "✓ Kopiert!";
+          button.classList.add('success');
+          setTimeout(()=> {
+            button.textContent = originalText;
+            button.classList.remove('success');
+          }, 2000);
+        })
+        .catch(()=>{
+          fallbackCopy(text, button, originalText);
+        });
+    } else {
+      fallbackCopy(text, button, originalText);
+    }
+  }
+  
+  function fallbackCopy(text, button, originalText){
+    const ta = h("textarea", {
+      style:"position:fixed;left:-9999px;top:-9999px;"
+    });
+    ta.value = text;
+    root.body.appendChild(ta);
+    ta.select();
+    
+    try{
+      root.execCommand("copy");
+      button.textContent = "✓ Kopiert!";
+      button.classList.add('success');
+      setTimeout(()=> {
+        button.textContent = originalText;
+        button.classList.remove('success');
+      }, 2000);
+    } catch {
+      button.textContent = "❌ Fehler";
+      setTimeout(()=> button.textContent = originalText, 2000);
+    }
+    
+    ta.remove();
+  }
+
+  // Card-Titel extrahieren
+  function getTitleFromCard(card){
+    const hEl = card.querySelector("h3, h2, h4, .title, [data-title]");
     return (hEl?.textContent || card.getAttribute("data-title") || "").trim();
   }
 
-  // Global delegation for Tips overlay
+  // Globale Event Delegation für Tips Overlay
   root.addEventListener("click", (e)=>{
-    const ov = e.target.closest("#ov-tips, .tips-overlay");
-    if(!ov) return;
+    const tipsOverlay = e.target.closest("#ov-tips, .tips-overlay");
+    if(!tipsOverlay) return;
 
-    // 'Öffnen' button
-    const openBtn = e.target.closest("button,a");
-    const text = (openBtn?.textContent || "").trim().toLowerCase();
-    if(text === "öffnen"){
-      const card = openBtn.closest(".tip-card, .card, li, article, section") || ov;
-      const title = titleFromCard(card);
-      const tip = getTip(title) || getTip(card?.dataset?.id || "");
-      if(tip){ e.preventDefault(); openTipModal(tip); }
-      return;
-    }
+    const btn = e.target.closest("button, a");
+    if(!btn) return;
+    
+    const action = btn.dataset.action;
+    const text = (btn.textContent || "").trim().toLowerCase();
+    
+    console.log('[tips-interact] Click detected:', {action, text});
 
-    // 'Link kopieren' in grid -> copy prompt directly
-    if(text === "link kopieren"){
-      const card = openBtn.closest(".tip-card, .card, li, article, section") || ov;
-      const title = titleFromCard(card);
-      const tip = getTip(title) || getTip(card?.dataset?.id || "");
-      if(tip){
-        e.preventDefault();
-        (navigator.clipboard ? navigator.clipboard.writeText(tip.prompt || "") : Promise.reject())
-          .then(()=>{ openBtn.textContent="Kopiert ✓"; setTimeout(()=> openBtn.textContent="Link kopieren", 1200); })
-          .catch(()=>{ openBtn.textContent="Kopieren fehlgeschlagen"; setTimeout(()=> openBtn.textContent="Link kopieren", 1400); });
+    // 'Öffnen' button oder data-action="open-tip"
+    if(action === "open-tip" || text === "öffnen"){
+      e.preventDefault();
+      
+      const tipId = btn.dataset.tipId;
+      const card = btn.closest(".tip-card, .card, .tip, li, article, section") || tipsOverlay;
+      const title = getTitleFromCard(card);
+      
+      const tip = getTip(tipId || title);
+      
+      if(tip){ 
+        openTipModal(tip); 
+      } else {
+        console.error('[tips-interact] Tip not found for:', tipId || title);
+        alert('Tipp nicht gefunden. Bitte TIPS_DATA prüfen.');
       }
       return;
     }
-  });
+
+    // 'Prompt kopieren' oder data-action="copy-tip"
+    if(action === "copy-tip" || text === "prompt kopieren" || text === "link kopieren"){
+      e.preventDefault();
+      
+      const tipId = btn.dataset.tipId;
+      const card = btn.closest(".tip-card, .card, .tip, li, article, section") || tipsOverlay;
+      const title = getTitleFromCard(card);
+      
+      const tip = getTip(tipId || title);
+      
+      if(tip){
+        copyToClipboard(tip.prompt || "", btn);
+      } else {
+        console.error('[tips-interact] Tip not found for copy:', tipId || title);
+      }
+      return;
+    }
+  }, { passive:false }); // passive:false wegen preventDefault
+
+  // Overlay Visibility Watcher (optional für zusätzliche Init-Logik)
+  function watchOverlay(){
+    const ov = $("#ov-tips");
+    if(!ov) return;
+    
+    const observer = new MutationObserver(()=>{
+      const isVisible = ov.getAttribute("aria-hidden") === "false" || 
+                        ov.style.display === "block" ||
+                        ov.dataset.open === "1";
+      
+      if(isVisible) {
+        console.log('[tips-interact] Tips overlay now visible');
+        // Hier könnte zusätzliche Init-Logik stehen
+      }
+    });
+    
+    observer.observe(ov, { 
+      attributes: true, 
+      attributeFilter: ["aria-hidden", "style", "data-open"] 
+    });
+  }
+
+  // Init
+  if(document.readyState === "complete"){
+    setTimeout(watchOverlay, 200);
+  } else {
+    window.addEventListener("load", ()=> setTimeout(watchOverlay, 200));
+  }
+  
+  console.log('[tips-interact] Module loaded and ready');
 })();

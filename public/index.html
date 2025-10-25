@@ -5,75 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <meta name="x-api-base" content="/api"/>
-    <title>hohl.rocks – KI-gestützte Web-Experience</title>
-    <meta name="description" content="Erleben Sie die Kraft der KI: Organische Neon-Bubbles mit intelligenten Assistenten." />
+    <title>hohl.rocks — KI‑gestützte Web‑Experience</title>
+    <meta name="description" content="Neon‑Bubbles, Prompts, KI‑Tipps & KI‑News. Ruhig, klar, magisch‑intuitiv." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css" />
-    <!-- Leichtes Overlay & zugängliche Modals -->
-    <link rel="stylesheet" href="./css/modal-theme.css" />
-    <link rel="stylesheet" href="./css/modal-improvements.css" />
-    <link rel="stylesheet" href="./css/shimmer-effect.css" />
-    <style>
-      /* Bubble Container */
-      #bubbles {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 5;
-      }
-      /* Organische Bubble-Formen */
-      .bubble {
-        position: absolute;
-        backdrop-filter: blur(12px);
-        cursor: pointer;
-        pointer-events: auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 1.5rem;
-        font-size: .95rem;
-        color: rgba(255,255,255,.95);
-        font-weight: 600;
-        opacity: 0;
-        transition: opacity 2s ease, transform .3s ease;
-        text-shadow: 0 0 15px rgba(255,255,255,.6);
-        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-        animation: morph 8s ease-in-out infinite, drift 15s ease-in-out infinite;
-      }
-      @keyframes morph {
-        0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: scale(1); }
-        25%      { border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%; transform: scale(1.08); }
-        50%      { border-radius: 70% 30% 40% 60% / 70% 40% 60% 30%; transform: scale(.96); }
-        75%      { border-radius: 30% 70% 60% 40% / 30% 60% 40% 70%; transform: scale(1.04); }
-      }
-      @keyframes drift {
-        0%,100% { transform: translate(0,0); }
-        25%     { transform: translate(40px,-30px); }
-        50%     { transform: translate(-30px,20px); }
-        75%     { transform: translate(20px,40px); }
-      }
-      .bubble:hover { transform: scale(1.15); filter: brightness(1.25); }
-      /* Neon-Farben je Typ */
-      .bubble[data-bubble="briefing"] { background: radial-gradient(ellipse at center, rgba(0,255,255,.25), rgba(0,200,255,.1)); border:2px solid rgba(0,255,255,.7); box-shadow:0 0 40px rgba(0,255,255,.5), inset 0 0 30px rgba(0,255,255,.3); }
-      .bubble[data-bubble="agenda"]   { background: radial-gradient(ellipse at center, rgba(255,0,255,.25), rgba(200,0,255,.1)); border:2px solid rgba(255,0,255,.7); box-shadow:0 0 40px rgba(255,0,255,.5), inset 0 0 30px rgba(255,0,255,.3); }
-      .bubble[data-bubble="pitch"]    { background: radial-gradient(ellipse at center, rgba(255,255,0,.25), rgba(255,200,0,.1)); border:2px solid rgba(255,255,0,.7); box-shadow:0 0 40px rgba(255,255,0,.5), inset 0 0 30px rgba(255,255,0,.3); }
-      .bubble[data-bubble="risks"]    { background: radial-gradient(ellipse at center, rgba(255,100,0,.25), rgba(255,50,0,.1)); border:2px solid rgba(255,100,0,.7); box-shadow:0 0 40px rgba(255,100,0,.5), inset 0 0 30px rgba(255,100,0,.3); }
-      .bubble[data-bubble="excel"]    { background: radial-gradient(ellipse at center, rgba(0,255,100,.25), rgba(0,200,50,.1)); border:2px solid rgba(0,255,100,.7); box-shadow:0 0 40px rgba(0,255,100,.5), inset 0 0 30px rgba(0,255,100,.3); }
-      .bubble[data-bubble="daily"]    { background: radial-gradient(ellipse at center, rgba(150,100,255,.25), rgba(100,50,255,.1)); border:2px solid rgba(150,100,255,.7); box-shadow:0 0 40px rgba(150,100,255,.5), inset 0 0 30px rgba(150,100,255,.3); }
-      /* Sound Button (rechts unten) */
-      .sound-toggle{
-        position: fixed; right: 20px; bottom: 20px; width: 50px; height: 50px; border-radius: 50%;
-        background: rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.3); color:#fff; cursor: pointer;
-        display:flex; align-items:center; justify-content:center; z-index:100; transition:all .3s;
-      }
-      .sound-toggle:hover{ background: rgba(255,255,255,.2); transform: scale(1.08); }
-      .sound-toggle.active{ border-color: rgba(0,255,255,.8); box-shadow: 0 0 20px rgba(0,255,255,.5); }
-    </style>
   </head>
   <body>
     <video class="bg" autoplay muted loop playsinline aria-hidden="true" poster="./videos/road_poster.jpg">
@@ -81,55 +18,51 @@
       <source src="./videos/road_720p_bg.mp4" type="video/mp4" />
     </video>
 
-    <!-- Dynamischer Bubbles Container -->
     <div id="bubbles" aria-hidden="false"></div>
-
-    <!-- Sound Toggle Button -->
-    <button class="sound-toggle" id="sound-toggle" aria-label="Sound an/aus"><span id="sound-icon">🔇</span></button>
-    <audio id="ambient-audio" loop>
-      <source src="./audio/ambient_loop.mp3" type="audio/mpeg">
-      <source src="./audio/ambient_loop.ogg" type="audio/ogg">
-    </audio>
+    <ul id="bubble-labels" aria-hidden="true"></ul>
 
     <header class="site-header">
       <nav class="site-nav" aria-label="Hauptnavigation">
-        <button class="nav-btn" data-action="tips" type="button">KI-Tipps</button>
-        <button class="nav-btn" data-action="news" type="button">KI-News</button>
+        <button class="nav-btn" data-action="tips" type="button">KI‑Tipps</button>
+        <button class="nav-btn" data-action="news" type="button">KI‑News</button>
         <button class="nav-btn" data-action="prompts" type="button">Prompts</button>
         <button class="nav-btn" data-action="projekte" type="button">Projekte</button>
         <button class="nav-btn" data-action="impressum" type="button">Impressum</button>
-        <button class="nav-btn toggle" id="btn-eu" type="button" aria-pressed="false" title="EU-only Provider">EU: aus</button>
-        <!-- 'Klang' + Settings oben entfernt; Bedienung unten rechts vorhanden -->
+        <button class="nav-btn toggle" id="btn-eu" type="button" aria-pressed="false" title="EU‑only Provider">EU: aus</button>
+        <button class="nav-btn" data-action="klang" type="button">Klang</button>
+        <button class="nav-btn gear" data-action="settings" aria-label="Einstellungen" title="Einstellungen (S)" type="button">⚙︎</button>
       </nav>
     </header>
 
     <main class="hero" role="main" id="main"><h1>hohl.rocks</h1></main>
 
-    <!-- Overlays -->
+    <!-- KI-Tipps (Cards) -->
     <div id="ov-tips" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-tips-title">
-        <header><h2 id="ov-tips-title">KI-Tipps</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
-        <div class="tags"><span class="tag" id="tag-tips">Tipps</span></div>
-        <div class="small">Fokus: How‑to · Praxis · Prompting · Produktivität</div>
+        <header><h2 id="ov-tips-title">KI‑Tipps</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
+        <div class="tags"><span class="tag" id="tag-tips">Tipps …</span></div>
+        <div class="small">Fokus: How‑to · Praxis · Prompting · Produktivität (DE/DACH)</div>
         <div class="grid-tips" id="tips-grid"></div>
       </div>
     </div>
 
+    <!-- KI-News -->
     <div id="ov-news" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-news-title">
-        <header><h2 id="ov-news-title">KI-News</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
-        <div class="tags"><span class="tag" id="tag-api">API</span><span class="tag" id="tag-news">News</span></div>
-        <div class="small">Praxis, Tools, Sicherheit, Wirtschaft</div>
+        <header><h2 id="ov-news-title">KI‑News</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
+        <div class="tags"><span class="tag" id="tag-api">API …</span><span class="tag" id="tag-news">News …</span></div>
+        <div class="small">DE‑Fokus: Regulierung · Releases · Sicherheit · Wirtschaft</div>
         <ul class="list" id="news"></ul>
       </div>
     </div>
 
+    <!-- Prompts -->
     <div id="ov-prompts" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-prompts-title">
-        <header><h2 id="ov-prompts-title">Prompt-Galerie</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
+        <header><h2 id="ov-prompts-title">Prompt‑Galerie</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
         <div class="tools">
           <input type="search" id="prompt-search" placeholder="Suchen…" aria-label="Prompts durchsuchen"/>
           <button class="chip" data-filter="Alle" data-active="1">Alle</button>
@@ -141,6 +74,7 @@
       </div>
     </div>
 
+    <!-- Impressum -->
     <div id="ov-impressum" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close="1"></div>
       <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-impressum-title">
@@ -149,110 +83,43 @@
       </div>
     </div>
 
+    <!-- Run -->
+    <div id="ov-run" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close="1"></div>
+      <div class="panel" role="dialog" aria-modal="true" aria-labelledby="ov-run-title">
+        <header><h2 id="ov-run-title">Run</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
+        <div class="small">Streamt live von /api/run/stream</div>
+        <form id="run-form"><textarea id="run-input" rows="4" style="width:100%;margin:8px 0" placeholder="Frag mich etwas …"></textarea><button type="submit">Absenden</button></form>
+        <pre id="run-out" style="white-space:pre-wrap"></pre>
+      </div>
+    </div>
+
+    <!-- Modal & Tour anchors -->
+    <section id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Overlay">
+      <div class="modal__panel" tabindex="-1">
+        <div class="modal__toolbar"><button class="ui btn" data-copy="modal" type="button">Kopieren</button><button class="ui btn ghost modal__close" aria-label="Schließen" type="button">Schließen</button></div>
+        <div id="modal-content"></div>
+      </div>
+    </section>
+    <section id="tour" class="tour" aria-hidden="true" aria-label="Onboarding">
+      <div class="tour__panel" role="dialog" aria-modal="true" tabindex="-1">
+        <ol>
+          <li><strong>Bubbles</strong>: Klicke eine Bubble – du erhältst einen sofort nutzbaren Prompt.</li>
+          <li><strong>Shortcuts</strong>: <kbd>T</kbd> Tipps · <kbd>N</kbd> News · <kbd>P</kbd> Prompts.</li>
+          <li><strong>Layout</strong>: Drücke <kbd>O</kbd> für Orbit‑Layout.</li>
+        </ol>
+        <div class="tour__actions"><button class="ui btn" data-tour="done" type="button">Verstanden</button><button class="ui btn ghost" data-tour="skip" type="button">Überspringen</button></div>
+      </div>
+    </section>
+
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-    <!-- Bubble-Engine (nur Erzeugung + Bewegung; Click handled by modal-lite.js) -->
-    <script>
-    fetch('./data/bubble-content.json')
-      .then(r => r.json())
-      .then(cfg => { window.BUBBLE_CONFIG = cfg.bubbles; window.BUBBLE_SETTINGS = cfg.settings; initBubbleEngine(); })
-      .catch(() => {
-        window.BUBBLE_CONFIG = [
-          { id: 'briefing', text: 'Briefing-Assistent', minSize: 120, maxSize: 160 },
-          { id: 'agenda', text: 'Meeting-Agenda',    minSize: 110, maxSize: 150 },
-          { id: 'pitch',   text: '60s Pitch',        minSize: 100, maxSize: 140 },
-          { id: 'risks',   text: 'Risiko-Analyse',   minSize: 115, maxSize: 155 },
-          { id: 'excel',   text: 'Excel-Formeln',    minSize: 105, maxSize: 145 },
-          { id: 'daily',   text: 'Täglicher Fokus',  minSize: 120, maxSize: 160 }
-        ];
-        window.BUBBLE_SETTINGS = { maxBubbles: 4 };
-        initBubbleEngine();
-      });
-
-    function initBubbleEngine() {
-      const container = document.getElementById('bubbles');
-      let activeBubbles = [];
-      const maxBubbles = window.BUBBLE_SETTINGS?.maxBubbles || 4;
-
-      function getRandomPosition(size) {
-        const margin = size + 50;
-        return {
-          x: margin + Math.random() * (window.innerWidth - margin * 2),
-          y: margin + Math.random() * (window.innerHeight - margin * 2)
-        };
-      }
-      function getRandomShape() {
-        const shapes = [
-          '60% 40% 30% 70% / 60% 30% 70% 40%',
-          '40% 60% 70% 30% / 40% 70% 30% 60%',
-          '70% 30% 40% 60% / 70% 40% 60% 30%',
-          '30% 70% 60% 40% / 30% 60% 40% 70%',
-          '50% 50% 30% 70% / 50% 30% 70% 50%',
-          '45% 55% 65% 35% / 55% 45% 35% 65%'
-        ];
-        return shapes[Math.floor(Math.random() * shapes.length)];
-      }
-      function createBubble() {
-        const type = window.BUBBLE_CONFIG[Math.floor(Math.random() * window.BUBBLE_CONFIG.length)];
-        const size = type.minSize + Math.random() * (type.maxSize - type.minSize);
-        const pos = getRandomPosition(size);
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.dataset.bubble = type.id;
-        bubble.textContent = type.text;
-        bubble.style.width = size + 'px';
-        bubble.style.height = (size * (0.8 + Math.random() * 0.4)) + 'px';
-        bubble.style.left = pos.x + 'px';
-        bubble.style.top  = pos.y + 'px';
-        bubble.style.borderRadius = getRandomShape();
-        container.appendChild(bubble);
-        activeBubbles.push(bubble);
-        setTimeout(() => { bubble.style.opacity = '1'; }, 80);
-        const lifetime = 12000 + Math.random() * 6000;
-        setTimeout(() => {
-          bubble.style.opacity = '0';
-          setTimeout(() => {
-            if (container.contains(bubble)) container.removeChild(bubble);
-            activeBubbles = activeBubbles.filter(b => b !== bubble);
-          }, 2000);
-        }, lifetime);
-      }
-      function startBubbleGeneration() {
-        createBubble();
-        setTimeout(createBubble, 2000);
-        setInterval(() => { if (activeBubbles.length < maxBubbles) createBubble(); }, 3500);
-      }
-      startBubbleGeneration();
-    }
-
-    // Sound-Controller (Button unten rechts)
-    document.addEventListener('DOMContentLoaded', () => {
-      const soundToggle = document.getElementById('sound-toggle');
-      const soundIcon = document.getElementById('sound-icon');
-      const ambientAudio = document.getElementById('ambient-audio');
-      let on = false;
-      soundToggle?.addEventListener('click', () => {
-        on = !on;
-        if (on) { ambientAudio.volume = 0.3; ambientAudio.play().catch(()=>{}); soundIcon.textContent = '🔊'; soundToggle.classList.add('active'); }
-        else    { ambientAudio.pause(); soundIcon.textContent = '🔇'; soundToggle.classList.remove('active'); }
-      });
-    });
-    </script>
-
-    <!-- App-Module -->
     <script type="module" src="./js/utils.js"></script>
     <script type="module" src="./js/api.js"></script>
     <script type="module" src="./js/app.js"></script>
+    <script type="module" src="./js/audio.js"></script>
+    <script type="module" src="./js/bubbleEngine.js"></script>
     <script type="module" src="./js/overlay.js"></script>
     <script type="module" src="./js/modal.js"></script>
-
-    <!-- Fixes & neue Features -->
-    <script src="/js/nav-click-guard.js" defer></script>
-    <script src="/js/prompts-interact.js" defer></script>
-    <script src="/js/nav-prune.js" defer></script>
-    <script src="/js/tips-data.js" defer></script>
-    <script src="/js/tips-interact.js" defer></script>
-    <script src="/js/news-render-fix.js" defer></script>
-    <script src="/js/modal-lite.js" defer></script>
   </body>
 </html>

@@ -1,0 +1,627 @@
+[
+  {
+    "id": "bleeding-strong",
+    "title": "Starke Blutung – Druck ausüben",
+    "hazard": [
+      "medizin"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-512.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/bleeding.strong.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/bleeding.strong.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/bleeding.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Handschuhe falls möglich.",
+      "Direkter Druck auf Wunde.",
+      "Druckverband anlegen.",
+      "112 rufen."
+    ]
+  },
+  {
+    "id": "recovery-position",
+    "title": "Stabile Seitenlage",
+    "hazard": [
+      "medizin"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-512.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/recovery.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/recovery.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/recovery.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Atmung prüfen.",
+      "Arm anwinkeln.",
+      "Gegenbein überkreuzen.",
+      "Zur Seite rollen.",
+      "Kopf überstrecken."
+    ]
+  },
+  {
+    "id": "burns-cooling",
+    "title": "Verbrennung – Kühlen",
+    "hazard": [
+      "medizin"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/burns.cool.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/burns.cool.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/burns.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Mit Wasser kühlen.",
+      "10–20 Minuten.",
+      "Schmuck entfernen.",
+      "Steril abdecken."
+    ]
+  },
+  {
+    "id": "aed-basic",
+    "title": "AED benutzen",
+    "hazard": [
+      "notfall",
+      "medizin"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/aed.basic.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/aed.basic.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/aed.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "AED holen.",
+      "Pads kleben.",
+      "Anweisungen folgen.",
+      "Alle weg beim Schock."
+    ]
+  },
+  {
+    "id": "seizure-safety",
+    "title": "Krampfanfall – Sicherheit",
+    "hazard": [
+      "medizin"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/seizure.safe.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/seizure.safe.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/seizure.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Gegenstände entfernen.",
+      "Kopf schützen.",
+      "Zeit messen.",
+      "Nach Anfall: Seitenlage.",
+      "112 bei >5 Min."
+    ]
+  },
+  {
+    "id": "poisoning-oral",
+    "title": "Vergiftung – geschluckt",
+    "hazard": [
+      "medizin",
+      "vergiftung"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/poisoning.oral.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/poisoning.oral.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/poisoning.oral.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Nicht erbrechen!",
+      "Mund ausspülen.",
+      "Gift-Info anrufen.",
+      "112 bei Symptomen."
+    ]
+  },
+  {
+    "id": "hypothermia",
+    "title": "Unterkühlung – wärmen",
+    "hazard": [
+      "medizin",
+      "kälte"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/hypothermia.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/hypothermia.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/hypothermia.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "In Wärme bringen.",
+      "Nass ausziehen.",
+      "Zudecken, warm trinken.",
+      "Bewegen vermeiden."
+    ]
+  },
+  {
+    "id": "heat-stroke",
+    "title": "Hitzschlag – kühlen",
+    "hazard": [
+      "medizin",
+      "hitze"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/heat.stroke.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/heat.stroke.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/heat.stroke.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "In Schatten bringen.",
+      "Kühlen: Nacken/Achsel/Leiste.",
+      "Flach lagern.",
+      "112 bei Bewusstseinsstörung."
+    ]
+  },
+  {
+    "id": "asthma-attack",
+    "title": "Asthmaanfall – Inhalator",
+    "hazard": [
+      "medizin",
+      "atmung"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/asthma.attack.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/asthma.attack.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/asthma.attack.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Aufrecht hinsetzen.",
+      "Inhalator benutzen.",
+      "Lippenbremse atmen.",
+      "112 bei keiner Besserung."
+    ]
+  },
+  {
+    "id": "anaphylaxis-epipen",
+    "title": "Anaphylaxie – Adrenalinpen",
+    "hazard": [
+      "medizin",
+      "allergie"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/anaphylaxis.epipen.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/anaphylaxis.epipen.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/anaphylaxis.epipen.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Symptome prüfen.",
+      "EpiPen in Oberschenkel.",
+      "5–10 Sek. halten.",
+      "112 rufen."
+    ]
+  },
+  {
+    "id": "stroke-fast",
+    "title": "Schlaganfall – FAST",
+    "hazard": [
+      "medizin",
+      "neurologie"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/stroke.fast.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/stroke.fast.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/stroke.fast.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Gesicht schief?",
+      "Arm schwach?",
+      "Sprache gestört?",
+      "Sofort 112!"
+    ]
+  },
+  {
+    "id": "heart-attack",
+    "title": "Herzinfarkt – handeln",
+    "hazard": [
+      "medizin",
+      "herz"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/heart.attack.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/heart.attack.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/heart.attack.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Ruhe bewahren.",
+      "Oberkörper hoch lagern.",
+      "Enge Kleidung öffnen.",
+      "112 rufen."
+    ]
+  },
+  {
+    "id": "choking-heimlich",
+    "title": "Verschluckt – Heimlich",
+    "hazard": [
+      "medizin",
+      "ersticken"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/choking.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/choking.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/choking.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Husten ermutigen.",
+      "5 Schläge Rücken.",
+      "5 Bauchstöße.",
+      "Wiederholen – 112 rufen."
+    ]
+  },
+  {
+    "id": "drowning-near",
+    "title": "Beinahe‑Ertrinken",
+    "hazard": [
+      "medizin",
+      "wasser"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/drowning.near.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/drowning.near.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/drowning.near.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Sichern, nicht gefährden.",
+      "Aus dem Wasser holen.",
+      "Atmung prüfen.",
+      "112 / Reanimation falls nötig."
+    ]
+  },
+  {
+    "id": "hazmat-chemical",
+    "title": "Chemieunfall – Abstand",
+    "hazard": [
+      "gefahr",
+      "chemie"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/hazmat.chemical.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/hazmat.chemical.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/hazmat.chemical.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Abstand halten.",
+      "Gegen Wind stellen.",
+      "Gebäude aufsuchen.",
+      "Fenster/Türen schließen."
+    ]
+  },
+  {
+    "id": "air-raid-shelter",
+    "title": "Luftalarm – Schutz suchen",
+    "hazard": [
+      "krieg",
+      "zivilschutz"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/air.raid.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/air.raid.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/air.raid.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Deckung im Inneren.",
+      "Tief, fern von Fenstern.",
+      "Boden hinlegen.",
+      "Nach Entwarnung prüfen."
+    ]
+  },
+  {
+    "id": "evacuation-go-bag",
+    "title": "Evakuierung – Go‑Bag",
+    "hazard": [
+      "krieg",
+      "katastrophe"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/evacuation.gobag.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/evacuation.gobag.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/evacuation.gobag.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Dokumente, Medikamente.",
+      "Wasser, Snacks.",
+      "Ladegeräte, Geld.",
+      "Treffpunkt klären."
+    ]
+  },
+  {
+    "id": "blackout-safety",
+    "title": "Blackout – Sicherheit",
+    "hazard": [
+      "infrastruktur",
+      "stromausfall"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/blackout.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/blackout.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/blackout.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Batterielicht nutzen.",
+      "Kühlschrank zu.",
+      "Geräte ausstecken.",
+      "Infos per Radio."
+    ]
+  },
+  {
+    "id": "spinal-stabilization",
+    "title": "Wirbelsäule – Stabilisieren",
+    "hazard": [
+      "medizin",
+      "trauma"
+    ],
+    "lang": "de",
+    "poster": "/icons/icon-192.png",
+    "sources": [
+      {
+        "type": "video/webm",
+        "src": "/videos/spine.stabilize.de.webm"
+      },
+      {
+        "type": "video/mp4",
+        "src": "/videos/spine.stabilize.de.mp4"
+      }
+    ],
+    "captions": [
+      {
+        "lang": "de",
+        "src": "/videos/captions/spine.stabilize.de.vtt",
+        "label": "Deutsch"
+      }
+    ],
+    "steps": [
+      "Kopf halten.",
+      "Bewegen vermeiden.",
+      "112 rufen.",
+      "Wärme geben."
+    ]
+  }
+]

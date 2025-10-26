@@ -414,7 +414,7 @@ function renderImpressum(){
   // Bubbles direkt aus prompts.json
   try { 
     const items = await loadPrompts(); 
-    await initBubbleEngine(items); 
+    initBubbleEngine({ selector: '.bubble, [data-bubble], [data-id]' }); 
   } catch (err) { 
     console.warn('[init] Bubbles init failed', err); 
   }

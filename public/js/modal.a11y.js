@@ -4,19 +4,20 @@ export function fixModalAria() {
   const setOpen = (el) => el.setAttribute('aria-hidden','false');
   const setClose = (el) => el.setAttribute('aria-hidden','true');
 
-  const obs = new MutationObserver(() => {
+  const isVisible = (el) => !!el && (
+    el.offsetParent !== null ||
+    (getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden')
+  );
+
+  const sync = () => {
     document.querySelectorAll(sel).forEach(el => {
-      const visible = el && (el.offsetParent !== null || (getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden'));
-      if (visible) setOpen(el);
+      if (isVisible(el)) setOpen(el); else setClose(el);
     });
-  });
+  };
+
+  const obs = new MutationObserver(sync);
   obs.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['style','class','aria-hidden'] });
 
   // Initial pass
-  setTimeout(() => {
-    document.querySelectorAll(sel).forEach(el => {
-      const visible = el && (el.offsetParent !== null || (getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden'));
-      if (visible) setOpen(el); else setClose(el);
-    });
-  }, 0);
+  setTimeout(sync, 0);
 }

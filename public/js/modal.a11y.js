@@ -1,23 +1,31 @@
-// modal.a11y.js – ensures aria-hidden=false while modal is open
+// public/js/modal.a11y.js
+//
+// This utility patches aria-hidden attributes on modal and tour overlays.  Some themes or third party scripts
+// set `aria-hidden="true"` on these containers by default.  When a modal opens and focus moves inside,
+// screen readers and browsers may warn if the ancestor remains hidden.  The fixModalAria function observes
+// attribute changes and ensures that any open dialog has aria-hidden removed.  It runs immediately on load.
+
 export function fixModalAria() {
-  const sel = '.modal[role="dialog"], #bubble-modal[role="dialog"]';
-  const setOpen = (el) => el.setAttribute('aria-hidden','false');
-  const setClose = (el) => el.setAttribute('aria-hidden','true');
-
-  const isVisible = (el) => !!el && (
-    el.offsetParent !== null ||
-    (getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden')
-  );
-
-  const sync = () => {
-    document.querySelectorAll(sel).forEach(el => {
-      if (isVisible(el)) setOpen(el); else setClose(el);
-    });
-  };
-
-  const obs = new MutationObserver(sync);
-  obs.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['style','class','aria-hidden'] });
-
-  // Initial pass
-  setTimeout(sync, 0);
+  const selectors = ['#modal', '.modal', '.tour'];
+  const targets = selectors.flatMap(sel => Array.from(document.querySelectorAll(sel)));
+  targets.forEach(el => {
+    // Remove aria-hidden on load if the element is already open
+    if (el.dataset.open) {
+      el.removeAttribute('aria-hidden');
+    }
+  });
+  const observer = new MutationObserver(mutations => {
+    for (const m of mutations) {
+      if (m.type === 'attributes' && m.attributeName === 'data-open') {
+        const el = m.target;
+        if (el.dataset.open) {
+          el.removeAttribute('aria-hidden');
+        }
+      }
+    }
+  });
+  targets.forEach(el => observer.observe(el, { attributes: true }));
 }
+
+// Invoke immediately so that the patch is active as soon as the module is imported.
+fixModalAria();

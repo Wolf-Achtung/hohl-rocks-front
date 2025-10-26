@@ -12,8 +12,10 @@ function escHtml(s=''){ return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;'
 export function openModal({ title='', html='' } = {}){
   if (!modal) return;
   content.innerHTML = (title ? `<h3 class="modal__title">${escHtml(title)}</h3>` : '') + html;
+  // Mark modal as open and ensure it is not hidden for screen readers.  Some browsers warn when an element or its ancestors
+  // retain an aria-hidden="true" attribute while a descendant receives focus.  To avoid this, remove the attribute entirely.
   modal.dataset.open = '1';
-  modal.setAttribute('aria-hidden','false');
+  modal.removeAttribute('aria-hidden');
   panel?.focus();
 }
 export function closeModal(){

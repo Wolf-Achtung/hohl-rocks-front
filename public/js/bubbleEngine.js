@@ -108,19 +108,47 @@ function openItem(item){
     try{
       await runBubble(item.id, payload, {
         thread: getThread(item.id),
-        onToken: (tok)=>{
-          acc += tok;
-          textBox.innerHTML = acc.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+        onToken: (tok) => {
+          // Unterstützt Spezial-Tokens für HTML-Ausgabe. Tokens mit dem Präfix "__HTML__" werden als HTML eingefügt,
+          // während alle anderen Tokens sicher escaped werden. Dadurch können Bild- oder Audio-Tags direkt gestreamt werden.
+          if (typeof tok === 'string' && tok.startsWith('__HTML__')) {
+            const rawHtml = tok.slice(8);
+            if (acc) {
+              // Flush previously accumulated text into the box and reset accumulator
+              textBox.innerHTML = acc
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\n/g, '<br>');
+              acc = '';
+            }
+            try {
+              textBox.insertAdjacentHTML('beforeend', rawHtml);
+            } catch {
+              // Fallback: if HTML can't be inserted, append as text
+              textBox.innerHTML += rawHtml
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            }
+          } else {
+            acc += tok;
+            textBox.innerHTML = acc
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/\n/g, '<br>');
+          }
         }
       });
-      if(!acc) textBox.textContent = 'Fertig.';
+      if (!acc && !textBox.innerHTML) textBox.textContent = 'Fertig.';
       const th = getThread(item.id);
-      th.push({role:'user', content: JSON.stringify(payload)});
-      th.push({role:'assistant', content: acc});
+      th.push({ role: 'user', content: JSON.stringify(payload) });
+      th.push({ role: 'assistant', content: acc || textBox.textContent || textBox.innerHTML });
       setThread(item.id, th);
-    }catch(err){
+    } catch (err) {
       console.error(err);
-      resultBox.innerHTML = `<p>Fehler: ${err.message||err}</p>`;
+      resultBox.innerHTML = `<p>Fehler: ${err.message || err}</p>`;
       toast('Fehler bei der Ausführung');
     }
   }, {once:true});

@@ -22,14 +22,21 @@ export async function postJson(path, body){
 }
 
 export const tips  = async () => getJson('/tips');
-export const summarize = async (text, max=2) => postJson('/summarize', { text, max });
 export const news  = async () => getJson('/news');
 export const daily = async () => getJson('/daily');
 export const run   = async (input, { eu } = {}) => postJson(`/run?eu=${eu?'1':'0'}`, { input });
 export const health = async () => { try { const r = await fetch('/healthz'); if(!r.ok) return false; const j = await r.json(); return j?.ok !== false; } catch { return false; } };
 export const metrics = async (type, meta={}) => { try { await postJson('/metrics', { type, meta }); } catch {} };
 
-export const api = { health, news, tips, daily, run, metrics };
+// Dynamische Suche für KI‑News.  Ruft den Endpunkt /news/search?q=… auf und liefert strukturierte Ergebnisse zurück.
+// Wenn die Suchanfrage leer ist, sollte stattdessen news() verwendet werden.
+export const searchNews = async (query = '') => {
+  const q = String(query || '').trim();
+  if (!q) return { items: [] };
+  return getJson(`/news/search?q=${encodeURIComponent(q)}`);
+};
+
+export const api = { health, news, tips, daily, run, metrics, searchNews };
 export function apiBase(){ return API_BASE; } export function setApiBase(b){ API_BASE = (b||'/api').replace(/\/+$/,''); }
 
 export function streamRun(input, { onToken, onDone, onError, eu } = {}){

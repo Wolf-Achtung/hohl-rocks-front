@@ -72,9 +72,11 @@ async function loadTips(){
 
 /* KI-News */
 const ulNews = $('#news');
-async function loadNews(){
+async function loadNews(searchTerm = ''){
   try{
-    const j = await api.news();
+    const j = searchTerm
+      ? await api.searchNews(searchTerm)
+      : await api.news();
     const items = Array.isArray(j?.items) ? j.items : [];
     ulNews.innerHTML = '';
     if (!items.length){ ulNews.append(el('li',{}, 'Keine Ergebnisse.')); mark(tagNews, true); return; }
@@ -85,6 +87,19 @@ async function loadNews(){
     }
     mark(tagNews, true);
   }catch(e){ console.error(e); toast('News-Fehler'); mark(tagNews, false); }
+}
+
+// Live-Search für KI-News: reagiert auf Eingaben im Suchfeld und ruft die entsprechende API auf
+const newsSearchBox = document.getElementById('news-search');
+if (newsSearchBox){
+  newsSearchBox.addEventListener('input', () => {
+    const q = newsSearchBox.value.trim();
+    if (q){
+      loadNews(q);
+    } else {
+      loadNews();
+    }
+  });
 }
 
 /* Prompt-Galerie */

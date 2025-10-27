@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <!-- Verwende absolute Pfade für Stylesheet, damit die Seite auch unter Unterverzeichnissen (z. B. /tips/*) korrekt geladen wird. -->
     <link rel="stylesheet" href="/styles.css" />
+    <!-- Optional shimmering effect for the hero heading.  This separate stylesheet animates the "hohl.rocks" title with a gentle sheen. -->
+    <link rel="stylesheet" href="/css/shimmer-effect.css" />
   </head>
   <body>
     <video class="bg" autoplay muted loop playsinline aria-hidden="true" poster="./videos/road_poster.jpg">
@@ -55,6 +57,10 @@
         <header><h2 id="ov-news-title">KI‑News</h2><button class="close" data-close="1" aria-label="Schließen">Schließen ✕</button></header>
         <div class="tags"><span class="tag" id="tag-api">API …</span><span class="tag" id="tag-news">News …</span></div>
         <div class="small">DE‑Fokus: Regulierung · Releases · Sicherheit · Wirtschaft</div>
+        <!-- Optional News-Suchfeld: Mit diesem Eingabefeld können Nutzer aktuelle KI‑News durchsuchen. -->
+        <div class="tools" style="margin-bottom:8px">
+          <input type="search" id="news-search" placeholder="Suchen …" aria-label="KI‑News durchsuchen"/>
+        </div>
         <ul class="list" id="news"></ul>
       </div>
     </div>

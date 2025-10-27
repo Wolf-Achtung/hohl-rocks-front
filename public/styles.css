@@ -77,3 +77,27 @@ ul.list li{background:rgba(6,10,16,.6);border:1px solid rgba(255,255,255,.08);bo
 .modal__toolbar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px}
 .ui.btn{appearance:none;border:1px solid rgba(255,255,255,.18);background:#16202c;color:var(--fg);padding:6px 10px;border-radius:10px;cursor:pointer}
 .ui.btn.ghost{background:transparent}
+
+/* ===== Tipp‑Detail Seiten ===== */
+.tip-detail {
+  max-width: 720px;
+  margin: 80px auto;
+  padding: 24px;
+  background: rgba(18,24,32,0.85);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.tip-detail h1 {
+  margin-bottom: 0.5em;
+  font-size: 2rem;
+  font-weight: 600;
+}
+.tip-detail p {
+  margin: 0.5em 0;
+  line-height: 1.5;
+}
+.tip-detail .ui.btn {
+  display: inline-block;
+  margin-top: 1em;
+  text-decoration: none;
+}

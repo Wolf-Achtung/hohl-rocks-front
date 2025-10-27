@@ -1,10 +1,14 @@
-/* Shimmer-Effekt für hohl.rocks Schriftzug */
+/* Shimmer-Effekt für den hohl.rocks Schriftzug
+ *
+ * Dieses Stylesheet definiert einen subtilen Lichtschein, der über den Titel in der Heldensektion wandert.  Der
+ * Hintergrund des Textes ist als linearer Verlauf mit wechselnden Transparenzen angelegt und wird über die Zeit
+ * animiert.  Die ursprünglich enthaltenen Varianten wurden entfernt, um die Datei übersichtlich und gültig zu halten.
+ */
 
 .hero h1 {
   margin: 12px 0 0;
   font-size: 28px;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
-  
   /* Shimmer-Effekt */
   background: linear-gradient(
     90deg,
@@ -20,7 +24,6 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  
   animation: shimmer 3s linear infinite;
 }
 
@@ -32,59 +35,3 @@
     background-position: 200% 0;
   }
 }
-
-/* Optionale Varianten - kommentiert, zum Ausprobieren: */
-
-/* Variante 2: Langsamer, subtiler Shimmer */
-
-.hero h1 {
-  animation: shimmer 5s ease-in-out infinite;
-}
-
-
-/* Variante 3: Hin- und Her-Bewegung (statt nur eine Richtung) */
-
-@keyframes shimmer {
-  0%, 100% {
-    background-position: -200% 0;
-  }
-  50% {
-    background-position: 200% 0;
-  }
-}
-
-
-/* Variante 4: Neon-Shimmer mit Cyan */
-/*
-.hero h1 {
-  background: linear-gradient(
-    90deg,
-    rgba(230, 238, 247, 0.7) 0%,
-    rgba(230, 238, 247, 0.8) 20%,
-    rgba(0, 255, 255, 0.9) 40%,
-    rgba(100, 255, 255, 1) 50%,
-    rgba(0, 255, 255, 0.9) 60%,
-    rgba(230, 238, 247, 0.8) 80%,
-    rgba(230, 238, 247, 0.7) 100%
-  );
-  background-size: 200% 100%;
-  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.3));
-}
-*/
-
-Variante 5: Gold-Shimmer (edel) */
-
-.hero h1 {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0.9) 20%,
-    rgba(255, 215, 0, 1) 40%,
-    rgba(255, 255, 150, 1) 50%,
-    rgba(255, 215, 0, 1) 60%,
-    rgba(255, 255, 255, 0.9) 80%,
-    rgba(255, 255, 255, 0.8) 100%
-  );
-  background-size: 200% 100%;
-}
-

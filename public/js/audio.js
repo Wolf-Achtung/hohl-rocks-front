@@ -6,6 +6,7 @@ const audio = new Audio(src);
 audio.loop = true;
 audio.preload = 'auto';
 audio.volume = 0.28; // dezent
+audio.playbackRate = 0.92; // etwas ruhigeres Tempo
 
 export const AudioController = {
   toggle(){

@@ -24,6 +24,7 @@ function onAction(action){
     case 'news': openOverlay('#ov-news'); loadNews(); break;
     case 'prompts': openOverlay('#ov-prompts'); renderPrompts(); break;
     case 'impressum': openOverlay('#ov-impressum'); renderImpressum(); break;
+    case 'daily': openOverlay('#ov-daily'); loadDaily(); break; // NEW
     case 'projekte': toast('Projekte folgen'); break;
     case 'settings': toast('Einstellungen folgen'); break;
     case 'klang':
@@ -47,11 +48,12 @@ const tagApi = $('#tag-api'), tagNews = $('#tag-news'), tagTips = $('#tag-tips')
 function mark(el, ok){ if(!el) return; el.className = 'tag ' + (ok ? 'ok' : ''); el.textContent = (el.textContent.split(' ')[0] || '') + ' ' + (ok ? '✓' : ''); }
 
 /* KI-Tipps (Cards) */
-const tipsGrid = $('#tips-grid');
+const tipsGrid = $('#tips-grid');                 // existiert jetzt in index.html
 async function loadTips(){
   try{
     const j = await api.tips();
     const items = Array.isArray(j?.items) ? j.items : [];
+    if (!tipsGrid) return;                         // Guard
     tipsGrid.innerHTML = '';
     if (!items.length){ tipsGrid.innerHTML = '<p>Keine Ergebnisse.</p>'; mark(tagTips, true); return; }
     for (const it of items.slice(0, 20)){
@@ -71,13 +73,14 @@ async function loadTips(){
 }
 
 /* KI-News */
-const ulNews = $('#news');
+const ulNews = $('#news');                         // existiert jetzt in index.html
 async function loadNews(searchTerm = ''){
   try{
     const j = searchTerm
       ? await api.searchNews(searchTerm)
       : await api.news();
     const items = Array.isArray(j?.items) ? j.items : [];
+    if (!ulNews) return;                            // Guard
     ulNews.innerHTML = '';
     if (!items.length){ ulNews.append(el('li',{}, 'Keine Ergebnisse.')); mark(tagNews, true); return; }
     for (const it of items.slice(0, 20)){
@@ -89,35 +92,48 @@ async function loadNews(searchTerm = ''){
   }catch(e){ console.error(e); toast('News-Fehler'); mark(tagNews, false); }
 }
 
-// Live-Search für KI-News: reagiert auf Eingaben im Suchfeld und ruft die entsprechende API auf
+// Live-Search für KI-News
 const newsSearchBox = document.getElementById('news-search');
 if (newsSearchBox){
   newsSearchBox.addEventListener('input', () => {
     const q = newsSearchBox.value.trim();
-    if (q){
-      loadNews(q);
-    } else {
-      loadNews();
-    }
+    if (q){ loadNews(q); } else { loadNews(); }
   });
 }
 
 /* Prompt-Galerie */
 let PROMPTS = []; async function loadPrompts(){ if (PROMPTS.length) return PROMPTS; const r = await fetch('./data/prompts.json', { cache:'no-store' }); PROMPTS = r.ok ? await r.json() : []; return PROMPTS; }
 const grid = $('#prompt-grid'); const searchBox = $('#prompt-search'); let currentFilter = 'Alle';
-function renderPrompts(){ loadPrompts().then(()=>{ const q = (searchBox?.value||'').toLowerCase().trim(); const list = PROMPTS.filter(p => (currentFilter==='Alle' || (p.tags||[]).includes(currentFilter)) && (p.question.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q))); grid.innerHTML = ''; for (const it of list){ const card = el('div',{class:'card'}, el('h3',{}, it.question), el('p',{}, it.desc || ''), el('div',{class:'actions'}, el('button',{type:'button','data-copy':it.prompt},'Kopieren'), el('button',{type:'button','data-run':it.prompt},'Im Run öffnen'))); grid.append(card); } }); }
+function renderPrompts(){ loadPrompts().then(()=>{
+  if(!grid) return;
+  const q = (searchBox?.value||'').toLowerCase().trim();
+  const list = PROMPTS.filter(p => (currentFilter==='Alle' || (p.tags||[]).includes(currentFilter)) && (p.question.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)));
+  grid.innerHTML = '';
+  for (const it of list){
+    const card = el('div',{class:'card'},
+      el('h3',{}, it.question),
+      el('p',{}, it.desc || ''),
+      el('div',{class:'actions'},
+        el('button',{type:'button','data-copy':it.prompt},'Kopieren'),
+        el('button',{type:'button','data-run':it.prompt},'Im Run öffnen')
+      )
+    );
+    grid.append(card);
+  }
+}); }
 document.addEventListener('click', async (e)=>{
   const dc = e.target?.dataset?.copy;
   if (dc){
     if (dc === 'modal'){
-      const p = document.querySelector('#modal .prompt-text')?.innerText?.trim();
+      const p = document.querySelector('#ov-run #run-input')?.value?.trim()
+            || document.querySelector('#modal .prompt-text')?.innerText?.trim();
       if (p){ await copy(p); toast('Prompt kopiert'); }
     } else {
       await copy(dc); toast('Kopiert');
     }
   }
   const run = e.target?.dataset?.run;
-  if (run){ openOverlay('#ov-run'); const box = $('#run-input'); box.value = run; box.focus(); api.metrics('prompt_run', {}); }
+  if (run){ openOverlay('#ov-run'); const box = $('#run-input'); if (box){ box.value = run; box.focus(); } api.metrics('prompt_run', {}); }
 });
 document.addEventListener('click', (e)=>{ const f = e.target?.dataset?.filter; if (!f) return; currentFilter = f; document.querySelectorAll('.tools .chip').forEach(ch => ch.toggleAttribute('data-active', ch.dataset.filter === f)); renderPrompts(); });
 searchBox?.addEventListener('input', ()=> renderPrompts());
@@ -154,7 +170,22 @@ Auskunft, Berichtigung oder Löschung Ihrer Daten
 Datenübertragbarkeit
 Widerruf erteilter Einwilligungen
 Beschwerde bei der Datenschutzbehörde`;
-function renderImpressum(){ const elHost = $('#impressum-body'); elHost.innerHTML = IMPRESSUM.split('\n\n').map(p => '<p>'+p.replace(/\n/g,'<br>')+'</p>').join(''); }
+function renderImpressum(){ const elHost = $('#impressum-body'); if(!elHost) return; elHost.innerHTML = IMPRESSUM.split('\n\n').map(p => '<p>'+p.replace(/\n/g,'<br>')+'</p>').join(''); }
+
+/* Spotlight (Today’s Spark) – NEW */
+const dailyBody = $('#daily-body');
+const esc = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+async function loadDaily(){
+  if(!dailyBody) return;
+  try{
+    const base = document.querySelector('meta[name="x-api-base"]')?.content || '/api';
+    const res = await fetch(base.replace(/\/$/,'') + '/spark/today', { cache:'no-store' });
+    if(!res.ok){ dailyBody.innerHTML = '<p>Heute kein Spotlight verfügbar.</p>'; return; }
+    const data = await res.json().catch(()=>null);
+    if(!data){ dailyBody.innerHTML = '<p>Heute kein Spotlight verfügbar.</p>'; return; }
+    dailyBody.innerHTML = `<h3>${esc(data.title || 'Today’s Spark')}</h3>${data.text?`<p>${esc(data.text)}</p>`:''}`;
+  }catch(e){ dailyBody.innerHTML = '<p>Offline – später erneut versuchen.</p>'; }
+}
 
 /* Init */
 (async function init(){
@@ -164,12 +195,10 @@ function renderImpressum(){ const elHost = $('#impressum-body'); elHost.innerHTM
   if (!prefs.lastNewsPrefetch || (now - prefs.lastNewsPrefetch) > 23*60*60*1000){ prefs.lastNewsPrefetch = now; pref.set(prefs); try{ await getJson('/news?prefetch=1'); } catch {} }
   if (!prefs.lastTipsPrefetch || (now - prefs.lastTipsPrefetch) > 23*60*60*1000){ prefs.lastTipsPrefetch = now; pref.set(prefs); try{ await getJson('/tips?prefetch=1'); } catch {} }
   // Bubbles direkt aus prompts.json
-  try { const items = await loadPrompts(); await initBubbleEngine(items); } catch (err) { console.warn('bubbles init failed', err); }
+  try { const r = await fetch('./data/prompts.json',{cache:'no-store'}); const items = r.ok ? await r.json() : []; await initBubbleEngine(items); } catch (err) { console.warn('bubbles init failed', err); }
 })();
 
-// Ensure no overlay is left open on initial page load.  Some persisted state from a previous session may leave
-// data-open attributes set on overlay elements, which causes them to be visible on refresh.  This cleanup
-// runs once on DOMContentLoaded to reset overlays to their closed state.
+// Reset evtl. offener Overlays beim Initial-Load
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.overlay[data-open]').forEach(el => {
     el.removeAttribute('data-open');

@@ -1,223 +1,116 @@
-[
+files["public/data/prompts.json"] = json.dumps([
   {
-    "id": 1,
-    "question": "Wo verlierst du im Alltag Zeit?",
-    "desc": "To‑Dos in 3 Stufen + Reihenfolge.",
-    "prompt": "Sortiere diese Aufgaben in drei Stufen (Sofort/Heute/Kann warten). Erstelle daraus eine 5‑Punkte‑Reihenfolge mit kurzer Begründung je Schritt. Aufgaben: ",
-    "tags": [
-      "Alltag"
-    ]
+    "question": "EU AI Act: Welche Pflichten treffen unser Produkt?",
+    "desc": "Risikoklassifizierung, Pflichten-Checkliste, erforderliche Nachweise.",
+    "prompt": "Handle als Compliance Lead. Klassifiziere unser System nach EU AI Act (Unzulässig/Hoher/Niedriger/Mindest-Risiko). Gib eine tabellarische Pflichten-Checkliste mit Verantwortlichen, Nachweisen, Fristen und Referenzen auf Artikel-Ebene. Füge am Ende empfohlene nächste Schritte (30/60/90 Tage) hinzu.",
+    "tags": ["Compliance", "EU AI Act", "Enterprise"]
   },
   {
-    "id": 2,
-    "question": "Was kochst du aus 3 Zutaten?",
-    "desc": "3 Zutaten → Gericht, Einkaufsliste, 20‑Minuten‑Plan.",
-    "prompt": "Ich habe diese Zutaten: [ZUTATEN]. Schlage ein Gericht (1 Portion) vor, mit Einkaufsliste (fehlende Zutaten) und 20‑Minuten‑Schrittplan.",
-    "tags": [
-      "Alltag",
-      "Kreativ"
-    ]
+    "question": "RAG-Architektur für mein Wissensarchiv",
+    "desc": "Retriever-Strategie, Chunking, Embeddings, Eval, Kosten.",
+    "prompt": "Du bist Solutions Architect. Entwirf eine RAG-Architektur für ~2000 PDFs (deutsch). Beschreibe: Datenaufnahme, Chunking-Strategie (Größe/Overlap), Metadaten, Vektordatenbank, Re-Ranker, Prompting, Caching. Nenne Evaluationsmetriken (Answer Correctness, Faithfulness, Context Precision) und gib einen Kostenfahrplan (Speicher/Abfragen/Traffic).",
+    "tags": ["Architecture", "RAG", "Search"]
   },
   {
-    "id": 3,
-    "question": "Wie kannst du ein nerviges Problem neu framen?",
-    "desc": "Nerviges Problem neu rahmen + Mini‑Handlung.",
-    "prompt": "Formuliere 3 neue Blickwinkel (Reframing) für dieses Problem und gib je eine konkrete Mini‑Handlung: ",
-    "tags": [
-      "Alltag",
-      "Mindset"
-    ]
+    "question": "DPIA/DSFA für KI‑Feature",
+    "desc": "Datenschutz-Folgenabschätzung schlank & vollständig.",
+    "prompt": "Agieren als Datenschutzbeauftragter. Erstelle eine prägnante DSFA für ein KI‑Feature (z. B. Textklassifikation). Liste Datenkategorien, Rechtsgrundlage, Speicherfristen, technische/organisatorische Maßnahmen, Drittlandübermittlungen, Betroffenenrechte und ein Risiko-Register mit Bewertung/Rest-Risiko.",
+    "tags": ["Privacy", "DSGVO", "Compliance"]
   },
   {
-    "id": 4,
-    "question": "Wie schläfst du nächste Woche besser?",
-    "desc": "„7‑Tage‑Schlaf‑Routine Light“ ohne Gadgets.",
-    "prompt": "Entwirf eine minimalistische 7‑Tage‑Schlaf‑Routine. Vorgaben: 3 Kernregeln, 1 Abendritual, 1 Notfallplan bei schlechtem Schlaf.",
-    "tags": [
-      "Alltag",
-      "Gesundheit"
-    ]
+    "question": "Eval‑Plan für LLM‑Antwortqualität",
+    "desc": "Automatisierte Off-/On‑Policy Evals + menschliche QA.",
+    "prompt": "Erstelle einen Evaluationsplan für ein deutschsprachiges Q&A‑System. Definiere Metriken, Benchmarks, Gold Sets, menschliches Review (double‑blind), Frequenz, Dashboards. Beschreibe Testdaten-Generierung, Guardrails und Regressions‑Schwellen. Liefere ein JSON‑Schema für automatisierte Reports.",
+    "tags": ["Evaluation", "Quality", "MLOps"]
   },
   {
-    "id": 5,
-    "question": "Was willst du in 30 Minuten verstehen?",
-    "desc": "Thema in 30 Minuten kapieren – Plan + Quiz.",
-    "prompt": "Leite mich durch einen Lern‑Sprint (30 Minuten) für das Thema: [THEMA]. Gib mir einen Blockplan und 5 Quizfragen mit Lösungen.",
-    "tags": [
-      "Kreativ",
-      "Arbeit",
-      "Lernen"
-    ]
+    "question": "Incident‑Playbook für KI‑Produkte",
+    "desc": "Abläufe, Rollen, SLAs, Runbooks, Kommunikation.",
+    "prompt": "Schreibe ein Incident‑Playbook für ein KI‑Produkt (Halluzination, Bias, Datenleck, Abuse). Definiere Schweregrade, SLAs, On‑Call, Eskalation, Kommunikationsplan (intern/extern), rechtliche Notifikationen, Postmortem‑Vorlage.",
+    "tags": ["Reliability", "Security", "Ops"]
   },
   {
-    "id": 6,
-    "question": "Welche 3 Captions funktionieren am besten?",
-    "desc": "Drei Captions (seriös/freundlich/spielerisch).",
-    "prompt": "Erzeuge 3 Captions in verschiedenen Tönen (seriös, freundlich, spielerisch) für ein Foto. Thema/Kontext: [KONTEXT].",
-    "tags": [
-      "Kreativ",
-      "Social"
-    ]
+    "question": "Guardrails & Moderation",
+    "desc": "Richtlinien + technische Maßnahmen für sichere Antworten.",
+    "prompt": "Entwirf Richtlinien und technische Guardrails zur Inhaltsmoderation (Prompt‑Injection, PII, IP‑Leaks, Unsafe Advice). Inkludiere Prompt‑Patterns, Modell‑Konfiguration, Post‑Filtering, Logging, Red‑Team‑Plan.",
+    "tags": ["Safety", "Security"]
   },
   {
-    "id": 7,
-    "question": "Kannst du es einem 5‑Jährigen erklären?",
-    "desc": "Klare, bildhafte Erklärung – max. 140 Wörter.",
-    "prompt": "Erkläre mir [THEMA] so, dass es ein Kind (5) versteht. Benutze ein greifbares Bild/Analogien und max. 140 Wörter.",
-    "tags": [
-      "Alltag",
-      "Lernen"
-    ]
+    "question": "LLM‑Kostenmodell & Budget",
+    "desc": "Durchsatz, Latenz, Token‑Budget, Caching, Mix‑of‑Models.",
+    "prompt": "Erstelle ein Kosten‑ und Kapazitätsmodell für eine LLM‑App (10k Nutzer/Tag). Berücksichtige Eingabe-/Ausgabe‑Token, Kontextgröße, Cache‑Treffer, Mischung mehrerer Modelle (günstig/teuer), Rate Limits und Auto‑Scaling. Gib am Ende drei Budget‑Szenarien.",
+    "tags": ["Finance", "Ops"]
   },
   {
-    "id": 8,
-    "question": "Wie triffst du heute eine gute Entscheidung?",
-    "desc": "6 Punkte, keine Floskeln: Entscheidungsvorlage.",
-    "prompt": "Gib mir ein Chef‑Briefing in 6 Bulletpoints. Struktur: Kontext · Zahlen · Risiko · Optionen A/B · Empfehlung · Nächste Schritte. Thema: ",
-    "tags": [
-      "Arbeit"
-    ]
+    "question": "Produkt‑Discovery mit KI",
+    "desc": "Research‑Framework + Experimente + Akzeptanzkriterien.",
+    "prompt": "Leite einen strukturierten Discovery‑Prozess für ein neues KI‑Feature: Problem‑Hypothese, Nutzersegmente, Jobs‑to‑be‑Done, Experiment‑Matrix, Lernziele, Messgrößen, Exit‑Kriterien. Erzeuge anschließend ein Decision‑Memo.",
+    "tags": ["Product", "Discovery"]
   },
   {
-    "id": 9,
-    "question": "Wie bereitest du ein heikles Gespräch vor?",
-    "desc": "Heikle Gespräche ohne Aggro – Fragen & Ich‑Botschaften.",
-    "prompt": "Hilf mir, ein heikles Gespräch vorzubereiten. Gib 5 Fragen und 5 Ich‑Botschaften. Kontext: ",
-    "tags": [
-      "Alltag",
-      "Arbeit"
-    ]
+    "question": "Daten‑Kuration & Dataset Card",
+    "desc": "Sampling, Labeling, Balance, Dokumentation.",
+    "prompt": "Beschreibe einen Plan zur Datenkuration: Sampling‑Strategie, Balancing, Labeling‑Richtlinie (mit QA‑Checks), PII‑Handling, Versionierung. Erzeuge eine vollständige Dataset Card (Sections + Beispielwerte).",
+    "tags": ["Data", "Documentation"]
   },
   {
-    "id": 10,
-    "question": "Wie pitchst du deine Idee in 60 Sekunden?",
-    "desc": "60‑Sekunden‑Pitch – klar, merkfähig, menschlich.",
-    "prompt": "Erzeuge einen 60‑Sekunden‑Pitch für: ",
-    "tags": [
-      "Arbeit",
-      "Kreativ"
-    ]
+    "question": "Sichere Prompt‑Vorlage (deutsch)",
+    "desc": "Mehrschritt‑Vorlage mit Rollen, Regeln, Tests.",
+    "prompt": "Baue eine robuste Prompt‑Vorlage in Deutsch: Rolle, Ziele, Stil, Verbote, Testfälle, Selbst‑Checks, JSON‑Ausgabeformat. Hänge eine kurze Prompt‑Härtung (Injection‑Resistenz) an.",
+    "tags": ["Prompting", "Safety"]
   },
   {
-    "id": 11,
-    "question": "Was sind heute deine 3 wichtigsten Aufgaben?",
-    "desc": "Täglicher Fokus in 12 Minuten.",
-    "prompt": "Gib mir die 3 wichtigsten Aufgaben für heute und je die ersten 2 Schritte. Kontext: ",
-    "tags": [
-      "Alltag",
-      "Arbeit"
-    ]
+    "question": "API‑Design für KI‑Service",
+    "desc": "OpenAPI‑Spec, Idempotenz, Fehlercodes, Ratenbegrenzung.",
+    "prompt": "Entwirf eine OpenAPI‑Spec (YAML) für einen Text‑Analyse‑Service inkl. Async‑Jobs. Füge Idempotenz‑Key, Fehlercodes, Schemas, Beispiel‑Requests/Responses und ein Auth‑Kapitel hinzu.",
+    "tags": ["API", "Design"]
   },
   {
-    "id": 12,
-    "question": "Welche Formel löst dein Tabellenproblem?",
-    "desc": "Excel/Sheets‑Formelhilfe inkl. Beispiel.",
-    "prompt": "Welche Excel/Google‑Sheets‑Formel löst dieses Problem? Kontext: ",
-    "tags": [
-      "Arbeit",
-      "Kreativ"
-    ]
+    "question": "Onboarding‑Wizard für KI‑Produkt",
+    "desc": "Checkliste, Metriken, Erfolgskriterien.",
+    "prompt": "Erstelle einen Onboarding‑Plan: 3‑Schritte‑Wizard, Beispiel‑Copy, Tooltips, Checklisten‑Events, Aktivierungs‑Metriken (Aha‑Moment), Retention‑Hypothesen.",
+    "tags": ["UX", "Product"]
   },
   {
-    "id": 13,
-    "question": "Wie sähe eine straffe 30‑Minuten‑Agenda aus?",
-    "desc": "Meeting‑Agenda (30’) – Ergebnisorientiert.",
-    "prompt": "Plane eine 30‑Minuten‑Agenda. Thema/Teilnehmende: ",
-    "tags": [
-      "Arbeit"
-    ]
+    "question": "Auswirkungs‑Analyse (Impact) für KI‑Feature",
+    "desc": "Risiken, Chancen, Stakeholder, Messgrößen.",
+    "prompt": "Erarbeite eine Impact‑Analyse: Nutzen‑Hypothesen, Stakeholder, Risiken, ethische Implikationen, Metriken, Beobachtbarkeit, Exit‑Kriterien. Liefere am Ende ein kompaktes Executive‑Summary.",
+    "tags": ["Impact", "Ethics"]
   },
   {
-    "id": 14,
-    "question": "Wo lauern hier die 3 größten Risiken?",
-    "desc": "Risiko‑Analyse mit Impact‑Bewertung.",
-    "prompt": "Analysiere die 3 größten Risiken, gib Eintrittswahrscheinlichkeit (Low/Med/High) und Gegenmaßnahme. Kontext: ",
-    "tags": [
-      "Arbeit",
-      "Mindset"
-    ]
+    "question": "Agentic Workflow – Plan & Ops",
+    "desc": "Zerlegung in Skills, Tools, Speicher, Überwachung.",
+    "prompt": "Skizziere einen agentischen Workflow (Plan‑Act‑Observe‑Refine). Definiere Skills, Tool‑Schnittstellen, Speicher, Sicherungsnetze, Audit‑Logs und Telemetrie.",
+    "tags": ["Agents", "Architecture"]
   },
   {
-    "id": 15,
-    "question": "Kannst du aus diesem Link ein Chef‑Briefing machen?",
-    "desc": "Artikel → 8 Bulletpoints, neutral & präzise.",
-    "prompt": "Fasse den verlinkten Artikel stichpunktartig als Entscheidungsbriefing (max. 8 Bulletpoints) zusammen. Gliedere in: Kontext · Kernaussagen · Auswirkungen · Risiken · Nächste Schritte. Link/URL: ",
-    "tags": [
-      "Arbeit"
-    ]
+    "question": "LLM‑Evaluation mit eigenen Daten",
+    "desc": "Golden‑Set, metrische Auswertung, Human‑in‑the‑Loop.",
+    "prompt": "Baue einen Plan: Sampling der Nutzerfragen, Golden‑Set, automatische Scorer (BLEU/ROUGE/BERTScore/LLM‑as‑Judge) und humanes Review; erzeugt ein CSV‑Schema für Experimente.",
+    "tags": ["Evaluation", "Data"]
   },
   {
-    "id": 16,
-    "question": "Was sagt dein zukünftiges Ich in 12 Monaten?",
-    "desc": "Zeitreise‑Tagebuch – Optimistisch‑realistisch, 130 Wörter.",
-    "prompt": "Schreibe einen kurzen Tagebucheintrag aus der Sicht meines zukünftigen Ichs in 12 Monaten. Stichworte: KI im Alltag, gesunde Gewohnheiten, Fokus aufs Wesentliche.",
-    "tags": [
-      "Mindset",
-      "Alltag"
-    ]
+    "question": "Change‑Management für KI‑Einführung",
+    "desc": "Schulungen, Governance, Kommunikationspaket.",
+    "prompt": "Entwirf ein Change‑Management‑Paket: Zielgruppen, Schulungspfad (Beginner/Power‑User), Kommunikationsfahrplan, Ambassadors‑Programm, Governance‑Board.",
+    "tags": ["Org", "Enablement"]
   },
   {
-    "id": 17,
-    "question": "Welche 5 Hebel bringen dein Projekt schneller voran?",
-    "desc": "KI‑Berater – 5 Hebel + Next Steps (48h).",
-    "prompt": "Analysiere mein Vorhaben und liste die 5 größten Hebel. Gib zu jedem Hebel konkrete nächste Schritte für die nächsten 48 Stunden mit Aufwand/Nutzen‑Skala (1‑5). Vorhaben: ",
-    "tags": [
-      "Arbeit",
-      "Mindset"
-    ]
+    "question": "Vertriebs‑Playbook mit KI",
+    "desc": "ICP, Messaging, Sequenzen, Objection Handling.",
+    "prompt": "Erzeuge ein Vertriebs‑Playbook: ICP, Persona‑Pain‑Map, Value‑Props, 5‑Touch‑Sequenz (E‑Mail/LinkedIn/Call), Objection‑Antworten, KPI‑Board.",
+    "tags": ["Sales", "Go‑To‑Market"]
   },
   {
-    "id": 18,
-    "question": "Wie würde dein Bild aussehen?",
-    "desc": "Beschreibe ein Bild – KI erstellt es.",
-    "prompt": "[BESCHREIBUNG]",
-    "tags": [
-      "Kreativ",
-      "Medien"
-    ],
-    "file": false,
-    "category": "Kreativ",
-    "level": "Mittel",
-    "language": "de"
+    "question": "Kosten‑/Leistungs‑Tuning für RAG",
+    "desc": "Cache, Index‑Layouts, Re‑Ranking, Antwort‑Budget.",
+    "prompt": "Gib konkrete Tuning‑Hebel an (Hybrid‑Index, Re‑Ranking, Query‑Rewrites, Token‑Budget, Cache‑Strategien, Batch‑ing) und zeige vorher/nachher‑Beispielwerte.",
+    "tags": ["RAG", "Optimization"]
   },
   {
-    "id": 19,
-    "question": "Was siehst du auf dem Bild?",
-    "desc": "Bildanalyse: KI beschreibt hochgeladenes Bild.",
-    "prompt": "Bitte lade ein Bild hoch: [BILD]",
-    "tags": [
-      "Medien"
-    ],
-    "file": true,
-    "category": "Medien",
-    "level": "Mittel",
-    "language": "de"
-  },
-  {
-    "id": 20,
-    "question": "Willst du einen KI‑Witz hören?",
-    "desc": "Ja/Nein‑Entscheidung mit kurzer Antwort.",
-    "prompt": "Antwort (Ja/Nein): [ANTWORT]",
-    "tags": [
-      "Alltag"
-    ],
-    "file": false,
-    "category": "Alltag",
-    "level": "Einfach",
-    "language": "de"
-  },
-  {
-    "id": 21,
-    "question": "Welcher Sound passt dazu?",
-    "desc": "Erzeuge eine kurze Musik‑Skizze zu deiner Szene.",
-    "prompt": "Beschreibe kurz die Stimmung/Szene: [BESCHREIBUNG]",
-    "tags": [
-      "Medien",
-      "Kreativ"
-    ],
-    "file": false,
-    "category": "Medien",
-    "level": "Mittel",
-    "language": "de"
+    "question": "Security‑Review: Prompt Injection",
+    "desc": "Threat‑Model, Tests, Abwehrmaßnahmen.",
+    "prompt": "Erstelle ein Threat‑Model für Prompt‑Injection (STRIDE). Füge Testvektoren, Erkennungs‑Heuristiken, Abwehr (Sandboxes, Output‑Filters), Observability hinzu.",
+    "tags": ["Security", "Testing"]
   }
-]
+], ensure_ascii=False, indent=2)

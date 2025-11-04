@@ -1,54 +1,52 @@
-import { toast } from './utils.js';
-const META = document.querySelector('meta[name="x-api-base"]');
-let API_BASE = (META?.content || '/api').replace(/\/+$/,'');
+files["public/js/api.js"] = r"""// public/js/api.js
+// Unified frontend API for hohl.rocks (UTF-8)
+// - Uses <meta name="x-api-base" content="/api"> if present
+// - Stable helpers: getJson, postJson, selfCheck
+// - Endpoints: /news, /tips, /metrics, /spark/today
 
-export async function getJson(path){
-  const rel = path.startsWith('/') ? path : '/'+path;
-  async function withBase(base){
-    const res = await fetch(`${base}${rel}`, { headers:{'Accept':'application/json'} });
-    if(!res.ok) throw new Error(String(res.status));
-    return res.json();
+const API_BASE =
+  document.querySelector('meta[name="x-api-base"]')?.content?.replace(/\/$/,'') || '/api';
+
+export async function getJson(path, opts = {}) {
+  const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' }, ...opts });
+  // Sicherheitsnetz: nie ungeparst lassen
+  const txt = await res.text();
+  if (!res.ok) {
+    console.debug('[api:getJson] HTTP', res.status, url, txt.slice(0, 300));
+    return {};
   }
-  try{ return await withBase(API_BASE); } catch { return withBase('/_api'); }
-}
-export async function postJson(path, body){
-  const rel = path.startsWith('/') ? path : '/'+path;
-  async function withBase(base){
-    const res = await fetch(`${base}${rel}`, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(body||{}) });
-    if(!res.ok) throw new Error(String(res.status));
-    return res.json();
-  }
-  try{ return await withBase(API_BASE); } catch { return withBase('/_api'); }
+  try { return JSON.parse(txt); } catch { return {}; }
 }
 
-export const tips  = async () => getJson('/tips');
-export const news  = async () => getJson('/news');
-export const daily = async () => getJson('/daily');
-export const run   = async (input, { eu } = {}) => postJson(`/run?eu=${eu?'1':'0'}`, { input });
-export const health = async () => { try { const r = await fetch('/healthz'); if(!r.ok) return false; const j = await r.json(); return j?.ok !== false; } catch { return false; } };
-export const metrics = async (type, meta={}) => { try { await postJson('/metrics', { type, meta }); } catch {} };
+export async function postJson(path, body, opts = {}) {
+  const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(body ?? {}),
+    ...opts
+  });
+  const txt = await res.text();
+  if (!res.ok) { console.debug('[api:postJson] HTTP', res.status, url, txt.slice(0, 300)); return {}; }
+  try { return JSON.parse(txt); } catch { return {}; }
+}
 
-// Dynamische Suche für KI‑News.  Ruft den Endpunkt /news/search?q=… auf und liefert strukturierte Ergebnisse zurück.
-// Wenn die Suchanfrage leer ist, sollte stattdessen news() verwendet werden.
-export const searchNews = async (query = '') => {
-  const q = String(query || '').trim();
-  if (!q) return { items: [] };
-  return getJson(`/news/search?q=${encodeURIComponent(q)}`);
+export async function selfCheck() {
+  try { const j = await getJson('/self'); return !!j?.ok; } catch { return false; }
+}
+
+// Optional: Streaming-Stub (kann später an OpenAI/Server-Events gekoppelt werden)
+export async function streamRun(prompt, onChunk) {
+  // Platzhalter – bewusst einfach gehalten.
+  onChunk?.('Streaming ist hier (noch) nicht verdrahtet.'); return { done: true };
+}
+
+export const api = {
+  news: (qs='') => getJson(`/news${qs ? `?${qs}` : ''}`),
+  searchNews: (q) => getJson(`/news?q=${encodeURIComponent(q || '')}`),
+  tips: () => getJson('/tips'),
+  metrics: (name, payload={}) => postJson('/metrics', { name, payload }),
+  spark: () => getJson('/spark/today'),
 };
-
-export const api = { health, news, tips, daily, run, metrics, searchNews };
-export function apiBase(){ return API_BASE; } export function setApiBase(b){ API_BASE = (b||'/api').replace(/\/+$/,''); }
-
-export function streamRun(input, { onToken, onDone, onError, eu } = {}){
-  const mk = (base)=> `${base}/run/stream?q=${encodeURIComponent(input)}&eu=${eu?'1':'0'}`;
-  let es = new EventSource(mk(API_BASE)); let switched = false;
-  function failover(){ if (switched) return onError?.(new Error('stream_error')); switched = true; try{ es.close(); }catch{}; es = new EventSource(mk('/_api')); es.onmessage = handler; es.onerror = (e)=>{ onError?.(e); es.close(); }; }
-  function handler(ev){ if (ev.data === '[DONE]'){ try{ onDone?.(); } finally { es.close(); } } else if (ev.data === '[ERROR]'){ failover(); } else onToken?.(ev.data); }
-  es.onmessage = handler; es.onerror = (e)=> failover(); return () => { try{ es.close(); } catch {} };
-}
-export async function runBubble(bubbleId, payload, { thread=[], onToken, eu } = {}){
-  const header = `[Bubble ${bubbleId} | ${new Date().toISOString()}]`; const input = header + "\n" + JSON.stringify({ payload, thread }, null, 2);
-  if (typeof onToken === 'function'){ return new Promise((resolve,reject)=>{ const stop = streamRun(input, { eu, onToken: (t)=> onToken(t), onDone: ()=> resolve(), onError: (e)=> reject(e||new Error('stream_error')) }); }); }
-  else { const j = await run(input, { eu }); return j?.result || ''; }
-}
-export async function selfCheck(){ const ok = await health(); if(!ok) toast('Backend nicht erreichbar'); return ok; }
+"""

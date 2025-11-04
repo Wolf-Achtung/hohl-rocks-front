@@ -1,100 +1,123 @@
-'use strict';
+/* -*- coding: utf-8 -*- */
+/**
+ * Zentrale API-Schicht:
+ * - API Base Detection (Query ?api=..., LocalStorage, <meta name="x-api-base">, Fallback /api)
+ * - fetchJson() mit Timeout, Retry (bei Netz/Timeout), ETag-Cache (304)
+ * - Stabile JSON-Parsing-Fehlerbehandlung
+ * - Back-Compat: window.getJson alias
+ */
+(() => {
+  'use strict';
 
-// Unified frontend API (strict ASCII)
-// - Uses <meta name="x-api-base" content="/api"> if present
-// - Defensive JSON parsing and graceful degradation
-
-function apiBase() {
-  var m = document.querySelector('meta[name="x-api-base"]');
-  var base = (m && typeof m.content === 'string') ? m.content.trim() : '';
-  if (!base) return '/api';
-  return base.replace(/\/$/, '');
-}
-var API_BASE = apiBase();
-
-export async function getJson(path, opts) {
-  opts = opts || {};
-  var url = path.startsWith('http') ? path : (API_BASE + path);
-  var res;
-  try {
-    var headers = Object.assign({ 'Accept': 'application/json' }, (opts.headers || {}));
-    res = await fetch(url, Object.assign({}, opts, { headers: headers }));
-  } catch (err) {
-    console.debug('[api] network error', err);
-    return {};
+  // ---- Helpers (ohne Abhängigkeit von utils.js) ----
+  const LS_KEY = 'hr.api.base';
+  function sanitizeBase(u) { return (u || '').replace(/\/+$/,''); }
+  function joinUrl(base, path) {
+    base = (base || '').replace(/\/+$/, '');
+    path = (path || '').replace(/^\/+/, '');
+    if (/^https?:\/\//i.test(path)) return path;
+    return `${base}/${path}`;
   }
-  var txt = '';
-  try { txt = await res.text(); } catch (e) { txt = ''; }
-  if (!res.ok) {
-    console.debug('[api] HTTP', res.status, url);
-    return {};
+  function getMeta(name) {
+    const el = document.querySelector(`meta[name="${name}"]`);
+    return (el && el.content ? el.content.trim() : '');
   }
-  try { return txt ? JSON.parse(txt) : {}; }
-  catch (e) { console.debug('[api] invalid json', url); return {}; }
-}
+  function parseQuery() { return Object.fromEntries(new URLSearchParams(location.search).entries()); }
+  function getStoredBase(){ try { return localStorage.getItem(LS_KEY) || ''; } catch { return ''; } }
+  function setStoredBase(v){ try { localStorage.setItem(LS_KEY, v); } catch {} }
 
-export async function postJson(path, body, opts) {
-  opts = opts || {};
-  var url = path.startsWith('http') ? path : (API_BASE + path);
-  var res;
-  try {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(body || {})
-    });
-  } catch (err) {
-    console.debug('[api] network error', err); return {};
+  function detectApiBase() {
+    const q = parseQuery().api;
+    if (q) { const b = sanitizeBase(q); setStoredBase(b); return b; }
+    const fromLS = getStoredBase(); if (fromLS) return sanitizeBase(fromLS);
+    if (window.__API_BASE__) return sanitizeBase(window.__API_BASE__);
+    const meta = getMeta('x-api-base'); if (meta) return sanitizeBase(meta);
+    return '/api';
   }
-  var txt = '';
-  try { txt = await res.text(); } catch (e) { txt = ''; }
-  if (!res.ok) { console.debug('[api] HTTP', res.status, url); return {}; }
-  try { return txt ? JSON.parse(txt) : {}; }
-  catch (e) { return {}; }
-}
 
-export async function selfCheck() {
-  try { const j = await getJson('/self'); return !!(j && j.ok); }
-  catch { return false; }
-}
+  let API_BASE = detectApiBase();
+  function setApiBase(next) {
+    const b = sanitizeBase(next);
+    if (b) {
+      API_BASE = b; setStoredBase(b);
+      document.dispatchEvent(new CustomEvent('api:base-changed', { detail: b }));
+    }
+    return API_BASE;
+  }
 
-export async function streamRun(prompt, onChunk) {
-  if (typeof onChunk === 'function') onChunk('Streaming not configured.');
-  return { done: true };
-}
+  // ---- Fetch mit Timeout/Retry/ETag ----
+  const etags = new Map();
 
-// --- News helpers (primary + fallback) ---------------------------------------
+  async function fetchJson(path, { method='GET', headers={}, body, timeout=10_000, retry=1 } = {}) {
+    const url = joinUrl(API_BASE, path);
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeout);
 
-async function newsPrimary(q) {
-  var qs = q ? ('?q=' + encodeURIComponent(q)) : '';
-  var r = await getJson('/news' + qs);
-  if (r && Array.isArray(r.items) && r.items.length) return r;
-  return { items: [] };
-}
+    const hdrs = new Headers({ 'Accept': 'application/json; charset=utf-8' });
+    if (body && method !== 'GET') hdrs.set('Content-Type', 'application/json; charset=utf-8');
+    if (etags.has(url)) hdrs.set('If-None-Match', etags.get(url));
+    for (const [k,v] of Object.entries(headers)) hdrs.set(k, v);
 
-async function newsFallback() {
-  try {
-    const r = await fetch('/data/news.json', { cache: 'no-store' });
-    if (!r.ok) return { items: [] };
-    const arr = await r.json();
-    const items = Array.isArray(arr) ? arr : [];
-    return { items };
-  } catch { return { items: [] }; }
-}
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: hdrs,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: ctrl.signal,
+        credentials: 'omit',
+        cache: 'no-store',
+        mode: 'cors'
+      });
 
-// Public API object (used by app.js)
-export const api = {
-  news: async () => {
-    const p = await newsPrimary('');
-    if (p.items.length) return p;
-    return newsFallback();
-  },
-  searchNews: async (q) => {
-    const p = await newsPrimary(q || '');
-    if (p.items.length) return p;
-    return newsFallback();
-  },
-  tips: () => getJson('/tips'),
-  metrics: (name, payload) => postJson('/metrics', { name: name || '', payload: payload || {} }),
-  spark: () => getJson('/spark/today')
-};
+      clearTimeout(timer);
+
+      if (res.status === 304 && etags.has(url)) {
+        return JSON.parse(sessionStorage.getItem(url) || 'null') || { ok: true };
+      }
+
+      const et = res.headers.get('ETag'); if (et) etags.set(url, et);
+
+      const txt = await res.text();
+      let data = null;
+      try { data = txt ? JSON.parse(txt) : null; }
+      catch (parseErr) {
+        const err = new Error(`Invalid JSON from ${url}`);
+        err.cause = parseErr; err.status = res.status;
+        throw err;
+      }
+
+      if (!res.ok) {
+        const err = new Error((data && data.error) || `HTTP ${res.status}`);
+        err.status = res.status; err.data = data;
+        throw err;
+      }
+
+      try { sessionStorage.setItem(url, JSON.stringify(data)); } catch {}
+      return data;
+    } catch (err) {
+      clearTimeout(timer);
+      const msg = (err && err.message) ? err.message : String(err);
+      if (retry > 0 && (err.name === 'AbortError' || /Network/i.test(msg))) {
+        await new Promise(r => setTimeout(r, 150 * (2 - retry)));
+        return fetchJson(path, { method, headers, body, timeout, retry: retry - 1 });
+      }
+      throw err;
+    }
+  }
+
+  // ---- API Endpunkte ----
+  async function self()          { return fetchJson('/self'); }
+  async function sparkToday()    { return fetchJson('/spark/today'); }
+  async function news(params={}) { const s = new URLSearchParams(params); return fetchJson('/news' + (s.toString()?`?${s}`:'')); }
+  async function tips()          { return fetchJson('/tips'); }
+
+  const API = Object.freeze({
+    base: () => API_BASE,
+    setBase: setApiBase,
+    fetchJson, getJson: fetchJson, // Back-Compat
+    self, sparkToday, news, tips
+  });
+
+  window.API = API;
+  window.getJson = fetchJson; // Back-Compat für bestehendes Frontend
+})();

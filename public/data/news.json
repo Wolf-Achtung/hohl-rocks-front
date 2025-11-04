@@ -1,0 +1,8 @@
+[
+  {"title":"European AI Act – Ueberblick & Status", "url":"https://digital-strategy.ec.europa.eu/en/policies/european-ai-act", "why":"EU"},
+  {"title":"OpenAI Blog – Aktuelle Ankuendigungen", "url":"https://openai.com/blog", "why":"OpenAI"},
+  {"title":"Google AI Blog", "url":"https://ai.googleblog.com/", "why":"Google"},
+  {"title":"DeepMind – Research & News", "url":"https://deepmind.google/discover/", "why":"DeepMind"},
+  {"title":"Hugging Face Blog", "url":"https://huggingface.co/blog", "why":"Hugging Face"},
+  {"title":"NVIDIA AI Blog", "url":"https://blogs.nvidia.com/", "why":"NVIDIA"}
+]

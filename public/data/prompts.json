@@ -1,116 +1,38 @@
-files["public/data/prompts.json"] = json.dumps([
+[
   {
     "question": "EU AI Act: Welche Pflichten treffen unser Produkt?",
-    "desc": "Risikoklassifizierung, Pflichten-Checkliste, erforderliche Nachweise.",
-    "prompt": "Handle als Compliance Lead. Klassifiziere unser System nach EU AI Act (Unzulässig/Hoher/Niedriger/Mindest-Risiko). Gib eine tabellarische Pflichten-Checkliste mit Verantwortlichen, Nachweisen, Fristen und Referenzen auf Artikel-Ebene. Füge am Ende empfohlene nächste Schritte (30/60/90 Tage) hinzu.",
+    "desc": "Risikoklassifizierung, Pflichten-Checkliste, Nachweise.",
+    "prompt": "Handle als Compliance Lead. Klassifiziere unser System nach EU AI Act (Unzulaessig/Hohes/Niedriges/Mindest-Risiko). Erzeuge eine tabellarische Pflichten-Checkliste mit Verantwortlichen, Nachweisen, Fristen und Artikel-Referenzen. Gib am Ende empfohlene naechste Schritte (30/60/90 Tage).",
     "tags": ["Compliance", "EU AI Act", "Enterprise"]
   },
   {
-    "question": "RAG-Architektur für mein Wissensarchiv",
+    "question": "RAG-Architektur fuer mein Wissensarchiv",
     "desc": "Retriever-Strategie, Chunking, Embeddings, Eval, Kosten.",
-    "prompt": "Du bist Solutions Architect. Entwirf eine RAG-Architektur für ~2000 PDFs (deutsch). Beschreibe: Datenaufnahme, Chunking-Strategie (Größe/Overlap), Metadaten, Vektordatenbank, Re-Ranker, Prompting, Caching. Nenne Evaluationsmetriken (Answer Correctness, Faithfulness, Context Precision) und gib einen Kostenfahrplan (Speicher/Abfragen/Traffic).",
+    "prompt": "Du bist Solutions Architect. Entwirf eine RAG-Architektur fuer ~2000 PDFs (deutsch). Beschreibe: Datenaufnahme, Chunking-Strategie (Groesse/Overlap), Metadaten, Vektordatenbank, Re-Ranker, Prompting, Caching. Nenne Evaluationsmetriken (Answer Correctness, Faithfulness, Context Precision) und gib einen Kostenfahrplan.",
     "tags": ["Architecture", "RAG", "Search"]
   },
   {
-    "question": "DPIA/DSFA für KI‑Feature",
-    "desc": "Datenschutz-Folgenabschätzung schlank & vollständig.",
-    "prompt": "Agieren als Datenschutzbeauftragter. Erstelle eine prägnante DSFA für ein KI‑Feature (z. B. Textklassifikation). Liste Datenkategorien, Rechtsgrundlage, Speicherfristen, technische/organisatorische Maßnahmen, Drittlandübermittlungen, Betroffenenrechte und ein Risiko-Register mit Bewertung/Rest-Risiko.",
-    "tags": ["Privacy", "DSGVO", "Compliance"]
-  },
-  {
-    "question": "Eval‑Plan für LLM‑Antwortqualität",
-    "desc": "Automatisierte Off-/On‑Policy Evals + menschliche QA.",
-    "prompt": "Erstelle einen Evaluationsplan für ein deutschsprachiges Q&A‑System. Definiere Metriken, Benchmarks, Gold Sets, menschliches Review (double‑blind), Frequenz, Dashboards. Beschreibe Testdaten-Generierung, Guardrails und Regressions‑Schwellen. Liefere ein JSON‑Schema für automatisierte Reports.",
+    "question": "Eval-Plan fuer LLM-Antwortqualitaet",
+    "desc": "Automatisierte Off-/On-Policy Evals + menschliche QA.",
+    "prompt": "Erstelle einen Evaluationsplan fuer ein deutschsprachiges QA-System. Definiere Metriken, Benchmarks, Gold Sets, menschliches Review (double-blind), Frequenz, Dashboards. Beschreibe Testdaten-Generierung, Guardrails und Regressions-Schwellwerte. Liefere ein JSON-Schema fuer Reports.",
     "tags": ["Evaluation", "Quality", "MLOps"]
   },
   {
-    "question": "Incident‑Playbook für KI‑Produkte",
-    "desc": "Abläufe, Rollen, SLAs, Runbooks, Kommunikation.",
-    "prompt": "Schreibe ein Incident‑Playbook für ein KI‑Produkt (Halluzination, Bias, Datenleck, Abuse). Definiere Schweregrade, SLAs, On‑Call, Eskalation, Kommunikationsplan (intern/extern), rechtliche Notifikationen, Postmortem‑Vorlage.",
-    "tags": ["Reliability", "Security", "Ops"]
+    "question": "DPIA/DSFA fuer KI-Feature",
+    "desc": "Datenschutz-Folgenabschaetzung schlank & vollstaendig.",
+    "prompt": "Agieren als Datenschutzbeauftragter. Erstelle eine praegnante DSFA: Datenkategorien, Rechtsgrundlage, Speicherfristen, TOMs, Drittlanduebermittlungen, Betroffenenrechte, Risiko-Register (Bewertung/Rest-Risiko).",
+    "tags": ["Privacy", "DSGVO", "Compliance"]
   },
   {
     "question": "Guardrails & Moderation",
-    "desc": "Richtlinien + technische Maßnahmen für sichere Antworten.",
-    "prompt": "Entwirf Richtlinien und technische Guardrails zur Inhaltsmoderation (Prompt‑Injection, PII, IP‑Leaks, Unsafe Advice). Inkludiere Prompt‑Patterns, Modell‑Konfiguration, Post‑Filtering, Logging, Red‑Team‑Plan.",
+    "desc": "Richtlinien + technische Massnahmen.",
+    "prompt": "Entwirf Richtlinien und technische Guardrails zur Inhaltsmoderation (Prompt-Injection, PII, IP-Leaks, Unsafe Advice). Inkludiere Prompt-Patterns, Modell-Konfiguration, Post-Filtering, Logging, Red-Team-Plan.",
     "tags": ["Safety", "Security"]
   },
   {
-    "question": "LLM‑Kostenmodell & Budget",
-    "desc": "Durchsatz, Latenz, Token‑Budget, Caching, Mix‑of‑Models.",
-    "prompt": "Erstelle ein Kosten‑ und Kapazitätsmodell für eine LLM‑App (10k Nutzer/Tag). Berücksichtige Eingabe-/Ausgabe‑Token, Kontextgröße, Cache‑Treffer, Mischung mehrerer Modelle (günstig/teuer), Rate Limits und Auto‑Scaling. Gib am Ende drei Budget‑Szenarien.",
+    "question": "LLM-Kostenmodell & Budget",
+    "desc": "Durchsatz, Latenz, Token-Budget, Caching, Mix-of-Models.",
+    "prompt": "Erstelle ein Kosten- und Kapazitaetsmodell fuer eine LLM-App (10k Nutzer/Tag). Beruecksichtige Eingabe-/Ausgabe-Token, Kontextgroesse, Cache-Treffer, Mix of Models, Rate Limits und Auto-Scaling. Gib drei Budget-Szenarien.",
     "tags": ["Finance", "Ops"]
-  },
-  {
-    "question": "Produkt‑Discovery mit KI",
-    "desc": "Research‑Framework + Experimente + Akzeptanzkriterien.",
-    "prompt": "Leite einen strukturierten Discovery‑Prozess für ein neues KI‑Feature: Problem‑Hypothese, Nutzersegmente, Jobs‑to‑be‑Done, Experiment‑Matrix, Lernziele, Messgrößen, Exit‑Kriterien. Erzeuge anschließend ein Decision‑Memo.",
-    "tags": ["Product", "Discovery"]
-  },
-  {
-    "question": "Daten‑Kuration & Dataset Card",
-    "desc": "Sampling, Labeling, Balance, Dokumentation.",
-    "prompt": "Beschreibe einen Plan zur Datenkuration: Sampling‑Strategie, Balancing, Labeling‑Richtlinie (mit QA‑Checks), PII‑Handling, Versionierung. Erzeuge eine vollständige Dataset Card (Sections + Beispielwerte).",
-    "tags": ["Data", "Documentation"]
-  },
-  {
-    "question": "Sichere Prompt‑Vorlage (deutsch)",
-    "desc": "Mehrschritt‑Vorlage mit Rollen, Regeln, Tests.",
-    "prompt": "Baue eine robuste Prompt‑Vorlage in Deutsch: Rolle, Ziele, Stil, Verbote, Testfälle, Selbst‑Checks, JSON‑Ausgabeformat. Hänge eine kurze Prompt‑Härtung (Injection‑Resistenz) an.",
-    "tags": ["Prompting", "Safety"]
-  },
-  {
-    "question": "API‑Design für KI‑Service",
-    "desc": "OpenAPI‑Spec, Idempotenz, Fehlercodes, Ratenbegrenzung.",
-    "prompt": "Entwirf eine OpenAPI‑Spec (YAML) für einen Text‑Analyse‑Service inkl. Async‑Jobs. Füge Idempotenz‑Key, Fehlercodes, Schemas, Beispiel‑Requests/Responses und ein Auth‑Kapitel hinzu.",
-    "tags": ["API", "Design"]
-  },
-  {
-    "question": "Onboarding‑Wizard für KI‑Produkt",
-    "desc": "Checkliste, Metriken, Erfolgskriterien.",
-    "prompt": "Erstelle einen Onboarding‑Plan: 3‑Schritte‑Wizard, Beispiel‑Copy, Tooltips, Checklisten‑Events, Aktivierungs‑Metriken (Aha‑Moment), Retention‑Hypothesen.",
-    "tags": ["UX", "Product"]
-  },
-  {
-    "question": "Auswirkungs‑Analyse (Impact) für KI‑Feature",
-    "desc": "Risiken, Chancen, Stakeholder, Messgrößen.",
-    "prompt": "Erarbeite eine Impact‑Analyse: Nutzen‑Hypothesen, Stakeholder, Risiken, ethische Implikationen, Metriken, Beobachtbarkeit, Exit‑Kriterien. Liefere am Ende ein kompaktes Executive‑Summary.",
-    "tags": ["Impact", "Ethics"]
-  },
-  {
-    "question": "Agentic Workflow – Plan & Ops",
-    "desc": "Zerlegung in Skills, Tools, Speicher, Überwachung.",
-    "prompt": "Skizziere einen agentischen Workflow (Plan‑Act‑Observe‑Refine). Definiere Skills, Tool‑Schnittstellen, Speicher, Sicherungsnetze, Audit‑Logs und Telemetrie.",
-    "tags": ["Agents", "Architecture"]
-  },
-  {
-    "question": "LLM‑Evaluation mit eigenen Daten",
-    "desc": "Golden‑Set, metrische Auswertung, Human‑in‑the‑Loop.",
-    "prompt": "Baue einen Plan: Sampling der Nutzerfragen, Golden‑Set, automatische Scorer (BLEU/ROUGE/BERTScore/LLM‑as‑Judge) und humanes Review; erzeugt ein CSV‑Schema für Experimente.",
-    "tags": ["Evaluation", "Data"]
-  },
-  {
-    "question": "Change‑Management für KI‑Einführung",
-    "desc": "Schulungen, Governance, Kommunikationspaket.",
-    "prompt": "Entwirf ein Change‑Management‑Paket: Zielgruppen, Schulungspfad (Beginner/Power‑User), Kommunikationsfahrplan, Ambassadors‑Programm, Governance‑Board.",
-    "tags": ["Org", "Enablement"]
-  },
-  {
-    "question": "Vertriebs‑Playbook mit KI",
-    "desc": "ICP, Messaging, Sequenzen, Objection Handling.",
-    "prompt": "Erzeuge ein Vertriebs‑Playbook: ICP, Persona‑Pain‑Map, Value‑Props, 5‑Touch‑Sequenz (E‑Mail/LinkedIn/Call), Objection‑Antworten, KPI‑Board.",
-    "tags": ["Sales", "Go‑To‑Market"]
-  },
-  {
-    "question": "Kosten‑/Leistungs‑Tuning für RAG",
-    "desc": "Cache, Index‑Layouts, Re‑Ranking, Antwort‑Budget.",
-    "prompt": "Gib konkrete Tuning‑Hebel an (Hybrid‑Index, Re‑Ranking, Query‑Rewrites, Token‑Budget, Cache‑Strategien, Batch‑ing) und zeige vorher/nachher‑Beispielwerte.",
-    "tags": ["RAG", "Optimization"]
-  },
-  {
-    "question": "Security‑Review: Prompt Injection",
-    "desc": "Threat‑Model, Tests, Abwehrmaßnahmen.",
-    "prompt": "Erstelle ein Threat‑Model für Prompt‑Injection (STRIDE). Füge Testvektoren, Erkennungs‑Heuristiken, Abwehr (Sandboxes, Output‑Filters), Observability hinzu.",
-    "tags": ["Security", "Testing"]
   }
-], ensure_ascii=False, indent=2)
+]

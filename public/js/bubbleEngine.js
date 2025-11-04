@@ -1,14 +1,11 @@
-files["public/js/bubbleEngine.js"] = r"""// public/js/bubbleEngine.js (UTF-8)
-// Interaktive Prompt-Bubbles als <button> mit data-run.
-// - Zwei Layouts (drift/orbit), leichtgewichtige Animation
-// - Respektiert window.BUBBLE_CONFIG als Fallback
-// - Exporte: initBubbleEngine(items), destroyBubbleEngine()
+// Interaktive Prompt-Bubbles als <button> mit data-run (strict ASCII).
+// Zwei Layouts (drift/orbit). Exportiert: initBubbleEngine, destroyBubbleEngine.
 
 const rnd = (a,b)=> a + Math.random()*(b-a);
 const clamp = (v,a,b)=> v<a?a : v>b?b : v;
 
 const MAX_ACTIVE = 6;
-const TTL_MIN = 18_000, TTL_MAX = 32_000;
+const TTL_MIN = 18000, TTL_MAX = 32000;
 const SCALE_MIN = 0.85, SCALE_MAX = 1.25;
 const SPEED_MIN = 0.05, SPEED_MAX = 0.18;
 
@@ -25,9 +22,9 @@ function pickItems(items){
     }));
   }
   return [
-    { title:'Executive Briefing', desc:'Schneller Überblick', prompt:'Gib mir ein Executive Briefing zu …', sizeHint:140 },
-    { title:'Meeting‑Agenda', desc:'30‑Min Fokus', prompt:'Erzeuge eine Agenda zu …', sizeHint:130 },
-    { title:'60s Pitch', desc:'Kurz & knackig', prompt:'Schreibe einen 60‑Sekunden‑Pitch zu …', sizeHint:120 }
+    { title:'Executive Briefing', desc:'Kurzuebersicht', prompt:'Gib mir ein Executive Briefing zu ...', sizeHint:140 },
+    { title:'Meeting-Agenda', desc:'30-Min Fokus', prompt:'Erzeuge eine Agenda zu ...', sizeHint:130 },
+    { title:'60s Pitch', desc:'Kurz und knackig', prompt:'Schreibe einen 60-Sekunden-Pitch zu ...', sizeHint:120 }
   ];
 }
 
@@ -47,7 +44,7 @@ function makeButton(item){
   btn.className = 'ai-bubble';
   btn.dataset.run = item.run;
   btn.setAttribute('aria-label', item.title);
-  btn.innerHTML = `<strong class="t">${item.title}</strong>${item.sub?`<span class="s">${item.sub}</span>`:''}`;
+  btn.innerHTML = '<strong class="t">'+item.title+'</strong>' + (item.sub?('<span class="s">'+item.sub+'</span>'):'');
   Object.assign(btn.style, {
     position:'absolute', willChange:'transform', padding:'12px 16px', borderRadius:'999px',
     backdropFilter:'blur(6px)', background:'rgba(255,255,255,0.1)', color:'#fff',
@@ -58,7 +55,7 @@ function makeButton(item){
   return { el: btn, scale };
 }
 
-function placeAt(b,x,y,s){ b.x=x; b.y=y; b.s=s; b.el.style.transform=`translate3d(${x}px,${y}px,0) scale(${s})`; }
+function placeAt(b,x,y,s){ b.x=x; b.y=y; b.s=s; b.el.style.transform='translate3d('+x+'px,'+y+'px,0) scale('+s+')'; }
 
 function layoutOrbit(engine){
   const { bounds, bubbles } = engine;
@@ -96,7 +93,7 @@ function step(engine, dt){
       if(b.x<30 || b.x>bounds.width-30) b.vx = -b.vx;
       if(b.y<30 || b.y>bounds.height-30) b.vy = -b.vy;
     }
-    b.el.style.transform = `translate3d(${b.x|0}px,${b.y|0}px,0) scale(${b.s})`;
+    b.el.style.transform = 'translate3d('+(b.x|0)+'px,'+(b.y|0)+'px,0) scale('+b.s+')';
   });
 }
 
@@ -104,7 +101,7 @@ class Engine{
   constructor(containerSel, labelsSel, items){
     this.container = document.querySelector(containerSel);
     this.labels    = document.querySelector(labelsSel);
-    if(!this.container) throw new Error('bubbleEngine: Container nicht gefunden: '+containerSel);
+    if(!this.container) throw new Error('bubbleEngine: container not found: '+containerSel);
     this.items = normalize(pickItems(items));
     this.bubbles = [];
     this.layout = 'drift';
@@ -129,15 +126,6 @@ class Engine{
     this.layout==='orbit' ? layoutOrbit(this) : layoutDrift(this);
     window.addEventListener('resize', this.onResize, { passive:true });
     window.addEventListener('layout:toggle', this.onLayoutToggle);
-    // Sicherstellen, dass Clicks funktionieren, auch wenn CSS überschrieben wurde:
-    this.container.addEventListener('click', (e)=>{
-      const btn = e.target.closest('button.ai-bubble');
-      if(btn?.dataset?.run){
-        // delegiere ans Hauptdokument (app.js lauscht bereits auf dataset.run)
-        const ev = new Event('click', { bubbles:true, cancelable:true });
-        btn.dispatchEvent(ev);
-      }
-    });
     this.raf = requestAnimationFrame(this.loop);
   }
   onResize(){
@@ -146,7 +134,7 @@ class Engine{
     this.layout==='orbit' ? layoutOrbit(this) : layoutDrift(this);
   }
   onLayoutToggle(e){
-    this.layout = e?.detail?.layout || (this.layout==='drift' ? 'orbit' : 'drift');
+    this.layout = e && e.detail && e.detail.layout ? e.detail.layout : (this.layout==='drift' ? 'orbit' : 'drift');
     this.layout==='orbit' ? layoutOrbit(this) : layoutDrift(this);
   }
   loop(now){
@@ -182,4 +170,3 @@ export function initBubbleEngine(items=[], options={}){
 }
 export function destroyBubbleEngine(){ if(ENGINE){ ENGINE.destroy(); ENGINE = null; } }
 export default { initBubbleEngine, destroyBubbleEngine };
-"""

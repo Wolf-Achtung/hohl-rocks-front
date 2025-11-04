@@ -183,10 +183,3 @@ export function initBubbleEngine(items=[], options={}){
 export function destroyBubbleEngine(){ if(ENGINE){ ENGINE.destroy(); ENGINE = null; } }
 export default { initBubbleEngine, destroyBubbleEngine };
 """
-
-# public/css/bubbles.css — Clickbarkeit sicherstellen (Canvas blockiert nichts)
-files["public/css/bubbles.css"] = r"""/* public/css/bubbles.css (UTF-8) */
-#jelly-canvas { pointer-events: none; }
-#bubbles, #bubbles * { pointer-events: auto; }
-#bubbles .ai-bubble { cursor: pointer; }
-"""

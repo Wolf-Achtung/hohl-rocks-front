@@ -1,7 +1,42 @@
+# Sicherheits- & Cache-Header (Netlify)
+# CSP erlaubt Requests zur Railway-API aus deinen ENV.
+# API_BASE: https://hohl-rocks-back-production.up.railway.app
+# (siehe env_variablen_hohlrocks.txt)  :contentReference[oaicite:1]{index=1}
+
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Cache-Control: public, max-age=86400
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' data:; connect-src 'self' https://hohl-rocks-back-production.up.railway.app; frame-ancestors 'none'
 
+# UTF-8 dauerhaft für Assets ausliefern (relevant für Umlaute)
+
+/css/*
+  Content-Type: text/css; charset=utf-8
+  Cache-Control: public, max-age=604800, immutable
+
+/js/*
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=604800, immutable
+
+/data/*
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-cache
+
+/audio/*
+  Cache-Control: public, max-age=604800, immutable
+
+/videos/*
+  Cache-Control: public, max-age=604800, immutable
+
+/favicon.svg
+  Cache-Control: public, max-age=604800, immutable
+
+/tips/*
+  Content-Type: text/html; charset=utf-8
+  Cache-Control: no-cache

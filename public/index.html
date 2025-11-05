@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="/prompt-generator.css" />
     <link rel="stylesheet" href="/prompt-optimizer.css" />
     <link rel="stylesheet" href="/model-battle.css" />
+    <link rel="stylesheet" href="/daily-challenge.css" />
 
     <style>
       /* Base Layout */
@@ -267,6 +268,15 @@
         from{transform:translateX(400px);opacity:0}
         to{transform:translateX(0);opacity:1}
       }
+      
+      /* Daily Challenge Spinner Animation */
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Helper Classes */
+      .hidden { display: none !important; }
     </style>
   </head>
   <body>
@@ -554,6 +564,187 @@
       </div>
     </section>
 
+    <!-- Daily AI Challenge Section (Feature #4) -->
+    <section id="daily-challenge" class="feature-section" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); padding: 60px 20px; margin: 40px 0;">
+      <div class="container" style="max-width: 1000px; margin: 0 auto;">
+        <!-- Header -->
+        <div class="section-header" style="text-align: center; margin-bottom: 50px;">
+          <h2 style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 15px;">🎮 Daily AI Challenge</h2>
+          <p class="section-subtitle" style="font-size: 1.1rem; color: rgba(255,255,255,0.8); max-width: 700px; margin: 0 auto;">
+            Jeden Tag eine neue kreative Herausforderung. Reiche deine Lösung ein und erhalte AI-Feedback!
+          </p>
+        </div>
+
+        <!-- Challenge Display -->
+        <div class="challenge-container">
+          <!-- Challenge Card -->
+          <div class="challenge-card" style="margin-bottom: 30px;">
+            <!-- Challenge Header -->
+            <div class="challenge-header">
+              <div class="challenge-meta">
+                <span class="challenge-date" id="challenge-date">Loading...</span>
+                <span class="challenge-number" id="challenge-number">#000</span>
+              </div>
+              <div class="challenge-badges">
+                <span class="difficulty-badge" id="difficulty-badge">Medium</span>
+                <span class="category-badge" id="category-badge">Business</span>
+              </div>
+            </div>
+
+            <!-- Challenge Content -->
+            <div class="challenge-content">
+              <h3 class="challenge-type" id="challenge-type">Loading Challenge...</h3>
+              <p class="challenge-prompt" id="challenge-prompt">
+                Lade die heutige Challenge...
+              </p>
+            </div>
+
+            <!-- Challenge Tips -->
+            <div class="challenge-tips" id="challenge-tips">
+              <h4>💡 Tipps für deine Lösung:</h4>
+              <ul id="tips-list">
+                <li>Laden...</li>
+              </ul>
+            </div>
+
+            <!-- Submission Form -->
+            <div class="submission-form">
+              <label for="submission-text">Deine Lösung:</label>
+              <textarea 
+                id="submission-text" 
+                class="submission-textarea" 
+                placeholder="Schreibe deine kreative Lösung hier... (min. 10 Zeichen)"
+                rows="8"
+              ></textarea>
+              
+              <div class="char-counter">
+                <span id="char-count">0</span> Zeichen
+              </div>
+
+              <button id="submit-solution-btn" class="btn-primary">
+                <span class="btn-icon">🚀</span>
+                <span class="btn-text">Lösung Einreichen & Bewerten</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Results Card (Hidden by default) -->
+          <div class="results-card hidden" id="results-card">
+            <!-- Score Display -->
+            <div class="score-display">
+              <div class="score-circle" id="score-circle">
+                <span class="score-number" id="score-number">0</span>
+                <span class="score-label">Punkte</span>
+              </div>
+              <div class="badge-earned" id="badge-earned">
+                <span class="badge-icon">🏆</span>
+                <span class="badge-name">Gold</span>
+              </div>
+            </div>
+
+            <!-- Feedback -->
+            <div class="feedback-section">
+              <h3>📝 Dein Feedback</h3>
+              <p class="feedback-text" id="feedback-text">
+                Loading...
+              </p>
+            </div>
+
+            <!-- Strengths -->
+            <div class="strengths-section">
+              <h4>✅ Stärken:</h4>
+              <ul id="strengths-list">
+                <li>Loading...</li>
+              </ul>
+            </div>
+
+            <!-- Improvements -->
+            <div class="improvements-section">
+              <h4>💪 Verbesserungspotenzial:</h4>
+              <ul id="improvements-list">
+                <li>Loading...</li>
+              </ul>
+            </div>
+
+            <!-- Actions -->
+            <div class="result-actions">
+              <button id="new-submission-btn" class="btn-secondary">
+                ✍️ Neue Lösung Einreichen
+              </button>
+              <button id="share-result-btn" class="btn-secondary">
+                📤 Ergebnis Teilen
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats & Streak -->
+        <div class="stats-container">
+          <!-- Personal Stats -->
+          <div class="stats-card">
+            <h3>📊 Deine Stats</h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-icon">🔥</span>
+                <div class="stat-content">
+                  <span class="stat-value" id="streak-count">0</span>
+                  <span class="stat-label">Tage Streak</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <span class="stat-icon">🎯</span>
+                <div class="stat-content">
+                  <span class="stat-value" id="total-challenges">0</span>
+                  <span class="stat-label">Challenges</span>
+                </div>
+              </div>
+              <div class="stat-item">
+                <span class="stat-icon">⭐</span>
+                <div class="stat-content">
+                  <span class="stat-value" id="avg-score">0</span>
+                  <span class="stat-label">Ø Score</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Badge Collection -->
+            <div class="badge-collection">
+              <h4>🏆 Badge Sammlung</h4>
+              <div class="badges-earned">
+                <div class="badge-count">
+                  <span class="badge-icon gold">🥇</span>
+                  <span class="badge-amount" id="gold-badges">0</span>
+                </div>
+                <div class="badge-count">
+                  <span class="badge-icon silver">🥈</span>
+                  <span class="badge-amount" id="silver-badges">0</span>
+                </div>
+                <div class="badge-count">
+                  <span class="badge-icon bronze">🥉</span>
+                  <span class="badge-amount" id="bronze-badges">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div class="leaderboard-card">
+            <h3>🏅 Top Players</h3>
+            <div class="leaderboard-list" id="leaderboard-list">
+              <div class="leaderboard-item">
+                <span class="rank">#1</span>
+                <span class="username">Loading...</span>
+                <span class="player-score">0</span>
+              </div>
+            </div>
+            <p class="leaderboard-note">
+              💡 Dein Fortschritt wird lokal gespeichert. Leaderboard bald live!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Overlays -->
     
     <!-- Tips Overlay -->
@@ -649,6 +840,20 @@
     </div>
 
     <!-- Toast Notifications -->
+    
+    <!-- Daily Challenge Loading Overlay -->
+    <div id="challenge-loading" class="loading-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; gap: 1.5rem;">
+      <div class="spinner" style="width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <p style="color: white; font-size: 1.2rem; font-weight: 500;">Bewerte deine Lösung...</p>
+    </div>
+
+    <!-- Daily Challenge Toast -->
+    <div id="challenge-toast" class="toast hidden" style="position: fixed; bottom: 2rem; right: 2rem; background: rgba(255,255,255,0.95); color: #1a1a1a; padding: 1rem 1.5rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 0.8rem; z-index: 10000;">
+      <span class="toast-icon" style="font-size: 1.5rem;">✅</span>
+      <span class="toast-message" style="font-weight: 600;">Success!</span>
+    </div>
+
+    <!-- Main Toast Notifications -->
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <!-- Core Scripts -->
@@ -670,5 +875,8 @@
     
     <!-- Model Battle Arena (Feature #2) -->
     <script src="/model-battle.js"></script>
+    
+    <!-- Daily AI Challenge (Feature #4) -->
+    <script src="/daily-challenge.js"></script>
   </body>
 </html>

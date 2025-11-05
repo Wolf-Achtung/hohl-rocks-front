@@ -4,7 +4,7 @@
 // ========================================
 
 // Config
-const BACKEND_URL = 'https://your-backend.railway.app'; // ANPASSEN!
+const BACKEND_URL = 'https://hohl-rocks-back-production.up.railway.app';
 const STORAGE_KEY = 'dailyChallenge';
 
 // ========================================

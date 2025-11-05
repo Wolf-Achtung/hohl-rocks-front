@@ -48,6 +48,20 @@
       .btn-row{display:flex;gap:8px;margin-top:10px}
       .btn{appearance:none;border:1px solid rgba(148,163,184,.5);background:transparent;color:#e5e7eb;padding:8px 12px;border-radius:10px;cursor:pointer}
       .btn.primary{background:#4f46e5;border-color:#4f46e5}
+      
+      /* Impressum Styles */
+      .impressum-content{max-width:720px;margin:0 auto;line-height:1.6}
+      .impressum-content a{color:#60a5fa;text-decoration:none}
+      .impressum-content a:hover{text-decoration:underline}
+      .imp-section{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.1)}
+      .imp-section:last-child{border-bottom:none}
+      .imp-section h3{margin:0 0 0.75rem;font-size:1.25rem;font-weight:600;color:#fff}
+      .imp-section h4{margin:1.25rem 0 0.5rem;font-size:1rem;font-weight:600;color:rgba(255,255,255,.9)}
+      .imp-section p{margin:0.5rem 0;color:rgba(255,255,255,.75)}
+      .imp-section ul{margin:0.75rem 0 0;padding-left:1.5rem;color:rgba(255,255,255,.75)}
+      .imp-section li{margin:0.35rem 0}
+      .imp-section .btn{display:inline-block;margin-top:0.5rem;background:rgba(96,165,250,.15);border-color:rgba(96,165,250,.4);color:#60a5fa}
+      .imp-section .btn:hover{background:rgba(96,165,250,.25);transform:translateY(-1px)}
     </style>
   </head>
   <body>
@@ -72,7 +86,7 @@
         <button class="nav-btn" data-action="tips" type="button">KI-Tipps</button>
         <button class="nav-btn" data-action="news" type="button">KI-News</button>
         <button class="nav-btn" data-action="daily" type="button">Spotlight</button>
-        <button class="nav-btn" id="btn-eu" type="button" aria-pressed="false">EU: aus</button>
+        <button class="nav-btn" data-action="impressum" type="button">Impressum</button>
       </nav>
     </header>
 
@@ -142,10 +156,53 @@
       <div class="backdrop" data-close></div>
       <section class="dialog" role="dialog" aria-labelledby="imp-title">
         <header class="head">
-          <h2 id="imp-title">Impressum</h2>
+          <h2 id="imp-title">Rechtliches & Transparenz</h2>
           <button class="close" aria-label="Schließen" data-close>×</button>
         </header>
-        <div id="impressum-body"></div>
+        <div id="impressum-body" class="impressum-content">
+          <section class="imp-section">
+            <h3>Impressum</h3>
+            <p><strong>Verantwortlich für den Inhalt:</strong><br>
+            Wolf Hohl<br>
+            Greifswalder Str. 224a<br>
+            10405 Berlin</p>
+            <p><a href="mailto:kontakt@hohl.rocks" class="btn">E-Mail schreiben</a></p>
+          </section>
+
+          <section class="imp-section">
+            <h3>Haftungsausschluss</h3>
+            <p>Diese Website dient ausschließlich der Information. Trotz sorgfältiger Prüfung übernehme ich keine Haftung für Inhalte externer Links.</p>
+          </section>
+
+          <section class="imp-section">
+            <h3>Urheberrecht</h3>
+            <p>Alle Inhalte dieser Website unterliegen dem deutschen Urheberrecht. Alle Bilder wurden mit Hilfe von Midjourney erzeugt.</p>
+          </section>
+
+          <section class="imp-section">
+            <h3>Hinweis zum EU AI Act</h3>
+            <p>Diese Website informiert über Pflichten, Risiken und Fördermöglichkeiten beim Einsatz von KI nach EU AI Act und DSGVO. Sie ersetzt keine Rechtsberatung.</p>
+          </section>
+
+          <section class="imp-section">
+            <h3>Datenschutzerklärung</h3>
+            <p>Der Schutz Ihrer persönlichen Daten ist mir ein besonderes Anliegen.</p>
+            
+            <h4>Kontakt mit mir</h4>
+            <p>Wenn Sie per Formular oder E-Mail Kontakt aufnehmen, werden Ihre Angaben zur Bearbeitung sechs Monate gespeichert.</p>
+            
+            <h4>Cookies</h4>
+            <p>Diese Website verwendet keine Cookies zur Nutzerverfolgung oder Analyse.</p>
+            
+            <h4>Ihre Rechte laut DSGVO</h4>
+            <ul>
+              <li>Auskunft, Berichtigung oder Löschung Ihrer Daten</li>
+              <li>Datenübertragbarkeit</li>
+              <li>Widerruf erteilter Einwilligungen</li>
+              <li>Beschwerde bei der Datenschutzbehörde</li>
+            </ul>
+          </section>
+        </div>
       </section>
     </div>
 

@@ -1,486 +1,401 @@
-// ========================================
-// FEATURE #2: MODEL BATTLE ARENA
-// Frontend Logic mit SSE Streaming
-// ========================================
+// ===================================================================
+// MODEL BATTLE ARENA - JavaScript
+// Features: API Integration, Battle Logic, Voting, LocalStorage
+// ===================================================================
 
-(function() {
-  'use strict';
+// Configuration
+const API_BASE = 'https://hohl-rocks-back-production.up.railway.app';
 
-  const API_URL = 'https://hohl-rocks-back-production.up.railway.app';
-  
-  // DOM Elements
-  const promptInput = document.getElementById('battle-prompt-input');
-  const charCount = document.getElementById('battle-char-count');
-  const startBtn = document.getElementById('battle-start-btn');
-  const battleArena = document.getElementById('battle-arena');
-  const leaderboardGrid = document.getElementById('leaderboard-grid');
+// State
+let currentBattleResults = null;
+let votedModel = null;
 
-  // Model Containers
-  const models = {
-    claude: {
-      name: 'Claude Sonnet 4',
-      icon: '🤖',
-      subtitle: 'Anthropic',
-      status: document.getElementById('claude-status'),
-      statusText: document.getElementById('claude-status-text'),
-      statusIndicator: document.getElementById('claude-status-indicator'),
-      response: document.getElementById('claude-response'),
-      speed: document.getElementById('claude-speed'),
-      voteBtn: document.getElementById('claude-vote-btn'),
-      card: document.getElementById('claude-card')
-    },
-    openai: {
-      name: 'GPT-4o Mini',
-      icon: '🧠',
-      subtitle: 'OpenAI',
-      status: document.getElementById('openai-status'),
-      statusText: document.getElementById('openai-status-text'),
-      statusIndicator: document.getElementById('openai-status-indicator'),
-      response: document.getElementById('openai-response'),
-      speed: document.getElementById('openai-speed'),
-      voteBtn: document.getElementById('openai-vote-btn'),
-      card: document.getElementById('openai-card')
-    },
-    perplexity: {
-      name: 'Sonar Pro',
-      icon: '🔮',
-      subtitle: 'Perplexity',
-      status: document.getElementById('perplexity-status'),
-      statusText: document.getElementById('perplexity-status-text'),
-      statusIndicator: document.getElementById('perplexity-status-indicator'),
-      response: document.getElementById('perplexity-response'),
-      speed: document.getElementById('perplexity-speed'),
-      voteBtn: document.getElementById('perplexity-vote-btn'),
-      card: document.getElementById('perplexity-card')
-    }
-  };
+// DOM Elements
+const promptInput = document.getElementById('battle-prompt');
+const charCurrent = document.getElementById('char-current');
+const startBattleBtn = document.getElementById('start-battle-btn');
+const resultsSection = document.getElementById('results-section');
+const newBattleBtn = document.getElementById('new-battle-btn');
+const quickBtns = document.querySelectorAll('.quick-btn');
+const toast = document.getElementById('toast');
 
-  // State
-  let currentBattle = {
-    active: false,
-    responses: {},
-    speeds: {},
-    completed: 0
-  };
+// ===================================================================
+// INITIALIZATION
+// ===================================================================
 
-  let votedThisBattle = false;
+document.addEventListener('DOMContentLoaded', () => {
+  setupEventListeners();
+  loadStats();
+});
 
-  // ========================================
-  // Character Counter
-  // ========================================
+// ===================================================================
+// EVENT LISTENERS
+// ===================================================================
+
+function setupEventListeners() {
+  // Input character counter
   promptInput.addEventListener('input', () => {
     const length = promptInput.value.length;
-    charCount.textContent = `${length}/500`;
-    
-    if (length > 500) {
-      charCount.style.color = '#ef4444';
-    } else {
-      charCount.style.color = 'rgba(255, 255, 255, 0.6)';
-    }
+    charCurrent.textContent = length;
+    startBattleBtn.disabled = length === 0;
   });
 
-  // ========================================
-  // Start Battle
-  // ========================================
-  startBtn.addEventListener('click', async () => {
-    const prompt = promptInput.value.trim();
+  // Start battle
+  startBattleBtn.addEventListener('click', startBattle);
 
-    if (!prompt) {
-      showToast('Bitte gib einen Prompt ein!', 'error');
-      return;
-    }
-
-    if (prompt.length > 500) {
-      showToast('Prompt zu lang (max 500 Zeichen)!', 'error');
-      return;
-    }
-
-    // Reset state
-    resetBattle();
-    
-    // Show arena
-    battleArena.classList.add('active');
-    startBtn.disabled = true;
-    startBtn.textContent = '⚔️ Battle läuft...';
-    votedThisBattle = false;
-
-    // Scroll to arena
-    battleArena.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    // Start SSE Stream
-    try {
-      await startBattleStream(prompt);
-    } catch (error) {
-      console.error('Battle error:', error);
-      showToast('Battle konnte nicht gestartet werden', 'error');
-      startBtn.disabled = false;
-      startBtn.textContent = '⚔️ Battle Starten';
-    }
-  });
-
-  // ========================================
-  // SSE Battle Stream
-  // ========================================
-  async function startBattleStream(prompt) {
-    return new Promise((resolve, reject) => {
-      const eventSource = new EventSource(
-        `${API_URL}/api/model-battle?prompt=${encodeURIComponent(prompt)}`,
-        { withCredentials: false }
-      );
-
-      // Handle incoming events
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          handleStreamEvent(data);
-        } catch (error) {
-          console.error('Parse error:', error);
-        }
-      };
-
-      // Handle errors
-      eventSource.onerror = (error) => {
-        console.error('SSE Error:', error);
-        eventSource.close();
-        
-        if (currentBattle.completed < 3) {
-          showToast('Verbindung unterbrochen', 'error');
-          reject(error);
-        } else {
-          resolve();
-        }
-        
-        startBtn.disabled = false;
-        startBtn.textContent = '⚔️ Neues Battle Starten';
-      };
-
-      // Auto-close after completion
-      setTimeout(() => {
-        if (currentBattle.completed === 3) {
-          eventSource.close();
-          resolve();
-        }
-      }, 60000); // 60s timeout
-    });
-  }
-
-  // ========================================
-  // Handle Stream Events
-  // ========================================
-  function handleStreamEvent(data) {
-    const { type, model } = data;
-
-    switch (type) {
-      case 'status':
-        updateStatus(model, data.message, 'thinking');
-        break;
-
-      case 'chunk':
-        updateStatus(model, 'Schreibt...', 'writing');
-        appendText(model, data.text);
-        break;
-
-      case 'complete':
-        updateStatus(model, 'Fertig!', 'done');
-        models[model].speed.textContent = `${data.speed}s`;
-        currentBattle.speeds[model] = data.speed;
-        currentBattle.responses[model] = data.text;
-        currentBattle.completed++;
-        
-        // Remove typing cursor
-        const cursor = models[model].response.querySelector('.typing-cursor');
-        if (cursor) cursor.remove();
-
-        // Show vote button
-        setTimeout(() => {
-          models[model].voteBtn.classList.add('show');
-        }, 300);
-
-        // Check if all done
-        if (currentBattle.completed === 3) {
-          battleComplete();
-        }
-        break;
-
-      case 'error':
-        updateStatus(model, data.error, 'error');
-        currentBattle.completed++;
-        
-        if (currentBattle.completed === 3) {
-          battleComplete();
-        }
-        break;
-
-      case 'battle-complete':
-        console.log('Battle complete!', data);
-        break;
-    }
-  }
-
-  // ========================================
-  // Update Model Status
-  // ========================================
-  function updateStatus(model, text, state) {
-    const m = models[model];
-    if (!m) return;
-
-    m.statusText.textContent = text;
-    m.statusIndicator.className = `status-indicator ${state}`;
-  }
-
-  // ========================================
-  // Append Text with Typing Effect
-  // ========================================
-  function appendText(model, text) {
-    const m = models[model];
-    if (!m || !m.response) return;
-
-    // Remove old cursor
-    let cursor = m.response.querySelector('.typing-cursor');
-    if (cursor) cursor.remove();
-
-    // Append text
-    const textNode = document.createTextNode(text);
-    m.response.appendChild(textNode);
-
-    // Add new cursor
-    cursor = document.createElement('span');
-    cursor.className = 'typing-cursor';
-    m.response.appendChild(cursor);
-
-    // Auto-scroll
-    m.response.scrollTop = m.response.scrollHeight;
-  }
-
-  // ========================================
-  // Battle Complete
-  // ========================================
-  function battleComplete() {
-    console.log('All models finished!');
-    
-    // Find fastest
-    const speeds = currentBattle.speeds;
-    let fastest = null;
-    let fastestTime = Infinity;
-
-    Object.entries(speeds).forEach(([model, time]) => {
-      const timeFloat = parseFloat(time);
-      if (timeFloat < fastestTime) {
-        fastestTime = timeFloat;
-        fastest = model;
-      }
-    });
-
-    // Mark fastest with winner badge
-    if (fastest) {
-      const card = models[fastest].card;
-      card.classList.add('winner');
-      
-      const badge = document.createElement('div');
-      badge.className = 'winner-badge';
-      badge.textContent = '🏆 Schnellster';
-      card.style.position = 'relative';
-      card.insertBefore(badge, card.firstChild);
-    }
-
-    // Re-enable start button
-    startBtn.disabled = false;
-    startBtn.textContent = '⚔️ Neues Battle Starten';
-
-    showToast('Battle abgeschlossen! Wähle deinen Favoriten!', 'success');
-  }
-
-  // ========================================
-  // Vote Handlers
-  // ========================================
-  Object.keys(models).forEach(modelKey => {
-    const model = models[modelKey];
-    
-    model.voteBtn.addEventListener('click', async () => {
-      if (votedThisBattle) {
-        showToast('Du hast bereits abgestimmt!', 'warning');
-        return;
-      }
-
-      // Disable all vote buttons
-      Object.values(models).forEach(m => {
-        m.voteBtn.disabled = true;
-      });
-
-      // Mark as voted
-      model.voteBtn.classList.add('voted');
-      model.voteBtn.textContent = '✓ Gewählt!';
-      votedThisBattle = true;
-
-      // Submit vote
-      try {
-        const modelNames = {
-          claude: 'claude-sonnet-4',
-          openai: 'gpt-4o-mini',
-          perplexity: 'sonar-pro'
-        };
-
-        await submitVote(modelNames[modelKey], currentBattle.speeds);
-        showToast(`Vote für ${model.name} gespeichert!`, 'success');
-        
-        // Reload leaderboard
-        setTimeout(() => loadLeaderboard(), 500);
-        
-      } catch (error) {
-        console.error('Vote error:', error);
-        showToast('Vote konnte nicht gespeichert werden', 'error');
-      }
+  // Quick prompts
+  quickBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const prompt = btn.dataset.prompt;
+      promptInput.value = prompt;
+      charCurrent.textContent = prompt.length;
+      startBattleBtn.disabled = false;
+      promptInput.focus();
     });
   });
 
-  // ========================================
-  // Submit Vote to Backend
-  // ========================================
-  async function submitVote(winner, speeds) {
-    const response = await fetch(`${API_URL}/api/model-battle/vote`, {
+  // New battle
+  newBattleBtn.addEventListener('click', resetBattle);
+
+  // Enter key to start battle
+  promptInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && e.ctrlKey && !startBattleBtn.disabled) {
+      startBattle();
+    }
+  });
+}
+
+// ===================================================================
+// BATTLE LOGIC
+// ===================================================================
+
+async function startBattle() {
+  const prompt = promptInput.value.trim();
+
+  if (!prompt) {
+    showToast('Bitte gib einen Prompt ein', 'error');
+    return;
+  }
+
+  try {
+    // Disable button
+    startBattleBtn.disabled = true;
+    startBattleBtn.textContent = '⚔️ Battle läuft...';
+
+    // Show results section
+    resultsSection.style.display = 'block';
+    
+    // Reset previous results
+    resetResponseCards();
+    votedModel = null;
+
+    // Scroll to results
+    setTimeout(() => {
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
+    // Call API
+    const response = await fetch(`${API_BASE}/api/model-battle`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ winner, speeds })
+      body: JSON.stringify({ prompt })
     });
 
     if (!response.ok) {
-      throw new Error('Vote failed');
+      throw new Error(`API Error: ${response.status}`);
     }
 
-    return response.json();
-  }
+    const data = await response.json();
+    currentBattleResults = data;
 
-  // ========================================
-  // Load Leaderboard
-  // ========================================
-  async function loadLeaderboard() {
-    try {
-      const response = await fetch(`${API_URL}/api/model-battle/leaderboard`);
-      const data = await response.json();
+    // Display results
+    displayResults(data);
 
-      if (data.success && data.leaderboard) {
-        renderLeaderboard(data.leaderboard);
-      }
-    } catch (error) {
-      console.error('Leaderboard error:', error);
-    }
-  }
+    // Save to history
+    saveBattleToHistory(prompt, data);
 
-  // ========================================
-  // Render Leaderboard
-  // ========================================
-  function renderLeaderboard(leaderboard) {
-    const modelNames = {
-      'claude-sonnet-4': { name: 'Claude Sonnet 4', icon: '🤖' },
-      'gpt-4o-mini': { name: 'GPT-4o Mini', icon: '🧠' },
-      'sonar-pro': { name: 'Sonar Pro', icon: '🔮' }
-    };
+    // Show toast
+    showToast('Battle abgeschlossen! 🎉');
 
-    leaderboardGrid.innerHTML = leaderboard.map((item, index) => {
-      const modelInfo = modelNames[item.model] || { name: item.model, icon: '🤖' };
-      const rank = index + 1;
-      const isFirst = rank === 1;
-      const rankClass = isFirst ? 'gold' : '';
-
-      return `
-        <div class="leaderboard-item ${isFirst ? 'first' : ''}">
-          <div class="leaderboard-rank ${rankClass}">${rank}</div>
-          <div class="leaderboard-model">
-            ${modelInfo.icon} ${modelInfo.name}
-          </div>
-          <div class="leaderboard-stats">
-            <div class="stat-row">
-              <span>Siege:</span>
-              <span class="stat-value">${item.wins}</span>
-            </div>
-            <div class="stat-row">
-              <span>∅ Speed:</span>
-              <span class="stat-value">${item.avgSpeed}s</span>
-            </div>
-            <div class="stat-row">
-              <span>Battles:</span>
-              <span class="stat-value">${item.battles}</span>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  // ========================================
-  // Reset Battle
-  // ========================================
-  function resetBattle() {
-    currentBattle = {
-      active: true,
-      responses: {},
-      speeds: {},
-      completed: 0
-    };
-
-    Object.values(models).forEach(model => {
-      // Reset status
-      model.statusText.textContent = 'Warte...';
-      model.statusIndicator.className = 'status-indicator';
-      
-      // Clear response
-      model.response.innerHTML = '';
-      
-      // Reset speed
-      model.speed.textContent = '-';
-      
-      // Hide vote button
-      model.voteBtn.classList.remove('show', 'voted');
-      model.voteBtn.disabled = false;
-      model.voteBtn.textContent = '👍 Bester Output!';
-      
-      // Remove winner class
-      model.card.classList.remove('winner');
-      
-      // Remove winner badge
-      const badge = model.card.querySelector('.winner-badge');
-      if (badge) badge.remove();
-    });
-  }
-
-  // ========================================
-  // Toast Notification
-  // ========================================
-  function showToast(message, type = 'success') {
-    const colors = {
-      success: 'rgba(16, 185, 129, 0.95)',
-      error: 'rgba(239, 68, 68, 0.95)',
-      warning: 'rgba(251, 191, 36, 0.95)'
-    };
-
-    const toast = document.createElement('div');
-    toast.className = 'battle-toast';
-    toast.textContent = message;
-    toast.style.background = colors[type] || colors.success;
+  } catch (error) {
+    console.error('Battle error:', error);
+    showToast('Fehler beim Battle. Bitte versuche es erneut.', 'error');
     
-    document.body.appendChild(toast);
+    // Re-enable button
+    startBattleBtn.disabled = false;
+    startBattleBtn.textContent = '⚔️ Battle starten';
+  }
+}
 
-    setTimeout(() => {
-      toast.style.animation = 'slideOut 0.3s ease-out';
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+function resetResponseCards() {
+  const models = ['claude', 'gpt', 'perplexity'];
+
+  models.forEach(model => {
+    // Reset loading state
+    const loadingEl = document.getElementById(`loading-${model}`);
+    const responseEl = document.getElementById(`response-${model}`);
+    
+    if (loadingEl) loadingEl.style.display = 'flex';
+    if (responseEl) responseEl.style.display = 'none';
+
+    // Reset time
+    document.getElementById(`time-${model}`).textContent = '-';
+
+    // Reset buttons
+    const voteBtn = document.querySelector(`[data-model="${model}"].vote-btn`);
+    const copyBtn = document.querySelector(`[data-model="${model}"].copy-btn`);
+    
+    if (voteBtn) {
+      voteBtn.disabled = true;
+      voteBtn.classList.remove('voted');
+      voteBtn.textContent = '👍 Vote';
+    }
+    
+    if (copyBtn) {
+      copyBtn.disabled = true;
+      copyBtn.classList.remove('copied');
+      copyBtn.textContent = '📋 Kopieren';
+    }
+
+    // Reset winner badge
+    const card = document.querySelector(`[data-model="${model}"].response-card`);
+    if (card) card.classList.remove('winner');
+  });
+
+  // Reset stats
+  document.getElementById('fastest-model').textContent = '-';
+  document.getElementById('favorite-model').textContent = 'Noch nicht gewählt';
+}
+
+function displayResults(data) {
+  const { responses } = data;
+
+  // Find fastest model
+  const fastestModel = responses.reduce((fastest, current) => 
+    current.responseTime < fastest.responseTime ? current : fastest
+  );
+
+  document.getElementById('fastest-model').textContent = fastestModel.name;
+
+  // Display each response
+  responses.forEach(result => {
+    const modelKey = result.model;
+    
+    // Hide loading
+    const loadingEl = document.getElementById(`loading-${modelKey}`);
+    if (loadingEl) loadingEl.style.display = 'none';
+
+    // Show response
+    const responseEl = document.getElementById(`response-${modelKey}`);
+    if (responseEl) {
+      responseEl.textContent = result.response;
+      responseEl.style.display = 'block';
+    }
+
+    // Update time
+    const timeEl = document.getElementById(`time-${modelKey}`);
+    if (timeEl) {
+      timeEl.textContent = `${(result.responseTime / 1000).toFixed(2)}s`;
+      
+      // Highlight fastest
+      if (result.model === fastestModel.model) {
+        timeEl.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+        timeEl.style.color = '#fff';
+      }
+    }
+
+    // Enable buttons
+    const voteBtn = document.querySelector(`[data-model="${modelKey}"].vote-btn`);
+    const copyBtn = document.querySelector(`[data-model="${modelKey}"].copy-btn`);
+    
+    if (voteBtn && result.success) {
+      voteBtn.disabled = false;
+      voteBtn.onclick = () => voteForModel(modelKey, result.name);
+    }
+    
+    if (copyBtn && result.success) {
+      copyBtn.disabled = false;
+      copyBtn.onclick = () => copyResponse(modelKey, result.response);
+    }
+  });
+
+  // Re-enable start button
+  startBattleBtn.disabled = false;
+  startBattleBtn.textContent = '⚔️ Battle starten';
+}
+
+// ===================================================================
+// VOTING SYSTEM
+// ===================================================================
+
+function voteForModel(model, modelName) {
+  // Remove previous vote
+  document.querySelectorAll('.vote-btn').forEach(btn => {
+    btn.classList.remove('voted');
+    btn.textContent = '👍 Vote';
+  });
+
+  document.querySelectorAll('.response-card').forEach(card => {
+    card.classList.remove('winner');
+  });
+
+  // Set new vote
+  const voteBtn = document.querySelector(`[data-model="${model}"].vote-btn`);
+  if (voteBtn) {
+    voteBtn.classList.add('voted');
+    voteBtn.textContent = '✅ Gewählt';
   }
 
-  // ========================================
-  // Initialize
-  // ========================================
-  function init() {
-    console.log('🥊 Model Battle Arena initialized');
-    loadLeaderboard();
+  const card = document.querySelector(`[data-model="${model}"].response-card`);
+  if (card) {
+    card.classList.add('winner');
   }
 
-  // Start when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  votedModel = model;
+  document.getElementById('favorite-model').textContent = modelName;
+
+  // Save vote to stats
+  saveVote(model);
+
+  // Show toast
+  showToast(`${modelName} gewählt! 🏆`);
+}
+
+// ===================================================================
+// COPY FUNCTIONALITY
+// ===================================================================
+
+async function copyResponse(model, text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    
+    const copyBtn = document.querySelector(`[data-model="${model}"].copy-btn`);
+    if (copyBtn) {
+      copyBtn.textContent = '✅ Kopiert!';
+      copyBtn.classList.add('copied');
+
+      setTimeout(() => {
+        copyBtn.textContent = '📋 Kopieren';
+        copyBtn.classList.remove('copied');
+      }, 2000);
+    }
+
+    showToast('Antwort kopiert! 📋');
+
+  } catch (error) {
+    console.error('Copy failed:', error);
+    showToast('Fehler beim Kopieren', 'error');
+  }
+}
+
+// ===================================================================
+// RESET BATTLE
+// ===================================================================
+
+function resetBattle() {
+  // Clear input
+  promptInput.value = '';
+  charCurrent.textContent = '0';
+  startBattleBtn.disabled = true;
+  startBattleBtn.textContent = '⚔️ Battle starten';
+
+  // Hide results
+  resultsSection.style.display = 'none';
+
+  // Reset state
+  currentBattleResults = null;
+  votedModel = null;
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===================================================================
+// LOCAL STORAGE - Battle History & Stats
+// ===================================================================
+
+function saveBattleToHistory(prompt, results) {
+  try {
+    const history = JSON.parse(localStorage.getItem('battleHistory') || '[]');
+    
+    history.unshift({
+      prompt,
+      results,
+      timestamp: new Date().toISOString(),
+      voted: votedModel
+    });
+
+    // Keep only last 50 battles
+    if (history.length > 50) {
+      history.pop();
+    }
+
+    localStorage.setItem('battleHistory', JSON.stringify(history));
+  } catch (error) {
+    console.error('Error saving to history:', error);
+  }
+}
+
+function saveVote(model) {
+  try {
+    const stats = JSON.parse(localStorage.getItem('battleStats') || '{}');
+    
+    if (!stats.votes) {
+      stats.votes = { claude: 0, gpt: 0, perplexity: 0 };
+    }
+
+    stats.votes[model] = (stats.votes[model] || 0) + 1;
+    stats.totalBattles = (stats.totalBattles || 0) + 1;
+    stats.lastUpdated = new Date().toISOString();
+
+    localStorage.setItem('battleStats', JSON.stringify(stats));
+  } catch (error) {
+    console.error('Error saving vote:', error);
+  }
+}
+
+function loadStats() {
+  try {
+    const stats = JSON.parse(localStorage.getItem('battleStats') || '{}');
+    console.log('Battle Stats:', stats);
+    
+    // Could be used to display stats in UI later
+  } catch (error) {
+    console.error('Error loading stats:', error);
+  }
+}
+
+// ===================================================================
+// TOAST NOTIFICATION
+// ===================================================================
+
+function showToast(message, type = 'success') {
+  const toastMessage = document.getElementById('toast-message');
+  toastMessage.textContent = message;
+
+  if (type === 'error') {
+    toast.style.background = 'rgba(239, 68, 68, 0.95)';
   } else {
-    init();
+    toast.style.background = 'rgba(34, 197, 94, 0.95)';
   }
 
-})();
+  toast.style.display = 'block';
+
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
+}
+
+// ===================================================================
+// ERROR HANDLING
+// ===================================================================
+
+window.addEventListener('error', (e) => {
+  console.error('Global error:', e.error);
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('Unhandled promise rejection:', e.reason);
+});

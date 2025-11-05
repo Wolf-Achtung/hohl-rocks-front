@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Battle Arena — hohl.rocks</title>
+  <meta name="description" content="Vergleiche Claude, GPT und Perplexity direkt: Wer antwortet am besten?">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/model-battle.css">
+</head>
+<body>
+  
+  <!-- Background Video -->
+  <div class="site-bg">
+    <video class="bg-video" autoplay loop muted playsinline>
+      <source src="/hohl-bg.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Main Container -->
+  <div class="battle-container">
+    
+    <!-- Header -->
+    <header class="battle-header">
+      <a href="/" class="back-link">← Zurück zu hohl.rocks</a>
+      <h1>⚔️ Model Battle Arena</h1>
+      <p class="battle-subtitle">Vergleiche Claude Sonnet 4, GPT-4o Mini und Perplexity Sonar Pro direkt</p>
+    </header>
+
+    <!-- Input Section -->
+    <div class="battle-input-section">
+      <div class="input-container">
+        <label for="battle-prompt">Dein Prompt für alle 3 Modelle:</label>
+        <textarea 
+          id="battle-prompt" 
+          placeholder="z.B. 'Erkläre Quantencomputing in einfachen Worten' oder 'Schreibe einen kreativen Slogan für ein Café'"
+          rows="4"
+          maxlength="2000"
+        ></textarea>
+        <div class="input-footer">
+          <span class="char-count">
+            <span id="char-current">0</span> / 2000 Zeichen
+          </span>
+          <button id="start-battle-btn" class="btn-battle" disabled>
+            ⚔️ Battle starten
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Prompts -->
+      <div class="quick-prompts">
+        <span class="quick-label">Schnellstart:</span>
+        <button class="quick-btn" data-prompt="Erkläre maschinelles Lernen in 3 einfachen Sätzen">
+          💡 ML Erklärung
+        </button>
+        <button class="quick-btn" data-prompt="Schreibe einen motivierenden Slogan für ein Startup im Bereich nachhaltige Mode">
+          ✨ Slogan
+        </button>
+        <button class="quick-btn" data-prompt="Was sind die 3 wichtigsten Trends in der KI 2025?">
+          🔮 KI Trends
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section" class="results-section" style="display: none;">
+      
+      <!-- Battle Stats -->
+      <div class="battle-stats">
+        <div class="stat-card">
+          <span class="stat-label">Schnellster</span>
+          <span class="stat-value" id="fastest-model">-</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Dein Favorit</span>
+          <span class="stat-value" id="favorite-model">Noch nicht gewählt</span>
+        </div>
+      </div>
+
+      <!-- Model Responses Grid -->
+      <div class="responses-grid">
+        
+        <!-- Claude Response -->
+        <div class="response-card" data-model="claude">
+          <div class="card-header">
+            <div class="model-info">
+              <div class="model-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                🤖
+              </div>
+              <div>
+                <h3 class="model-name">Claude Sonnet 4</h3>
+                <p class="model-desc">Anthropic</p>
+              </div>
+            </div>
+            <div class="response-time">
+              <span id="time-claude">-</span>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="loading-indicator" id="loading-claude">
+              <div class="spinner"></div>
+              <p>Denkt nach...</p>
+            </div>
+            <div class="response-text" id="response-claude" style="display: none;"></div>
+          </div>
+
+          <div class="card-footer">
+            <button class="vote-btn" data-model="claude" disabled>
+              👍 Vote
+            </button>
+            <button class="copy-btn" data-model="claude" disabled>
+              📋 Kopieren
+            </button>
+          </div>
+        </div>
+
+        <!-- GPT Response -->
+        <div class="response-card" data-model="gpt">
+          <div class="card-header">
+            <div class="model-info">
+              <div class="model-icon" style="background: linear-gradient(135deg, #10a37f 0%, #059669 100%);">
+                ✨
+              </div>
+              <div>
+                <h3 class="model-name">GPT-4o Mini</h3>
+                <p class="model-desc">OpenAI</p>
+              </div>
+            </div>
+            <div class="response-time">
+              <span id="time-gpt">-</span>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="loading-indicator" id="loading-gpt">
+              <div class="spinner"></div>
+              <p>Denkt nach...</p>
+            </div>
+            <div class="response-text" id="response-gpt" style="display: none;"></div>
+          </div>
+
+          <div class="card-footer">
+            <button class="vote-btn" data-model="gpt" disabled>
+              👍 Vote
+            </button>
+            <button class="copy-btn" data-model="gpt" disabled>
+              📋 Kopieren
+            </button>
+          </div>
+        </div>
+
+        <!-- Perplexity Response -->
+        <div class="response-card" data-model="perplexity">
+          <div class="card-header">
+            <div class="model-info">
+              <div class="model-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);">
+                🔍
+              </div>
+              <div>
+                <h3 class="model-name">Perplexity Sonar Pro</h3>
+                <p class="model-desc">Perplexity AI</p>
+              </div>
+            </div>
+            <div class="response-time">
+              <span id="time-perplexity">-</span>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <div class="loading-indicator" id="loading-perplexity">
+              <div class="spinner"></div>
+              <p>Denkt nach...</p>
+            </div>
+            <div class="response-text" id="response-perplexity" style="display: none;"></div>
+          </div>
+
+          <div class="card-footer">
+            <button class="vote-btn" data-model="perplexity" disabled>
+              👍 Vote
+            </button>
+            <button class="copy-btn" data-model="perplexity" disabled>
+              📋 Kopieren
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- New Battle Button -->
+      <div class="new-battle-section">
+        <button id="new-battle-btn" class="btn-new-battle">
+          🔄 Neue Battle starten
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Info Section -->
+    <div class="info-section">
+      <h3>Wie funktioniert's?</h3>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-icon">1️⃣</div>
+          <p>Gib deinen Prompt ein oder wähle einen Schnellstart</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">2️⃣</div>
+          <p>Alle 3 Modelle beantworten gleichzeitig</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">3️⃣</div>
+          <p>Vergleiche die Antworten und vote für deinen Favoriten</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" style="display: none;">
+    <span id="toast-message">Erfolgreich!</span>
+  </div>
+
+  <!-- Script -->
+  <script src="/model-battle.js"></script>
+
+</body>
+</html>

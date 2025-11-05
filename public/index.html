@@ -314,19 +314,68 @@
       <p class="hero-sub">Interaktive KI-Prompt-Assistenten • Täglich neue Challenges • Professional AI Tools</p>
       
       <!-- Quick Links zu Features -->
-      <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <div style="margin-top: 2.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; max-width: 900px; margin-left: auto; margin-right: auto; padding: 0 1rem;">
+        
+        <!-- Feature #5: Prompt Library -->
         <a href="/prompt-library.html" 
-           style="padding: 12px 24px; 
+           style="padding: 16px 20px; 
                   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                   color: white; 
                   border-radius: 12px; 
                   text-decoration: none; 
                   font-weight: 600;
+                  text-align: center;
                   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); 
                   transition: all 0.3s ease;
-                  display: inline-block;">
-          📚 Prompt Library
+                  display: block;
+                  border: 1px solid rgba(255, 255, 255, 0.1);"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)';">
+          <div style="font-size: 28px; margin-bottom: 6px;">📚</div>
+          <div>Prompt Library</div>
+          <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">30+ Pro Templates</div>
         </a>
+
+        <!-- Feature #2: Model Battle Arena -->
+        <a href="/model-battle.html" 
+           style="padding: 16px 20px; 
+                  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); 
+                  color: white; 
+                  border-radius: 12px; 
+                  text-decoration: none; 
+                  font-weight: 600;
+                  text-align: center;
+                  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); 
+                  transition: all 0.3s ease;
+                  display: block;
+                  border: 1px solid rgba(255, 255, 255, 0.1);"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(245, 158, 11, 0.6)';"
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.4)';">
+          <div style="font-size: 28px; margin-bottom: 6px;">⚔️</div>
+          <div>Model Battle</div>
+          <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">3 AIs im Vergleich</div>
+        </a>
+
+        <!-- Coming Soon: Daily Challenge -->
+        <a href="#daily-challenge" 
+           style="padding: 16px 20px; 
+                  background: rgba(255, 255, 255, 0.05); 
+                  color: rgba(255, 255, 255, 0.7); 
+                  border-radius: 12px; 
+                  text-decoration: none; 
+                  font-weight: 600;
+                  text-align: center;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+                  transition: all 0.3s ease;
+                  display: block;
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  cursor: not-allowed;"
+           title="Coming Soon">
+          <div style="font-size: 28px; margin-bottom: 6px;">🎯</div>
+          <div>Daily Challenge</div>
+          <div style="font-size: 12px; opacity: 0.6; margin-top: 4px;">Bald verfügbar</div>
+        </a>
+        
       </div>
     </main>
 

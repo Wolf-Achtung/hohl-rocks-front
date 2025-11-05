@@ -1,228 +1,163 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Library | hohl.rocks</title>
-    <link rel="stylesheet" href="prompt-library.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Library — hohl.rocks</title>
+  <meta name="description" content="30+ professionelle KI-Prompts für Creative, Business, Technical & mehr">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/prompt-library.css">
 </head>
 <body>
-    <!-- Background Gradient -->
-    <div class="background-gradient"></div>
+  
+  <!-- Background Video -->
+  <div class="site-bg">
+    <video class="bg-video" autoplay loop muted playsinline>
+      <source src="/hohl-bg.mp4" type="video/mp4">
+    </video>
+  </div>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1 class="title">
-                    <span class="emoji">📚</span>
-                    Prompt Library
-                </h1>
-                <p class="subtitle">
-                    Entdecke, nutze & teile die besten Prompts der Community
-                </p>
-            </div>
-        </header>
+  <!-- Main Container -->
+  <div class="library-container">
+    
+    <!-- Header -->
+    <header class="library-header">
+      <a href="/" class="back-link">← Zurück zu hohl.rocks</a>
+      <h1>📚 Prompt Library</h1>
+      <p class="library-subtitle">30+ professionelle Prompts für Creative, Business & Technical Tasks</p>
+    </header>
 
-        <!-- Controls Section -->
-        <section class="controls-section">
-            <!-- Search Bar -->
-            <div class="search-container">
-                <input 
-                    type="text" 
-                    id="search-input" 
-                    class="search-input" 
-                    placeholder="🔍 Suche nach Prompts, Tags, Kategorien..."
-                >
-            </div>
+    <!-- Controls -->
+    <div class="library-controls">
+      
+      <!-- Search Bar -->
+      <div class="search-box">
+        <input 
+          type="search" 
+          id="search-input" 
+          placeholder="Suche nach Titel, Tags oder Kategorie..."
+          autocomplete="off"
+        >
+      </div>
 
-            <!-- Category Filter -->
-            <div class="category-filter">
-                <button class="category-btn active" data-category="all">
-                    Alle
-                </button>
-                <button class="category-btn" data-category="creative">
-                    🎨 Creative
-                </button>
-                <button class="category-btn" data-category="business">
-                    💼 Business
-                </button>
-                <button class="category-btn" data-category="technical">
-                    ⚙️ Technical
-                </button>
-                <button class="category-btn" data-category="education">
-                    📚 Education
-                </button>
-                <button class="category-btn" data-category="writing">
-                    ✍️ Writing
-                </button>
-                <button class="category-btn" data-category="ai">
-                    🤖 AI
-                </button>
-            </div>
+      <!-- Category Filter -->
+      <div class="category-filter">
+        <button class="filter-btn active" data-category="all">
+          Alle <span class="count" id="count-all">30</span>
+        </button>
+        <button class="filter-btn" data-category="creative">
+          🎨 Creative <span class="count" id="count-creative">6</span>
+        </button>
+        <button class="filter-btn" data-category="business">
+          💼 Business <span class="count" id="count-business">6</span>
+        </button>
+        <button class="filter-btn" data-category="technical">
+          💻 Technical <span class="count" id="count-technical">6</span>
+        </button>
+        <button class="filter-btn" data-category="marketing">
+          📢 Marketing <span class="count" id="count-marketing">6</span>
+        </button>
+        <button class="filter-btn" data-category="productivity">
+          ⚡ Productivity <span class="count" id="count-productivity">6</span>
+        </button>
+      </div>
 
-            <!-- View Toggle -->
-            <div class="view-toggle">
-                <button id="featured-view" class="view-btn active">
-                    ⭐ Featured
-                </button>
-                <button id="community-view" class="view-btn">
-                    👥 Community
-                </button>
-                <button id="my-prompts-view" class="view-btn">
-                    💾 Meine Prompts
-                </button>
-            </div>
-        </section>
+      <!-- Sort Options -->
+      <div class="sort-options">
+        <label for="sort-select">Sortieren:</label>
+        <select id="sort-select">
+          <option value="featured">Featured</option>
+          <option value="rating">Höchste Bewertung</option>
+          <option value="uses">Meist verwendet</option>
+          <option value="newest">Neueste</option>
+        </select>
+      </div>
 
-        <!-- Stats Section -->
-        <section class="stats-section">
-            <div class="stat-card">
-                <div class="stat-number" id="total-prompts">30</div>
-                <div class="stat-label">Prompts</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="total-categories">13</div>
-                <div class="stat-label">Kategorien</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="total-uses">45k+</div>
-                <div class="stat-label">Uses</div>
-            </div>
-        </section>
-
-        <!-- Prompts Grid -->
-        <section class="prompts-section">
-            <div id="prompts-grid" class="prompts-grid">
-                <!-- Prompts werden hier dynamisch geladen -->
-            </div>
-
-            <!-- Empty State -->
-            <div id="empty-state" class="empty-state" style="display: none;">
-                <div class="empty-icon">🔍</div>
-                <h3>Keine Prompts gefunden</h3>
-                <p>Versuche andere Suchbegriffe oder Filter</p>
-            </div>
-
-            <!-- Loading State -->
-            <div id="loading-state" class="loading-state">
-                <div class="spinner"></div>
-                <p>Lade Prompts...</p>
-            </div>
-        </section>
-
-        <!-- Submit Section -->
-        <section class="submit-section">
-            <div class="submit-card">
-                <h2>
-                    <span class="emoji">✨</span>
-                    Eigenen Prompt teilen
-                </h2>
-                <p class="submit-description">
-                    Teile deinen besten Prompt mit der Community!
-                </p>
-                
-                <form id="submit-form" class="submit-form">
-                    <div class="form-group">
-                        <label for="prompt-title">Titel</label>
-                        <input 
-                            type="text" 
-                            id="prompt-title" 
-                            required
-                            placeholder="z.B. 'LinkedIn Post Formula'"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="prompt-text">Prompt</label>
-                        <textarea 
-                            id="prompt-text" 
-                            required
-                            rows="6"
-                            placeholder="Dein Prompt hier..."
-                        ></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="prompt-category">Kategorie</label>
-                            <select id="prompt-category" required>
-                                <option value="">Wähle Kategorie...</option>
-                                <option value="creative">🎨 Creative</option>
-                                <option value="business">💼 Business</option>
-                                <option value="technical">⚙️ Technical</option>
-                                <option value="education">📚 Education</option>
-                                <option value="writing">✍️ Writing</option>
-                                <option value="ai">🤖 AI</option>
-                                <option value="communication">💬 Communication</option>
-                                <option value="data">📊 Data</option>
-                                <option value="marketing">🎯 Marketing</option>
-                                <option value="productivity">🚀 Productivity</option>
-                                <option value="design">🎨 Design</option>
-                                <option value="innovation">💡 Innovation</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="prompt-tags">Tags (komma-getrennt)</label>
-                            <input 
-                                type="text" 
-                                id="prompt-tags"
-                                placeholder="z.B. social, linkedin, content"
-                            >
-                        </div>
-                    </div>
-
-                    <button type="submit" class="submit-btn">
-                        <span>📤 Prompt Einreichen</span>
-                    </button>
-                </form>
-            </div>
-        </section>
     </div>
 
-    <!-- Prompt Detail Modal -->
-    <div id="prompt-modal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close">&times;</button>
-            
-            <div class="modal-header">
-                <h2 id="modal-title"></h2>
-                <div class="modal-meta">
-                    <span class="category-badge" id="modal-category"></span>
-                    <span class="rating" id="modal-rating"></span>
-                    <span class="uses" id="modal-uses"></span>
-                </div>
-            </div>
+    <!-- Loading State -->
+    <div id="loading-state" class="loading-state">
+      <div class="loader"></div>
+      <p>Lade Prompt Library...</p>
+    </div>
 
-            <div class="modal-body">
-                <div class="prompt-content">
-                    <label>Prompt:</label>
-                    <div id="modal-prompt" class="prompt-text"></div>
-                </div>
+    <!-- Results Info -->
+    <div id="results-info" class="results-info" style="display: none;">
+      <span id="results-count">30</span> Prompts gefunden
+    </div>
 
-                <div class="tags-container">
-                    <label>Tags:</label>
-                    <div id="modal-tags" class="tags"></div>
-                </div>
+    <!-- Prompts Grid -->
+    <div id="prompts-grid" class="prompts-grid">
+      <!-- Dynamically populated by JS -->
+    </div>
 
-                <div class="modal-actions">
-                    <button id="copy-modal-prompt" class="action-btn primary">
-                        📋 Kopieren
-                    </button>
-                    <button id="use-modal-prompt" class="action-btn">
-                        ✨ In Generator öffnen
-                    </button>
-                </div>
-            </div>
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <p>🔍 Keine Prompts gefunden</p>
+      <p class="empty-subtitle">Versuche andere Suchbegriffe oder Filter</p>
+    </div>
+
+  </div>
+
+  <!-- Prompt Detail Modal -->
+  <div id="prompt-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <button class="modal-close" id="close-modal">✕</button>
+      
+      <div class="modal-header">
+        <h2 id="modal-title">Prompt Title</h2>
+        <div class="modal-meta">
+          <span class="modal-category" id="modal-category">Category</span>
+          <span class="modal-rating" id="modal-rating">⭐ 4.8</span>
         </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="prompt-box">
+          <pre id="modal-prompt">Prompt text...</pre>
+          <button class="copy-btn" id="copy-prompt-btn">
+            📋 Kopieren
+          </button>
+        </div>
+
+        <div class="modal-tags" id="modal-tags">
+          <!-- Tags dynamically added -->
+        </div>
+
+        <div class="modal-stats">
+          <div class="stat">
+            <span class="stat-value" id="modal-uses">1,234</span>
+            <span class="stat-label">Verwendet</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="modal-author">hohl.rocks</span>
+            <span class="stat-label">Author</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" id="close-modal-btn">Schließen</button>
+        <button class="btn-primary" id="use-prompt-btn">
+          ✨ Prompt verwenden
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" style="display: none;">
+    <span id="toast-message">Prompt kopiert!</span>
+  </div>
 
-    <!-- JavaScript -->
-    <script src="prompt-library.js"></script>
+  <!-- Script -->
+  <script src="/prompt-library.js"></script>
+
 </body>
 </html>

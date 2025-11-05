@@ -1,7 +1,6 @@
 # Sicherheits- & Cache-Header (Netlify)
-# CSP erlaubt Requests zur Railway-API aus deinen ENV.
-# API_BASE: https://hohl-rocks-back-production.up.railway.app
-# (siehe env_variablen_hohlrocks.txt)  :contentReference[oaicite:1]{index=1}
+# CSP erlaubt Requests zur Railway-API
+# Backend: https://hohl-rocks-back-production.up.railway.app
 
 /*
   X-Frame-Options: DENY
@@ -12,7 +11,7 @@
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   Cache-Control: public, max-age=86400
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' data:; connect-src 'self' https://hohl-rocks-back-production.up.railway.app; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; media-src 'self' data: blob:; connect-src 'self' https://hohl-rocks-back-production.up.railway.app; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
 
 # UTF-8 dauerhaft für Assets ausliefern (relevant für Umlaute)
 

@@ -4,6 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
+    
+    <!-- CSP Meta Tag (anpassen für Production) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.hohl.rocks; img-src 'self' data: https:; media-src 'self' data: blob:;">
+    
     <meta name="x-api-base" content="/api"/>
     <title>hohl.rocks — KI-gestützte Web-Experience</title>
     <meta name="description" content="Neon-Bubbles, Prompts, KI-Tipps & KI-News. Ruhig, klar, magisch-intuitiv." />
@@ -11,6 +15,7 @@
     <!-- Fonts & Styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- KORRIGIERT: Korrekte URL mit ? nach css2 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/css/shimmer-effect.css" />
@@ -167,7 +172,7 @@
     <script type="module" src="/js/app.js"></script>
     <script type="module" src="/js/audio.js"></script>
     <script type="module" src="/js/modal.a11y.js"></script>
-    <!-- Today’s Spark (leise, robust) -->
+    <!-- Today's Spark (leise, robust) -->
     <script src="/js/spark-bubble.js" defer></script>
   </body>
 </html>

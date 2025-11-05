@@ -1,8 +1,9 @@
 /* -*- coding: utf-8 -*- */
 /**
- * Zentrale API-Schicht:
+ * Zentrale API-Schicht mit robusten Fallbacks
  * - API Base Detection (Query ?api=..., LocalStorage, <meta name="x-api-base">, Fallback /api)
  * - fetchJson() mit Timeout, Retry (bei Netz/Timeout), ETag-Cache (304)
+ * - Graceful Fallbacks für 404-Fehler
  * - Stabile JSON-Parsing-Fehlerbehandlung
  * - Back-Compat: window.getJson alias
  */
@@ -36,6 +37,8 @@
   }
 
   let API_BASE = detectApiBase();
+  let API_AVAILABLE = true; // Track API availability
+  
   function setApiBase(next) {
     const b = sanitizeBase(next);
     if (b) {
@@ -48,7 +51,7 @@
   // ---- Fetch mit Timeout/Retry/ETag ----
   const etags = new Map();
 
-  async function fetchJson(path, { method='GET', headers={}, body, timeout=10_000, retry=1 } = {}) {
+  async function fetchJson(path, { method='GET', headers={}, body, timeout=10_000, retry=1, fallback=null } = {}) {
     const url = joinUrl(API_BASE, path);
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeout);
@@ -71,16 +74,25 @@
 
       clearTimeout(timer);
 
+      // 304 Not Modified
       if (res.status === 304 && etags.has(url)) {
         return JSON.parse(sessionStorage.getItem(url) || 'null') || { ok: true };
+      }
+
+      // 404 Not Found - Return fallback
+      if (res.status === 404) {
+        API_AVAILABLE = false;
+        console.warn(`[API] 404 for ${url}, using fallback`);
+        return fallback || { error: 'not_found', status: 404 };
       }
 
       const et = res.headers.get('ETag'); if (et) etags.set(url, et);
 
       const txt = await res.text();
       let data = null;
-      try { data = txt ? JSON.parse(txt) : null; }
-      catch (parseErr) {
+      try { 
+        data = txt ? JSON.parse(txt) : null; 
+      } catch (parseErr) {
         const err = new Error(`Invalid JSON from ${url}`);
         err.cause = parseErr; err.status = res.status;
         throw err;
@@ -92,32 +104,91 @@
         throw err;
       }
 
+      API_AVAILABLE = true;
       try { sessionStorage.setItem(url, JSON.stringify(data)); } catch {}
       return data;
+      
     } catch (err) {
       clearTimeout(timer);
       const msg = (err && err.message) ? err.message : String(err);
+      
+      // Retry logic for network/timeout errors
       if (retry > 0 && (err.name === 'AbortError' || /Network/i.test(msg))) {
         await new Promise(r => setTimeout(r, 150 * (2 - retry)));
-        return fetchJson(path, { method, headers, body, timeout, retry: retry - 1 });
+        return fetchJson(path, { method, headers, body, timeout, retry: retry - 1, fallback });
       }
+      
+      // Return fallback if available
+      if (fallback) {
+        API_AVAILABLE = false;
+        console.warn(`[API] Error for ${url}, using fallback:`, err.message);
+        return fallback;
+      }
+      
       throw err;
     }
   }
 
-  // ---- API Endpunkte ----
-  async function self()          { return fetchJson('/self'); }
-  async function sparkToday()    { return fetchJson('/spark/today'); }
-  async function news(params={}) { const s = new URLSearchParams(params); return fetchJson('/news' + (s.toString()?`?${s}`:'')); }
-  async function tips()          { return fetchJson('/tips'); }
+  // ---- API Endpunkte mit Fallbacks ----
+  async function self() { 
+    return fetchJson('/self', { 
+      fallback: { 
+        ok: false, 
+        version: 'offline',
+        ui: { modalShade: 0.6, removeNavSound: false },
+        life: { extendClick: 2000, maxExtends: 3 }
+      } 
+    }); 
+  }
+  
+  async function sparkToday() { 
+    return fetchJson('/spark/today', { 
+      fallback: { 
+        title: 'Offline Modus',
+        text: 'Das Backend ist aktuell nicht erreichbar. Die Seite funktioniert im reduzierten Modus.'
+      } 
+    }); 
+  }
+  
+  async function news(params={}) { 
+    const s = new URLSearchParams(params); 
+    return fetchJson('/news' + (s.toString()?`?${s}`:''), {
+      fallback: {
+        items: [
+          {
+            title: 'Backend nicht verfügbar',
+            url: '#',
+            summary: 'Die News werden geladen, sobald das Backend wieder erreichbar ist.',
+            source: 'System'
+          }
+        ]
+      }
+    });
+  }
+  
+  async function tips() { 
+    return fetchJson('/tips', {
+      fallback: {
+        items: window.TIPS_DATA || []
+      }
+    }); 
+  }
 
   const API = Object.freeze({
     base: () => API_BASE,
     setBase: setApiBase,
-    fetchJson, getJson: fetchJson, // Back-Compat
-    self, sparkToday, news, tips
+    fetchJson, 
+    getJson: fetchJson, // Back-Compat
+    isAvailable: () => API_AVAILABLE,
+    self, 
+    sparkToday, 
+    news, 
+    tips
   });
 
   window.API = API;
   window.getJson = fetchJson; // Back-Compat für bestehendes Frontend
+  
+  // Log API status on load
+  console.log('[API] Initialized with base:', API_BASE);
 })();

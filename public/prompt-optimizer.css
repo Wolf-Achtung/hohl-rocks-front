@@ -1,0 +1,518 @@
+/**
+ * Prompt Optimizer Styles
+ * Glasmorphism design with score comparison and before/after view
+ */
+
+/* ============================================
+   PROMPT OPTIMIZER SECTION
+   ============================================ */
+
+.prompt-optimizer-section {
+    max-width: 1200px;
+    margin: 4rem auto;
+    padding: 0 2rem;
+}
+
+.prompt-optimizer-container {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.prompt-optimizer-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.prompt-optimizer-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
+}
+
+.prompt-optimizer-header p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   INPUT AREA
+   ============================================ */
+
+.prompt-input-area {
+    margin-bottom: 2rem;
+}
+
+#prompt-input-text {
+    width: 100%;
+    min-height: 120px;
+    padding: 1.5rem;
+    font-size: 1rem;
+    font-family: inherit;
+    line-height: 1.6;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+#prompt-input-text:focus {
+    outline: none;
+    border-color: #f5576c;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(245, 87, 108, 0.1);
+}
+
+#prompt-input-text::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.input-hint {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+#optimize-prompt-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+#optimize-prompt-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(245, 87, 108, 0.4);
+}
+
+#optimize-prompt-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+#optimize-prompt-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#optimize-prompt-btn .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ============================================
+   RESULTS AREA
+   ============================================ */
+
+#optimizer-results {
+    display: none;
+    margin-top: 2rem;
+}
+
+.optimizer-result {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* ============================================
+   SCORE COMPARISON
+   ============================================ */
+
+.score-comparison {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.score-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    min-width: 180px;
+    transition: all 0.3s ease;
+}
+
+.score-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.score-card.improved {
+    border-color: rgba(81, 207, 102, 0.3);
+    background: rgba(81, 207, 102, 0.05);
+}
+
+.score-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.score-value {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.score-arrow {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+   ANALYSIS GRID
+   ============================================ */
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.analysis-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.analysis-card.problems {
+    border-left: 3px solid #ff6b6b;
+}
+
+.analysis-card.improvements {
+    border-left: 3px solid #51cf66;
+}
+
+.analysis-card h3 {
+    font-size: 1.1rem;
+    margin: 0 0 1rem 0;
+    color: #fff;
+}
+
+.analysis-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.analysis-card li {
+    padding: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.analysis-card li:last-child {
+    border-bottom: none;
+}
+
+/* ============================================
+   PROMPT COMPARISON
+   ============================================ */
+
+.prompt-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.prompt-box {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.prompt-box.original-prompt {
+    border-left: 3px solid #ff922b;
+}
+
+.prompt-box.improved-prompt {
+    border-left: 3px solid #51cf66;
+}
+
+.prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.prompt-header h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #fff;
+}
+
+.copy-btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-btn-small:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.prompt-text {
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    flex: 1;
+}
+
+/* ============================================
+   EXPLANATION BOX
+   ============================================ */
+
+.explanation-box {
+    background: rgba(245, 87, 108, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(245, 87, 108, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.explanation-box h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.75rem 0;
+    color: #fff;
+}
+
+.explanation-box p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+}
+
+/* ============================================
+   ACTION BUTTONS
+   ============================================ */
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.primary-btn,
+.secondary-btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border: none;
+    color: #fff;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(245, 87, 108, 0.4);
+}
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.optimizer-loading {
+    text-align: center;
+    padding: 3rem;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #f5576c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
+}
+
+.optimizer-loading p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1.5rem;
+}
+
+.loading-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.loading-steps .step {
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.loading-steps .step.active {
+    background: rgba(245, 87, 108, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+
+.optimizer-error {
+    text-align: center;
+    padding: 3rem;
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.optimizer-error h3 {
+    font-size: 1.5rem;
+    color: #ff6b6b;
+    margin-bottom: 0.5rem;
+}
+
+.optimizer-error p {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .prompt-optimizer-container {
+        padding: 2rem 1.5rem;
+    }
+
+    .prompt-optimizer-header h2 {
+        font-size: 2rem;
+    }
+
+    .score-comparison {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .score-arrow {
+        transform: rotate(90deg);
+    }
+
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .prompt-comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+    }
+}

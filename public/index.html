@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="/css/spark.css" />
     <link rel="stylesheet" href="/modal-glassmorphism.css" />
     <link rel="stylesheet" href="/prompt-generator.css" />
+    <link rel="stylesheet" href="/prompt-optimizer.css" />
 
     <style>
       /* Base Layout */
@@ -331,6 +332,36 @@
       </div>
     </section>
 
+    <!-- Prompt Optimizer Section -->
+    <section class="prompt-optimizer-section">
+      <div class="prompt-optimizer-container">
+        
+        <!-- Header -->
+        <div class="prompt-optimizer-header">
+          <h2>⚡ Prompt Optimizer</h2>
+          <p>Gib einen Prompt ein und erhalte eine verbesserte Version mit Score und Analyse</p>
+        </div>
+
+        <!-- Input Area -->
+        <div class="prompt-input-area">
+          <textarea 
+            id="prompt-input-text" 
+            placeholder="z.B. 'Schreib mir was über KI' oder 'Erkläre Machine Learning'"
+            rows="5"
+            maxlength="1000"
+          ></textarea>
+          <div class="input-hint">Tipp: Drücke Strg+Enter (oder Cmd+Enter) zum Optimieren</div>
+          <button id="optimize-prompt-btn" type="button">
+            ⚡ Optimieren
+          </button>
+        </div>
+
+        <!-- Results Area -->
+        <div id="optimizer-results"></div>
+
+      </div>
+    </section>
+
     <!-- Overlays -->
     
     <!-- Tips Overlay -->
@@ -441,5 +472,8 @@
     
     <!-- Prompt Generator -->
     <script src="/prompt-generator.js"></script>
+    
+    <!-- Prompt Optimizer -->
+    <script src="/prompt-optimizer.js"></script>
   </body>
 </html>

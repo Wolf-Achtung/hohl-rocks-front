@@ -1,8 +1,74 @@
 [
-  {"title":"European AI Act – Ueberblick & Status", "url":"https://digital-strategy.ec.europa.eu/en/policies/european-ai-act", "why":"EU"},
-  {"title":"OpenAI Blog – Aktuelle Ankuendigungen", "url":"https://openai.com/blog", "why":"OpenAI"},
-  {"title":"Google AI Blog", "url":"https://ai.googleblog.com/", "why":"Google"},
-  {"title":"DeepMind – Research & News", "url":"https://deepmind.google/discover/", "why":"DeepMind"},
-  {"title":"Hugging Face Blog", "url":"https://huggingface.co/blog", "why":"Hugging Face"},
-  {"title":"NVIDIA AI Blog", "url":"https://blogs.nvidia.com/", "why":"NVIDIA"}
+  {
+    "title": "OpenAI Blog – Neueste Entwicklungen",
+    "url": "https://openai.com/blog",
+    "why": "GPT-4, ChatGPT, DALL-E Updates",
+    "summary": "Offizielle Ankündigungen zu GPT-4, ChatGPT und anderen OpenAI-Produkten"
+  },
+  {
+    "title": "Anthropic News – Claude Updates",
+    "url": "https://www.anthropic.com/news",
+    "why": "Claude 3 Opus, Sonnet, Haiku",
+    "summary": "Neueste Updates zu Claude-Modellen und Anthropics Forschung"
+  },
+  {
+    "title": "Google AI Blog – Gemini & Bard",
+    "url": "https://blog.google/technology/ai/",
+    "why": "Gemini, Bard, Google AI",
+    "summary": "Googles neueste KI-Innovationen und Forschungsergebnisse"
+  },
+  {
+    "title": "Hugging Face Blog – Open Source AI",
+    "url": "https://huggingface.co/blog",
+    "why": "Open Source Modelle & Tools",
+    "summary": "Community-driven AI: Neue Modelle, Datasets und ML-Tools"
+  },
+  {
+    "title": "The Batch by deeplearning.ai",
+    "url": "https://www.deeplearning.ai/the-batch/",
+    "why": "Andrew Ng's AI Newsletter",
+    "summary": "Wöchentlicher Überblick über wichtige AI-Entwicklungen weltweit"
+  },
+  {
+    "title": "MIT Technology Review AI",
+    "url": "https://www.technologyreview.com/topic/artificial-intelligence/",
+    "why": "Investigativer AI-Journalismus",
+    "summary": "Kritische Analyse von KI-Trends, Ethics und Business Impact"
+  },
+  {
+    "title": "Papers with Code – Latest Research",
+    "url": "https://paperswithcode.com/latest",
+    "why": "Neueste AI-Paper mit Code",
+    "summary": "Aktuelle Forschungspapiere mit Implementierungen und Benchmarks"
+  },
+  {
+    "title": "EU AI Act – Offizielle Updates",
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+    "why": "EU Regulierung",
+    "summary": "Offizielle Informationen zum EU AI Act und dessen Umsetzung"
+  },
+  {
+    "title": "Ars Technica AI",
+    "url": "https://arstechnica.com/ai/",
+    "why": "Tech News & Analysis",
+    "summary": "Technische Deep-Dives und kritische Berichterstattung über AI"
+  },
+  {
+    "title": "VentureBeat AI",
+    "url": "https://venturebeat.com/ai/",
+    "why": "AI Business & Startups",
+    "summary": "KI-Business-News, Startups und Enterprise-AI"
+  },
+  {
+    "title": "The Verge AI",
+    "url": "https://www.theverge.com/ai-artificial-intelligence",
+    "why": "Consumer AI & Culture",
+    "summary": "KI aus User-Perspektive: Products, Culture, Impact"
+  },
+  {
+    "title": "AI Alignment Forum",
+    "url": "https://www.alignmentforum.org/",
+    "why": "AI Safety & Alignment",
+    "summary": "Diskussionen über AI Safety, Alignment und existenzielle Risiken"
+  }
 ]

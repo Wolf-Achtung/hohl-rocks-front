@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/css/shimmer-effect.css" />
     <link rel="stylesheet" href="/css/spark.css" />
     <link rel="stylesheet" href="/modal-glassmorphism.css" />
+    <link rel="stylesheet" href="/prompt-generator.css" />
 
     <style>
       /* Base Layout */
@@ -300,6 +301,36 @@
       <p class="hero-sub">Interaktive KI-Prompt-Assistenten • Täglich neue Challenges • Professional AI Tools</p>
     </main>
 
+    <!-- Prompt Generator Section -->
+    <section class="prompt-generator-section">
+      <div class="prompt-generator-container">
+        
+        <!-- Header -->
+        <div class="prompt-generator-header">
+          <h2>✨ Live Prompt Generator</h2>
+          <p>Gib ein Thema ein und erhalte 5 verschiedene Prompt-Styles – von Executive bis Expert</p>
+        </div>
+
+        <!-- Input Area -->
+        <div class="prompt-input-area">
+          <input 
+            type="text" 
+            id="prompt-topic-input" 
+            placeholder="z.B. Künstliche Intelligenz im Marketing"
+            maxlength="200"
+            autocomplete="off"
+          />
+          <button id="generate-prompts-btn" type="button">
+            ✨ Generieren
+          </button>
+        </div>
+
+        <!-- Results Grid -->
+        <div id="prompt-results"></div>
+
+      </div>
+    </section>
+
     <!-- Overlays -->
     
     <!-- Tips Overlay -->
@@ -407,5 +438,8 @@
     <script type="module" src="/js/navigation-handler.js"></script>
     <script src="/js/tips-interact.js" defer></script>
     <script src="/js/news-render-fix.js" defer></script>
+    
+    <!-- Prompt Generator -->
+    <script src="/prompt-generator.js"></script>
   </body>
 </html>

@@ -1,9 +1,10 @@
 /**
- * tips-interact.js v3 - VERBESSERT
+ * tips-interact.js v3.1 - FIXED Event Propagation
  * - Zuverlässige Behandlung von KI-Tipps Overlay
  * - 'Öffnen' öffnet Modal mit Problem/Lösung + Prompt (copy)
  * - 'Prompt kopieren' kopiert direkt
  * - Funktioniert mit statischen TIPS_DATA
+ * - FIX: stopPropagation verhindert "Unknown action" Warnings
  */
 (function(){
   const root = document;
@@ -238,12 +239,11 @@
     
     const action = btn.dataset.action;
     const text = (btn.textContent || "").trim().toLowerCase();
-    
-    console.log('[tips-interact] Click detected:', {action, text});
 
     // 'Öffnen' button oder data-action="open-tip"
     if(action === "open-tip" || text === "öffnen"){
       e.preventDefault();
+      e.stopPropagation(); // ✅ FIX: Verhindert Navigation Handler
       
       const tipId = btn.dataset.tipId;
       const card = btn.closest(".tip-card, .card, .tip, li, article, section") || tipsOverlay;
@@ -263,6 +263,7 @@
     // 'Prompt kopieren' oder data-action="copy-tip"
     if(action === "copy-tip" || text === "prompt kopieren" || text === "link kopieren"){
       e.preventDefault();
+      e.stopPropagation(); // ✅ FIX: Verhindert Navigation Handler
       
       const tipId = btn.dataset.tipId;
       const card = btn.closest(".tip-card, .card, .tip, li, article, section") || tipsOverlay;
@@ -277,7 +278,7 @@
       }
       return;
     }
-  }, { passive:false }); // passive:false wegen preventDefault
+  }, { capture:true }); // ✅ FIX: capture phase statt bubble
 
   // Overlay Visibility Watcher (optional für zusätzliche Init-Logik)
   function watchOverlay(){
@@ -308,5 +309,5 @@
     window.addEventListener("load", ()=> setTimeout(watchOverlay, 200));
   }
   
-  console.log('[tips-interact] Module loaded and ready');
+  console.log('[tips-interact] Module loaded and ready (v3.1 - Event Propagation Fixed)');
 })();

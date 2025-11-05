@@ -148,6 +148,10 @@
         loadDaily();
         break;
         
+      case 'impressum':
+        openOverlay('ov-impressum');
+        break;
+        
       default:
         console.warn('[Nav] Unknown action:', action);
     }

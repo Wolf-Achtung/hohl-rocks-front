@@ -1,581 +1,523 @@
-// ========================================
-// FEATURE #4: DAILY AI CHALLENGE 🎮
-// JavaScript Logic
-// ========================================
+// ===================================================================
+// DAILY CHALLENGE - JavaScript
+// Features: API Integration, LocalStorage, Streak Tracking, Badge System
+// ===================================================================
 
-// Config
-const BACKEND_URL = 'https://hohl-rocks-back-production.up.railway.app';
-const STORAGE_KEY = 'dailyChallenge';
+// Configuration
+const API_BASE = 'https://hohl-rocks-back-production.up.railway.app';
 
-// ========================================
-// STATE MANAGEMENT
-// ========================================
+// State
+let currentChallenge = null;
+let selectedDifficulty = null;
+let todayDate = null;
 
-class ChallengeState {
-  constructor() {
-    this.load();
-  }
+// DOM Elements
+const loadingState = document.getElementById('loading-state');
+const challengeSelection = document.getElementById('challenge-selection');
+const challengeActive = document.getElementById('challenge-active');
+const challengeResult = document.getElementById('challenge-result');
+const historySection = document.getElementById('history-section');
 
-  load() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data) {
-      const parsed = JSON.parse(data);
-      this.stats = parsed.stats || this.getDefaultStats();
-      this.history = parsed.history || [];
-    } else {
-      this.stats = this.getDefaultStats();
-      this.history = [];
-    }
-  }
+// ===================================================================
+// INITIALIZATION
+// ===================================================================
 
-  getDefaultStats() {
-    return {
-      totalChallenges: 0,
-      currentStreak: 0,
-      longestStreak: 0,
-      lastCompletedDate: null,
-      totalScore: 0,
-      badges: {
-        gold: 0,
-        silver: 0,
-        bronze: 0
-      }
-    };
-  }
-
-  save() {
-    const data = {
-      stats: this.stats,
-      history: this.history
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }
-
-  addSubmission(submission) {
-    // Check if already completed today
-    const today = new Date().toISOString().split('T')[0];
-    if (this.stats.lastCompletedDate === today) {
-      // Already completed today - update instead
-      const todayIndex = this.history.findIndex(h => h.date === today);
-      if (todayIndex >= 0) {
-        this.history[todayIndex] = submission;
-      }
-    } else {
-      // New submission
-      this.history.push(submission);
-      this.stats.totalChallenges++;
-      
-      // Update streak
-      this.updateStreak(today);
-    }
-
-    // Update score & badges
-    this.stats.totalScore += submission.score;
-    if (submission.badge === 'Gold') this.stats.badges.gold++;
-    else if (submission.badge === 'Silver') this.stats.badges.silver++;
-    else if (submission.badge === 'Bronze') this.stats.badges.bronze++;
-
-    this.stats.lastCompletedDate = today;
-    this.save();
-  }
-
-  updateStreak(today) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-    if (this.stats.lastCompletedDate === yesterdayStr) {
-      // Streak continues
-      this.stats.currentStreak++;
-    } else if (this.stats.lastCompletedDate === today) {
-      // Already done today, keep streak
-    } else {
-      // Streak broken, start new
-      this.stats.currentStreak = 1;
-    }
-
-    // Update longest streak
-    if (this.stats.currentStreak > this.stats.longestStreak) {
-      this.stats.longestStreak = this.stats.currentStreak;
-    }
-  }
-
-  getAverageScore() {
-    if (this.stats.totalChallenges === 0) return 0;
-    return Math.round(this.stats.totalScore / this.stats.totalChallenges);
-  }
-}
-
-// Global State
-const challengeState = new ChallengeState();
-
-// ========================================
-// DOM ELEMENTS
-// ========================================
-
-const elements = {
-  // Challenge Info
-  challengeDate: document.getElementById('challenge-date'),
-  challengeNumber: document.getElementById('challenge-number'),
-  challengeType: document.getElementById('challenge-type'),
-  challengePrompt: document.getElementById('challenge-prompt'),
-  difficultyBadge: document.getElementById('difficulty-badge'),
-  categoryBadge: document.getElementById('category-badge'),
-  tipsList: document.getElementById('tips-list'),
-  
-  // Submission
-  submissionText: document.getElementById('submission-text'),
-  charCount: document.getElementById('char-count'),
-  submitBtn: document.getElementById('submit-solution-btn'),
-  
-  // Results
-  resultsCard: document.getElementById('results-card'),
-  scoreNumber: document.getElementById('score-number'),
-  badgeEarned: document.getElementById('badge-earned'),
-  feedbackText: document.getElementById('feedback-text'),
-  strengthsList: document.getElementById('strengths-list'),
-  improvementsList: document.getElementById('improvements-list'),
-  
-  // Actions
-  newSubmissionBtn: document.getElementById('new-submission-btn'),
-  shareResultBtn: document.getElementById('share-result-btn'),
-  
-  // Stats
-  streakCount: document.getElementById('streak-count'),
-  totalChallenges: document.getElementById('total-challenges'),
-  avgScore: document.getElementById('avg-score'),
-  goldBadges: document.getElementById('gold-badges'),
-  silverBadges: document.getElementById('silver-badges'),
-  bronzeBadges: document.getElementById('bronze-badges'),
-  
-  // Leaderboard
-  leaderboardList: document.getElementById('leaderboard-list'),
-  
-  // Overlays
-  loadingOverlay: document.getElementById('challenge-loading'),
-  toast: document.getElementById('challenge-toast')
-};
-
-// ========================================
-// INITIALIZE
-// ========================================
-
-async function initDailyChallenge() {
-  console.log('Initializing Daily Challenge...');
-  
-  // Load current challenge
-  await loadTodayChallenge();
-  
-  // Update stats display
-  updateStatsDisplay();
-  
-  // Load leaderboard
-  loadLeaderboard();
-  
-  // Setup event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  todayDate = getTodayDate();
+  loadStats();
+  checkIfCompletedToday();
+  loadChallenge();
   setupEventListeners();
-  
-  console.log('Daily Challenge initialized!');
+});
+
+// ===================================================================
+// DATE UTILITIES
+// ===================================================================
+
+function getTodayDate() {
+  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 }
 
-// ========================================
-// LOAD TODAY'S CHALLENGE
-// ========================================
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('de-DE', { 
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
 
-async function loadTodayChallenge() {
+// ===================================================================
+// LOCAL STORAGE MANAGEMENT
+// ===================================================================
+
+function getLocalData() {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/daily-challenge/get`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    return JSON.parse(localStorage.getItem('dailyChallengeData') || '{}');
+  } catch (error) {
+    console.error('Error reading localStorage:', error);
+    return {};
+  }
+}
 
+function saveLocalData(data) {
+  try {
+    localStorage.setItem('dailyChallengeData', JSON.stringify(data));
+  } catch (error) {
+    console.error('Error saving to localStorage:', error);
+  }
+}
+
+function checkIfCompletedToday() {
+  const data = getLocalData();
+  const today = getTodayDate();
+  
+  if (data.lastCompletedDate === today) {
+    // Already completed today!
+    const completedSection = document.getElementById('completed-today');
+    if (completedSection) {
+      document.getElementById('today-badge').textContent = getBadgeEmoji(data.lastBadge);
+      document.getElementById('today-score').textContent = `${data.lastScore}%`;
+      completedSection.style.display = 'block';
+    }
+    return true;
+  }
+  return false;
+}
+
+function getBadgeEmoji(badge) {
+  const badges = {
+    'gold': '🥇 Gold',
+    'silver': '🥈 Silver',
+    'bronze': '🥉 Bronze'
+  };
+  return badges[badge] || '🏆';
+}
+
+// ===================================================================
+// STATS MANAGEMENT
+// ===================================================================
+
+function loadStats() {
+  const data = getLocalData();
+  
+  // Calculate streak
+  const streak = calculateStreak(data);
+  document.getElementById('streak-count').textContent = streak;
+  
+  // Total badges
+  const totalBadges = (data.history || []).length;
+  document.getElementById('total-badges').textContent = totalBadges;
+  
+  // Completed count
+  document.getElementById('completed-count').textContent = totalBadges;
+}
+
+function calculateStreak(data) {
+  if (!data.history || data.history.length === 0) return 0;
+  
+  const today = new Date(getTodayDate());
+  let streak = 0;
+  let checkDate = new Date(today);
+  
+  // Sort history by date descending
+  const sortedHistory = [...data.history].sort((a, b) => 
+    new Date(b.date) - new Date(a.date)
+  );
+  
+  // Check consecutive days
+  for (const entry of sortedHistory) {
+    const entryDate = new Date(entry.date);
+    const diffDays = Math.floor((checkDate - entryDate) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0 || diffDays === 1) {
+      streak++;
+      checkDate = entryDate;
+    } else {
+      break;
+    }
+  }
+  
+  return streak;
+}
+
+function updateStats(badge, score) {
+  const data = getLocalData();
+  
+  // Update last completion
+  data.lastCompletedDate = getTodayDate();
+  data.lastBadge = badge;
+  data.lastScore = score;
+  
+  // Add to history
+  if (!data.history) data.history = [];
+  data.history.push({
+    date: getTodayDate(),
+    difficulty: selectedDifficulty,
+    badge: badge,
+    score: score,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Keep only last 90 days
+  if (data.history.length > 90) {
+    data.history = data.history.slice(-90);
+  }
+  
+  saveLocalData(data);
+  loadStats();
+}
+
+// ===================================================================
+// EVENT LISTENERS
+// ===================================================================
+
+function setupEventListeners() {
+  // Difficulty selection
+  document.querySelectorAll('.btn-select').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const difficulty = btn.dataset.difficulty;
+      startChallenge(difficulty);
+    });
+  });
+
+  // Back to selection
+  document.getElementById('back-to-selection')?.addEventListener('click', () => {
+    challengeActive.style.display = 'none';
+    challengeSelection.style.display = 'block';
+    selectedDifficulty = null;
+  });
+
+  // Answer input
+  const answerInput = document.getElementById('answer-input');
+  const submitBtn = document.getElementById('submit-answer-btn');
+  const charCount = document.getElementById('answer-chars');
+
+  answerInput?.addEventListener('input', () => {
+    const length = answerInput.value.length;
+    charCount.textContent = length;
+    submitBtn.disabled = length < 20;
+  });
+
+  // Submit answer
+  submitBtn?.addEventListener('click', submitAnswer);
+
+  // View history
+  document.getElementById('view-history-btn')?.addEventListener('click', showHistory);
+  
+  // Close history
+  document.getElementById('close-history-btn')?.addEventListener('click', () => {
+    historySection.style.display = 'none';
+  });
+
+  // New challenge tomorrow
+  document.getElementById('new-challenge-tomorrow-btn')?.addEventListener('click', () => {
+    window.location.reload();
+  });
+}
+
+// ===================================================================
+// LOAD CHALLENGE
+// ===================================================================
+
+async function loadChallenge() {
+  try {
+    console.log('🎯 Loading Daily Challenge...');
+    loadingState.style.display = 'block';
+    challengeSelection.style.display = 'none';
+
+    const url = `${API_BASE}/api/daily-challenge`;
+    console.log('📡 Fetching from:', url);
+    
+    const response = await fetch(url);
+    
+    console.log('📥 Response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('❌ Response not OK:', errorText);
+      throw new Error(`Failed to load challenge: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('✅ Challenge data received:', data);
     
-    if (data.success) {
-      displayChallenge(data.challenge);
-    } else {
-      throw new Error(data.error || 'Unknown error');
-    }
-    
+    currentChallenge = data.challenge;
+
+    // Display challenge
+    displayChallengeSelection(currentChallenge);
+
+    loadingState.style.display = 'none';
+    challengeSelection.style.display = 'block';
+    console.log('✨ Challenge displayed successfully!');
+
   } catch (error) {
-    console.error('Failed to load challenge:', error);
-    showToast('❌ Fehler beim Laden der Challenge', 'error');
-    
-    // Display fallback challenge
-    displayFallbackChallenge();
+    console.error('💥 Error loading challenge:', error);
+    loadingState.innerHTML = `
+      <div class="loader"></div>
+      <p style="color: #ef4444; margin-top: 20px;">❌ Fehler beim Laden der Challenge</p>
+      <p style="font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 10px;">
+        ${error.message}<br>
+        Backend: ${API_BASE}
+      </p>
+      <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        🔄 Neu versuchen
+      </button>
+    `;
   }
 }
 
-function displayChallenge(challenge) {
-  // Date & Number
-  const date = new Date(challenge.date);
-  elements.challengeDate.textContent = date.toLocaleDateString('de-DE', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
-  elements.challengeNumber.textContent = `#${challenge.challengeNumber}`;
-  
-  // Challenge Info
-  elements.challengeType.textContent = challenge.type;
-  elements.challengePrompt.textContent = challenge.prompt;
-  elements.difficultyBadge.textContent = challenge.difficulty;
-  elements.categoryBadge.textContent = challenge.category;
-  
-  // Tips
-  elements.tipsList.innerHTML = '';
-  challenge.tips.forEach(tip => {
-    const li = document.createElement('li');
-    li.textContent = tip;
-    elements.tipsList.appendChild(li);
-  });
+function displayChallengeSelection(challenge) {
+  // Theme
+  document.getElementById('challenge-theme').textContent = challenge.theme;
 
-  // Store current challenge for submission
-  window.currentChallenge = challenge;
+  // Difficulties
+  ['beginner', 'intermediate', 'expert'].forEach(difficulty => {
+    const data = challenge.challenges[difficulty];
+    document.getElementById(`title-${difficulty}`).textContent = data.title;
+    document.getElementById(`desc-${difficulty}`).textContent = data.description;
+    document.getElementById(`time-${difficulty}`).textContent = data.estimatedTime;
+  });
 }
 
-function displayFallbackChallenge() {
-  const fallback = {
-    date: new Date().toISOString().split('T')[0],
-    challengeNumber: 1,
-    type: 'Quick Writing',
-    prompt: 'Schreibe eine kurze, kreative Antwort auf die Frage: Was würdest du tun, wenn du für einen Tag unbegrenzte Ressourcen hättest?',
-    category: 'Creative',
-    difficulty: 'Easy',
-    tips: [
-      'Sei kreativ und denke groß',
-      'Beschreibe konkrete Aktionen',
-      'Zeige Persönlichkeit'
-    ]
-  };
-  
-  displayChallenge(fallback);
+// ===================================================================
+// START CHALLENGE
+// ===================================================================
+
+function startChallenge(difficulty) {
+  selectedDifficulty = difficulty;
+  const challengeData = currentChallenge.challenges[difficulty];
+
+  // Update UI
+  challengeSelection.style.display = 'none';
+  challengeActive.style.display = 'block';
+
+  // Set difficulty badge styling
+  const difficultyBadge = document.getElementById('active-difficulty');
+  difficultyBadge.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+  difficultyBadge.className = `difficulty-badge ${difficulty}`;
+
+  // Set challenge content
+  document.getElementById('active-title').textContent = challengeData.title;
+  document.getElementById('active-task').textContent = challengeData.task;
+  document.getElementById('active-hint').textContent = challengeData.hint;
+
+  // Clear answer
+  document.getElementById('answer-input').value = '';
+  document.getElementById('answer-chars').textContent = '0';
+  document.getElementById('submit-answer-btn').disabled = true;
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ========================================
-// EVENT LISTENERS
-// ========================================
+// ===================================================================
+// SUBMIT ANSWER
+// ===================================================================
 
-function setupEventListeners() {
-  // Character Counter
-  elements.submissionText.addEventListener('input', () => {
-    const length = elements.submissionText.value.length;
-    elements.charCount.textContent = length;
-  });
-  
-  // Submit Solution
-  elements.submitBtn.addEventListener('click', handleSubmitSolution);
-  
-  // New Submission
-  elements.newSubmissionBtn.addEventListener('click', () => {
-    elements.resultsCard.classList.add('hidden');
-    elements.submissionText.value = '';
-    elements.charCount.textContent = '0';
-    elements.submissionText.focus();
-  });
-  
-  // Share Result
-  elements.shareResultBtn.addEventListener('click', handleShareResult);
-}
+async function submitAnswer() {
+  const answer = document.getElementById('answer-input').value.trim();
+  const task = currentChallenge.challenges[selectedDifficulty].task;
 
-// ========================================
-// SUBMIT SOLUTION
-// ========================================
-
-async function handleSubmitSolution() {
-  const submission = elements.submissionText.value.trim();
-  
-  // Validation
-  if (submission.length < 10) {
-    showToast('❌ Lösung zu kurz (min. 10 Zeichen)', 'error');
+  if (answer.length < 20) {
+    showToast('Antwort zu kurz (min. 20 Zeichen)', 'error');
     return;
   }
-  
-  if (!window.currentChallenge) {
-    showToast('❌ Keine Challenge geladen', 'error');
-    return;
-  }
-  
-  // Disable button
-  elements.submitBtn.disabled = true;
-  elements.submitBtn.innerHTML = '<span class="btn-icon">⏳</span><span class="btn-text">Wird bewertet...</span>';
-  
-  // Show loading overlay
-  elements.loadingOverlay.classList.remove('hidden');
-  
+
   try {
-    const response = await fetch(`${BACKEND_URL}/api/daily-challenge/submit`, {
+    // Disable button
+    const submitBtn = document.getElementById('submit-answer-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Bewerte...';
+
+    // Call API
+    const response = await fetch(`${API_BASE}/api/submit-challenge`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        submission: submission,
-        challengeType: window.currentChallenge.type,
-        challengePrompt: window.currentChallenge.prompt
+        difficulty: selectedDifficulty,
+        task: task,
+        answer: answer
       })
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
+      throw new Error('Failed to submit challenge');
     }
 
     const data = await response.json();
-    
-    if (data.success) {
-      displayResults(data.evaluation, data.submission);
-      
-      // Save to state
-      challengeState.addSubmission({
-        date: window.currentChallenge.date,
-        challengeType: window.currentChallenge.type,
-        submission: submission,
-        score: data.evaluation.score,
-        badge: data.evaluation.badge,
-        timestamp: new Date().toISOString()
-      });
-      
-      // Update stats display
-      updateStatsDisplay();
-      
-      showToast('✅ Lösung erfolgreich bewertet!', 'success');
-    } else {
-      throw new Error(data.error || 'Evaluation failed');
-    }
-    
+    const evaluation = data.evaluation;
+
+    // Update stats
+    updateStats(evaluation.badge, evaluation.score);
+
+    // Show result
+    displayResult(evaluation);
+
+    // Hide active challenge
+    challengeActive.style.display = 'none';
+    challengeResult.style.display = 'block';
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
   } catch (error) {
-    console.error('Submission error:', error);
-    showToast('❌ Fehler bei der Bewertung', 'error');
-    
-    // Display fallback result
-    displayFallbackResult(submission);
-    
-  } finally {
-    // Hide loading overlay
-    elements.loadingOverlay.classList.add('hidden');
+    console.error('Error submitting answer:', error);
+    showToast('Fehler beim Einreichen. Bitte versuche es erneut.', 'error');
     
     // Re-enable button
-    elements.submitBtn.disabled = false;
-    elements.submitBtn.innerHTML = '<span class="btn-icon">🚀</span><span class="btn-text">Lösung Einreichen & Bewerten</span>';
+    const submitBtn = document.getElementById('submit-answer-btn');
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🚀 Antwort einreichen';
   }
 }
 
-// ========================================
-// DISPLAY RESULTS
-// ========================================
+// ===================================================================
+// DISPLAY RESULT
+// ===================================================================
 
-function displayResults(evaluation, submission) {
-  // Score
-  elements.scoreNumber.textContent = evaluation.score;
-  
-  // Badge
-  const badgeIcon = evaluation.badge === 'Gold' ? '🥇' : 
-                    evaluation.badge === 'Silver' ? '🥈' : '🥉';
-  elements.badgeEarned.querySelector('.badge-icon').textContent = badgeIcon;
-  elements.badgeEarned.querySelector('.badge-name').textContent = evaluation.badge;
-  
-  // Update score circle color based on badge
-  const scoreCircle = document.getElementById('score-circle');
-  if (evaluation.badge === 'Gold') {
-    scoreCircle.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
-  } else if (evaluation.badge === 'Silver') {
-    scoreCircle.style.background = 'linear-gradient(135deg, #94a3b8 0%, #64748b 100%)';
-  } else {
-    scoreCircle.style.background = 'linear-gradient(135deg, #cd7f32 0%, #a0522d 100%)';
-  }
-  
-  // Feedback
-  elements.feedbackText.textContent = evaluation.feedback;
-  
-  // Strengths
-  elements.strengthsList.innerHTML = '';
-  evaluation.strengths.forEach(strength => {
-    const li = document.createElement('li');
-    li.textContent = strength;
-    elements.strengthsList.appendChild(li);
-  });
-  
-  // Improvements
-  elements.improvementsList.innerHTML = '';
-  evaluation.improvements.forEach(improvement => {
-    const li = document.createElement('li');
-    li.textContent = improvement;
-    elements.improvementsList.appendChild(li);
-  });
-  
-  // Show results card
-  elements.resultsCard.classList.remove('hidden');
-  
-  // Scroll to results
-  setTimeout(() => {
-    elements.resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
-}
-
-function displayFallbackResult(submission) {
-  const fallbackEval = {
-    score: 60,
-    badge: 'Silver',
-    feedback: 'Technischer Fehler bei der Bewertung, aber deine Teilnahme zählt!',
-    strengths: [
-      'Du hast teilgenommen',
-      'Das ist der wichtigste Schritt'
-    ],
-    improvements: [
-      'Versuche es morgen wieder'
-    ]
+function displayResult(evaluation) {
+  // Badge icon and name
+  const badgeIcons = {
+    'gold': '🥇',
+    'silver': '🥈',
+    'bronze': '🥉'
   };
-  
-  displayResults(fallbackEval, { text: submission });
+
+  document.getElementById('result-badge-icon').textContent = badgeIcons[evaluation.badge];
+  const badgeName = document.getElementById('result-badge-name');
+  badgeName.textContent = evaluation.badge.charAt(0).toUpperCase() + evaluation.badge.slice(1);
+  badgeName.className = `badge-name ${evaluation.badge}`;
+
+  // Score
+  document.getElementById('result-score-value').textContent = evaluation.score;
+
+  // Summary
+  document.getElementById('result-summary-text').textContent = evaluation.summary;
+
+  // Positive feedback
+  const positiveList = document.getElementById('feedback-positive');
+  positiveList.innerHTML = '';
+  evaluation.feedback.positive.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    positiveList.appendChild(li);
+  });
+
+  // Improvements
+  const improvementsList = document.getElementById('feedback-improvements');
+  improvementsList.innerHTML = '';
+  evaluation.feedback.improvements.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    improvementsList.appendChild(li);
+  });
+
+  // Show toast
+  showToast(`${badgeIcons[evaluation.badge]} ${evaluation.badge.toUpperCase()} Badge verdient!`);
 }
 
-// ========================================
-// UPDATE STATS DISPLAY
-// ========================================
+// ===================================================================
+// HISTORY
+// ===================================================================
 
-function updateStatsDisplay() {
-  elements.streakCount.textContent = challengeState.stats.currentStreak;
-  elements.totalChallenges.textContent = challengeState.stats.totalChallenges;
-  elements.avgScore.textContent = challengeState.getAverageScore();
-  elements.goldBadges.textContent = challengeState.stats.badges.gold;
-  elements.silverBadges.textContent = challengeState.stats.badges.silver;
-  elements.bronzeBadges.textContent = challengeState.stats.badges.bronze;
-}
+function showHistory() {
+  const data = getLocalData();
+  const history = data.history || [];
 
-// ========================================
-// LEADERBOARD
-// ========================================
+  // Hide result, show history
+  challengeResult.style.display = 'none';
+  historySection.style.display = 'block';
 
-async function loadLeaderboard() {
-  try {
-    const response = await fetch(`${BACKEND_URL}/api/daily-challenge/leaderboard`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
+  // Count badges
+  const badgeCounts = { gold: 0, silver: 0, bronze: 0 };
+  history.forEach(entry => {
+    if (badgeCounts[entry.badge] !== undefined) {
+      badgeCounts[entry.badge]++;
     }
+  });
 
-    const data = await response.json();
-    
-    if (data.success) {
-      displayLeaderboard(data.leaderboard);
-    } else {
-      throw new Error(data.error || 'Unknown error');
-    }
-    
-  } catch (error) {
-    console.error('Failed to load leaderboard:', error);
-    displayMockLeaderboard();
-  }
-}
+  document.getElementById('gold-count').textContent = badgeCounts.gold;
+  document.getElementById('silver-count').textContent = badgeCounts.silver;
+  document.getElementById('bronze-count').textContent = badgeCounts.bronze;
 
-function displayLeaderboard(leaderboard) {
-  elements.leaderboardList.innerHTML = '';
-  
-  leaderboard.forEach(player => {
-    const item = document.createElement('div');
-    item.className = 'leaderboard-item';
-    item.innerHTML = `
-      <span class="rank">#${player.rank}</span>
-      <span class="username">${player.username}</span>
-      <span class="player-score">${player.score}</span>
+  // Render history list
+  const historyList = document.getElementById('history-list');
+  historyList.innerHTML = '';
+
+  if (history.length === 0) {
+    historyList.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
+        Noch keine Challenges gelöst. Zeit zu starten! 🚀
+      </div>
     `;
-    elements.leaderboardList.appendChild(item);
-  });
-}
-
-function displayMockLeaderboard() {
-  const mockData = [
-    { rank: 1, username: 'PromptMaster_42', score: 950 },
-    { rank: 2, username: 'AI_Enthusiast', score: 890 },
-    { rank: 3, username: 'CreativeWriter', score: 850 },
-    { rank: 4, username: 'TechGuru', score: 820 },
-    { rank: 5, username: 'StartupFounder', score: 780 }
-  ];
-  
-  displayLeaderboard(mockData);
-}
-
-// ========================================
-// SHARE RESULT
-// ========================================
-
-function handleShareResult() {
-  const score = elements.scoreNumber.textContent;
-  const badge = elements.badgeEarned.querySelector('.badge-name').textContent;
-  const challengeType = window.currentChallenge?.type || 'Challenge';
-  
-  const shareText = `🎮 Daily AI Challenge\n${challengeType}\n\n🏆 Score: ${score}/100\n⭐ Badge: ${badge}\n\n#DailyAIChallenge #hohl.rocks`;
-  
-  // Try native share API
-  if (navigator.share) {
-    navigator.share({
-      title: 'Daily AI Challenge Result',
-      text: shareText
-    }).then(() => {
-      showToast('✅ Geteilt!', 'success');
-    }).catch(err => {
-      console.error('Share failed:', err);
-      copyToClipboard(shareText);
-    });
-  } else {
-    // Fallback: Copy to clipboard
-    copyToClipboard(shareText);
+    return;
   }
-}
 
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('📋 In Zwischenablage kopiert!', 'success');
-  }).catch(err => {
-    console.error('Copy failed:', err);
-    showToast('❌ Kopieren fehlgeschlagen', 'error');
+  // Sort by date descending
+  const sortedHistory = [...history].sort((a, b) => 
+    new Date(b.date) - new Date(a.date)
+  );
+
+  sortedHistory.forEach(entry => {
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    
+    const badgeEmojis = {
+      'gold': '🥇',
+      'silver': '🥈',
+      'bronze': '🥉'
+    };
+
+    item.innerHTML = `
+      <div class="history-item-info">
+        <div class="history-date">${formatDate(entry.date)}</div>
+        <div class="history-difficulty">${entry.difficulty.charAt(0).toUpperCase() + entry.difficulty.slice(1)}</div>
+      </div>
+      <div class="history-item-badge">
+        <span class="history-badge-icon">${badgeEmojis[entry.badge]}</span>
+        <span class="history-score">${entry.score}%</span>
+      </div>
+    `;
+    
+    historyList.appendChild(item);
   });
 }
 
-// ========================================
+// ===================================================================
 // TOAST NOTIFICATION
-// ========================================
+// ===================================================================
 
 function showToast(message, type = 'success') {
-  const toast = elements.toast;
-  const icon = type === 'success' ? '✅' : '❌';
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toast-message');
   
-  toast.querySelector('.toast-icon').textContent = icon;
-  toast.querySelector('.toast-message').textContent = message;
-  toast.classList.remove('hidden');
-  
+  toastMessage.textContent = message;
+
+  if (type === 'error') {
+    toast.style.background = 'rgba(239, 68, 68, 0.95)';
+  } else {
+    toast.style.background = 'rgba(16, 185, 129, 0.95)';
+  }
+
+  toast.style.display = 'block';
+
   setTimeout(() => {
-    toast.classList.add('hidden');
+    toast.style.display = 'none';
   }, 3000);
 }
 
-// ========================================
-// INITIALIZE ON DOM READY
-// ========================================
+// ===================================================================
+// ERROR HANDLING
+// ===================================================================
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initDailyChallenge);
-} else {
-  initDailyChallenge();
-}
+window.addEventListener('error', (e) => {
+  console.error('Global error:', e.error);
+});
 
-// ========================================
-// Export for debugging
-// ========================================
-window.DailyChallenge = {
-  state: challengeState,
-  reload: loadTodayChallenge,
-  resetStats: () => {
-    localStorage.removeItem(STORAGE_KEY);
-    window.location.reload();
-  }
-};
-
-console.log('Daily Challenge script loaded ✅');
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('Unhandled promise rejection:', e.reason);
+});

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Library | hohl.rocks</title>
+    <link rel="stylesheet" href="prompt-library.css">
+</head>
+<body>
+    <!-- Background Gradient -->
+    <div class="background-gradient"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    <span class="emoji">📚</span>
+                    Prompt Library
+                </h1>
+                <p class="subtitle">
+                    Entdecke, nutze & teile die besten Prompts der Community
+                </p>
+            </div>
+        </header>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    class="search-input" 
+                    placeholder="🔍 Suche nach Prompts, Tags, Kategorien..."
+                >
+            </div>
+
+            <!-- Category Filter -->
+            <div class="category-filter">
+                <button class="category-btn active" data-category="all">
+                    Alle
+                </button>
+                <button class="category-btn" data-category="creative">
+                    🎨 Creative
+                </button>
+                <button class="category-btn" data-category="business">
+                    💼 Business
+                </button>
+                <button class="category-btn" data-category="technical">
+                    ⚙️ Technical
+                </button>
+                <button class="category-btn" data-category="education">
+                    📚 Education
+                </button>
+                <button class="category-btn" data-category="writing">
+                    ✍️ Writing
+                </button>
+                <button class="category-btn" data-category="ai">
+                    🤖 AI
+                </button>
+            </div>
+
+            <!-- View Toggle -->
+            <div class="view-toggle">
+                <button id="featured-view" class="view-btn active">
+                    ⭐ Featured
+                </button>
+                <button id="community-view" class="view-btn">
+                    👥 Community
+                </button>
+                <button id="my-prompts-view" class="view-btn">
+                    💾 Meine Prompts
+                </button>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-number" id="total-prompts">30</div>
+                <div class="stat-label">Prompts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-categories">13</div>
+                <div class="stat-label">Kategorien</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-uses">45k+</div>
+                <div class="stat-label">Uses</div>
+            </div>
+        </section>
+
+        <!-- Prompts Grid -->
+        <section class="prompts-section">
+            <div id="prompts-grid" class="prompts-grid">
+                <!-- Prompts werden hier dynamisch geladen -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <div class="empty-icon">🔍</div>
+                <h3>Keine Prompts gefunden</h3>
+                <p>Versuche andere Suchbegriffe oder Filter</p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-state">
+                <div class="spinner"></div>
+                <p>Lade Prompts...</p>
+            </div>
+        </section>
+
+        <!-- Submit Section -->
+        <section class="submit-section">
+            <div class="submit-card">
+                <h2>
+                    <span class="emoji">✨</span>
+                    Eigenen Prompt teilen
+                </h2>
+                <p class="submit-description">
+                    Teile deinen besten Prompt mit der Community!
+                </p>
+                
+                <form id="submit-form" class="submit-form">
+                    <div class="form-group">
+                        <label for="prompt-title">Titel</label>
+                        <input 
+                            type="text" 
+                            id="prompt-title" 
+                            required
+                            placeholder="z.B. 'LinkedIn Post Formula'"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prompt-text">Prompt</label>
+                        <textarea 
+                            id="prompt-text" 
+                            required
+                            rows="6"
+                            placeholder="Dein Prompt hier..."
+                        ></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prompt-category">Kategorie</label>
+                            <select id="prompt-category" required>
+                                <option value="">Wähle Kategorie...</option>
+                                <option value="creative">🎨 Creative</option>
+                                <option value="business">💼 Business</option>
+                                <option value="technical">⚙️ Technical</option>
+                                <option value="education">📚 Education</option>
+                                <option value="writing">✍️ Writing</option>
+                                <option value="ai">🤖 AI</option>
+                                <option value="communication">💬 Communication</option>
+                                <option value="data">📊 Data</option>
+                                <option value="marketing">🎯 Marketing</option>
+                                <option value="productivity">🚀 Productivity</option>
+                                <option value="design">🎨 Design</option>
+                                <option value="innovation">💡 Innovation</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prompt-tags">Tags (komma-getrennt)</label>
+                            <input 
+                                type="text" 
+                                id="prompt-tags"
+                                placeholder="z.B. social, linkedin, content"
+                            >
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span>📤 Prompt Einreichen</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- Prompt Detail Modal -->
+    <div id="prompt-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <div class="modal-meta">
+                    <span class="category-badge" id="modal-category"></span>
+                    <span class="rating" id="modal-rating"></span>
+                    <span class="uses" id="modal-uses"></span>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="prompt-content">
+                    <label>Prompt:</label>
+                    <div id="modal-prompt" class="prompt-text"></div>
+                </div>
+
+                <div class="tags-container">
+                    <label>Tags:</label>
+                    <div id="modal-tags" class="tags"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="copy-modal-prompt" class="action-btn primary">
+                        📋 Kopieren
+                    </button>
+                    <button id="use-modal-prompt" class="action-btn">
+                        ✨ In Generator öffnen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- JavaScript -->
+    <script src="prompt-library.js"></script>
+</body>
+</html>

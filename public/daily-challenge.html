@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Challenge — hohl.rocks</title>
+  <meta name="description" content="Täglich neue KI-Challenge: Teste deine Skills und sammle Badges!">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/daily-challenge.css">
+</head>
+<body>
+  
+  <!-- Background Video -->
+  <div class="site-bg">
+    <video class="bg-video" autoplay loop muted playsinline>
+      <source src="/hohl-bg.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Main Container -->
+  <div class="challenge-container">
+    
+    <!-- Header -->
+    <header class="challenge-header">
+      <a href="/" class="back-link">← Zurück zu hohl.rocks</a>
+      <h1>🎯 Daily Challenge</h1>
+      <p class="challenge-subtitle">Täglich neue KI-Challenge · Sammle Badges · Halte deinen Streak!</p>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-info">
+          <span class="stat-label">Streak</span>
+          <span class="stat-value" id="streak-count">0</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-info">
+          <span class="stat-label">Total Badges</span>
+          <span class="stat-value" id="total-badges">0</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">📅</div>
+        <div class="stat-info">
+          <span class="stat-label">Completed</span>
+          <span class="stat-value" id="completed-count">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="loading-state">
+      <div class="loader"></div>
+      <p>Lade Challenge des Tages...</p>
+    </div>
+
+    <!-- Challenge Selection -->
+    <div id="challenge-selection" class="challenge-selection" style="display: none;">
+      
+      <div class="challenge-intro">
+        <h2>Heute's Thema: <span id="challenge-theme">Loading...</span></h2>
+        <p>Wähle deinen Schwierigkeitsgrad und zeig was du kannst!</p>
+      </div>
+
+      <!-- Difficulty Cards -->
+      <div class="difficulty-grid">
+        
+        <!-- Beginner -->
+        <div class="difficulty-card" data-difficulty="beginner">
+          <div class="difficulty-badge beginner">Beginner</div>
+          <h3 id="title-beginner">Loading...</h3>
+          <p class="difficulty-desc" id="desc-beginner">Loading...</p>
+          <div class="difficulty-meta">
+            <span class="meta-item">⏱️ <span id="time-beginner">10 Min</span></span>
+            <span class="meta-item">🏆 Bronze bis Silver</span>
+          </div>
+          <button class="btn-select" data-difficulty="beginner">
+            Wählen
+          </button>
+        </div>
+
+        <!-- Intermediate -->
+        <div class="difficulty-card" data-difficulty="intermediate">
+          <div class="difficulty-badge intermediate">Intermediate</div>
+          <h3 id="title-intermediate">Loading...</h3>
+          <p class="difficulty-desc" id="desc-intermediate">Loading...</p>
+          <div class="difficulty-meta">
+            <span class="meta-item">⏱️ <span id="time-intermediate">12 Min</span></span>
+            <span class="meta-item">🏆 Silver bis Gold</span>
+          </div>
+          <button class="btn-select" data-difficulty="intermediate">
+            Wählen
+          </button>
+        </div>
+
+        <!-- Expert -->
+        <div class="difficulty-card" data-difficulty="expert">
+          <div class="difficulty-badge expert">Expert</div>
+          <h3 id="title-expert">Loading...</h3>
+          <p class="difficulty-desc" id="desc-expert">Loading...</p>
+          <div class="difficulty-meta">
+            <span class="meta-item">⏱️ <span id="time-expert">15 Min</span></span>
+            <span class="meta-item">🏆 Gold anstreben!</span>
+          </div>
+          <button class="btn-select" data-difficulty="expert">
+            Wählen
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Already Completed Today -->
+      <div id="completed-today" class="completed-today" style="display: none;">
+        <div class="completed-icon">✅</div>
+        <h3>Challenge bereits erledigt!</h3>
+        <p>Komm morgen wieder für eine neue Challenge!</p>
+        <div class="today-result">
+          <span class="result-badge" id="today-badge">🥇 Gold</span>
+          <span class="result-score" id="today-score">95%</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Challenge Active -->
+    <div id="challenge-active" class="challenge-active" style="display: none;">
+      
+      <div class="challenge-info">
+        <button class="btn-back" id="back-to-selection">← Zurück zur Auswahl</button>
+        <div class="challenge-difficulty">
+          <span class="difficulty-badge" id="active-difficulty">Beginner</span>
+        </div>
+        <h2 id="active-title">Challenge Title</h2>
+        <p class="active-task" id="active-task">Task description...</p>
+        <div class="hint-box">
+          <strong>💡 Tipp:</strong> <span id="active-hint">Hint...</span>
+        </div>
+      </div>
+
+      <div class="answer-section">
+        <label for="answer-input">Deine Antwort:</label>
+        <textarea 
+          id="answer-input" 
+          placeholder="Gib hier deine Antwort ein... (min. 20 Zeichen)"
+          rows="10"
+          maxlength="5000"
+        ></textarea>
+        <div class="answer-footer">
+          <span class="char-count">
+            <span id="answer-chars">0</span> / 5000 Zeichen
+          </span>
+          <button id="submit-answer-btn" class="btn-submit" disabled>
+            🚀 Antwort einreichen
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Result Display -->
+    <div id="challenge-result" class="challenge-result" style="display: none;">
+      
+      <div class="result-header">
+        <div class="badge-display" id="result-badge-display">
+          <div class="badge-icon" id="result-badge-icon">🥇</div>
+          <div class="badge-name" id="result-badge-name">Gold</div>
+        </div>
+        <div class="result-score">
+          <span class="score-value" id="result-score-value">95</span>
+          <span class="score-label">Punkte</span>
+        </div>
+      </div>
+
+      <div class="result-summary">
+        <p id="result-summary-text">Great job! Your answer was excellent.</p>
+      </div>
+
+      <div class="result-feedback">
+        <div class="feedback-section positive">
+          <h4>✅ Was gut war:</h4>
+          <ul id="feedback-positive"></ul>
+        </div>
+        <div class="feedback-section improvements">
+          <h4>💡 Verbesserungsvorschläge:</h4>
+          <ul id="feedback-improvements"></ul>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button id="view-history-btn" class="btn-secondary">
+          📊 Historie ansehen
+        </button>
+        <button id="new-challenge-tomorrow-btn" class="btn-primary">
+          ✨ Morgen wiederkommen
+        </button>
+      </div>
+
+    </div>
+
+    <!-- History Section -->
+    <div id="history-section" class="history-section" style="display: none;">
+      
+      <div class="history-header">
+        <h2>📊 Deine Challenge-Historie</h2>
+        <button id="close-history-btn" class="btn-close">✕</button>
+      </div>
+
+      <div class="history-stats">
+        <div class="history-stat">
+          <span class="stat-icon">🥇</span>
+          <span class="stat-count" id="gold-count">0</span>
+          <span class="stat-label">Gold</span>
+        </div>
+        <div class="history-stat">
+          <span class="stat-icon">🥈</span>
+          <span class="stat-count" id="silver-count">0</span>
+          <span class="stat-label">Silver</span>
+        </div>
+        <div class="history-stat">
+          <span class="stat-icon">🥉</span>
+          <span class="stat-count" id="bronze-count">0</span>
+          <span class="stat-label">Bronze</span>
+        </div>
+      </div>
+
+      <div class="history-list" id="history-list">
+        <!-- Populated by JS -->
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" style="display: none;">
+    <span id="toast-message">Erfolgreich!</span>
+  </div>
+
+  <!-- Script -->
+  <script src="/daily-challenge.js"></script>
+
+</body>
+</html>

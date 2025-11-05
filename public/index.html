@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/modal-glassmorphism.css" />
     <link rel="stylesheet" href="/prompt-generator.css" />
     <link rel="stylesheet" href="/prompt-optimizer.css" />
+    <link rel="stylesheet" href="/model-battle.css" />
 
     <style>
       /* Base Layout */
@@ -362,6 +363,197 @@
       </div>
     </section>
 
+    <!-- Model Battle Arena Section (Feature #2) -->
+    <section class="model-battle-section" id="model-battle">
+      <div class="battle-container">
+        
+        <!-- Header -->
+        <div class="battle-header">
+          <h1 class="battle-title">⚔️ Model Battle Arena</h1>
+          <p class="battle-subtitle">3 LLMs • Ein Prompt • Live Race</p>
+          <p class="battle-description">
+            Schicke deinen Prompt gleichzeitig an Claude, GPT-4 und Perplexity. 
+            Sieh zu, wie sie live gegeneinander antreten!
+          </p>
+        </div>
+
+        <!-- Input Card -->
+        <div class="battle-input-card">
+          <div class="battle-input-group">
+            <label class="battle-input-label">Dein Prompt:</label>
+            <textarea 
+              id="battle-prompt-input"
+              class="battle-prompt-input"
+              placeholder="z.B. 'Erkläre Quantencomputer in 3 Sätzen' oder 'Schreibe einen Marketing-Slogan für nachhaltiges Coffee-to-go'..."
+              maxlength="500"
+            ></textarea>
+            <div class="battle-char-count" id="battle-char-count">0/500</div>
+          </div>
+
+          <button class="battle-start-btn" id="battle-start-btn">
+            ⚔️ Battle Starten
+          </button>
+        </div>
+
+        <!-- Battle Arena - 3 Columns -->
+        <div class="battle-arena" id="battle-arena">
+          
+          <!-- Claude Card -->
+          <div class="model-card" id="claude-card">
+            <div class="model-header">
+              <div class="model-info">
+                <div class="model-icon">🤖</div>
+                <div>
+                  <div class="model-name">Claude Sonnet 4</div>
+                  <div class="model-subtitle">Anthropic</div>
+                </div>
+              </div>
+              <div class="speed-badge">
+                <span class="speed-time" id="claude-speed">-</span>
+                <span class="speed-label">Sekunden</span>
+              </div>
+            </div>
+
+            <div class="model-status" id="claude-status">
+              <div class="status-indicator" id="claude-status-indicator"></div>
+              <span class="model-status-text" id="claude-status-text">Warte...</span>
+            </div>
+
+            <div class="model-response" id="claude-response">
+              <div class="model-response-text"></div>
+            </div>
+
+            <button class="vote-btn" id="claude-vote-btn">
+              👍 Bester Output!
+            </button>
+          </div>
+
+          <!-- OpenAI Card -->
+          <div class="model-card" id="openai-card">
+            <div class="model-header">
+              <div class="model-info">
+                <div class="model-icon">🧠</div>
+                <div>
+                  <div class="model-name">GPT-4o Mini</div>
+                  <div class="model-subtitle">OpenAI</div>
+                </div>
+              </div>
+              <div class="speed-badge">
+                <span class="speed-time" id="openai-speed">-</span>
+                <span class="speed-label">Sekunden</span>
+              </div>
+            </div>
+
+            <div class="model-status" id="openai-status">
+              <div class="status-indicator" id="openai-status-indicator"></div>
+              <span class="model-status-text" id="openai-status-text">Warte...</span>
+            </div>
+
+            <div class="model-response" id="openai-response">
+              <div class="model-response-text"></div>
+            </div>
+
+            <button class="vote-btn" id="openai-vote-btn">
+              👍 Bester Output!
+            </button>
+          </div>
+
+          <!-- Perplexity Card -->
+          <div class="model-card" id="perplexity-card">
+            <div class="model-header">
+              <div class="model-info">
+                <div class="model-icon">🔮</div>
+                <div>
+                  <div class="model-name">Sonar Pro</div>
+                  <div class="model-subtitle">Perplexity</div>
+                </div>
+              </div>
+              <div class="speed-badge">
+                <span class="speed-time" id="perplexity-speed">-</span>
+                <span class="speed-label">Sekunden</span>
+              </div>
+            </div>
+
+            <div class="model-status" id="perplexity-status">
+              <div class="status-indicator" id="perplexity-status-indicator"></div>
+              <span class="model-status-text" id="perplexity-status-text">Warte...</span>
+            </div>
+
+            <div class="model-response" id="perplexity-response">
+              <div class="model-response-text"></div>
+            </div>
+
+            <button class="vote-btn" id="perplexity-vote-btn">
+              👍 Bester Output!
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="battle-leaderboard">
+          <h2 class="leaderboard-title">🏆 Leaderboard</h2>
+          <div class="leaderboard-grid" id="leaderboard-grid">
+            <!-- Wird dynamisch gefüllt -->
+            <div class="leaderboard-item">
+              <div class="leaderboard-model">🤖 Claude Sonnet 4</div>
+              <div class="leaderboard-stats">
+                <div class="stat-row">
+                  <span>Siege:</span>
+                  <span class="stat-value">-</span>
+                </div>
+                <div class="stat-row">
+                  <span>∅ Speed:</span>
+                  <span class="stat-value">-</span>
+                </div>
+                <div class="stat-row">
+                  <span>Battles:</span>
+                  <span class="stat-value">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="leaderboard-item">
+              <div class="leaderboard-model">🧠 GPT-4o Mini</div>
+              <div class="leaderboard-stats">
+                <div class="stat-row">
+                  <span>Siege:</span>
+                  <span class="stat-value">-</span>
+                </div>
+                <div class="stat-row">
+                  <span>∅ Speed:</span>
+                  <span class="stat-value">-</span>
+                </div>
+                <div class="stat-row">
+                  <span>Battles:</span>
+                  <span class="stat-value">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="leaderboard-item">
+              <div class="leaderboard-model">🔮 Sonar Pro</div>
+              <div class="leaderboard-stats">
+                <div class="stat-row">
+                  <span>Siege:</span>
+                  <span class="stat-value">-</span>
+                </div>
+                <div class="stat-row">
+                  <span>∅ Speed:</span>
+                  <span class="stat-value">-</span>
+                </div>
+                <div class="stat-row">
+                  <span>Battles:</span>
+                  <span class="stat-value">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- Overlays -->
     
     <!-- Tips Overlay -->
@@ -475,5 +667,8 @@
     
     <!-- Prompt Optimizer -->
     <script src="/prompt-optimizer.js"></script>
+    
+    <!-- Model Battle Arena (Feature #2) -->
+    <script src="/model-battle.js"></script>
   </body>
 </html>

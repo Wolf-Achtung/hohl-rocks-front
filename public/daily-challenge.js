@@ -29,6 +29,14 @@ const getApiBase = () => {
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Page Detection - only initialize on daily-challenge.html
+  const isOnFeaturePage = window.location.pathname.includes('daily-challenge.html');
+  
+  if (!isOnFeaturePage) {
+    console.log('[Daily Challenge] Not on feature page, skipping initialization');
+    return;
+  }
+  
   console.log('[Daily Challenge] Initializing...');
   
   // Initialize DOM elements safely

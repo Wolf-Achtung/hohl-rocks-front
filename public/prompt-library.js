@@ -31,6 +31,14 @@ const getApiBase = () => {
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Page Detection - only initialize on prompt-library.html
+  const isOnFeaturePage = window.location.pathname.includes('prompt-library.html');
+  
+  if (!isOnFeaturePage) {
+    console.log('[Prompt Library] Not on feature page, skipping initialization');
+    return;
+  }
+  
   console.log('[Prompt Library] Initializing...');
   
   // Initialize DOM elements safely

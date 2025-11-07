@@ -28,6 +28,14 @@ const getApiBase = () => {
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Page Detection - only initialize on model-battle.html
+  const isOnFeaturePage = window.location.pathname.includes('model-battle.html');
+  
+  if (!isOnFeaturePage) {
+    console.log('[Model Battle] Not on feature page, skipping initialization');
+    return;
+  }
+  
   console.log('[Model Battle] Initializing...');
   
   // Initialize DOM elements safely

@@ -34,6 +34,10 @@
         position:fixed;inset:0;width:100%;height:100%;
         object-fit:cover;z-index:-2;
         filter:brightness(0.4) contrast(1.08) saturate(1.15);
+        /* Performance Optimizations */
+        will-change:transform;
+        transform:translateZ(0);
+        backface-visibility:hidden;
       }
       
       /* Jelly Canvas (Ambient Background) */
@@ -276,6 +280,96 @@
         to { transform: rotate(360deg); }
       }
       
+      /* ========================================
+         JELLYFISH ANIMATIONS - Quallen-Effekt
+         ======================================== */
+      
+      /* Vertikales Schweben (auf und ab) */
+      @keyframes jellyfishFloat {
+        0%, 100% { 
+          transform: translateY(0px) translateX(0px) scale(1);
+        }
+        25% { 
+          transform: translateY(-12px) translateX(3px) scale(1.02);
+        }
+        50% { 
+          transform: translateY(-8px) translateX(-5px) scale(0.98);
+        }
+        75% { 
+          transform: translateY(-15px) translateX(2px) scale(1.01);
+        }
+      }
+      
+      /* Pulsierendes Leuchten */
+      @keyframes jellyfishGlow {
+        0%, 100% { 
+          filter: brightness(1) blur(0px);
+          opacity: 0.85;
+        }
+        50% { 
+          filter: brightness(1.2) blur(1px);
+          opacity: 0.95;
+        }
+      }
+      
+      /* Wellenartiges Morphing */
+      @keyframes jellyfishMorph {
+        0%, 100% { 
+          border-radius: 20px;
+        }
+        25% { 
+          border-radius: 25px 15px 20px 18px;
+        }
+        50% { 
+          border-radius: 18px 22px 16px 24px;
+        }
+        75% { 
+          border-radius: 22px 18px 24px 16px;
+        }
+      }
+      
+      /* Basis-Styles für alle Quallen-Cards */
+      .jellyfish-card {
+        animation: 
+          jellyfishFloat 8s ease-in-out infinite,
+          jellyfishGlow 6s ease-in-out infinite,
+          jellyfishMorph 10s ease-in-out infinite;
+        will-change: transform, filter, border-radius;
+      }
+      
+      /* Individuelle Animations-Delays für natürliche Bewegung */
+      .jellyfish-pink {
+        animation-delay: 0s, 0s, 0s;
+      }
+      
+      .jellyfish-orange {
+        animation-delay: -2.5s, -1.5s, -3s;
+      }
+      
+      .jellyfish-cyan {
+        animation-delay: -5s, -3s, -6s;
+      }
+      
+      /* Hover-Effekt: Qualle "schwebt höher" */
+      .jellyfish-card:hover {
+        animation-play-state: paused;
+        transform: translateY(-20px) scale(1.05) !important;
+        filter: brightness(1.3) !important;
+        opacity: 1 !important;
+      }
+      
+      /* Responsive: Sanftere Animationen auf Mobile */
+      @media (max-width: 768px) {
+        @keyframes jellyfishFloat {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-8px) scale(0.98); }
+        }
+        
+        .jellyfish-card {
+          animation-duration: 6s, 5s, 8s;
+        }
+      }
+      
       /* Helper Classes */
       .hidden { display: none !important; }
     </style>
@@ -285,9 +379,21 @@
 
     <!-- Background Video -->
     <div class="site-bg" aria-hidden="true">
-      <video class="bg-video" autoplay muted loop playsinline preload="auto">
-        <source src="./videos/road_720p_bg.webm" type="video/webm" />
-        <source src="./videos/road_720p_bg.mp4" type="video/mp4" />
+      <video 
+        class="bg-video" 
+        autoplay 
+        muted 
+        loop 
+        playsinline 
+        preload="auto"
+        poster="videos/road_poster.jpg"
+      >
+        <!-- WebM (VP9) für moderne Browser - beste Qualität/Kompression -->
+        <source src="videos/road_loop_720p_hq_vp9.webm" type="video/webm; codecs=vp9">
+        <!-- MP4 (H.264) als Fallback für Safari & ältere Browser -->
+        <source src="videos/road_loop_720p_hq_h264.mp4" type="video/mp4; codecs=avc1.4d401f">
+        <!-- Fallback-Text für Browser ohne Video-Support -->
+        Ihr Browser unterstützt keine Hintergrundvideos.
       </video>
     </div>
 
@@ -311,69 +417,74 @@
     <!-- Main Content -->
     <main id="main" class="site-main" tabindex="-1">
       <h1 class="hero-heading shimmer">hohl.rocks</h1>
-      <p class="hero-sub">Interaktive KI-Prompt-Assistenten • Täglich neue Challenges • Professional AI Tools</p>
       
       <!-- Quick Links zu Features -->
       <div style="margin-top: 2.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; max-width: 900px; margin-left: auto; margin-right: auto; padding: 0 1rem;">
         
-        <!-- Feature #5: Prompt Library -->
+        <!-- Feature #5: Prompt Library - Neon Pink Jellyfish -->
         <a href="/prompt-library.html" 
+           class="jellyfish-card jellyfish-pink"
            style="padding: 16px 20px; 
-                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                  background: rgba(255, 0, 255, 0.12); 
                   color: white; 
-                  border-radius: 12px; 
+                  border-radius: 20px; 
                   text-decoration: none; 
                   font-weight: 600;
                   text-align: center;
-                  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); 
+                  box-shadow: 0 8px 32px rgba(255, 0, 255, 0.3),
+                              inset 0 0 20px rgba(255, 0, 255, 0.1); 
                   transition: all 0.3s ease;
                   display: block;
-                  border: 1px solid rgba(255, 255, 255, 0.1);"
-           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)';"
-           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)';">
-          <div style="font-size: 28px; margin-bottom: 6px;">📚</div>
-          <div>Prompt Library</div>
-          <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">30+ Pro Templates</div>
+                  border: 1px solid rgba(255, 0, 255, 0.3);
+                  backdrop-filter: blur(10px);
+                  position: relative;
+                  overflow: hidden;">
+          <div style="font-size: 18px; font-weight: 700; text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);">Prompt Library</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">30+ Pro Templates</div>
         </a>
 
-        <!-- Feature #2: Model Battle Arena -->
+        <!-- Feature #2: Model Battle Arena - Neon Orange Jellyfish -->
         <a href="/model-battle.html" 
+           class="jellyfish-card jellyfish-orange"
            style="padding: 16px 20px; 
-                  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); 
+                  background: rgba(255, 100, 0, 0.12); 
                   color: white; 
-                  border-radius: 12px; 
+                  border-radius: 20px; 
                   text-decoration: none; 
                   font-weight: 600;
                   text-align: center;
-                  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); 
+                  box-shadow: 0 8px 32px rgba(255, 100, 0, 0.3),
+                              inset 0 0 20px rgba(255, 100, 0, 0.1); 
                   transition: all 0.3s ease;
                   display: block;
-                  border: 1px solid rgba(255, 255, 255, 0.1);"
-           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(245, 158, 11, 0.6)';"
-           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(245, 158, 11, 0.4)';">
-          <div style="font-size: 28px; margin-bottom: 6px;">⚔️</div>
-          <div>Model Battle</div>
-          <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">3 AIs im Vergleich</div>
+                  border: 1px solid rgba(255, 100, 0, 0.3);
+                  backdrop-filter: blur(10px);
+                  position: relative;
+                  overflow: hidden;">
+          <div style="font-size: 18px; font-weight: 700; text-shadow: 0 0 10px rgba(255, 100, 0, 0.8);">Model Battle</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">3 AIs im Vergleich</div>
         </a>
 
-        <!-- Feature #4: Daily Challenge -->
+        <!-- Feature #4: Daily Challenge - Neon Cyan Jellyfish -->
         <a href="/daily-challenge.html" 
+           class="jellyfish-card jellyfish-cyan"
            style="padding: 16px 20px; 
-                  background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%); 
+                  background: rgba(0, 255, 255, 0.12); 
                   color: white; 
-                  border-radius: 12px; 
+                  border-radius: 20px; 
                   text-decoration: none; 
                   font-weight: 600;
                   text-align: center;
-                  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); 
+                  box-shadow: 0 8px 32px rgba(0, 255, 255, 0.3),
+                              inset 0 0 20px rgba(0, 255, 255, 0.1); 
                   transition: all 0.3s ease;
                   display: block;
-                  border: 1px solid rgba(255, 255, 255, 0.1);"
-           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.6)';"
-           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.4)';">
-          <div style="font-size: 28px; margin-bottom: 6px;">🎯</div>
-          <div>Daily Challenge</div>
-          <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">Täglich neue Aufgaben</div>
+                  border: 1px solid rgba(0, 255, 255, 0.3);
+                  backdrop-filter: blur(10px);
+                  position: relative;
+                  overflow: hidden;">
+          <div style="font-size: 18px; font-weight: 700; text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);">Daily Challenge</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">Täglich neue Aufgaben</div>
         </a>
         
       </div>
@@ -925,6 +1036,33 @@
     <!-- Core Scripts -->
     <script type="module" src="/js/utils.js"></script>
     <script type="module" src="/js/api.js"></script>
+    
+    <!-- Background Video Autoplay Fallback -->
+    <script>
+      // Stelle sicher, dass Video auf allen Geräten abspielt
+      document.addEventListener('DOMContentLoaded', () => {
+        const video = document.querySelector('.bg-video');
+        if (video) {
+          // Promise-basiertes Abspielen mit Fehlerbehandlung
+          const playPromise = video.play();
+          
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log('✅ Background video playing');
+              })
+              .catch(error => {
+                console.log('⚠️ Autoplay blocked, trying after user interaction');
+                // Fallback: Starte Video bei erster User-Interaktion
+                document.body.addEventListener('click', () => {
+                  video.play().catch(e => console.log('Video play failed:', e));
+                }, { once: true });
+              });
+          }
+        }
+      });
+    </script>
+    
     <script type="module" src="/js/bubbles-noise.js"></script>
     <script type="module" src="/js/bubbleEngine.js"></script>
     <script src="/bubbles-init.js"></script>

@@ -1,10 +1,8 @@
 // ===================================================================
-// PROMPT LIBRARY - JavaScript
+// PROMPT LIBRARY - JavaScript (OPTIMIZED v2.0)
 // Features: API Integration, Search, Filter, Sort, Modal
+// Fixed: API_BASE duplication, DOM access timing, defensive checks
 // ===================================================================
-
-// Configuration
-const API_BASE = 'https://hohl-rocks-back-production.up.railway.app';
 
 // State
 let allPrompts = [];
@@ -12,27 +10,50 @@ let filteredPrompts = [];
 let currentCategory = 'all';
 let currentSort = 'featured';
 
-// DOM Elements
-const searchInput = document.getElementById('search-input');
-const filterButtons = document.querySelectorAll('.filter-btn');
-const sortSelect = document.getElementById('sort-select');
-const promptsGrid = document.getElementById('prompts-grid');
-const loadingState = document.getElementById('loading-state');
-const resultsInfo = document.getElementById('results-info');
-const resultsCount = document.getElementById('results-count');
-const emptyState = document.getElementById('empty-state');
-const modal = document.getElementById('prompt-modal');
-const closeModalBtn = document.getElementById('close-modal');
-const closeModalBtn2 = document.getElementById('close-modal-btn');
-const toast = document.getElementById('toast');
+// DOM Elements (will be initialized in DOMContentLoaded)
+let searchInput, filterButtons, sortSelect, promptsGrid, loadingState;
+let resultsInfo, resultsCount, emptyState, modal, closeModalBtn, closeModalBtn2, toast;
+
+// API Base - use centralized API
+const getApiBase = () => {
+  if (window.API && typeof window.API.base === 'function') {
+    return window.API.base();
+  }
+  // Fallback for development
+  return 'https://hohl-rocks-back-production.up.railway.app';
+};
 
 // ===================================================================
 // INITIALIZATION
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('[Prompt Library] Initializing...');
+  
+  // Initialize DOM elements safely
+  searchInput = document.getElementById('search-input');
+  filterButtons = document.querySelectorAll('.filter-btn');
+  sortSelect = document.getElementById('sort-select');
+  promptsGrid = document.getElementById('prompts-grid');
+  loadingState = document.getElementById('loading-state');
+  resultsInfo = document.getElementById('results-info');
+  resultsCount = document.getElementById('results-count');
+  emptyState = document.getElementById('empty-state');
+  modal = document.getElementById('prompt-modal');
+  closeModalBtn = document.getElementById('close-modal');
+  closeModalBtn2 = document.getElementById('close-modal-btn');
+  toast = document.getElementById('toast');
+  
+  // Validate critical DOM elements
+  if (!loadingState || !promptsGrid) {
+    console.error('[Prompt Library] Critical DOM elements not found!');
+    return;
+  }
+  
   loadPrompts();
   setupEventListeners();
+  
+  console.log('[Prompt Library] Initialized successfully');
 });
 
 // ===================================================================
@@ -40,12 +61,18 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===================================================================
 
 async function loadPrompts() {
+  if (!loadingState || !promptsGrid) {
+    console.error('[Prompt Library] Required DOM elements not found');
+    return;
+  }
+  
   try {
     loadingState.style.display = 'block';
     promptsGrid.style.display = 'none';
-    resultsInfo.style.display = 'none';
-    emptyState.style.display = 'none';
+    if (resultsInfo) resultsInfo.style.display = 'none';
+    if (emptyState) emptyState.style.display = 'none';
 
+    const API_BASE = getApiBase();
     const response = await fetch(`${API_BASE}/api/prompts`);
     
     if (!response.ok) {
@@ -61,13 +88,17 @@ async function loadPrompts() {
     
     loadingState.style.display = 'none';
     promptsGrid.style.display = 'grid';
-    resultsInfo.style.display = 'block';
+    if (resultsInfo) resultsInfo.style.display = 'block';
 
   } catch (error) {
-    console.error('Error loading prompts:', error);
+    console.error('[Prompt Library] Error loading prompts:', error);
+    const API_BASE = getApiBase();
     loadingState.innerHTML = `
       <p style="color: #ef4444;">❌ Fehler beim Laden der Prompts</p>
-      <p style="font-size: 14px; color: rgba(255,255,255,0.5);">Bitte versuche es später erneut</p>
+      <p style="font-size: 14px; color: rgba(255,255,255,0.5);">
+        Bitte versuche es später erneut<br>
+        Backend: ${API_BASE}
+      </p>
     `;
   }
 }
@@ -78,26 +109,38 @@ async function loadPrompts() {
 
 function setupEventListeners() {
   // Search
-  searchInput.addEventListener('input', handleSearch);
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+  }
 
   // Category Filter
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => handleCategoryFilter(btn));
-  });
+  if (filterButtons) {
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => handleCategoryFilter(btn));
+    });
+  }
 
   // Sort
-  sortSelect.addEventListener('change', handleSort);
+  if (sortSelect) {
+    sortSelect.addEventListener('change', handleSort);
+  }
 
   // Modal Close
-  closeModalBtn.addEventListener('click', closeModal);
-  closeModalBtn2.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closeModal);
+  }
+  if (closeModalBtn2) {
+    closeModalBtn2.addEventListener('click', closeModal);
+  }
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
 
   // Escape key to close modal
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.style.display !== 'none') {
+    if (e.key === 'Escape' && modal && modal.style.display !== 'none') {
       closeModal();
     }
   });
@@ -108,6 +151,8 @@ function setupEventListeners() {
 // ===================================================================
 
 function handleSearch() {
+  if (!searchInput) return;
+  
   const searchTerm = searchInput.value.toLowerCase().trim();
   
   filteredPrompts = allPrompts.filter(prompt => {
@@ -138,6 +183,8 @@ function handleSearch() {
 // ===================================================================
 
 function handleCategoryFilter(button) {
+  if (!button || !filterButtons) return;
+  
   // Update active state
   filterButtons.forEach(btn => btn.classList.remove('active'));
   button.classList.add('active');
@@ -172,6 +219,8 @@ function updateCategoryCounts() {
 // ===================================================================
 
 function handleSort() {
+  if (!sortSelect) return;
+  
   currentSort = sortSelect.value;
   sortPrompts();
   renderPrompts();
@@ -203,18 +252,22 @@ function sortPrompts() {
 // ===================================================================
 
 function renderPrompts() {
+  if (!promptsGrid) return;
+  
   // Update results count
-  resultsCount.textContent = filteredPrompts.length;
+  if (resultsCount) {
+    resultsCount.textContent = filteredPrompts.length;
+  }
 
   // Show empty state if no results
   if (filteredPrompts.length === 0) {
     promptsGrid.style.display = 'none';
-    emptyState.style.display = 'block';
+    if (emptyState) emptyState.style.display = 'block';
     return;
   }
 
   // Hide empty state
-  emptyState.style.display = 'none';
+  if (emptyState) emptyState.style.display = 'none';
   promptsGrid.style.display = 'grid';
 
   // Render cards
@@ -265,27 +318,46 @@ function createPromptCard(prompt) {
 // ===================================================================
 
 function openModal(prompt) {
-  // Populate modal
-  document.getElementById('modal-title').textContent = prompt.title;
-  document.getElementById('modal-category').textContent = capitalizeFirst(prompt.category);
-  document.getElementById('modal-rating').textContent = `⭐ ${prompt.rating.toFixed(1)}`;
-  document.getElementById('modal-prompt').textContent = prompt.prompt;
-  document.getElementById('modal-uses').textContent = formatNumber(prompt.uses);
-  document.getElementById('modal-author').textContent = prompt.author || 'hohl.rocks';
+  if (!modal) return;
+  
+  // Populate modal with defensive checks
+  const modalTitle = document.getElementById('modal-title');
+  if (modalTitle) modalTitle.textContent = prompt.title;
+  
+  const modalCategory = document.getElementById('modal-category');
+  if (modalCategory) modalCategory.textContent = capitalizeFirst(prompt.category);
+  
+  const modalRating = document.getElementById('modal-rating');
+  if (modalRating) modalRating.textContent = `⭐ ${prompt.rating.toFixed(1)}`;
+  
+  const modalPrompt = document.getElementById('modal-prompt');
+  if (modalPrompt) modalPrompt.textContent = prompt.prompt;
+  
+  const modalUses = document.getElementById('modal-uses');
+  if (modalUses) modalUses.textContent = formatNumber(prompt.uses);
+  
+  const modalAuthor = document.getElementById('modal-author');
+  if (modalAuthor) modalAuthor.textContent = prompt.author || 'hohl.rocks';
 
   // Tags
   const modalTags = document.getElementById('modal-tags');
-  modalTags.innerHTML = prompt.tags.map(tag => `<span class="tag">#${tag}</span>`).join('');
+  if (modalTags) {
+    modalTags.innerHTML = prompt.tags.map(tag => `<span class="tag">#${tag}</span>`).join('');
+  }
 
   // Copy button
   const copyBtn = document.getElementById('copy-prompt-btn');
-  copyBtn.textContent = '📋 Kopieren';
-  copyBtn.classList.remove('copied');
-  copyBtn.onclick = () => copyPrompt(prompt.prompt, copyBtn);
+  if (copyBtn) {
+    copyBtn.textContent = '📋 Kopieren';
+    copyBtn.classList.remove('copied');
+    copyBtn.onclick = () => copyPrompt(prompt.prompt, copyBtn);
+  }
 
   // Use prompt button
   const useBtn = document.getElementById('use-prompt-btn');
-  useBtn.onclick = () => usePrompt(prompt);
+  if (useBtn) {
+    useBtn.onclick = () => usePrompt(prompt);
+  }
 
   // Show modal
   modal.style.display = 'flex';
@@ -293,6 +365,8 @@ function openModal(prompt) {
 }
 
 function closeModal() {
+  if (!modal) return;
+  
   modal.style.display = 'none';
   document.body.style.overflow = 'auto';
 }
@@ -306,20 +380,24 @@ async function copyPrompt(text, button) {
     await navigator.clipboard.writeText(text);
     
     // Update button
-    button.textContent = '✅ Kopiert!';
-    button.classList.add('copied');
+    if (button) {
+      button.textContent = '✅ Kopiert!';
+      button.classList.add('copied');
+    }
 
     // Show toast
     showToast('Prompt in Zwischenablage kopiert! 📋');
 
     // Reset button after 2s
-    setTimeout(() => {
-      button.textContent = '📋 Kopieren';
-      button.classList.remove('copied');
-    }, 2000);
+    if (button) {
+      setTimeout(() => {
+        button.textContent = '📋 Kopieren';
+        button.classList.remove('copied');
+      }, 2000);
+    }
 
   } catch (error) {
-    console.error('Copy failed:', error);
+    console.error('[Prompt Library] Copy failed:', error);
     showToast('Fehler beim Kopieren ❌', 'error');
   }
 }
@@ -338,7 +416,11 @@ function usePrompt(prompt) {
 }
 
 function showToast(message, type = 'success') {
+  if (!toast) return;
+  
   const toastMessage = document.getElementById('toast-message');
+  if (!toastMessage) return;
+  
   toastMessage.textContent = message;
   
   if (type === 'error') {
@@ -374,9 +456,9 @@ function formatNumber(num) {
 // ===================================================================
 
 window.addEventListener('error', (e) => {
-  console.error('Global error:', e.error);
+  console.error('[Prompt Library] Global error:', e.error);
 });
 
 window.addEventListener('unhandledrejection', (e) => {
-  console.error('Unhandled promise rejection:', e.reason);
+  console.error('[Prompt Library] Unhandled promise rejection:', e.reason);
 });

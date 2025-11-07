@@ -1,31 +1,51 @@
 // ===================================================================
-// MODEL BATTLE ARENA - JavaScript
+// MODEL BATTLE ARENA - JavaScript (OPTIMIZED v2.0)
 // Features: API Integration, Battle Logic, Voting, LocalStorage
+// Fixed: API_BASE duplication, DOM access timing, defensive checks
 // ===================================================================
-
-// Configuration
-const API_BASE = 'https://hohl-rocks-back-production.up.railway.app';
 
 // State
 let currentBattleResults = null;
 let votedModel = null;
 
-// DOM Elements
-const promptInput = document.getElementById('battle-prompt');
-const charCurrent = document.getElementById('char-current');
-const startBattleBtn = document.getElementById('start-battle-btn');
-const resultsSection = document.getElementById('results-section');
-const newBattleBtn = document.getElementById('new-battle-btn');
-const quickBtns = document.querySelectorAll('.quick-btn');
-const toast = document.getElementById('toast');
+// DOM Elements (will be initialized in DOMContentLoaded)
+let promptInput, charCurrent, startBattleBtn, resultsSection, newBattleBtn, quickBtns, toast;
+
+// API Base - use centralized API
+const getApiBase = () => {
+  if (window.API && typeof window.API.base === 'function') {
+    return window.API.base();
+  }
+  // Fallback for development
+  return 'https://hohl-rocks-back-production.up.railway.app';
+};
 
 // ===================================================================
 // INITIALIZATION
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('[Model Battle] Initializing...');
+  
+  // Initialize DOM elements safely
+  promptInput = document.getElementById('battle-prompt');
+  charCurrent = document.getElementById('char-current');
+  startBattleBtn = document.getElementById('start-battle-btn');
+  resultsSection = document.getElementById('results-section');
+  newBattleBtn = document.getElementById('new-battle-btn');
+  quickBtns = document.querySelectorAll('.quick-btn');
+  toast = document.getElementById('toast');
+  
+  // Validate critical DOM elements
+  if (!promptInput || !startBattleBtn) {
+    console.error('[Model Battle] Critical DOM elements not found!');
+    return;
+  }
+  
   setupEventListeners();
   loadStats();
+  
+  console.log('[Model Battle] Initialized successfully');
 });
 
 // ===================================================================
@@ -34,35 +54,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function setupEventListeners() {
   // Input character counter
-  promptInput.addEventListener('input', () => {
-    const length = promptInput.value.length;
-    charCurrent.textContent = length;
-    startBattleBtn.disabled = length === 0;
-  });
+  if (promptInput && charCurrent && startBattleBtn) {
+    promptInput.addEventListener('input', () => {
+      const length = promptInput.value.length;
+      charCurrent.textContent = length;
+      startBattleBtn.disabled = length === 0;
+    });
+  }
 
   // Start battle
-  startBattleBtn.addEventListener('click', startBattle);
+  if (startBattleBtn) {
+    startBattleBtn.addEventListener('click', startBattle);
+  }
 
   // Quick prompts
-  quickBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const prompt = btn.dataset.prompt;
-      promptInput.value = prompt;
-      charCurrent.textContent = prompt.length;
-      startBattleBtn.disabled = false;
-      promptInput.focus();
+  if (quickBtns && promptInput && charCurrent && startBattleBtn) {
+    quickBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const prompt = btn.dataset.prompt;
+        promptInput.value = prompt;
+        charCurrent.textContent = prompt.length;
+        startBattleBtn.disabled = false;
+        promptInput.focus();
+      });
     });
-  });
+  }
 
   // New battle
-  newBattleBtn.addEventListener('click', resetBattle);
+  if (newBattleBtn) {
+    newBattleBtn.addEventListener('click', resetBattle);
+  }
 
   // Enter key to start battle
-  promptInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && e.ctrlKey && !startBattleBtn.disabled) {
-      startBattle();
-    }
-  });
+  if (promptInput && startBattleBtn) {
+    promptInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.ctrlKey && !startBattleBtn.disabled) {
+        startBattle();
+      }
+    });
+  }
 }
 
 // ===================================================================
@@ -70,6 +100,11 @@ function setupEventListeners() {
 // ===================================================================
 
 async function startBattle() {
+  if (!promptInput || !startBattleBtn || !resultsSection) {
+    console.error('[Model Battle] Required DOM elements not found');
+    return;
+  }
+  
   const prompt = promptInput.value.trim();
 
   if (!prompt) {
@@ -95,6 +130,7 @@ async function startBattle() {
     }, 100);
 
     // Call API
+    const API_BASE = getApiBase();
     const response = await fetch(`${API_BASE}/api/model-battle`, {
       method: 'POST',
       headers: {
@@ -120,12 +156,14 @@ async function startBattle() {
     showToast('Battle abgeschlossen! 🎉');
 
   } catch (error) {
-    console.error('Battle error:', error);
+    console.error('[Model Battle] Battle error:', error);
     showToast('Fehler beim Battle. Bitte versuche es erneut.', 'error');
     
     // Re-enable button
-    startBattleBtn.disabled = false;
-    startBattleBtn.textContent = '⚔️ Battle starten';
+    if (startBattleBtn) {
+      startBattleBtn.disabled = false;
+      startBattleBtn.textContent = '⚔️ Battle starten';
+    }
   }
 }
 
@@ -141,7 +179,8 @@ function resetResponseCards() {
     if (responseEl) responseEl.style.display = 'none';
 
     // Reset time
-    document.getElementById(`time-${model}`).textContent = '-';
+    const timeEl = document.getElementById(`time-${model}`);
+    if (timeEl) timeEl.textContent = '-';
 
     // Reset buttons
     const voteBtn = document.querySelector(`[data-model="${model}"].vote-btn`);
@@ -165,8 +204,11 @@ function resetResponseCards() {
   });
 
   // Reset stats
-  document.getElementById('fastest-model').textContent = '-';
-  document.getElementById('favorite-model').textContent = 'Noch nicht gewählt';
+  const fastestEl = document.getElementById('fastest-model');
+  const favoriteEl = document.getElementById('favorite-model');
+  
+  if (fastestEl) fastestEl.textContent = '-';
+  if (favoriteEl) favoriteEl.textContent = 'Noch nicht gewählt';
 }
 
 function displayResults(data) {
@@ -177,7 +219,8 @@ function displayResults(data) {
     current.responseTime < fastest.responseTime ? current : fastest
   );
 
-  document.getElementById('fastest-model').textContent = fastestModel.name;
+  const fastestEl = document.getElementById('fastest-model');
+  if (fastestEl) fastestEl.textContent = fastestModel.name;
 
   // Display each response
   responses.forEach(result => {
@@ -222,8 +265,10 @@ function displayResults(data) {
   });
 
   // Re-enable start button
-  startBattleBtn.disabled = false;
-  startBattleBtn.textContent = '⚔️ Battle starten';
+  if (startBattleBtn) {
+    startBattleBtn.disabled = false;
+    startBattleBtn.textContent = '⚔️ Battle starten';
+  }
 }
 
 // ===================================================================
@@ -254,7 +299,9 @@ function voteForModel(model, modelName) {
   }
 
   votedModel = model;
-  document.getElementById('favorite-model').textContent = modelName;
+  
+  const favoriteEl = document.getElementById('favorite-model');
+  if (favoriteEl) favoriteEl.textContent = modelName;
 
   // Save vote to stats
   saveVote(model);
@@ -285,7 +332,7 @@ async function copyResponse(model, text) {
     showToast('Antwort kopiert! 📋');
 
   } catch (error) {
-    console.error('Copy failed:', error);
+    console.error('[Model Battle] Copy failed:', error);
     showToast('Fehler beim Kopieren', 'error');
   }
 }
@@ -295,6 +342,8 @@ async function copyResponse(model, text) {
 // ===================================================================
 
 function resetBattle() {
+  if (!promptInput || !charCurrent || !startBattleBtn || !resultsSection) return;
+  
   // Clear input
   promptInput.value = '';
   charCurrent.textContent = '0';
@@ -334,7 +383,7 @@ function saveBattleToHistory(prompt, results) {
 
     localStorage.setItem('battleHistory', JSON.stringify(history));
   } catch (error) {
-    console.error('Error saving to history:', error);
+    console.error('[Model Battle] Error saving to history:', error);
   }
 }
 
@@ -352,18 +401,18 @@ function saveVote(model) {
 
     localStorage.setItem('battleStats', JSON.stringify(stats));
   } catch (error) {
-    console.error('Error saving vote:', error);
+    console.error('[Model Battle] Error saving vote:', error);
   }
 }
 
 function loadStats() {
   try {
     const stats = JSON.parse(localStorage.getItem('battleStats') || '{}');
-    console.log('Battle Stats:', stats);
+    console.log('[Model Battle] Stats:', stats);
     
     // Could be used to display stats in UI later
   } catch (error) {
-    console.error('Error loading stats:', error);
+    console.error('[Model Battle] Error loading stats:', error);
   }
 }
 
@@ -372,7 +421,11 @@ function loadStats() {
 // ===================================================================
 
 function showToast(message, type = 'success') {
+  if (!toast) return;
+  
   const toastMessage = document.getElementById('toast-message');
+  if (!toastMessage) return;
+  
   toastMessage.textContent = message;
 
   if (type === 'error') {
@@ -393,9 +446,9 @@ function showToast(message, type = 'success') {
 // ===================================================================
 
 window.addEventListener('error', (e) => {
-  console.error('Global error:', e.error);
+  console.error('[Model Battle] Global error:', e.error);
 });
 
 window.addEventListener('unhandledrejection', (e) => {
-  console.error('Unhandled promise rejection:', e.reason);
+  console.error('[Model Battle] Unhandled promise rejection:', e.reason);
 });

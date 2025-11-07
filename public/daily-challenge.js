@@ -1,33 +1,53 @@
 // ===================================================================
-// DAILY CHALLENGE - JavaScript
+// DAILY CHALLENGE - JavaScript (OPTIMIZED v2.0)
 // Features: API Integration, LocalStorage, Streak Tracking, Badge System
+// Fixed: API_BASE duplication, DOM access timing, defensive checks
 // ===================================================================
-
-// Configuration
-const API_BASE = 'https://hohl-rocks-back-production.up.railway.app';
 
 // State
 let currentChallenge = null;
 let selectedDifficulty = null;
 let todayDate = null;
 
-// DOM Elements
-const loadingState = document.getElementById('loading-state');
-const challengeSelection = document.getElementById('challenge-selection');
-const challengeActive = document.getElementById('challenge-active');
-const challengeResult = document.getElementById('challenge-result');
-const historySection = document.getElementById('history-section');
+// DOM Elements (will be initialized in DOMContentLoaded)
+let loadingState, challengeSelection, challengeActive, challengeResult, historySection;
+
+// API Base - use centralized API
+const getApiBase = () => {
+  if (window.API && typeof window.API.base === 'function') {
+    return window.API.base();
+  }
+  // Fallback for development
+  return 'https://hohl-rocks-back-production.up.railway.app';
+};
 
 // ===================================================================
 // INITIALIZATION
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('[Daily Challenge] Initializing...');
+  
+  // Initialize DOM elements safely
+  loadingState = document.getElementById('loading-state');
+  challengeSelection = document.getElementById('challenge-selection');
+  challengeActive = document.getElementById('challenge-active');
+  challengeResult = document.getElementById('challenge-result');
+  historySection = document.getElementById('history-section');
+  
+  // Validate critical DOM elements
+  if (!loadingState || !challengeSelection) {
+    console.error('[Daily Challenge] Critical DOM elements not found!');
+    return;
+  }
+  
   todayDate = getTodayDate();
   loadStats();
   checkIfCompletedToday();
   loadChallenge();
   setupEventListeners();
+  
+  console.log('[Daily Challenge] Initialized successfully');
 });
 
 // ===================================================================
@@ -77,8 +97,12 @@ function checkIfCompletedToday() {
     // Already completed today!
     const completedSection = document.getElementById('completed-today');
     if (completedSection) {
-      document.getElementById('today-badge').textContent = getBadgeEmoji(data.lastBadge);
-      document.getElementById('today-score').textContent = `${data.lastScore}%`;
+      const todayBadge = document.getElementById('today-badge');
+      const todayScore = document.getElementById('today-score');
+      
+      if (todayBadge) todayBadge.textContent = getBadgeEmoji(data.lastBadge);
+      if (todayScore) todayScore.textContent = `${data.lastScore}%`;
+      
       completedSection.style.display = 'block';
     }
     return true;
@@ -104,14 +128,17 @@ function loadStats() {
   
   // Calculate streak
   const streak = calculateStreak(data);
-  document.getElementById('streak-count').textContent = streak;
+  const streakEl = document.getElementById('streak-count');
+  if (streakEl) streakEl.textContent = streak;
   
   // Total badges
   const totalBadges = (data.history || []).length;
-  document.getElementById('total-badges').textContent = totalBadges;
+  const totalBadgesEl = document.getElementById('total-badges');
+  if (totalBadgesEl) totalBadgesEl.textContent = totalBadges;
   
   // Completed count
-  document.getElementById('completed-count').textContent = totalBadges;
+  const completedEl = document.getElementById('completed-count');
+  if (completedEl) completedEl.textContent = totalBadges;
 }
 
 function calculateStreak(data) {
@@ -183,38 +210,54 @@ function setupEventListeners() {
   });
 
   // Back to selection
-  document.getElementById('back-to-selection')?.addEventListener('click', () => {
-    challengeActive.style.display = 'none';
-    challengeSelection.style.display = 'block';
-    selectedDifficulty = null;
-  });
+  const backBtn = document.getElementById('back-to-selection');
+  if (backBtn && challengeActive && challengeSelection) {
+    backBtn.addEventListener('click', () => {
+      challengeActive.style.display = 'none';
+      challengeSelection.style.display = 'block';
+      selectedDifficulty = null;
+    });
+  }
 
   // Answer input
   const answerInput = document.getElementById('answer-input');
   const submitBtn = document.getElementById('submit-answer-btn');
   const charCount = document.getElementById('answer-chars');
 
-  answerInput?.addEventListener('input', () => {
-    const length = answerInput.value.length;
-    charCount.textContent = length;
-    submitBtn.disabled = length < 20;
-  });
+  if (answerInput && submitBtn && charCount) {
+    answerInput.addEventListener('input', () => {
+      const length = answerInput.value.length;
+      charCount.textContent = length;
+      submitBtn.disabled = length < 20;
+    });
+  }
 
   // Submit answer
-  submitBtn?.addEventListener('click', submitAnswer);
+  if (submitBtn) {
+    submitBtn.addEventListener('click', submitAnswer);
+  }
 
   // View history
-  document.getElementById('view-history-btn')?.addEventListener('click', showHistory);
+  const viewHistoryBtn = document.getElementById('view-history-btn');
+  if (viewHistoryBtn) {
+    viewHistoryBtn.addEventListener('click', showHistory);
+  }
   
   // Close history
-  document.getElementById('close-history-btn')?.addEventListener('click', () => {
-    historySection.style.display = 'none';
-  });
+  const closeHistoryBtn = document.getElementById('close-history-btn');
+  if (closeHistoryBtn && historySection) {
+    closeHistoryBtn.addEventListener('click', () => {
+      historySection.style.display = 'none';
+    });
+  }
 
   // New challenge tomorrow
-  document.getElementById('new-challenge-tomorrow-btn')?.addEventListener('click', () => {
-    window.location.reload();
-  });
+  const newChallengeBtn = document.getElementById('new-challenge-tomorrow-btn');
+  if (newChallengeBtn) {
+    newChallengeBtn.addEventListener('click', () => {
+      window.location.reload();
+    });
+  }
 }
 
 // ===================================================================
@@ -222,11 +265,17 @@ function setupEventListeners() {
 // ===================================================================
 
 async function loadChallenge() {
+  if (!loadingState || !challengeSelection) {
+    console.error('[Daily Challenge] Required DOM elements not found');
+    return;
+  }
+  
   try {
     console.log('🎯 Loading Daily Challenge...');
     loadingState.style.display = 'block';
     challengeSelection.style.display = 'none';
 
+    const API_BASE = getApiBase();
     const url = `${API_BASE}/api/daily-challenge`;
     console.log('📡 Fetching from:', url);
     
@@ -254,6 +303,7 @@ async function loadChallenge() {
 
   } catch (error) {
     console.error('💥 Error loading challenge:', error);
+    const API_BASE = getApiBase();
     loadingState.innerHTML = `
       <div class="loader"></div>
       <p style="color: #ef4444; margin-top: 20px;">❌ Fehler beim Laden der Challenge</p>
@@ -270,14 +320,19 @@ async function loadChallenge() {
 
 function displayChallengeSelection(challenge) {
   // Theme
-  document.getElementById('challenge-theme').textContent = challenge.theme;
+  const themeEl = document.getElementById('challenge-theme');
+  if (themeEl) themeEl.textContent = challenge.theme;
 
   // Difficulties
   ['beginner', 'intermediate', 'expert'].forEach(difficulty => {
     const data = challenge.challenges[difficulty];
-    document.getElementById(`title-${difficulty}`).textContent = data.title;
-    document.getElementById(`desc-${difficulty}`).textContent = data.description;
-    document.getElementById(`time-${difficulty}`).textContent = data.estimatedTime;
+    const titleEl = document.getElementById(`title-${difficulty}`);
+    const descEl = document.getElementById(`desc-${difficulty}`);
+    const timeEl = document.getElementById(`time-${difficulty}`);
+    
+    if (titleEl) titleEl.textContent = data.title;
+    if (descEl) descEl.textContent = data.description;
+    if (timeEl) timeEl.textContent = data.estimatedTime;
   });
 }
 
@@ -286,6 +341,11 @@ function displayChallengeSelection(challenge) {
 // ===================================================================
 
 function startChallenge(difficulty) {
+  if (!challengeSelection || !challengeActive) {
+    console.error('[Daily Challenge] Required DOM elements not found for startChallenge');
+    return;
+  }
+  
   selectedDifficulty = difficulty;
   const challengeData = currentChallenge.challenges[difficulty];
 
@@ -295,18 +355,28 @@ function startChallenge(difficulty) {
 
   // Set difficulty badge styling
   const difficultyBadge = document.getElementById('active-difficulty');
-  difficultyBadge.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-  difficultyBadge.className = `difficulty-badge ${difficulty}`;
+  if (difficultyBadge) {
+    difficultyBadge.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+    difficultyBadge.className = `difficulty-badge ${difficulty}`;
+  }
 
   // Set challenge content
-  document.getElementById('active-title').textContent = challengeData.title;
-  document.getElementById('active-task').textContent = challengeData.task;
-  document.getElementById('active-hint').textContent = challengeData.hint;
+  const titleEl = document.getElementById('active-title');
+  const taskEl = document.getElementById('active-task');
+  const hintEl = document.getElementById('active-hint');
+  
+  if (titleEl) titleEl.textContent = challengeData.title;
+  if (taskEl) taskEl.textContent = challengeData.task;
+  if (hintEl) hintEl.textContent = challengeData.hint;
 
   // Clear answer
-  document.getElementById('answer-input').value = '';
-  document.getElementById('answer-chars').textContent = '0';
-  document.getElementById('submit-answer-btn').disabled = true;
+  const answerInput = document.getElementById('answer-input');
+  const answerChars = document.getElementById('answer-chars');
+  const submitBtn = document.getElementById('submit-answer-btn');
+  
+  if (answerInput) answerInput.value = '';
+  if (answerChars) answerChars.textContent = '0';
+  if (submitBtn) submitBtn.disabled = true;
 
   // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -317,7 +387,10 @@ function startChallenge(difficulty) {
 // ===================================================================
 
 async function submitAnswer() {
-  const answer = document.getElementById('answer-input').value.trim();
+  const answerInput = document.getElementById('answer-input');
+  if (!answerInput) return;
+  
+  const answer = answerInput.value.trim();
   const task = currentChallenge.challenges[selectedDifficulty].task;
 
   if (answer.length < 20) {
@@ -328,10 +401,13 @@ async function submitAnswer() {
   try {
     // Disable button
     const submitBtn = document.getElementById('submit-answer-btn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ Bewerte...';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Bewerte...';
+    }
 
     // Call API
+    const API_BASE = getApiBase();
     const response = await fetch(`${API_BASE}/api/submit-challenge`, {
       method: 'POST',
       headers: {
@@ -358,8 +434,8 @@ async function submitAnswer() {
     displayResult(evaluation);
 
     // Hide active challenge
-    challengeActive.style.display = 'none';
-    challengeResult.style.display = 'block';
+    if (challengeActive) challengeActive.style.display = 'none';
+    if (challengeResult) challengeResult.style.display = 'block';
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -370,8 +446,10 @@ async function submitAnswer() {
     
     // Re-enable button
     const submitBtn = document.getElementById('submit-answer-btn');
-    submitBtn.disabled = false;
-    submitBtn.textContent = '🚀 Antwort einreichen';
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '🚀 Antwort einreichen';
+    }
   }
 }
 
@@ -387,34 +465,44 @@ function displayResult(evaluation) {
     'bronze': '🥉'
   };
 
-  document.getElementById('result-badge-icon').textContent = badgeIcons[evaluation.badge];
+  const badgeIconEl = document.getElementById('result-badge-icon');
+  if (badgeIconEl) badgeIconEl.textContent = badgeIcons[evaluation.badge];
+  
   const badgeName = document.getElementById('result-badge-name');
-  badgeName.textContent = evaluation.badge.charAt(0).toUpperCase() + evaluation.badge.slice(1);
-  badgeName.className = `badge-name ${evaluation.badge}`;
+  if (badgeName) {
+    badgeName.textContent = evaluation.badge.charAt(0).toUpperCase() + evaluation.badge.slice(1);
+    badgeName.className = `badge-name ${evaluation.badge}`;
+  }
 
   // Score
-  document.getElementById('result-score-value').textContent = evaluation.score;
+  const scoreEl = document.getElementById('result-score-value');
+  if (scoreEl) scoreEl.textContent = evaluation.score;
 
   // Summary
-  document.getElementById('result-summary-text').textContent = evaluation.summary;
+  const summaryEl = document.getElementById('result-summary-text');
+  if (summaryEl) summaryEl.textContent = evaluation.summary;
 
   // Positive feedback
   const positiveList = document.getElementById('feedback-positive');
-  positiveList.innerHTML = '';
-  evaluation.feedback.positive.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    positiveList.appendChild(li);
-  });
+  if (positiveList) {
+    positiveList.innerHTML = '';
+    evaluation.feedback.positive.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      positiveList.appendChild(li);
+    });
+  }
 
   // Improvements
   const improvementsList = document.getElementById('feedback-improvements');
-  improvementsList.innerHTML = '';
-  evaluation.feedback.improvements.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    improvementsList.appendChild(li);
-  });
+  if (improvementsList) {
+    improvementsList.innerHTML = '';
+    evaluation.feedback.improvements.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      improvementsList.appendChild(li);
+    });
+  }
 
   // Show toast
   showToast(`${badgeIcons[evaluation.badge]} ${evaluation.badge.toUpperCase()} Badge verdient!`);
@@ -425,6 +513,8 @@ function displayResult(evaluation) {
 // ===================================================================
 
 function showHistory() {
+  if (!challengeResult || !historySection) return;
+  
   const data = getLocalData();
   const history = data.history || [];
 
@@ -440,12 +530,18 @@ function showHistory() {
     }
   });
 
-  document.getElementById('gold-count').textContent = badgeCounts.gold;
-  document.getElementById('silver-count').textContent = badgeCounts.silver;
-  document.getElementById('bronze-count').textContent = badgeCounts.bronze;
+  const goldEl = document.getElementById('gold-count');
+  const silverEl = document.getElementById('silver-count');
+  const bronzeEl = document.getElementById('bronze-count');
+  
+  if (goldEl) goldEl.textContent = badgeCounts.gold;
+  if (silverEl) silverEl.textContent = badgeCounts.silver;
+  if (bronzeEl) bronzeEl.textContent = badgeCounts.bronze;
 
   // Render history list
   const historyList = document.getElementById('history-list');
+  if (!historyList) return;
+  
   historyList.innerHTML = '';
 
   if (history.length === 0) {
@@ -495,6 +591,8 @@ function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
   
+  if (!toast || !toastMessage) return;
+  
   toastMessage.textContent = message;
 
   if (type === 'error') {
@@ -515,9 +613,9 @@ function showToast(message, type = 'success') {
 // ===================================================================
 
 window.addEventListener('error', (e) => {
-  console.error('Global error:', e.error);
+  console.error('[Daily Challenge] Global error:', e.error);
 });
 
 window.addEventListener('unhandledrejection', (e) => {
-  console.error('Unhandled promise rejection:', e.reason);
+  console.error('[Daily Challenge] Unhandled promise rejection:', e.reason);
 });

@@ -1,8 +1,11 @@
 // ===================================================================
-// MODEL BATTLE ARENA - JavaScript (OPTIMIZED v2.0)
+// MODEL BATTLE ARENA - JavaScript (OPTIMIZED v2.1 - IIFE)
 // Features: API Integration, Battle Logic, Voting, LocalStorage
-// Fixed: API_BASE duplication, DOM access timing, defensive checks
+// Fixed: API_BASE duplication, DOM access timing, defensive checks, scope conflicts
 // ===================================================================
+
+(function() {
+'use strict';
 
 // State
 let currentBattleResults = null;
@@ -452,3 +455,5 @@ window.addEventListener('error', (e) => {
 window.addEventListener('unhandledrejection', (e) => {
   console.error('[Model Battle] Unhandled promise rejection:', e.reason);
 });
+
+})(); // End IIFE

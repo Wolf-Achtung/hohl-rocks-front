@@ -1,8 +1,11 @@
 // ===================================================================
-// PROMPT LIBRARY - JavaScript (OPTIMIZED v2.0)
+// PROMPT LIBRARY - JavaScript (OPTIMIZED v2.1 - IIFE)
 // Features: API Integration, Search, Filter, Sort, Modal
-// Fixed: API_BASE duplication, DOM access timing, defensive checks
+// Fixed: API_BASE duplication, DOM access timing, defensive checks, scope conflicts
 // ===================================================================
+
+(function() {
+'use strict';
 
 // State
 let allPrompts = [];
@@ -462,3 +465,5 @@ window.addEventListener('error', (e) => {
 window.addEventListener('unhandledrejection', (e) => {
   console.error('[Prompt Library] Unhandled promise rejection:', e.reason);
 });
+
+})(); // End IIFE

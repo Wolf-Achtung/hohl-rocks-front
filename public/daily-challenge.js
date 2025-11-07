@@ -1,8 +1,11 @@
 // ===================================================================
-// DAILY CHALLENGE - JavaScript (OPTIMIZED v2.0)
+// DAILY CHALLENGE - JavaScript (OPTIMIZED v2.1 - IIFE)
 // Features: API Integration, LocalStorage, Streak Tracking, Badge System
-// Fixed: API_BASE duplication, DOM access timing, defensive checks
+// Fixed: API_BASE duplication, DOM access timing, defensive checks, scope conflicts
 // ===================================================================
+
+(function() {
+'use strict';
 
 // State
 let currentChallenge = null;
@@ -619,3 +622,5 @@ window.addEventListener('error', (e) => {
 window.addEventListener('unhandledrejection', (e) => {
   console.error('[Daily Challenge] Unhandled promise rejection:', e.reason);
 });
+
+})(); // End IIFE

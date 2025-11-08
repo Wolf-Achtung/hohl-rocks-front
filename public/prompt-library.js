@@ -17,12 +17,26 @@ let currentSort = 'featured';
 let searchInput, filterButtons, sortSelect, promptsGrid, loadingState;
 let resultsInfo, resultsCount, emptyState, modal, closeModalBtn, closeModalBtn2, toast;
 
-// API Base - use centralized API
+// API Base - use centralized API with comprehensive fallbacks
 const getApiBase = () => {
+  // Priority 1: window.API.base() (from api-config.js)
   if (window.API && typeof window.API.base === 'function') {
     return window.API.base();
   }
-  // Fallback for development
+  
+  // Priority 2: Meta tag fallback
+  console.error('[Prompt Library] api-config.js nicht geladen!');
+  const metaTag = document.querySelector('meta[name="x-api-base"]');
+  if (metaTag) {
+    const base = metaTag.getAttribute('content');
+    if (base) {
+      console.log('[Prompt Library] Using meta tag fallback:', base);
+      return base;
+    }
+  }
+  
+  // Priority 3: Production fallback
+  console.warn('[Prompt Library] Using hardcoded production fallback');
   return 'https://hohl-rocks-back-production.up.railway.app';
 };
 

@@ -15,12 +15,26 @@ let todayDate = null;
 // DOM Elements (will be initialized in DOMContentLoaded)
 let loadingState, challengeSelection, challengeActive, challengeResult, historySection;
 
-// API Base - use centralized API
+// API Base - use centralized API with comprehensive fallbacks
 const getApiBase = () => {
+  // Priority 1: window.API.base() (from api-config.js)
   if (window.API && typeof window.API.base === 'function') {
     return window.API.base();
   }
-  // Fallback for development
+  
+  // Priority 2: Meta tag fallback
+  console.error('[Daily Challenge] api-config.js nicht geladen!');
+  const metaTag = document.querySelector('meta[name="x-api-base"]');
+  if (metaTag) {
+    const base = metaTag.getAttribute('content');
+    if (base) {
+      console.log('[Daily Challenge] Using meta tag fallback:', base);
+      return base;
+    }
+  }
+  
+  // Priority 3: Production fallback
+  console.warn('[Daily Challenge] Using hardcoded production fallback');
   return 'https://hohl-rocks-back-production.up.railway.app';
 };
 

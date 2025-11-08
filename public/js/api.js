@@ -1,194 +1,345 @@
-/* -*- coding: utf-8 -*- */
-/**
- * Zentrale API-Schicht mit robusten Fallbacks
- * - API Base Detection (Query ?api=..., LocalStorage, <meta name="x-api-base">, Fallback /api)
- * - fetchJson() mit Timeout, Retry (bei Netz/Timeout), ETag-Cache (304)
- * - Graceful Fallbacks für 404-Fehler
- * - Stabile JSON-Parsing-Fehlerbehandlung
- * - Back-Compat: window.getJson alias
- */
-(() => {
-  'use strict';
+// ═══════════════════════════════════════════════════════════════
+// HOHL.ROCKS - API CLIENT (KOMPLETT KORRIGIERT)
+// Alle Endpoints mit /api/ Prefix - Ready to Deploy
+// Version: 2.1 - Final Fix
+// ═══════════════════════════════════════════════════════════════
 
-  // ---- Helpers (ohne Abhängigkeit von utils.js) ----
-  const LS_KEY = 'hr.api.base';
-  function sanitizeBase(u) { return (u || '').replace(/\/+$/,''); }
-  function joinUrl(base, path) {
-    base = (base || '').replace(/\/+$/, '');
-    path = (path || '').replace(/^\/+/, '');
-    if (/^https?:\/\//i.test(path)) return path;
-    return `${base}/${path}`;
-  }
-  function getMeta(name) {
-    const el = document.querySelector(`meta[name="${name}"]`);
-    return (el && el.content ? el.content.trim() : '');
-  }
-  function parseQuery() { return Object.fromEntries(new URLSearchParams(location.search).entries()); }
-  function getStoredBase(){ try { return localStorage.getItem(LS_KEY) || ''; } catch { return ''; } }
-  function setStoredBase(v){ try { localStorage.setItem(LS_KEY, v); } catch {} }
-
-  function detectApiBase() {
-    const q = parseQuery().api;
-    if (q) { const b = sanitizeBase(q); setStoredBase(b); return b; }
-    const fromLS = getStoredBase(); if (fromLS) return sanitizeBase(fromLS);
-    if (window.__API_BASE__) return sanitizeBase(window.__API_BASE__);
-    const meta = getMeta('x-api-base'); if (meta) return sanitizeBase(meta);
-    return '/api';
+class HohlRocksAPI {
+  constructor(baseUrl) {
+    this.baseUrl = baseUrl || window.API?.base() || 'https://hohl-rocks-back-production.up.railway.app';
   }
 
-  let API_BASE = detectApiBase();
-  let API_AVAILABLE = true; // Track API availability
-  
-  function setApiBase(next) {
-    const b = sanitizeBase(next);
-    if (b) {
-      API_BASE = b; setStoredBase(b);
-      document.dispatchEvent(new CustomEvent('api:base-changed', { detail: b }));
-    }
-    return API_BASE;
-  }
+  // ═══════════════════════════════════════════════════════════════
+  // HEALTH & STATUS
+  // ═══════════════════════════════════════════════════════════════
 
-  // ---- Fetch mit Timeout/Retry/ETag ----
-  const etags = new Map();
-
-  async function fetchJson(path, { method='GET', headers={}, body, timeout=10_000, retry=1, fallback=null } = {}) {
-    const url = joinUrl(API_BASE, path);
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), timeout);
-
-    const hdrs = new Headers({ 'Accept': 'application/json; charset=utf-8' });
-    if (body && method !== 'GET') hdrs.set('Content-Type', 'application/json; charset=utf-8');
-    if (etags.has(url)) hdrs.set('If-None-Match', etags.get(url));
-    for (const [k,v] of Object.entries(headers)) hdrs.set(k, v);
-
+  /**
+   * Health Check - Backend Status
+   * @returns {Promise<Object>}
+   */
+  async health() {
     try {
-      const res = await fetch(url, {
-        method,
-        headers: hdrs,
-        body: body ? JSON.stringify(body) : undefined,
-        signal: ctrl.signal,
-        credentials: 'omit',
-        cache: 'no-store',
-        mode: 'cors'
-      });
-
-      clearTimeout(timer);
-
-      // 304 Not Modified
-      if (res.status === 304 && etags.has(url)) {
-        return JSON.parse(sessionStorage.getItem(url) || 'null') || { ok: true };
-      }
-
-      // 404 Not Found - Return fallback
-      if (res.status === 404) {
-        API_AVAILABLE = false;
-        console.warn(`[API] 404 for ${url}, using fallback`);
-        return fallback || { error: 'not_found', status: 404 };
-      }
-
-      const et = res.headers.get('ETag'); if (et) etags.set(url, et);
-
-      const txt = await res.text();
-      let data = null;
-      try { 
-        data = txt ? JSON.parse(txt) : null; 
-      } catch (parseErr) {
-        const err = new Error(`Invalid JSON from ${url}`);
-        err.cause = parseErr; err.status = res.status;
-        throw err;
-      }
-
-      if (!res.ok) {
-        const err = new Error((data && data.error) || `HTTP ${res.status}`);
-        err.status = res.status; err.data = data;
-        throw err;
-      }
-
-      API_AVAILABLE = true;
-      try { sessionStorage.setItem(url, JSON.stringify(data)); } catch {}
-      return data;
-      
-    } catch (err) {
-      clearTimeout(timer);
-      const msg = (err && err.message) ? err.message : String(err);
-      
-      // Retry logic for network/timeout errors
-      if (retry > 0 && (err.name === 'AbortError' || /Network/i.test(msg))) {
-        await new Promise(r => setTimeout(r, 150 * (2 - retry)));
-        return fetchJson(path, { method, headers, body, timeout, retry: retry - 1, fallback });
-      }
-      
-      // Return fallback if available
-      if (fallback) {
-        API_AVAILABLE = false;
-        console.warn(`[API] Error for ${url}, using fallback:`, err.message);
-        return fallback;
-      }
-      
-      throw err;
+      const response = await fetch(`${this.baseUrl}/health`);
+      if (!response.ok) throw new Error(`Health check failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Health check error:', error);
+      throw error;
     }
   }
 
-  // ---- API Endpunkte mit Fallbacks ----
-  async function self() { 
-    return fetchJson('/self', { 
-      fallback: { 
-        ok: false, 
-        version: 'offline',
-        ui: { modalShade: 0.6, removeNavSound: false },
-        life: { extendClick: 2000, maxExtends: 3 }
-      } 
-    }); 
-  }
-  
-  async function sparkToday() { 
-    return fetchJson('/spark/today', { 
-      fallback: { 
-        title: 'Offline Modus',
-        text: 'Das Backend ist aktuell nicht erreichbar. Die Seite funktioniert im reduzierten Modus.'
-      } 
-    }); 
-  }
-  
-  async function news(params={}) { 
-    const s = new URLSearchParams(params); 
-    return fetchJson('/news' + (s.toString()?`?${s}`:''), {
-      fallback: {
-        items: [
-          {
-            title: 'Backend nicht verfügbar',
-            url: '#',
-            summary: 'Die News werden geladen, sobald das Backend wieder erreichbar ist.',
-            source: 'System'
-          }
-        ]
-      }
-    });
-  }
-  
-  async function tips() { 
-    return fetchJson('/tips', {
-      fallback: {
-        items: window.TIPS_DATA || []
-      }
-    }); 
+  /**
+   * Self Check - Backend Self-Test
+   * ✅ KORRIGIERT: /self → /api/self
+   * @returns {Promise<Object>}
+   */
+  async self() {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/self`);
+      if (!response.ok) throw new Error(`Self check failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Self check error:', error);
+      throw error;
+    }
   }
 
-  const API = Object.freeze({
-    base: () => API_BASE,
-    setBase: setApiBase,
-    fetchJson, 
-    getJson: fetchJson, // Back-Compat
-    isAvailable: () => API_AVAILABLE,
-    self, 
-    sparkToday, 
-    news, 
-    tips
-  });
+  // ═══════════════════════════════════════════════════════════════
+  // PROMPT GENERATOR
+  // ═══════════════════════════════════════════════════════════════
 
-  window.API = API;
-  window.getJson = fetchJson; // Back-Compat für bestehendes Frontend
+  /**
+   * Generate Prompt
+   * @param {Object} data - { task, style, context }
+   * @returns {Promise<Object>}
+   */
+  async generatePrompt(data) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/prompt-generator`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) throw new Error(`Generate failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Generate prompt error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // PROMPT OPTIMIZER
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Optimize Prompt
+   * @param {Object} data - { prompt }
+   * @returns {Promise<Object>}
+   */
+  async optimizePrompt(data) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/prompt-optimizer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) throw new Error(`Optimize failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Optimize prompt error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // PROMPT LIBRARY
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Get All Prompts
+   * @param {Object} filters - { category, featured, search }
+   * @returns {Promise<Object>}
+   */
+  async getPrompts(filters = {}) {
+    try {
+      const params = new URLSearchParams(filters);
+      const url = `${this.baseUrl}/api/prompts${params.toString() ? '?' + params.toString() : ''}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Get prompts failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Get prompts error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get Single Prompt by ID
+   * @param {number} id - Prompt ID
+   * @returns {Promise<Object>}
+   */
+  async getPrompt(id) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/prompts/${id}`);
+      if (!response.ok) throw new Error(`Get prompt failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Get prompt error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // MODEL BATTLE
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Start Model Battle
+   * @param {Object} data - { prompt }
+   * @returns {Promise<Object>}
+   */
+  async modelBattle(data) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/model-battle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) throw new Error(`Battle failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Model battle error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // DAILY CHALLENGE
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Get Daily Challenge
+   * @returns {Promise<Object>}
+   */
+  async getDailyChallenge() {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/daily-challenge`);
+      if (!response.ok) throw new Error(`Get challenge failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Get daily challenge error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Submit Challenge Solution
+   * @param {Object} data - { solution }
+   * @returns {Promise<Object>}
+   */
+  async submitChallenge(data) {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/submit-challenge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) throw new Error(`Submit failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Submit challenge error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // NEWS (NEU!)
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Get AI News
+   * ✅ NEU: News Endpoint
+   * @returns {Promise<Object>}
+   */
+  async getNews() {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/news`);
+      if (!response.ok) throw new Error(`Get news failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Get news error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // SPARK OF THE DAY (NEU!)
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Get Spark of the Day
+   * ✅ KORRIGIERT: /spark/today → /api/spark/today
+   * @returns {Promise<Object>}
+   */
+  async getSparkOfTheDay() {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/spark/today`);
+      if (!response.ok) throw new Error(`Get spark failed: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('[API] Get spark of the day error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // UTILITY METHODS
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Test Backend Connection
+   * @returns {Promise<boolean>}
+   */
+  async testConnection() {
+    try {
+      const health = await this.health();
+      return health && health.status === 'healthy';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Get API Base URL
+   * @returns {string}
+   */
+  getBaseUrl() {
+    return this.baseUrl;
+  }
+
+  /**
+   * Update API Base URL
+   * @param {string} newBaseUrl
+   */
+  setBaseUrl(newBaseUrl) {
+    this.baseUrl = newBaseUrl;
+    console.log('[API] Base URL updated:', newBaseUrl);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EXPORT & GLOBAL INSTANCE
+// ═══════════════════════════════════════════════════════════════
+
+// Create global instance
+if (typeof window !== 'undefined') {
+  window.HohlRocksAPI = HohlRocksAPI;
   
-  // Log API status on load
-  console.log('[API] Initialized with base:', API_BASE);
-})();
+  // Auto-initialize with correct base URL
+  if (window.API && typeof window.API.base === 'function') {
+    window.api = new HohlRocksAPI(window.API.base());
+    console.log('[API] Initialized with base:', window.API.base());
+  } else {
+    window.api = new HohlRocksAPI();
+    console.log('[API] Initialized with fallback base');
+  }
+}
+
+// Export for modules
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = HohlRocksAPI;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// USAGE EXAMPLES
+// ═══════════════════════════════════════════════════════════════
+
+/*
+
+// Health Check
+const health = await api.health();
+console.log('Backend healthy:', health.status === 'healthy');
+
+// Self Check
+const self = await api.self();
+console.log('Self check:', self);
+
+// Generate Prompt
+const generated = await api.generatePrompt({
+  task: 'Marketing campaign',
+  style: 'professional',
+  context: 'B2B tech startup'
+});
+console.log('Generated:', generated);
+
+// Get All Prompts
+const prompts = await api.getPrompts({ category: 'creative', featured: true });
+console.log('Prompts:', prompts);
+
+// Model Battle
+const battle = await api.modelBattle({ prompt: 'Explain quantum computing' });
+console.log('Battle results:', battle);
+
+// Daily Challenge
+const challenge = await api.getDailyChallenge();
+console.log('Today\'s challenge:', challenge);
+
+// Get News (NEU!)
+const news = await api.getNews();
+console.log('AI News:', news);
+
+// Get Spark of the Day (NEU!)
+const spark = await api.getSparkOfTheDay();
+console.log('Spark:', spark);
+
+// Test Connection
+const isConnected = await api.testConnection();
+console.log('Backend connected:', isConnected);
+
+*/

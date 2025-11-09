@@ -1,60 +1,125 @@
-/* tips-data.js
- * Curated tips (Problem/Situation, Lösung, Prompt) ready for UI.
- * These are static; can be replaced by auto-generated tips later.
- */
-window.TIPS_DATA = [
-  {
-    id: "prompt-basics",
-    title: "AI Prompt Engineering Basics",
-    category: "Praxis",
-    problem: "Unklare Prompts liefern unzuverlässige Ergebnisse.",
-    solution: "Nutze Rollen, Ziel, Format und Qualitätskriterien. Baue Beispiele ein und bitte um Selbstprüfung.",
-    prompt: "Rolle: Du bist ein präziser technischer Redakteur.\nZiel: Erkläre [Thema] verständlich für Einsteiger.\nFormat: Überschrift, 3 Bulletpoints, 1 Beispiel.\nQualität: Korrigiere Fachfehler, nenne Quellenideen.\nBeispiel: ...\n\nAufgabe: Schreibe den Text.",
-    tags: ["Prompting", "Best Practice"]
+// ═══════════════════════════════════════════════════════════════
+// HOHL.ROCKS - TIPS DATA
+// Tooltip-Daten für die Navigation und Features
+// ═══════════════════════════════════════════════════════════════
+
+window.TIPS_DATA = {
+  // Navigation Tips
+  navigation: {
+    home: {
+      title: "Startseite",
+      description: "Zurück zur Hauptseite von hohl.rocks"
+    },
+    promptGenerator: {
+      title: "Prompt Generator",
+      description: "Erstelle professionelle AI-Prompts in 5 verschiedenen Stilen"
+    },
+    promptOptimizer: {
+      title: "Prompt Optimizer",
+      description: "Verbessere deine bestehenden Prompts mit KI-Analyse"
+    },
+    promptLibrary: {
+      title: "Prompt Library",
+      description: "Durchsuche 30+ kuratierte Premium-Prompts"
+    },
+    modelBattle: {
+      title: "Model Battle Arena",
+      description: "Vergleiche Claude, GPT-4 und Perplexity direkt"
+    },
+    dailyChallenge: {
+      title: "Daily AI Challenge",
+      description: "Löse tägliche Prompt-Challenges und sammle Punkte"
+    },
+    news: {
+      title: "KI-News",
+      description: "Die wichtigsten AI-News des Tages"
+    },
+    spark: {
+      title: "Spark of the Day",
+      description: "Tägliche Inspiration für KI-Prompt-Engineering"
+    }
   },
-  {
-    id: "sonnet-best",
-    title: "Claude 3.5 Sonnet Best Practices",
-    category: "Effizienz",
-    problem: "Sonnet liefert viel Text, aber nicht immer die gewünschte Struktur.",
-    solution: "Definiere strukturierte Ausgaben (JSON/Markdown) und nutze Follow-up-Refinement in kurzen Iterationen.",
-    prompt: "Du bist ein strukturierter KI-Analyst. Erzeuge eine Markdown-Checkliste zu [Aufgabe] mit: Ziel, Schritte, Risiken, Zeitbedarf. Kurze Sätze, klare Verben.",
-    tags: ["Claude", "Struktur"]
+
+  // Feature Tips
+  features: {
+    generator: {
+      taskInput: "Beschreibe deine Aufgabe oder dein Ziel",
+      styleSelect: "Wähle einen Prompt-Stil",
+      contextInput: "Gib zusätzlichen Kontext für bessere Ergebnisse",
+      generateButton: "Generiere deinen optimierten Prompt"
+    },
+    optimizer: {
+      promptInput: "Füge deinen bestehenden Prompt hier ein",
+      analyzeButton: "Lasse deinen Prompt analysieren",
+      improvements: "Erhalte konkrete Verbesserungsvorschläge"
+    },
+    library: {
+      search: "Suche nach Prompts nach Kategorie oder Keyword",
+      categories: "Filtere nach Creative, Business, Technical oder Learning",
+      featured: "Zeige nur Featured Prompts",
+      copy: "Kopiere Prompts direkt in die Zwischenablage"
+    },
+    battle: {
+      promptInput: "Gib deinen Prompt ein",
+      startBattle: "Starte den Vergleich zwischen allen 3 Modellen",
+      results: "Vergleiche die Antworten direkt nebeneinander"
+    },
+    challenge: {
+      daily: "Jeden Tag eine neue Prompt-Challenge",
+      submit: "Reiche deine Lösung ein",
+      feedback: "Erhalte sofortiges Feedback von Claude"
+    }
   },
-  {
-    id: "web-perf",
-    title: "Video Optimization for Web",
-    category: "Performance",
-    problem: "Hintergrundvideos sind dunkel oder groß – Performance leidet.",
-    solution: "Nutze CSS-Filter für Look, modern codecs (H.265/AV1), und lazy/hardware-accelerated playback.",
-    prompt: "Gib mir eine kurze Optimierungs-Checkliste für Web-Videos: Codec, Bitrate, Resolution ladders, CSS-Filter, Autoplay-Policies, Accessibility.",
-    tags: ["Web", "Performance"]
+
+  // Onboarding Tips
+  onboarding: {
+    welcome: {
+      title: "Willkommen bei hohl.rocks!",
+      description: "Deine Plattform für professionelles AI-Prompt-Engineering"
+    },
+    quickStart: {
+      title: "Quick Start",
+      steps: [
+        "Wähle ein Feature aus der Navigation",
+        "Probiere den Prompt Generator für einen ersten Test",
+        "Erkunde die Prompt Library für Inspiration",
+        "Nimm an der Daily Challenge teil"
+      ]
+    },
+    tips: {
+      title: "Pro Tips",
+      items: [
+        "Je spezifischer dein Input, desto besser das Ergebnis",
+        "Nutze den Optimizer um bestehende Prompts zu verbessern",
+        "Model Battle zeigt dir welches KI-Modell für deinen Use Case am besten ist",
+        "Die Daily Challenge hilft dir deine Prompt-Skills zu verbessern"
+      ]
+    }
   },
-  {
-    id: "gdpr",
-    title: "DSGVO-konforme KI-Nutzung",
-    category: "Rechtssicherheit",
-    problem: "Unsicherheit bei personenbezogenen Daten in LLM-Prompts.",
-    solution: "Datensparsamkeit, Pseudonymisierung, Model- und Anbieterwahl (EU), Logging ohne PII.",
-    prompt: "Erstelle eine knappe Policy-Vorlage für DSGVO-konforme LLM-Nutzung im Unternehmen inkl. Do/Don't-Liste.",
-    tags: ["Compliance", "Policy"]
+
+  // Status Messages
+  status: {
+    loading: "Lädt...",
+    success: "Erfolgreich!",
+    error: "Ein Fehler ist aufgetreten",
+    offline: "Backend nicht erreichbar - Offline Modus",
+    ready: "Bereit",
+    processing: "Verarbeite..."
   },
-  {
-    id: "eu-ai-act",
-    title: "EU AI Act – Was Sie wissen müssen",
-    category: "Compliance",
-    problem: "Neue Pflichten für KI-Anbieter und -Nutzer sind unklar.",
-    solution: "Stufe die eigenen Systeme ein (Risiko-Level), implementiere Transparenz & Human Oversight, dokumentiere Tests.",
-    prompt: "Fasse die Pflichten für [Use Case] nach EU AI Act zusammen (5 Punkte), inkl. Risikostufe & To-do-Liste.",
-    tags: ["Regulierung"]
-  },
-  {
-    id: "copywriter",
-    title: "Profi-Text mit Iterationen",
-    category: "Produktivität",
-    problem: "Entwürfe sind ok, aber nicht druckreif.",
-    solution: "Arbeite in 2 Phasen: Ideenliste → Auswahl → Feinschliff mit Stil-Constraints & Faktencheck.",
-    prompt: "Phase 1: 10 knackige Ideen zu [Thema].\nWähle 3 stärkste.\nPhase 2: Schreibe finalen Text (max. 220 Wörter) im Stil 'klar, modern, ohne Jargon'.",
-    tags: ["Schreiben", "Qualität"]
+
+  // Error Messages
+  errors: {
+    network: "Netzwerkfehler - Bitte prüfe deine Internetverbindung",
+    api: "API-Fehler - Bitte versuche es später erneut",
+    validation: "Ungültige Eingabe - Bitte prüfe deine Daten",
+    timeout: "Zeitüberschreitung - Der Server antwortet nicht",
+    unknown: "Unbekannter Fehler - Bitte kontaktiere den Support"
   }
-];
+};
+
+// Export für Module
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = window.TIPS_DATA;
+}
+
+console.log('[Tips] TIPS_DATA loaded successfully');

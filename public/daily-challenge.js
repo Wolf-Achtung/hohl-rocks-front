@@ -1,7 +1,8 @@
 // ===================================================================
-// DAILY CHALLENGE - JavaScript (OPTIMIZED v2.1 - IIFE)
+// DAILY CHALLENGE - JavaScript (OPTIMIZED v2.2 - FULLY FIXED)
 // Features: API Integration, LocalStorage, Streak Tracking, Badge System
 // Fixed: API_BASE duplication, DOM access timing, defensive checks, scope conflicts
+// Added: Better error handling, null checks, fallback messages
 // ===================================================================
 
 (function() {
@@ -19,11 +20,20 @@ let loadingState, challengeSelection, challengeActive, challengeResult, historyS
 const getApiBase = () => {
   // Priority 1: window.API.base() (from api-config.js)
   if (window.API && typeof window.API.base === 'function') {
-    return window.API.base();
+    const base = window.API.base();
+    console.log('[Daily Challenge] Using API.base():', base);
+    return base;
   }
   
-  // Priority 2: Meta tag fallback
-  console.error('[Daily Challenge] api-config.js nicht geladen!');
+  // Priority 2: window.api instance
+  if (window.api && typeof window.api.getBaseUrl === 'function') {
+    const base = window.api.getBaseUrl();
+    console.log('[Daily Challenge] Using api.getBaseUrl():', base);
+    return base;
+  }
+  
+  // Priority 3: Meta tag fallback
+  console.warn('[Daily Challenge] api-config.js nicht geladen, using fallbacks');
   const metaTag = document.querySelector('meta[name="x-api-base"]');
   if (metaTag) {
     const base = metaTag.getAttribute('content');
@@ -33,7 +43,7 @@ const getApiBase = () => {
     }
   }
   
-  // Priority 3: Production fallback
+  // Priority 4: Production fallback
   console.warn('[Daily Challenge] Using hardcoded production fallback');
   return 'https://hohl-rocks-back-production.up.railway.app';
 };
@@ -296,26 +306,46 @@ async function loadChallenge() {
   }
   
   try {
-    console.log('🎯 Loading Daily Challenge...');
+    console.log('🎯 [Daily Challenge] Loading...');
     loadingState.style.display = 'block';
     challengeSelection.style.display = 'none';
 
     const API_BASE = getApiBase();
+    
+    // ✅ WICHTIG: Validiere API Base
+    if (!API_BASE) {
+      throw new Error('API Base URL not available');
+    }
+    
     const url = `${API_BASE}/api/daily-challenge`;
-    console.log('📡 Fetching from:', url);
+    console.log('📡 [Daily Challenge] Fetching from:', url);
     
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     
-    console.log('📥 Response status:', response.status);
+    console.log('📥 [Daily Challenge] Response status:', response.status);
     
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Response not OK:', errorText);
-      throw new Error(`Failed to load challenge: ${response.status}`);
+      const errorText = await response.text().catch(() => 'No error text');
+      console.error('❌ [Daily Challenge] Response not OK:', errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('✅ Challenge data received:', data);
+    console.log('✅ [Daily Challenge] Data received:', data);
+    
+    // ✅ WICHTIG: Validiere Response Format
+    if (!data) {
+      throw new Error('Empty response from API');
+    }
+    
+    if (!data.challenge) {
+      throw new Error('No challenge data in response');
+    }
     
     currentChallenge = data.challenge;
 
@@ -324,40 +354,70 @@ async function loadChallenge() {
 
     loadingState.style.display = 'none';
     challengeSelection.style.display = 'block';
-    console.log('✨ Challenge displayed successfully!');
+    console.log('✨ [Daily Challenge] Displayed successfully!');
 
   } catch (error) {
-    console.error('💥 Error loading challenge:', error);
+    console.error('💥 [Daily Challenge] Load error:', error);
     const API_BASE = getApiBase();
+    
+    // ✅ BESSERE Fehlermeldung mit mehr Details
     loadingState.innerHTML = `
-      <div class="loader"></div>
-      <p style="color: #ef4444; margin-top: 20px;">❌ Fehler beim Laden der Challenge</p>
-      <p style="font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 10px;">
-        ${error.message}<br>
-        Backend: ${API_BASE}
-      </p>
-      <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer;">
-        🔄 Neu versuchen
-      </button>
+      <div class="error-container" style="text-align: center; padding: 40px;">
+        <div class="error-icon" style="font-size: 64px; margin-bottom: 20px;">⚠️</div>
+        <h3 style="color: #ef4444; margin-bottom: 10px;">Fehler beim Laden der Challenge</h3>
+        <p style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 20px;">
+          ${error.message}
+        </p>
+        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 30px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+          <div>Backend URL: ${API_BASE}</div>
+          <div>Endpoint: /api/daily-challenge</div>
+          <div>Zeit: ${new Date().toLocaleTimeString('de-DE')}</div>
+        </div>
+        <button onclick="location.reload()" style="padding: 12px 24px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          🔄 Neu versuchen
+        </button>
+        <div style="margin-top: 30px; padding: 20px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">
+          <h4 style="color: #3b82f6; margin-bottom: 10px;">💡 Mögliche Lösungen:</h4>
+          <ul style="text-align: left; color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.8;">
+            <li>Prüfe deine Internetverbindung</li>
+            <li>Das Backend könnte gerade neu starten (2-3 Min warten)</li>
+            <li>Browser-Cache leeren (Ctrl+Shift+R)</li>
+            <li>In 5 Minuten nochmal versuchen</li>
+          </ul>
+        </div>
+      </div>
     `;
   }
 }
 
 function displayChallengeSelection(challenge) {
+  // ✅ Validiere Challenge Daten
+  if (!challenge) {
+    console.error('[Daily Challenge] Challenge data is null');
+    return;
+  }
+  
   // Theme
   const themeEl = document.getElementById('challenge-theme');
-  if (themeEl) themeEl.textContent = challenge.theme;
+  if (themeEl && challenge.theme) {
+    themeEl.textContent = challenge.theme;
+  }
 
   // Difficulties
   ['beginner', 'intermediate', 'expert'].forEach(difficulty => {
+    if (!challenge.challenges || !challenge.challenges[difficulty]) {
+      console.warn(`[Daily Challenge] Missing data for difficulty: ${difficulty}`);
+      return;
+    }
+    
     const data = challenge.challenges[difficulty];
     const titleEl = document.getElementById(`title-${difficulty}`);
     const descEl = document.getElementById(`desc-${difficulty}`);
     const timeEl = document.getElementById(`time-${difficulty}`);
     
-    if (titleEl) titleEl.textContent = data.title;
-    if (descEl) descEl.textContent = data.description;
-    if (timeEl) timeEl.textContent = data.estimatedTime;
+    if (titleEl && data.title) titleEl.textContent = data.title;
+    if (descEl && data.description) descEl.textContent = data.description;
+    if (timeEl && data.estimatedTime) timeEl.textContent = data.estimatedTime;
   });
 }
 
@@ -368,6 +428,12 @@ function displayChallengeSelection(challenge) {
 function startChallenge(difficulty) {
   if (!challengeSelection || !challengeActive) {
     console.error('[Daily Challenge] Required DOM elements not found for startChallenge');
+    return;
+  }
+  
+  if (!currentChallenge || !currentChallenge.challenges || !currentChallenge.challenges[difficulty]) {
+    console.error('[Daily Challenge] Invalid challenge data');
+    showToast('Challenge-Daten nicht verfügbar', 'error');
     return;
   }
   
@@ -416,6 +482,12 @@ async function submitAnswer() {
   if (!answerInput) return;
   
   const answer = answerInput.value.trim();
+  
+  if (!currentChallenge || !currentChallenge.challenges || !currentChallenge.challenges[selectedDifficulty]) {
+    showToast('Challenge-Daten nicht verfügbar', 'error');
+    return;
+  }
+  
   const task = currentChallenge.challenges[selectedDifficulty].task;
 
   if (answer.length < 20) {
@@ -433,7 +505,11 @@ async function submitAnswer() {
 
     // Call API
     const API_BASE = getApiBase();
-    const response = await fetch(`${API_BASE}/api/submit-challenge`, {
+    const url = `${API_BASE}/api/submit-challenge`;
+    
+    console.log('[Daily Challenge] Submitting to:', url);
+    
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -446,10 +522,15 @@ async function submitAnswer() {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to submit challenge');
+      throw new Error(`HTTP ${response.status}`);
     }
 
     const data = await response.json();
+    
+    if (!data || !data.evaluation) {
+      throw new Error('Invalid evaluation response');
+    }
+    
     const evaluation = data.evaluation;
 
     // Update stats
@@ -466,7 +547,7 @@ async function submitAnswer() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch (error) {
-    console.error('Error submitting answer:', error);
+    console.error('[Daily Challenge] Submit error:', error);
     showToast('Fehler beim Einreichen. Bitte versuche es erneut.', 'error');
     
     // Re-enable button
@@ -509,7 +590,7 @@ function displayResult(evaluation) {
 
   // Positive feedback
   const positiveList = document.getElementById('feedback-positive');
-  if (positiveList) {
+  if (positiveList && evaluation.feedback && evaluation.feedback.positive) {
     positiveList.innerHTML = '';
     evaluation.feedback.positive.forEach(item => {
       const li = document.createElement('li');
@@ -520,7 +601,7 @@ function displayResult(evaluation) {
 
   // Improvements
   const improvementsList = document.getElementById('feedback-improvements');
-  if (improvementsList) {
+  if (improvementsList && evaluation.feedback && evaluation.feedback.improvements) {
     improvementsList.innerHTML = '';
     evaluation.feedback.improvements.forEach(item => {
       const li = document.createElement('li');

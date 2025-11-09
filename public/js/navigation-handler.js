@@ -2,6 +2,7 @@
 /**
  * navigation-handler.js
  * Behandelt alle Navigation-Button Clicks (data-action)
+ * FIXED: API calls, error handling, null checks
  */
 (() => {
   'use strict';
@@ -91,27 +92,62 @@
   // Load Daily Spotlight
   async function loadDaily() {
     const body = document.getElementById('daily-body');
-    if (!body) return;
+    if (!body) {
+      console.error('[Nav] Daily body element not found');
+      return;
+    }
     
     body.innerHTML = '<p>Lade Spotlight...</p>';
     
     try {
-      if (!window.API?.sparkToday) {
-        throw new Error('API not initialized');
+      // ✅ FIX: Verwende window.api (lowercase!) mit getSparkOfTheDay Methode
+      if (!window.api || typeof window.api.getSparkOfTheDay !== 'function') {
+        throw new Error('API not initialized or getSparkOfTheDay method not available');
       }
       
-      const data = await window.API.sparkToday();
+      console.log('[Nav] Calling api.getSparkOfTheDay()');
+      const data = await window.api.getSparkOfTheDay();
+      console.log('[Nav] Spark data received:', data);
       
-      const title = data?.title || 'Spotlight';
-      const text = data?.text || 'Heute kein Spotlight verfügbar.';
+      // ✅ FIX: Bessere Daten-Validierung
+      if (!data || !data.spark) {
+        throw new Error('Invalid response format - no spark data');
+      }
+      
+      const sparkText = data.spark || 'Heute kein Spotlight verfügbar.';
+      const sparkAuthor = data.author || 'hohl.rocks';
+      const sparkCategory = data.category || '';
       
       body.innerHTML = `
-        <h3>${escapeHtml(title)}</h3>
-        <p>${escapeHtml(text)}</p>
+        <div class="spark-content">
+          <div class="spark-icon">✨</div>
+          <blockquote class="spark-text">${escapeHtml(sparkText)}</blockquote>
+          <div class="spark-meta">
+            <span class="spark-author">— ${escapeHtml(sparkAuthor)}</span>
+            ${sparkCategory ? `<span class="spark-category">${escapeHtml(sparkCategory)}</span>` : ''}
+          </div>
+        </div>
       `;
     } catch (err) {
-      console.error('[Nav] Error loading daily:', err);
-      body.innerHTML = '<p>Fehler beim Laden des Spotlight.</p>';
+      console.error('[Nav] Error loading daily spark:', err);
+      
+      // ✅ FIX: Bessere Fehlermeldung mit Fallback
+      body.innerHTML = `
+        <div class="error-message">
+          <p style="color: #ef4444;">⚠️ Fehler beim Laden des Spark of the Day</p>
+          <p style="font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 10px;">
+            ${escapeHtml(err.message)}
+          </p>
+          <div class="spark-fallback" style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+            <p style="font-style: italic; color: rgba(255,255,255,0.8);">
+              "Die Kunst des Promptens: Konkret genug für Relevanz, offen genug für Kreativität."
+            </p>
+            <p style="margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.5);">
+              — hohl.rocks (Offline Fallback)
+            </p>
+          </div>
+        </div>
+      `;
     }
   }
 
@@ -185,6 +221,15 @@
   domReady(() => {
     console.log('[Nav] Navigation handler initialized');
     
+    // ✅ FIX: Warte kurz auf API Initialisierung
+    setTimeout(() => {
+      if (window.api) {
+        console.log('[Nav] API available:', typeof window.api);
+      } else {
+        console.warn('[Nav] window.api not available yet');
+      }
+    }, 100);
+    
     // Navigation clicks
     document.addEventListener('click', handleNavClick);
     
@@ -199,7 +244,11 @@
       console.warn('[Nav] TIPS_DATA not found, loading from tips-data.js');
       const script = document.createElement('script');
       script.src = '/js/tips-data.js';
+      script.onload = () => console.log('[Nav] tips-data.js loaded');
+      script.onerror = () => console.error('[Nav] Failed to load tips-data.js');
       document.head.appendChild(script);
+    } else {
+      console.log('[Nav] TIPS_DATA already loaded');
     }
   });
 })();

@@ -34,7 +34,7 @@
         position:fixed;inset:0;width:100%;height:100%;
         object-fit:cover;z-index:-2;
         
-        /* Visual Enhancement (leicht reduziert für besseren Kontrast) */
+        /* Visual Enhancement (optimiert für besseren Kontrast) */
         filter:brightness(1.3) contrast(1.1) saturate(1.1);
         
         /* ⚡ KRITISCH: Chrome GPU-Acceleration Fix */
@@ -524,7 +524,7 @@
       <nav class="site-nav" aria-label="Hauptnavigation">
         <button class="nav-btn" data-action="tips" type="button">KI-Tipps</button>
         <button class="nav-btn" data-action="news" type="button">KI-News</button>
-        <button class="nav-btn" data-action="daily" type="button">Daily Challenge</button>
+        <button class="nav-btn" data-action="ki-projekte" type="button">KI-Projekte</button>
         <button class="nav-btn" data-action="impressum" type="button">Impressum</button>
       </nav>
     </header>
@@ -1183,6 +1183,9 @@
         }
       });
     </script>
+    
+    <!-- ⚡ KRITISCH: tips-data.js MUSS VOR navigation-handler.js geladen werden! -->
+    <script src="/js/tips-data.js"></script>
     
     <script type="module" src="/js/bubbles-noise.js"></script>
     <script type="module" src="/js/bubbleEngine.js"></script>

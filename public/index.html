@@ -29,15 +29,50 @@
       /* Base Layout */
       html,body{height:100%;margin:0;overflow-x:hidden}
       
-      /* Background Video */
+      /* Background Video - Chrome Performance Optimized ⚡ */
       .site-bg video.bg-video{
         position:fixed;inset:0;width:100%;height:100%;
         object-fit:cover;z-index:-2;
-        filter:brightness(1.5) contrast(1.2) saturate(1.15);
-        /* Performance Optimizations */
-        will-change:transform;
-        transform:translateZ(0);
+        
+        /* Visual Enhancement (leicht reduziert für besseren Kontrast) */
+        filter:brightness(1.3) contrast(1.1) saturate(1.1);
+        
+        /* ⚡ KRITISCH: Chrome GPU-Acceleration Fix */
+        transform:translate3d(0, 0, 0) scale(1.0001);
         backface-visibility:hidden;
+        perspective:1000px;
+        will-change:transform;
+        
+        /* 🎯 Layer Isolation (verhindert Repaints beim Scrollen) */
+        isolation:isolate;
+        
+        /* 📦 Containment (massive Performance-Verbesserung in Chrome) */
+        contain:layout style paint;
+        
+        /* ✨ Smooth Rendering */
+        image-rendering:-webkit-optimize-contrast;
+        -webkit-font-smoothing:antialiased;
+        
+        /* Smooth Filter Transitions */
+        transition:filter 0.3s ease;
+      }
+      
+      /* Chrome-spezifische Extra-Optimierungen */
+      @supports (-webkit-appearance:none){
+        .site-bg video.bg-video{
+          -webkit-transform:translate3d(0, 0, 0) scale(1.0001);
+          -webkit-backface-visibility:hidden;
+          -webkit-perspective:1000px;
+          will-change:transform, opacity;
+        }
+      }
+      
+      /* Accessibility: Reduced Motion Support */
+      @media (prefers-reduced-motion:reduce){
+        .site-bg video.bg-video{
+          animation:none !important;
+          transition:none !important;
+        }
       }
       
       /* Jelly Canvas (Ambient Background) */

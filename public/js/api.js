@@ -280,13 +280,46 @@ class HohlRocksAPI {
 // Create global instance
 if (typeof window !== 'undefined') {
   window.HohlRocksAPI = HohlRocksAPI;
-  
+
   // Auto-initialize with correct base URL
-  if (window.API && typeof window.API.base === 'function') {
-    window.api = new HohlRocksAPI(window.API.base());
+  const apiInstance = window.API && typeof window.API.base === 'function'
+    ? new HohlRocksAPI(window.API.base())
+    : new HohlRocksAPI();
+
+  // Make instance available as both window.api (lowercase) and add methods to window.API (uppercase)
+  window.api = apiInstance;
+
+  // Copy all API methods to window.API for unified access
+  if (window.API) {
+    // Preserve existing API config methods (base, isReady, setBase)
+    const configMethods = {
+      base: window.API.base,
+      isReady: window.API.isReady,
+      setBase: window.API.setBase
+    };
+
+    // Copy all methods from the instance to window.API
+    Object.getOwnPropertyNames(Object.getPrototypeOf(apiInstance)).forEach(method => {
+      if (method !== 'constructor' && typeof apiInstance[method] === 'function') {
+        window.API[method] = apiInstance[method].bind(apiInstance);
+      }
+    });
+
+    // Restore config methods (in case they were overwritten)
+    Object.assign(window.API, configMethods);
+
+    // Add special aliases
+    window.API.sparkToday = apiInstance.getSparkOfTheDay.bind(apiInstance);
+
+    // Override setBase to update the instance's baseUrl
+    window.API.setBase = function(newBase) {
+      apiInstance.setBaseUrl(newBase);
+      console.log('[API] Base URL updated via setBase:', newBase);
+    };
+
     console.log('[API] Initialized with base:', window.API.base());
+    console.log('[API] Available as window.api and window.API');
   } else {
-    window.api = new HohlRocksAPI();
     console.log('[API] Initialized with fallback base');
   }
 }

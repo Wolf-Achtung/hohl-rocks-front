@@ -75,21 +75,51 @@
   // ═══════════════════════════════════════════════════════════════
   // WINDOW.API OBJECT
   // ═══════════════════════════════════════════════════════════════
-  
+
   const API_BASE = detectApiBase();
-  
+
   // Globales API Object erstellen
   window.API = window.API || {};
-  
+
   // base() Funktion hinzufügen (für Feature-Files)
   window.API.base = function() {
     return API_BASE;
   };
-  
+
   // isReady() Funktion hinzufügen
   window.API.isReady = function() {
     return true;
   };
+
+  // setBase() Funktion hinzufügen (für app.js)
+  window.API.setBase = function(newBase) {
+    // This will be overridden by api.js, but provide a stub for early access
+    console.log('[API Config] setBase called before api.js loaded:', newBase);
+  };
+
+  // Proxy-Funktionen für API-Methoden (werden später von api.js überschrieben)
+  // Diese stellen sicher, dass Aufrufe funktionieren, auch wenn api.js später lädt
+  const createApiProxy = (methodName) => {
+    return async function(...args) {
+      // Warte auf die echte API-Instanz
+      if (window.api && typeof window.api[methodName] === 'function') {
+        return await window.api[methodName](...args);
+      }
+      throw new Error(`API method ${methodName} not yet initialized. Please wait for api.js to load.`);
+    };
+  };
+
+  // Proxy für alle wichtigen API-Methoden
+  window.API.self = createApiProxy('self');
+  window.API.sparkToday = createApiProxy('getSparkOfTheDay');
+  window.API.health = createApiProxy('health');
+  window.API.generatePrompt = createApiProxy('generatePrompt');
+  window.API.optimizePrompt = createApiProxy('optimizePrompt');
+  window.API.getPrompts = createApiProxy('getPrompts');
+  window.API.modelBattle = createApiProxy('modelBattle');
+  window.API.getDailyChallenge = createApiProxy('getDailyChallenge');
+  window.API.submitChallenge = createApiProxy('submitChallenge');
+  window.API.getNews = createApiProxy('getNews');
 
   // ═══════════════════════════════════════════════════════════════
   // INITIALIZATION & CONSOLE OUTPUT

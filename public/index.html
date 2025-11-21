@@ -14,6 +14,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
+    <!-- Hero Poster Preload for fast LCP -->
+    <link rel="preload" as="image" href="/videos/road_poster.jpg" fetchpriority="high" />
+    
     <!-- Styles -->
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/css/shimmer-effect.css" />
@@ -500,13 +503,16 @@
         muted 
         loop 
         playsinline 
-        preload="auto"
-        poster="videos/road_poster.jpg"
+        webkit-playsinline
+        preload="metadata"
+        poster="/videos/road_poster.jpg"
+        width="1280"
+        height="720"
       >
-        <!-- WebM (VP9) für moderne Browser - beste Qualität/Kompression -->
-        <source src="videos/road_loop_720p_hq_vp9.webm" type="video/webm; codecs=vp9">
-        <!-- MP4 (H.264) als Fallback für Safari & ältere Browser -->
-        <source src="videos/road_loop_720p_hq_h264.mp4" type="video/mp4; codecs=avc1.4d401f">
+        <!-- Modern browsers: VP9 (beste Qualität/Kompression) -->
+        <source src="/videos/road_loop_720p_hq_vp9.webm" type="video/webm; codecs=vp9">
+        <!-- Universal fallback: H.264 (MP4) für Safari & ältere Browser -->
+        <source src="/videos/road_loop_720p_hq_h264.mp4" type="video/mp4; codecs=avc1.4d401f">
         <!-- Fallback-Text für Browser ohne Video-Support -->
         Ihr Browser unterstützt keine Hintergrundvideos.
       </video>
@@ -1158,28 +1164,56 @@
     <script type="module" src="/js/utils.js"></script>
     <script type="module" src="/js/api.js"></script>
     
-    <!-- Background Video Autoplay Fallback -->
+    <!-- Background Video Autoplay & Visibility Handling -->
     <script>
-      // Stelle sicher, dass Video auf allen Geräten abspielt
       document.addEventListener('DOMContentLoaded', () => {
         const video = document.querySelector('.bg-video');
-        if (video) {
-          // Promise-basiertes Abspielen mit Fehlerbehandlung
+        if (!video) return;
+
+        const playVideo = () => {
           const playPromise = video.play();
-          
           if (playPromise !== undefined) {
             playPromise
               .then(() => {
                 console.log('✅ Background video playing');
               })
               .catch(error => {
-                console.log('⚠️ Autoplay blocked, trying after user interaction');
-                // Fallback: Starte Video bei erster User-Interaktion
-                document.body.addEventListener('click', () => {
+                console.log('⚠️ Autoplay blocked, waiting for first interaction', error);
+                const onFirstInteract = () => {
                   video.play().catch(e => console.log('Video play failed:', e));
-                }, { once: true });
+                  document.removeEventListener('click', onFirstInteract);
+                  document.removeEventListener('keydown', onFirstInteract);
+                };
+                document.addEventListener('click', onFirstInteract, { once: true });
+                document.addEventListener('keydown', onFirstInteract, { once: true });
               });
           }
+        };
+
+        // Start playback immediately
+        playVideo();
+
+        // Pause video when it is not visible to save CPU/Battery
+        try {
+          const observer = new IntersectionObserver(
+            entries => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  if (video.paused) {
+                    playVideo();
+                  }
+                } else {
+                  if (!video.paused && !video.ended) {
+                    video.pause();
+                  }
+                }
+              });
+            },
+            { threshold: 0.35 }
+          );
+          observer.observe(video);
+        } catch (err) {
+          console.log('IntersectionObserver not available:', err);
         }
       });
     </script>

@@ -42,13 +42,18 @@
       /* Reset & Base */
       *, *::before, *::after { box-sizing: border-box; }
 
-      html, body {
+      html {
+        height: 100%;
+        background: var(--bg-dark); /* Fallback wenn Video nicht lädt */
+      }
+
+      body {
         height: 100%;
         margin: 0;
         padding: 0;
         overflow-x: hidden;
         font-family: var(--font-family);
-        background: var(--bg-dark);
+        background: transparent; /* WICHTIG: Transparent damit Video dahinter sichtbar */
         color: var(--text-primary);
         line-height: 1.6;
         scroll-behavior: smooth;

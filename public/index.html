@@ -102,11 +102,13 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: brightness(1.2) contrast(1.05) saturate(1.1);
-        transform: translate3d(0, 0, 0) scale(1.0001);
+        filter: brightness(1.1) contrast(1.02);
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
         backface-visibility: hidden;
-        will-change: transform;
-        contain: layout style paint;
+        -webkit-backface-visibility: hidden;
+        perspective: 1000;
+        -webkit-perspective: 1000;
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -292,24 +294,48 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         GLASSMORPHISM CARDS
+         HERO-STYLE TEXT (wiederverwendbar)
+         ═══════════════════════════════════════════════════════════════ */
+
+      .hero-style-text {
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.25));
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         SOLID COLORED CARDS (statt Glass)
          ═══════════════════════════════════════════════════════════════ */
 
       .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--glass-border);
+        background: linear-gradient(145deg, rgba(30, 30, 45, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%);
+        border: 1px solid rgba(99, 102, 241, 0.2);
         border-radius: 20px;
         padding: 1.5rem;
         transition: all 0.3s ease;
       }
 
       .glass-card:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(99, 102, 241, 0.3);
+        background: linear-gradient(145deg, rgba(40, 40, 60, 0.98) 0%, rgba(30, 30, 50, 1) 100%);
+        border-color: rgba(99, 102, 241, 0.5);
         transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
       }
+
+      /* Projekt-spezifische Farben */
+      .project-card:nth-child(1) { background: linear-gradient(145deg, rgba(99, 102, 241, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); }
+      .project-card:nth-child(2) { background: linear-gradient(145deg, rgba(139, 92, 246, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); }
+      .project-card:nth-child(3) { background: linear-gradient(145deg, rgba(236, 72, 153, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); }
+      .project-card:nth-child(4) { background: linear-gradient(145deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); }
+
+      .project-card:nth-child(1):hover { border-color: rgba(99, 102, 241, 0.6); }
+      .project-card:nth-child(2):hover { border-color: rgba(139, 92, 246, 0.6); }
+      .project-card:nth-child(3):hover { border-color: rgba(236, 72, 153, 0.6); }
+      .project-card:nth-child(4):hover { border-color: rgba(34, 197, 94, 0.6); }
 
       /* ═══════════════════════════════════════════════════════════════
          PROJECTS SECTION
@@ -330,10 +356,93 @@
         overflow: hidden;
       }
 
-      .project-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        display: block;
+      /* Tool-Card Farben */
+      .tool-card:first-child .glass-card {
+        background: linear-gradient(145deg, rgba(99, 102, 241, 0.2) 0%, rgba(20, 20, 35, 0.95) 100%);
+        border-color: rgba(99, 102, 241, 0.4);
+      }
+      .tool-card:last-child .glass-card {
+        background: linear-gradient(145deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         MUSIC PLAYER
+         ═══════════════════════════════════════════════════════════════ */
+
+      .music-player {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        background: linear-gradient(145deg, rgba(30, 30, 45, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .music-player:hover {
+        border-color: rgba(99, 102, 241, 0.6);
+        transform: scale(1.05);
+      }
+
+      .music-player.playing {
+        border-color: rgba(34, 197, 94, 0.6);
+      }
+
+      .music-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .music-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 16px;
+      }
+
+      .music-bar {
+        width: 3px;
+        background: var(--accent-primary);
+        border-radius: 2px;
+        transition: height 0.2s ease;
+      }
+
+      .music-player:not(.playing) .music-bar {
+        height: 4px !important;
+      }
+
+      .music-player.playing .music-bar:nth-child(1) { animation: musicBar 0.5s ease-in-out infinite alternate; }
+      .music-player.playing .music-bar:nth-child(2) { animation: musicBar 0.5s ease-in-out infinite alternate 0.1s; }
+      .music-player.playing .music-bar:nth-child(3) { animation: musicBar 0.5s ease-in-out infinite alternate 0.2s; }
+      .music-player.playing .music-bar:nth-child(4) { animation: musicBar 0.5s ease-in-out infinite alternate 0.3s; }
+
+      @keyframes musicBar {
+        0% { height: 4px; }
+        100% { height: 16px; }
+      }
+
+      .music-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      @media (max-width: 768px) {
+        .music-player {
+          bottom: 1rem;
+          right: 1rem;
+          padding: 0.6rem 1rem;
+        }
+        .music-label { display: none; }
       }
 
       .project-title {
@@ -821,8 +930,8 @@
     <section class="projects-section" id="projekte">
       <div class="section-container">
         <div class="section-header fade-in">
-          <h2 class="section-title">
-            <span>🚀</span> Meine Projekte
+          <h2 class="section-title hero-style-text">
+            Meine Projekte
           </h2>
           <p class="section-subtitle">
             4 Live-Projekte – alle mit KI gebaut, alle in Produktion
@@ -832,7 +941,6 @@
         <div class="projects-grid">
           <!-- KI-Sicherheit.jetzt -->
           <article class="glass-card project-card fade-in">
-            <span class="project-icon">🎯</span>
             <h3 class="project-title">ki-sicherheit.jetzt</h3>
             <p class="project-desc">
               KI-Readiness-Beratung für Unternehmen. EU AI Act konform.
@@ -849,7 +957,6 @@
 
           <!-- art-radar.berlin -->
           <article class="glass-card project-card fade-in">
-            <span class="project-icon">🎨</span>
             <h3 class="project-title">art-radar.berlin</h3>
             <p class="project-desc">
               Dein KI-Kunstguide für Berlin. Automatisch aktualisierte
@@ -866,7 +973,6 @@
 
           <!-- akut.jetzt -->
           <article class="glass-card project-card fade-in">
-            <span class="project-icon">🆘</span>
             <h3 class="project-title">akut.jetzt</h3>
             <p class="project-desc">
               Notfall-App mit KI-Unterstützung. Funktioniert auch offline.
@@ -883,7 +989,6 @@
 
           <!-- achtung.jetzt -->
           <article class="glass-card project-card fade-in">
-            <span class="project-icon">🔒</span>
             <h3 class="project-title">achtung.jetzt</h3>
             <p class="project-desc">
               Bevor du sendest: KI checkt deine Texte auf sensible Daten
@@ -905,8 +1010,8 @@
     <section class="tools-section" id="ausprobieren">
       <div class="section-container">
         <div class="section-header fade-in">
-          <h2 class="section-title">
-            <span>⚡</span> KI ausprobieren
+          <h2 class="section-title hero-style-text">
+            KI ausprobieren
           </h2>
           <p class="section-subtitle">
             Erlebe selbst, wie unterschiedlich KI-Modelle antworten
@@ -916,9 +1021,8 @@
         <div class="tools-grid">
           <!-- Model Battle - Hauptfeature -->
           <a href="/model-battle.html" class="tool-card fade-in">
-            <div class="glass-card" style="border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.1);">
+            <div class="glass-card">
               <div class="tool-header">
-                <span class="tool-icon">⚔️</span>
                 <div>
                   <h3 class="tool-title">Model Battle Arena</h3>
                   <p class="tool-subtitle">Claude vs GPT vs Perplexity</p>
@@ -932,11 +1036,10 @@
             </div>
           </a>
 
-          <!-- Frag die KI -->
+          <!-- KI-Beratung -->
           <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="tool-card fade-in">
             <div class="glass-card">
               <div class="tool-header">
-                <span class="tool-icon">💬</span>
                 <div>
                   <h3 class="tool-title">KI-Beratung für Unternehmen</h3>
                   <p class="tool-subtitle">Readiness-Report in 5 Minuten</p>
@@ -957,8 +1060,8 @@
     <section class="timeline-section" id="ueber">
       <div class="section-container">
         <div class="section-header fade-in">
-          <h2 class="section-title">
-            <span>👤</span> Über Wolf Hohl
+          <h2 class="section-title hero-style-text">
+            Über Wolf Hohl
           </h2>
           <p class="section-subtitle">
             Vom Kino-Trailer zur KI. 25 Jahre Erfahrung, neu gedacht.
@@ -967,8 +1070,13 @@
 
         <!-- TÜV Badge prominent -->
         <div class="fade-in" style="text-align: center; margin-bottom: 3rem;">
-          <div style="display: inline-flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 16px;">
-            <span style="font-size: 2.5rem;">🏅</span>
+          <div style="display: inline-flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; background: linear-gradient(145deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 16px;">
+            <div style="width: 48px; height: 48px; background: rgba(34, 197, 94, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(34, 197, 94, 0.5);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
             <div style="text-align: left;">
               <div style="font-size: 1.25rem; font-weight: 700; color: #22c55e;">TÜV-zertifizierter KI-Manager</div>
               <div style="font-size: 0.9rem; color: var(--text-secondary);">TÜV Austria · Zertifiziert 2024</div>
@@ -1007,6 +1115,22 @@
         </div>
       </div>
     </section>
+
+    <!-- Music Player -->
+    <div class="music-player" id="music-player" title="Musik an/aus">
+      <div class="music-icon">
+        <div class="music-bars">
+          <div class="music-bar" style="height: 8px;"></div>
+          <div class="music-bar" style="height: 14px;"></div>
+          <div class="music-bar" style="height: 6px;"></div>
+          <div class="music-bar" style="height: 12px;"></div>
+        </div>
+      </div>
+      <span class="music-label">hohl.rocks</span>
+    </div>
+    <audio id="bg-music" loop preload="none">
+      <source src="/audio/ambient_loop.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- Footer -->
     <footer class="site-footer">
@@ -1238,6 +1362,43 @@
               target.scrollIntoView({ behavior: 'smooth' });
             }
           });
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // MUSIC PLAYER - hohl.rocks
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const player = document.getElementById('music-player');
+        const audio = document.getElementById('bg-music');
+        if (!player || !audio) return;
+
+        let isPlaying = false;
+
+        player.addEventListener('click', () => {
+          if (isPlaying) {
+            audio.pause();
+            player.classList.remove('playing');
+            isPlaying = false;
+          } else {
+            audio.volume = 0.3;
+            audio.play().then(() => {
+              player.classList.add('playing');
+              isPlaying = true;
+            }).catch(err => {
+              console.log('Audio playback failed:', err);
+            });
+          }
+        });
+
+        // Pause when page is hidden
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden && isPlaying) {
+            audio.pause();
+            player.classList.remove('playing');
+            isPlaying = false;
+          }
         });
       });
     </script>

@@ -104,13 +104,20 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: brightness(1.1) contrast(1.02);
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        perspective: 1000;
-        -webkit-perspective: 1000;
+        /* Keine Filter - verbessert Chrome-Performance erheblich */
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
+        -webkit-transform: translate3d(0, 0, 0);
+      }
+
+      /* iOS/Mobile: Statisches Bild statt Video */
+      @media (max-width: 768px), (hover: none) {
+        .bg-video {
+          display: none;
+        }
+        .site-bg {
+          background: url('/videos/road_poster.jpg') center/cover no-repeat;
+        }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -659,6 +666,119 @@
         font-weight: 600;
         color: var(--text-primary);
         margin-top: 0.25rem;
+      }
+
+      .now-playing-artist {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      /* Track Navigation */
+      .track-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .track-nav-btn {
+        width: 36px;
+        height: 36px;
+        background: rgba(0, 47, 167, 0.15);
+        border: 1px solid rgba(0, 47, 167, 0.3);
+        border-radius: 50%;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .track-nav-btn:hover {
+        background: rgba(0, 47, 167, 0.25);
+        border-color: rgba(0, 47, 167, 0.5);
+        color: var(--text-primary);
+      }
+
+      .track-nav-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+      }
+
+      .track-counter {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        min-width: 50px;
+        text-align: center;
+      }
+
+      /* Track List */
+      .track-list {
+        margin-top: 1rem;
+        max-height: 150px;
+        overflow-y: auto;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .track-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .track-item:last-child {
+        border-bottom: none;
+      }
+
+      .track-item:hover {
+        background: rgba(0, 47, 167, 0.1);
+      }
+
+      .track-item.active {
+        background: rgba(0, 47, 167, 0.2);
+      }
+
+      .track-item-number {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        width: 20px;
+        text-align: center;
+      }
+
+      .track-item.active .track-item-number {
+        color: var(--accent-primary);
+      }
+
+      .track-item-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .track-item-title {
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .track-item-artist {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .track-item-duration {
+        font-size: 0.8rem;
+        color: var(--text-muted);
       }
 
       .project-title {
@@ -1739,10 +1859,29 @@
               </div>
             </div>
 
-            <!-- Now Playing -->
-            <div class="now-playing">
-              <div class="now-playing-label">Now Playing</div>
-              <div class="now-playing-title">hohl.rocks Ambient</div>
+            <!-- Now Playing + Playlist -->
+            <div class="studio-section">
+              <div class="now-playing" style="background: transparent; padding: 0; margin: 0;">
+                <div class="now-playing-label">Now Playing</div>
+                <div class="now-playing-title" id="current-track-title">Ambient Dreams</div>
+                <div class="now-playing-artist" id="current-track-artist">hohl.rocks</div>
+
+                <!-- Track Navigation -->
+                <div class="track-nav">
+                  <button class="track-nav-btn" id="prev-track" title="Vorheriger Track">
+                    <svg viewBox="0 0 24 24"><path d="M19 20L9 12l10-8v16zM7 19V5H5v14h2z"/></svg>
+                  </button>
+                  <span class="track-counter" id="track-counter">1 / 4</span>
+                  <button class="track-nav-btn" id="next-track" title="Nächster Track">
+                    <svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4zm12 1v14h2V5h-2z"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Track List -->
+              <div class="track-list" id="track-list">
+                <!-- Tracks werden via JavaScript eingefügt -->
+              </div>
             </div>
 
           </div>
@@ -1983,7 +2122,7 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // MUSIC STUDIO - KI Sound Experience
+      // MUSIC STUDIO - KI Sound Experience mit Playlist
       // ═══════════════════════════════════════════════════════════════
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -2003,9 +2142,26 @@
         const midValue = document.getElementById('mid-value');
         const trebleValue = document.getElementById('treble-value');
         const moodBtns = document.querySelectorAll('.mood-btn');
+        const trackTitleEl = document.getElementById('current-track-title');
+        const trackArtistEl = document.getElementById('current-track-artist');
+        const trackCounterEl = document.getElementById('track-counter');
+        const trackListEl = document.getElementById('track-list');
+        const prevBtn = document.getElementById('prev-track');
+        const nextBtn = document.getElementById('next-track');
 
         if (!playerBtn || !audio || !canvas) return;
 
+        // ═══════════════════════════════════════════════════════════════
+        // PLAYLIST - Tracks hinzufügen/ändern hier
+        // ═══════════════════════════════════════════════════════════════
+        const tracks = [
+          { title: 'Ambient Dreams', artist: 'hohl.rocks', src: '/audio/ambient_loop.mp3' },
+          { title: 'Deep Focus', artist: 'hohl.rocks', src: '/audio/deep_focus.mp3' },
+          { title: 'Night Drive', artist: 'hohl.rocks', src: '/audio/night_drive.mp3' },
+          { title: 'Digital Rain', artist: 'hohl.rocks', src: '/audio/digital_rain.mp3' }
+        ];
+
+        let currentTrackIndex = 0;
         let isPlaying = false;
         let audioContext = null;
         let analyser = null;
@@ -2016,6 +2172,90 @@
         let gainNode = null;
         let animationId = null;
         let isInitialized = false;
+
+        // Render Track List
+        function renderTrackList() {
+          trackListEl.innerHTML = tracks.map((track, i) => `
+            <div class="track-item ${i === currentTrackIndex ? 'active' : ''}" data-index="${i}">
+              <span class="track-item-number">${i + 1}</span>
+              <div class="track-item-info">
+                <div class="track-item-title">${track.title}</div>
+                <div class="track-item-artist">${track.artist}</div>
+              </div>
+            </div>
+          `).join('');
+
+          // Add click handlers
+          trackListEl.querySelectorAll('.track-item').forEach(item => {
+            item.addEventListener('click', () => {
+              const idx = parseInt(item.dataset.index);
+              if (idx !== currentTrackIndex) {
+                loadTrack(idx);
+                if (isPlaying) playTrack();
+              }
+            });
+          });
+        }
+
+        // Update UI
+        function updateTrackUI() {
+          const track = tracks[currentTrackIndex];
+          trackTitleEl.textContent = track.title;
+          trackArtistEl.textContent = track.artist;
+          trackCounterEl.textContent = `${currentTrackIndex + 1} / ${tracks.length}`;
+
+          // Update track list active state
+          trackListEl.querySelectorAll('.track-item').forEach((item, i) => {
+            item.classList.toggle('active', i === currentTrackIndex);
+          });
+        }
+
+        // Load Track
+        function loadTrack(index) {
+          currentTrackIndex = index;
+          const track = tracks[index];
+          audio.src = track.src;
+          updateTrackUI();
+        }
+
+        // Play Track
+        function playTrack() {
+          if (!isInitialized) initAudio();
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          audio.play().then(() => {
+            playerBtn.classList.add('playing');
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = '';
+            drawVisualizer();
+            isPlaying = true;
+          }).catch(err => console.log('Audio playback failed:', err));
+        }
+
+        // Next/Previous Track
+        function nextTrack() {
+          const wasPlaying = isPlaying;
+          if (isPlaying) { audio.pause(); stopVisualizer(); }
+          loadTrack((currentTrackIndex + 1) % tracks.length);
+          if (wasPlaying) playTrack();
+        }
+
+        function prevTrack() {
+          const wasPlaying = isPlaying;
+          if (isPlaying) { audio.pause(); stopVisualizer(); }
+          loadTrack((currentTrackIndex - 1 + tracks.length) % tracks.length);
+          if (wasPlaying) playTrack();
+        }
+
+        // Auto-advance when track ends
+        audio.addEventListener('ended', () => {
+          nextTrack();
+        });
+
+        // Navigation buttons
+        prevBtn?.addEventListener('click', prevTrack);
+        nextBtn?.addEventListener('click', nextTrack);
 
         // Open studio overlay when clicking the player button
         playerBtn.addEventListener('click', () => {
@@ -2032,10 +2272,8 @@
           analyser = audioContext.createAnalyser();
           analyser.fftSize = 256;
 
-          // Create source from audio element
           source = audioContext.createMediaElementSource(audio);
 
-          // Create EQ filters
           bassFilter = audioContext.createBiquadFilter();
           bassFilter.type = 'lowshelf';
           bassFilter.frequency.value = 200;
@@ -2052,11 +2290,9 @@
           trebleFilter.frequency.value = 3000;
           trebleFilter.gain.value = 0;
 
-          // Create gain node for volume
           gainNode = audioContext.createGain();
           gainNode.gain.value = 0.3;
 
-          // Connect: source -> bass -> mid -> treble -> gain -> analyser -> destination
           source.connect(bassFilter);
           bassFilter.connect(midFilter);
           midFilter.connect(trebleFilter);
@@ -2070,24 +2306,20 @@
         // Visualizer
         function drawVisualizer() {
           if (!analyser || !canvas) return;
-
           const ctx = canvas.getContext('2d');
           const bufferLength = analyser.frequencyBinCount;
           const dataArray = new Uint8Array(bufferLength);
 
           function draw() {
             animationId = requestAnimationFrame(draw);
-
             analyser.getByteFrequencyData(dataArray);
 
-            // Set canvas size
             canvas.width = canvas.offsetWidth * window.devicePixelRatio;
             canvas.height = canvas.offsetHeight * window.devicePixelRatio;
             ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
             const width = canvas.offsetWidth;
             const height = canvas.offsetHeight;
-
             ctx.clearRect(0, 0, width, height);
 
             const barCount = 32;
@@ -2097,24 +2329,18 @@
             for (let i = 0; i < barCount; i++) {
               const value = dataArray[i * step];
               const barHeight = (value / 255) * height * 0.9;
-
-              // Gradient color based on height
-              const hue = 220 + (i / barCount) * 20; // Blue range
+              const hue = 220 + (i / barCount) * 20;
               const saturation = 70 + (value / 255) * 30;
               const lightness = 40 + (value / 255) * 20;
 
               ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-
               const x = i * (barWidth + 2);
               const y = height - barHeight;
-
-              // Rounded bars
               ctx.beginPath();
               ctx.roundRect(x, y, barWidth, barHeight, 3);
               ctx.fill();
             }
           }
-
           draw();
         }
 
@@ -2127,14 +2353,6 @@
 
         // Play/Pause
         function togglePlay() {
-          if (!isInitialized) {
-            initAudio();
-          }
-
-          if (audioContext && audioContext.state === 'suspended') {
-            audioContext.resume();
-          }
-
           if (isPlaying) {
             audio.pause();
             playerBtn.classList.remove('playing');
@@ -2143,15 +2361,7 @@
             stopVisualizer();
             isPlaying = false;
           } else {
-            audio.play().then(() => {
-              playerBtn.classList.add('playing');
-              playIcon.style.display = 'none';
-              pauseIcon.style.display = '';
-              drawVisualizer();
-              isPlaying = true;
-            }).catch(err => {
-              console.log('Audio playback failed:', err);
-            });
+            playTrack();
           }
         }
 
@@ -2160,11 +2370,8 @@
         // Volume control
         function updateVolume(value) {
           const vol = value / 100;
-          if (gainNode) {
-            gainNode.gain.value = vol;
-          } else {
-            audio.volume = vol;
-          }
+          if (gainNode) gainNode.gain.value = vol;
+          else audio.volume = vol;
           volumeSlider.value = value;
           volumeSlider2.value = value;
         }
@@ -2208,7 +2415,6 @@
           midValue.textContent = mid > 0 ? '+' + mid : mid;
           trebleValue.textContent = treble > 0 ? '+' + treble : treble;
 
-          // Update active button
           moodBtns.forEach(b => b.classList.remove('active'));
           if (btn) btn.classList.add('active');
         }
@@ -2228,21 +2434,18 @@
 
         moodBtns.forEach(btn => {
           btn.addEventListener('click', () => {
-            const bass = parseInt(btn.dataset.bass);
-            const mid = parseInt(btn.dataset.mid);
-            const treble = parseInt(btn.dataset.treble);
-            setMood(bass, mid, treble, btn);
+            setMood(parseInt(btn.dataset.bass), parseInt(btn.dataset.mid), parseInt(btn.dataset.treble), btn);
           });
         });
 
-        // Set initial mood (Neutral)
+        // Initialize
+        renderTrackList();
+        updateTrackUI();
         document.querySelector('.mood-btn[data-mood="neutral"]')?.classList.add('active');
 
         // Pause when page is hidden
         document.addEventListener('visibilitychange', () => {
-          if (document.hidden && isPlaying) {
-            togglePlay();
-          }
+          if (document.hidden && isPlaying) togglePlay();
         });
       });
     </script>

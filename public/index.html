@@ -817,6 +817,168 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
+         CONTACT FORM
+         ═══════════════════════════════════════════════════════════════ */
+
+      .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-group label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background: rgba(0, 47, 167, 0.1);
+        border: 1px solid rgba(0, 47, 167, 0.3);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-family: var(--font-family);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: rgba(0, 47, 167, 0.6);
+        background: rgba(0, 47, 167, 0.15);
+        box-shadow: 0 0 20px rgba(0, 47, 167, 0.2);
+      }
+
+      .form-group input::placeholder,
+      .form-group textarea::placeholder {
+        color: var(--text-muted);
+      }
+
+      .form-group select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+      }
+
+      .form-group select option {
+        background: #1a1a2e;
+        color: var(--text-primary);
+      }
+
+      .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      @media (max-width: 500px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .form-submit {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .btn-submit {
+        flex: 1;
+        padding: 1rem 2rem;
+        background: var(--accent-gradient);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-family: var(--font-family);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 47, 167, 0.4);
+      }
+
+      .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-cancel {
+        padding: 1rem 1.5rem;
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: var(--text-secondary);
+        font-family: var(--font-family);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-cancel:hover {
+        border-color: rgba(0, 47, 167, 0.4);
+        color: var(--text-primary);
+      }
+
+      .form-success {
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .form-success-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1.5rem;
+        background: rgba(0, 47, 167, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .form-success-icon svg {
+        width: 32px;
+        height: 32px;
+        stroke: var(--accent-primary);
+      }
+
+      .form-success h3 {
+        font-size: 1.5rem;
+        margin: 0 0 0.5rem;
+        color: var(--text-primary);
+      }
+
+      .form-success p {
+        color: var(--text-secondary);
+        margin: 0;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
          RESPONSIVE
          ═══════════════════════════════════════════════════════════════ */
 
@@ -1121,7 +1283,7 @@
 
       <p class="footer-contact">
         Wolf Hohl · Berlin ·
-        <a href="mailto:kontakt@hohl.rocks">kontakt@hohl.rocks</a>
+        <a href="#" data-action="kontakt">Kontakt aufnehmen</a>
       </p>
 
       <div class="footer-links" style="margin-bottom: 1.5rem;">
@@ -1132,6 +1294,7 @@
       </div>
 
       <div class="footer-links">
+        <a href="#" class="footer-link" data-action="kontakt">Kontakt</a>
         <a href="#" class="footer-link" data-action="impressum">Impressum</a>
         <a href="#" class="footer-link" data-action="impressum">Datenschutz</a>
       </div>
@@ -1152,7 +1315,7 @@
             Wolf Hohl<br>
             Greifswalder Str. 224a<br>
             10405 Berlin</p>
-            <p><a href="mailto:kontakt@hohl.rocks">kontakt@hohl.rocks</a></p>
+            <p><a href="#" data-action="kontakt">Kontakt aufnehmen</a></p>
           </section>
 
           <section class="imp-section">
@@ -1188,6 +1351,68 @@
               <li>Beschwerde bei der Datenschutzbehörde</li>
             </ul>
           </section>
+        </div>
+      </section>
+    </div>
+
+    <!-- Kontakt Overlay -->
+    <div id="ov-kontakt" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close></div>
+      <section class="dialog" role="dialog" aria-labelledby="kontakt-title">
+        <header class="head">
+          <h2 id="kontakt-title">Kontakt aufnehmen</h2>
+          <button class="close" aria-label="Schließen" data-close>×</button>
+        </header>
+        <div id="kontakt-body">
+          <!-- Form -->
+          <form id="contact-form" class="contact-form" action="https://formspree.io/f/xyzgkpwl" method="POST">
+            <input type="hidden" name="_subject" value="Neue Anfrage von hohl.rocks">
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact-name">Name</label>
+                <input type="text" id="contact-name" name="name" placeholder="Ihr Name" required>
+              </div>
+              <div class="form-group">
+                <label for="contact-email">E-Mail</label>
+                <input type="email" id="contact-email" name="email" placeholder="ihre@email.de" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-type">Betreff</label>
+              <select id="contact-type" name="type" required>
+                <option value="" disabled selected>Bitte wählen...</option>
+                <option value="Allgemeine Anfrage">Allgemeine Anfrage</option>
+                <option value="KI-Beratung">KI-Beratung für Unternehmen</option>
+                <option value="Projekt-Zusammenarbeit">Projekt-Zusammenarbeit</option>
+                <option value="Technische Frage">Technische Frage</option>
+                <option value="Sonstiges">Sonstiges</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-message">Nachricht</label>
+              <textarea id="contact-message" name="message" placeholder="Ihre Nachricht..." required></textarea>
+            </div>
+
+            <div class="form-submit">
+              <button type="button" class="btn-cancel" data-close>Abbrechen</button>
+              <button type="submit" class="btn-submit">Nachricht senden</button>
+            </div>
+          </form>
+
+          <!-- Success Message (hidden by default) -->
+          <div id="contact-success" class="form-success" style="display: none;">
+            <div class="form-success-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <h3>Nachricht gesendet</h3>
+            <p>Vielen Dank für Ihre Nachricht. Ich melde mich zeitnah bei Ihnen.</p>
+          </div>
         </div>
       </section>
     </div>
@@ -1290,16 +1515,48 @@
       // ═══════════════════════════════════════════════════════════════
 
       document.addEventListener('DOMContentLoaded', () => {
-        // Open overlay
+        // Helper function to open overlay
+        function openOverlay(overlayId) {
+          const overlay = document.getElementById(overlayId);
+          if (overlay) {
+            overlay.classList.add('active');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+          }
+        }
+
+        // Helper function to close overlay
+        function closeOverlay(overlay) {
+          if (overlay) {
+            overlay.classList.remove('active');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+          }
+        }
+
+        // Open impressum overlay
         document.querySelectorAll('[data-action="impressum"]').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.preventDefault();
-            const overlay = document.getElementById('ov-impressum');
-            if (overlay) {
-              overlay.classList.add('active');
-              overlay.setAttribute('aria-hidden', 'false');
-              document.body.style.overflow = 'hidden';
+            openOverlay('ov-impressum');
+          });
+        });
+
+        // Open kontakt overlay
+        document.querySelectorAll('[data-action="kontakt"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Close impressum if open (for link from impressum)
+            const impressumOverlay = document.getElementById('ov-impressum');
+            if (impressumOverlay && impressumOverlay.classList.contains('active')) {
+              closeOverlay(impressumOverlay);
             }
+            // Reset form if needed
+            const form = document.getElementById('contact-form');
+            const success = document.getElementById('contact-success');
+            if (form) form.style.display = '';
+            if (success) success.style.display = 'none';
+            openOverlay('ov-kontakt');
           });
         });
 
@@ -1307,11 +1564,7 @@
         document.querySelectorAll('.overlay [data-close]').forEach(el => {
           el.addEventListener('click', () => {
             const overlay = el.closest('.overlay');
-            if (overlay) {
-              overlay.classList.remove('active');
-              overlay.setAttribute('aria-hidden', 'true');
-              document.body.style.overflow = '';
-            }
+            closeOverlay(overlay);
           });
         });
 
@@ -1319,10 +1572,61 @@
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
             document.querySelectorAll('.overlay.active').forEach(overlay => {
-              overlay.classList.remove('active');
-              overlay.setAttribute('aria-hidden', 'true');
-              document.body.style.overflow = '';
+              closeOverlay(overlay);
             });
+          }
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // CONTACT FORM HANDLING
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('contact-form');
+        const successDiv = document.getElementById('contact-success');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const submitBtn = form.querySelector('.btn-submit');
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Wird gesendet...';
+          submitBtn.disabled = true;
+
+          const formData = new FormData(form);
+
+          try {
+            const response = await fetch(form.action, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'Accept': 'application/json'
+              }
+            });
+
+            if (response.ok) {
+              // Show success message
+              form.style.display = 'none';
+              successDiv.style.display = 'block';
+              form.reset();
+            } else {
+              throw new Error('Form submission failed');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            // Fallback to mailto
+            const name = formData.get('name');
+            const email = formData.get('email');
+            const type = formData.get('type');
+            const message = formData.get('message');
+            const subject = encodeURIComponent(`[hohl.rocks] ${type}`);
+            const body = encodeURIComponent(`Name: ${name}\nE-Mail: ${email}\n\n${message}`);
+            window.location.href = `mailto:wolf@hohl.rocks?subject=${subject}&body=${body}`;
+          } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
           }
         });
       });

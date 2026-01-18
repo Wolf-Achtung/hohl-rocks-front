@@ -29,13 +29,15 @@
         --bg-dark: #0a0a0f;
         --glass-bg: rgba(255, 255, 255, 0.05);
         --glass-border: rgba(255, 255, 255, 0.1);
-        --accent-primary: #6366f1;
-        --accent-secondary: #8b5cf6;
-        --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        /* Yves Klein Blau (International Klein Blue) */
+        --accent-primary: #002FA7;
+        --accent-secondary: #0038c7;
+        --accent-gradient: linear-gradient(135deg, #002FA7 0%, #0038c7 100%);
+        --accent-rgb: 0, 47, 167;
         --text-primary: #ffffff;
         --text-secondary: rgba(255, 255, 255, 0.7);
         --text-muted: rgba(255, 255, 255, 0.5);
-        --glow: 0 0 30px rgba(99, 102, 241, 0.3);
+        --glow: 0 0 30px rgba(0, 47, 167, 0.4);
         --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       }
 
@@ -89,9 +91,9 @@
         inset: 0;
         background: linear-gradient(
           to bottom,
-          rgba(10, 10, 15, 0.4) 0%,
-          rgba(10, 10, 15, 0.6) 50%,
-          rgba(10, 10, 15, 0.85) 100%
+          rgba(10, 10, 15, 0.15) 0%,
+          rgba(10, 10, 15, 0.35) 50%,
+          rgba(10, 10, 15, 0.7) 100%
         );
         z-index: 1;
       }
@@ -156,8 +158,8 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        text-shadow: 0 0 60px rgba(99, 102, 241, 0.4);
-        filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.3));
+        text-shadow: 0 0 60px rgba(0, 47, 167, 0.4);
+        filter: drop-shadow(0 0 30px rgba(0, 47, 167, 0.3));
       }
 
       .hero-divider {
@@ -222,10 +224,10 @@
       }
 
       .hero-cta:hover {
-        background: rgba(99, 102, 241, 0.15);
-        border-color: rgba(99, 102, 241, 0.4);
+        background: rgba(0, 47, 167, 0.15);
+        border-color: rgba(0, 47, 167, 0.4);
         transform: translateY(-2px);
-        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
+        box-shadow: 0 8px 30px rgba(0, 47, 167, 0.2);
       }
 
       .hero-cta .arrow {
@@ -304,7 +306,7 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.25));
+        filter: drop-shadow(0 0 20px rgba(0, 47, 167, 0.25));
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -312,30 +314,28 @@
          ═══════════════════════════════════════════════════════════════ */
 
       .glass-card {
-        background: linear-gradient(145deg, rgba(30, 30, 45, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%);
-        border: 1px solid rgba(99, 102, 241, 0.2);
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
+        border: 1px solid rgba(0, 47, 167, 0.3);
         border-radius: 20px;
         padding: 1.5rem;
         transition: all 0.3s ease;
       }
 
       .glass-card:hover {
-        background: linear-gradient(145deg, rgba(40, 40, 60, 0.98) 0%, rgba(30, 30, 50, 1) 100%);
-        border-color: rgba(99, 102, 241, 0.5);
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.25) 0%, rgba(25, 25, 45, 0.98) 100%);
+        border-color: rgba(0, 47, 167, 0.6);
         transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
+        box-shadow: 0 12px 40px rgba(0, 47, 167, 0.2);
       }
 
-      /* Projekt-spezifische Farben */
-      .project-card:nth-child(1) { background: linear-gradient(145deg, rgba(99, 102, 241, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); }
-      .project-card:nth-child(2) { background: linear-gradient(145deg, rgba(139, 92, 246, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); }
-      .project-card:nth-child(3) { background: linear-gradient(145deg, rgba(236, 72, 153, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); }
-      .project-card:nth-child(4) { background: linear-gradient(145deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); }
+      /* Alle Projekt-Karten einheitlich Yves Klein Blau */
+      .project-card {
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
+      }
 
-      .project-card:nth-child(1):hover { border-color: rgba(99, 102, 241, 0.6); }
-      .project-card:nth-child(2):hover { border-color: rgba(139, 92, 246, 0.6); }
-      .project-card:nth-child(3):hover { border-color: rgba(236, 72, 153, 0.6); }
-      .project-card:nth-child(4):hover { border-color: rgba(34, 197, 94, 0.6); }
+      .project-card:hover {
+        border-color: rgba(0, 47, 167, 0.6);
+      }
 
       /* ═══════════════════════════════════════════════════════════════
          PROJECTS SECTION
@@ -356,13 +356,10 @@
         overflow: hidden;
       }
 
-      /* Tool-Card Farben */
-      .tool-card:first-child .glass-card {
-        background: linear-gradient(145deg, rgba(99, 102, 241, 0.2) 0%, rgba(20, 20, 35, 0.95) 100%);
-        border-color: rgba(99, 102, 241, 0.4);
-      }
-      .tool-card:last-child .glass-card {
-        background: linear-gradient(145deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
+      /* Tool-Card Farben - einheitlich Yves Klein Blau */
+      .tool-card .glass-card {
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.2) 0%, rgba(20, 20, 35, 0.95) 100%);
+        border-color: rgba(0, 47, 167, 0.4);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -378,20 +375,21 @@
         align-items: center;
         gap: 0.75rem;
         padding: 0.75rem 1.25rem;
-        background: linear-gradient(145deg, rgba(30, 30, 45, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%);
-        border: 1px solid rgba(99, 102, 241, 0.3);
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.98) 100%);
+        border: 1px solid rgba(0, 47, 167, 0.3);
         border-radius: 50px;
         cursor: pointer;
         transition: all 0.3s ease;
       }
 
       .music-player:hover {
-        border-color: rgba(99, 102, 241, 0.6);
+        border-color: rgba(0, 47, 167, 0.6);
         transform: scale(1.05);
       }
 
       .music-player.playing {
-        border-color: rgba(34, 197, 94, 0.6);
+        border-color: rgba(0, 47, 167, 0.8);
+        box-shadow: 0 0 20px rgba(0, 47, 167, 0.4);
       }
 
       .music-icon {
@@ -464,7 +462,7 @@
         gap: 0.4rem;
         font-size: 0.8rem;
         font-weight: 600;
-        color: #22c55e;
+        color: var(--accent-primary);
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
@@ -472,7 +470,7 @@
       .status-dot {
         width: 8px;
         height: 8px;
-        background: #22c55e;
+        background: var(--accent-primary);
         border-radius: 50%;
         animation: pulse 2s infinite;
       }
@@ -499,7 +497,7 @@
 
       .project-link:hover {
         transform: scale(1.05);
-        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        box-shadow: 0 4px 20px rgba(0, 47, 167, 0.4);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -615,7 +613,7 @@
         background: var(--accent-gradient);
         border-radius: 50%;
         transform: translateX(-6px);
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 20px rgba(0, 47, 167, 0.5);
       }
 
       .timeline-year {
@@ -943,8 +941,8 @@
           <article class="glass-card project-card fade-in">
             <h3 class="project-title">ki-sicherheit.jetzt</h3>
             <p class="project-desc">
-              KI-Readiness-Beratung für Unternehmen. EU AI Act konform.
-              Mit TÜV-zertifizierter Expertise.
+              KI-Readiness-Beratung für Unternehmen.
+              EU AI Act konform, TÜV-zertifiziert.
             </p>
             <div class="project-status">
               <span class="status-dot"></span>
@@ -959,8 +957,8 @@
           <article class="glass-card project-card fade-in">
             <h3 class="project-title">art-radar.berlin</h3>
             <p class="project-desc">
-              Dein KI-Kunstguide für Berlin. Automatisch aktualisierte
-              Ausstellungen und Vernissagen.
+              Dein KI-Kunstguide für Berlin.
+              Automatisch aktualisierte Ausstellungen.
             </p>
             <div class="project-status">
               <span class="status-dot"></span>
@@ -975,8 +973,8 @@
           <article class="glass-card project-card fade-in">
             <h3 class="project-title">akut.jetzt</h3>
             <p class="project-desc">
-              Notfall-App mit KI-Unterstützung. Funktioniert auch offline.
-              Versteckter Notruf durch Schütteln.
+              Notfall-App mit KI-Unterstützung.
+              Funktioniert offline, versteckter Notruf.
             </p>
             <div class="project-status">
               <span class="status-dot"></span>
@@ -991,8 +989,8 @@
           <article class="glass-card project-card fade-in">
             <h3 class="project-title">achtung.jetzt</h3>
             <p class="project-desc">
-              Bevor du sendest: KI checkt deine Texte auf sensible Daten
-              und kritische Informationen.
+              Bevor du sendest: KI checkt Texte.
+              Erkennt sensible Daten automatisch.
             </p>
             <div class="project-status">
               <span class="status-dot"></span>
@@ -1018,7 +1016,7 @@
           </p>
         </div>
 
-        <div class="tools-grid">
+        <div class="tools-grid" style="max-width: 600px; margin: 0 auto;">
           <!-- Model Battle - Hauptfeature -->
           <a href="/model-battle.html" class="tool-card fade-in">
             <div class="glass-card">
@@ -1033,23 +1031,6 @@
                 die Antworten live. Wer ist schneller? Wer besser?
               </p>
               <div class="tool-arrow">Jetzt Battle starten →</div>
-            </div>
-          </a>
-
-          <!-- KI-Beratung -->
-          <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="tool-card fade-in">
-            <div class="glass-card">
-              <div class="tool-header">
-                <div>
-                  <h3 class="tool-title">KI-Beratung für Unternehmen</h3>
-                  <p class="tool-subtitle">Readiness-Report in 5 Minuten</p>
-                </div>
-              </div>
-              <p class="tool-desc">
-                Beantworte wenige Fragen und erhalte einen individuellen
-                KI-Integrationsplan für dein Unternehmen.
-              </p>
-              <div class="tool-arrow">Zum Readiness-Report →</div>
             </div>
           </a>
         </div>
@@ -1070,15 +1051,15 @@
 
         <!-- TÜV Badge prominent -->
         <div class="fade-in" style="text-align: center; margin-bottom: 3rem;">
-          <div style="display: inline-flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; background: linear-gradient(145deg, rgba(34, 197, 94, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 16px;">
-            <div style="width: 48px; height: 48px; background: rgba(34, 197, 94, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(34, 197, 94, 0.5);">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <div style="display: inline-flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); border: 1px solid rgba(0, 47, 167, 0.4); border-radius: 16px;">
+            <div style="width: 48px; height: 48px; background: rgba(0, 47, 167, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(0, 47, 167, 0.5);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002FA7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
             </div>
             <div style="text-align: left;">
-              <div style="font-size: 1.25rem; font-weight: 700; color: #22c55e;">TÜV-zertifizierter KI-Manager</div>
+              <div style="font-size: 1.25rem; font-weight: 700; color: #002FA7;">TÜV-zertifizierter KI-Manager</div>
               <div style="font-size: 0.9rem; color: var(--text-secondary);">TÜV Austria · Zertifiziert 2024</div>
             </div>
           </div>

@@ -1364,9 +1364,15 @@
           <button class="close" aria-label="Schließen" data-close>×</button>
         </header>
         <div id="kontakt-body">
-          <!-- Form -->
-          <form id="contact-form" class="contact-form" action="https://formspree.io/f/xyzgkpwl" method="POST">
-            <input type="hidden" name="_subject" value="Neue Anfrage von hohl.rocks">
+          <!-- Form - Netlify Forms -->
+          <form id="contact-form" class="contact-form" name="kontakt" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+            <!-- Verstecktes Feld: Form-Name (wichtig für Netlify) -->
+            <input type="hidden" name="form-name" value="kontakt">
+
+            <!-- Honeypot gegen Spam (unsichtbar für Nutzer) -->
+            <p style="display:none;">
+              <label>Nicht ausfüllen: <input name="bot-field"></label>
+            </p>
 
             <div class="form-row">
               <div class="form-group">
@@ -1381,7 +1387,7 @@
 
             <div class="form-group">
               <label for="contact-type">Betreff</label>
-              <select id="contact-type" name="type" required>
+              <select id="contact-type" name="betreff" required>
                 <option value="" disabled selected>Bitte wählen...</option>
                 <option value="Allgemeine Anfrage">Allgemeine Anfrage</option>
                 <option value="KI-Beratung">KI-Beratung für Unternehmen</option>
@@ -1393,7 +1399,7 @@
 
             <div class="form-group">
               <label for="contact-message">Nachricht</label>
-              <textarea id="contact-message" name="message" placeholder="Ihre Nachricht..." required></textarea>
+              <textarea id="contact-message" name="nachricht" placeholder="Ihre Nachricht..." required></textarea>
             </div>
 
             <div class="form-submit">
@@ -1579,7 +1585,7 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // CONTACT FORM HANDLING
+      // CONTACT FORM HANDLING (Netlify Forms)
       // ═══════════════════════════════════════════════════════════════
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -1598,12 +1604,11 @@
           const formData = new FormData(form);
 
           try {
-            const response = await fetch(form.action, {
+            // Netlify Forms: POST an Root-URL mit URL-encoded body
+            const response = await fetch('/', {
               method: 'POST',
-              body: formData,
-              headers: {
-                'Accept': 'application/json'
-              }
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams(formData).toString()
             });
 
             if (response.ok) {
@@ -1619,10 +1624,10 @@
             // Fallback to mailto
             const name = formData.get('name');
             const email = formData.get('email');
-            const type = formData.get('type');
-            const message = formData.get('message');
-            const subject = encodeURIComponent(`[hohl.rocks] ${type}`);
-            const body = encodeURIComponent(`Name: ${name}\nE-Mail: ${email}\n\n${message}`);
+            const betreff = formData.get('betreff');
+            const nachricht = formData.get('nachricht');
+            const subject = encodeURIComponent(`[hohl.rocks] ${betreff}`);
+            const body = encodeURIComponent(`Name: ${name}\nE-Mail: ${email}\n\n${nachricht}`);
             window.location.href = `mailto:wolf@hohl.rocks?subject=${subject}&body=${body}`;
           } finally {
             submitBtn.textContent = originalText;

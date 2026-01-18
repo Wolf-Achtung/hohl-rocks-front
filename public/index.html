@@ -443,6 +443,224 @@
         .music-label { display: none; }
       }
 
+      /* ═══════════════════════════════════════════════════════════════
+         MUSIC STUDIO - KI Sound Experience
+         ═══════════════════════════════════════════════════════════════ */
+
+      .music-studio-content {
+        padding: 0;
+      }
+
+      .studio-visualizer {
+        width: 100%;
+        height: 120px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+      }
+
+      .studio-visualizer canvas {
+        width: 100%;
+        height: 100%;
+      }
+
+      .studio-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .studio-section {
+        background: rgba(0, 47, 167, 0.1);
+        border: 1px solid rgba(0, 47, 167, 0.2);
+        border-radius: 12px;
+        padding: 1.25rem;
+      }
+
+      .studio-section-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 1rem;
+      }
+
+      /* Play Controls */
+      .play-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+      }
+
+      .play-btn {
+        width: 64px;
+        height: 64px;
+        background: var(--accent-gradient);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .play-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(0, 47, 167, 0.5);
+      }
+
+      .play-btn svg {
+        width: 28px;
+        height: 28px;
+        fill: white;
+      }
+
+      .volume-control {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+        max-width: 150px;
+      }
+
+      .volume-control svg {
+        width: 20px;
+        height: 20px;
+        stroke: var(--text-secondary);
+        flex-shrink: 0;
+      }
+
+      /* Sliders */
+      .slider-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .slider-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+
+      .slider-value {
+        color: var(--accent-primary);
+        font-weight: 600;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 6px;
+        background: rgba(0, 47, 167, 0.2);
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: var(--accent-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: var(--accent-primary);
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* EQ Section */
+      .eq-sliders {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+
+      /* Mood Presets */
+      .mood-presets {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+      }
+
+      @media (max-width: 500px) {
+        .mood-presets {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .mood-btn {
+        padding: 0.75rem 1rem;
+        background: rgba(0, 47, 167, 0.15);
+        border: 1px solid rgba(0, 47, 167, 0.3);
+        border-radius: 8px;
+        color: var(--text-secondary);
+        font-family: var(--font-family);
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .mood-btn:hover {
+        border-color: rgba(0, 47, 167, 0.5);
+        color: var(--text-primary);
+      }
+
+      .mood-btn.active {
+        background: var(--accent-gradient);
+        border-color: var(--accent-primary);
+        color: white;
+      }
+
+      .mood-btn-icon {
+        display: block;
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+
+      /* Now Playing Info */
+      .now-playing {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(0, 47, 167, 0.05);
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
+
+      .now-playing-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .now-playing-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-top: 0.25rem;
+      }
+
       .project-title {
         font-size: 1.25rem;
         font-weight: 700;
@@ -1423,6 +1641,115 @@
       </section>
     </div>
 
+    <!-- Music Studio Overlay -->
+    <div id="ov-music-studio" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close></div>
+      <section class="dialog" role="dialog" aria-labelledby="studio-title" style="max-width: 500px;">
+        <header class="head">
+          <h2 id="studio-title">Sound Studio</h2>
+          <button class="close" aria-label="Schließen" data-close>×</button>
+        </header>
+        <div class="music-studio-content" style="padding: 1.5rem;">
+
+          <!-- Visualizer -->
+          <div class="studio-visualizer">
+            <canvas id="audio-visualizer"></canvas>
+          </div>
+
+          <div class="studio-controls">
+
+            <!-- Play/Pause + Volume -->
+            <div class="studio-section">
+              <div class="play-controls">
+                <div class="volume-control">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  </svg>
+                  <input type="range" id="volume-slider" min="0" max="100" value="30">
+                </div>
+
+                <button class="play-btn" id="studio-play-btn" title="Play/Pause">
+                  <svg id="play-icon" viewBox="0 0 24 24">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                  </svg>
+                </button>
+
+                <div class="volume-control">
+                  <input type="range" id="volume-slider-2" min="0" max="100" value="30">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- EQ Controls -->
+            <div class="studio-section">
+              <h3 class="studio-section-title">Equalizer</h3>
+              <div class="eq-sliders">
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span>Bass</span>
+                    <span class="slider-value" id="bass-value">0</span>
+                  </div>
+                  <input type="range" id="bass-slider" min="-12" max="12" value="0">
+                </div>
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span>Mid</span>
+                    <span class="slider-value" id="mid-value">0</span>
+                  </div>
+                  <input type="range" id="mid-slider" min="-12" max="12" value="0">
+                </div>
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span>Treble</span>
+                    <span class="slider-value" id="treble-value">0</span>
+                  </div>
+                  <input type="range" id="treble-slider" min="-12" max="12" value="0">
+                </div>
+              </div>
+            </div>
+
+            <!-- Mood Presets -->
+            <div class="studio-section">
+              <h3 class="studio-section-title">KI-Stimmung</h3>
+              <div class="mood-presets">
+                <button class="mood-btn" data-mood="neutral" data-bass="0" data-mid="0" data-treble="0">
+                  <span class="mood-btn-icon">~</span>
+                  Neutral
+                </button>
+                <button class="mood-btn" data-mood="chill" data-bass="4" data-mid="-2" data-treble="-3">
+                  <span class="mood-btn-icon">*</span>
+                  Chill
+                </button>
+                <button class="mood-btn" data-mood="focus" data-bass="-2" data-mid="3" data-treble="1">
+                  <span class="mood-btn-icon">!</span>
+                  Focus
+                </button>
+                <button class="mood-btn" data-mood="energy" data-bass="6" data-mid="2" data-treble="5">
+                  <span class="mood-btn-icon">+</span>
+                  Energie
+                </button>
+              </div>
+            </div>
+
+            <!-- Now Playing -->
+            <div class="now-playing">
+              <div class="now-playing-label">Now Playing</div>
+              <div class="now-playing-title">hohl.rocks Ambient</div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </div>
+
     <!-- Scripts -->
     <script>
       // ═══════════════════════════════════════════════════════════════
@@ -1656,38 +1983,265 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // MUSIC PLAYER - hohl.rocks
+      // MUSIC STUDIO - KI Sound Experience
       // ═══════════════════════════════════════════════════════════════
 
       document.addEventListener('DOMContentLoaded', () => {
-        const player = document.getElementById('music-player');
+        const playerBtn = document.getElementById('music-player');
         const audio = document.getElementById('bg-music');
-        if (!player || !audio) return;
+        const studioOverlay = document.getElementById('ov-music-studio');
+        const studioPlayBtn = document.getElementById('studio-play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const canvas = document.getElementById('audio-visualizer');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeSlider2 = document.getElementById('volume-slider-2');
+        const bassSlider = document.getElementById('bass-slider');
+        const midSlider = document.getElementById('mid-slider');
+        const trebleSlider = document.getElementById('treble-slider');
+        const bassValue = document.getElementById('bass-value');
+        const midValue = document.getElementById('mid-value');
+        const trebleValue = document.getElementById('treble-value');
+        const moodBtns = document.querySelectorAll('.mood-btn');
+
+        if (!playerBtn || !audio || !canvas) return;
 
         let isPlaying = false;
+        let audioContext = null;
+        let analyser = null;
+        let source = null;
+        let bassFilter = null;
+        let midFilter = null;
+        let trebleFilter = null;
+        let gainNode = null;
+        let animationId = null;
+        let isInitialized = false;
 
-        player.addEventListener('click', () => {
+        // Open studio overlay when clicking the player button
+        playerBtn.addEventListener('click', () => {
+          studioOverlay.classList.add('active');
+          studioOverlay.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        });
+
+        // Initialize Web Audio API
+        function initAudio() {
+          if (isInitialized) return;
+
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+
+          // Create source from audio element
+          source = audioContext.createMediaElementSource(audio);
+
+          // Create EQ filters
+          bassFilter = audioContext.createBiquadFilter();
+          bassFilter.type = 'lowshelf';
+          bassFilter.frequency.value = 200;
+          bassFilter.gain.value = 0;
+
+          midFilter = audioContext.createBiquadFilter();
+          midFilter.type = 'peaking';
+          midFilter.frequency.value = 1000;
+          midFilter.Q.value = 1;
+          midFilter.gain.value = 0;
+
+          trebleFilter = audioContext.createBiquadFilter();
+          trebleFilter.type = 'highshelf';
+          trebleFilter.frequency.value = 3000;
+          trebleFilter.gain.value = 0;
+
+          // Create gain node for volume
+          gainNode = audioContext.createGain();
+          gainNode.gain.value = 0.3;
+
+          // Connect: source -> bass -> mid -> treble -> gain -> analyser -> destination
+          source.connect(bassFilter);
+          bassFilter.connect(midFilter);
+          midFilter.connect(trebleFilter);
+          trebleFilter.connect(gainNode);
+          gainNode.connect(analyser);
+          analyser.connect(audioContext.destination);
+
+          isInitialized = true;
+        }
+
+        // Visualizer
+        function drawVisualizer() {
+          if (!analyser || !canvas) return;
+
+          const ctx = canvas.getContext('2d');
+          const bufferLength = analyser.frequencyBinCount;
+          const dataArray = new Uint8Array(bufferLength);
+
+          function draw() {
+            animationId = requestAnimationFrame(draw);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            // Set canvas size
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const barCount = 32;
+            const barWidth = (width / barCount) - 2;
+            const step = Math.floor(bufferLength / barCount);
+
+            for (let i = 0; i < barCount; i++) {
+              const value = dataArray[i * step];
+              const barHeight = (value / 255) * height * 0.9;
+
+              // Gradient color based on height
+              const hue = 220 + (i / barCount) * 20; // Blue range
+              const saturation = 70 + (value / 255) * 30;
+              const lightness = 40 + (value / 255) * 20;
+
+              ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+              const x = i * (barWidth + 2);
+              const y = height - barHeight;
+
+              // Rounded bars
+              ctx.beginPath();
+              ctx.roundRect(x, y, barWidth, barHeight, 3);
+              ctx.fill();
+            }
+          }
+
+          draw();
+        }
+
+        function stopVisualizer() {
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+          }
+        }
+
+        // Play/Pause
+        function togglePlay() {
+          if (!isInitialized) {
+            initAudio();
+          }
+
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+
           if (isPlaying) {
             audio.pause();
-            player.classList.remove('playing');
+            playerBtn.classList.remove('playing');
+            playIcon.style.display = '';
+            pauseIcon.style.display = 'none';
+            stopVisualizer();
             isPlaying = false;
           } else {
-            audio.volume = 0.3;
             audio.play().then(() => {
-              player.classList.add('playing');
+              playerBtn.classList.add('playing');
+              playIcon.style.display = 'none';
+              pauseIcon.style.display = '';
+              drawVisualizer();
               isPlaying = true;
             }).catch(err => {
               console.log('Audio playback failed:', err);
             });
           }
+        }
+
+        studioPlayBtn.addEventListener('click', togglePlay);
+
+        // Volume control
+        function updateVolume(value) {
+          const vol = value / 100;
+          if (gainNode) {
+            gainNode.gain.value = vol;
+          } else {
+            audio.volume = vol;
+          }
+          volumeSlider.value = value;
+          volumeSlider2.value = value;
+        }
+
+        volumeSlider.addEventListener('input', (e) => updateVolume(e.target.value));
+        volumeSlider2.addEventListener('input', (e) => updateVolume(e.target.value));
+
+        // EQ Controls
+        bassSlider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          if (bassFilter) bassFilter.gain.value = val;
+          bassValue.textContent = val > 0 ? '+' + val : val;
+          updateMoodButtons();
         });
+
+        midSlider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          if (midFilter) midFilter.gain.value = val;
+          midValue.textContent = val > 0 ? '+' + val : val;
+          updateMoodButtons();
+        });
+
+        trebleSlider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          if (trebleFilter) trebleFilter.gain.value = val;
+          trebleValue.textContent = val > 0 ? '+' + val : val;
+          updateMoodButtons();
+        });
+
+        // Mood Presets
+        function setMood(bass, mid, treble, btn) {
+          bassSlider.value = bass;
+          midSlider.value = mid;
+          trebleSlider.value = treble;
+
+          if (bassFilter) bassFilter.gain.value = bass;
+          if (midFilter) midFilter.gain.value = mid;
+          if (trebleFilter) trebleFilter.gain.value = treble;
+
+          bassValue.textContent = bass > 0 ? '+' + bass : bass;
+          midValue.textContent = mid > 0 ? '+' + mid : mid;
+          trebleValue.textContent = treble > 0 ? '+' + treble : treble;
+
+          // Update active button
+          moodBtns.forEach(b => b.classList.remove('active'));
+          if (btn) btn.classList.add('active');
+        }
+
+        function updateMoodButtons() {
+          const b = parseInt(bassSlider.value);
+          const m = parseInt(midSlider.value);
+          const t = parseInt(trebleSlider.value);
+
+          moodBtns.forEach(btn => {
+            const bb = parseInt(btn.dataset.bass);
+            const bm = parseInt(btn.dataset.mid);
+            const bt = parseInt(btn.dataset.treble);
+            btn.classList.toggle('active', b === bb && m === bm && t === bt);
+          });
+        }
+
+        moodBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const bass = parseInt(btn.dataset.bass);
+            const mid = parseInt(btn.dataset.mid);
+            const treble = parseInt(btn.dataset.treble);
+            setMood(bass, mid, treble, btn);
+          });
+        });
+
+        // Set initial mood (Neutral)
+        document.querySelector('.mood-btn[data-mood="neutral"]')?.classList.add('active');
 
         // Pause when page is hidden
         document.addEventListener('visibilitychange', () => {
           if (document.hidden && isPlaying) {
-            audio.pause();
-            player.classList.remove('playing');
-            isPlaying = false;
+            togglePlay();
           }
         });
       });

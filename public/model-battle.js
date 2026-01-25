@@ -1,11 +1,23 @@
 // ===================================================================
-// MODEL BATTLE ARENA - JavaScript (OPTIMIZED v2.1 - IIFE)
+// MODEL BATTLE ARENA - JavaScript (OPTIMIZED v2.2 - IIFE)
 // Features: API Integration, Battle Logic, Voting, LocalStorage
 // Fixed: API_BASE duplication, DOM access timing, defensive checks, scope conflicts
+// Added: Debug function fallbacks
 // ===================================================================
 
 (function() {
 'use strict';
+
+// Debug function fallbacks (in case api-config.js is not loaded)
+if (typeof window.debugLog !== 'function') {
+  window.debugLog = function() {};
+}
+if (typeof window.debugWarn !== 'function') {
+  window.debugWarn = function() {};
+}
+if (typeof window.debugError !== 'function') {
+  window.debugError = function(...args) { console.error(...args); };
+}
 
 // State
 let currentBattleResults = null;

@@ -12,7 +12,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Hero Poster Preload for fast LCP -->
     <link rel="preload" as="image" href="/videos/road_poster.jpg" fetchpriority="high" />
@@ -34,11 +34,16 @@
         --accent-secondary: #0038c7;
         --accent-gradient: linear-gradient(135deg, #002FA7 0%, #0038c7 100%);
         --accent-rgb: 0, 47, 167;
+        /* Warme Farben für Persönlichkeit */
+        --color-warm: #E07A5F;
+        --color-warm-light: #F2CC8F;
+        --color-warm-rgb: 224, 122, 95;
         --text-primary: #ffffff;
         --text-secondary: rgba(255, 255, 255, 0.7);
         --text-muted: rgba(255, 255, 255, 0.5);
         --glow: 0 0 30px rgba(0, 47, 167, 0.4);
         --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-handwriting: 'Caveat', cursive;
       }
 
       /* Reset & Base */
@@ -345,11 +350,186 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
+         MANIFEST SECTION - Persönlichkeit & visueller Bruch
+         ═══════════════════════════════════════════════════════════════ */
+
+      .manifest-section {
+        position: relative;
+        padding: 6rem 2rem;
+        background: linear-gradient(180deg,
+          rgba(10, 10, 15, 0.9) 0%,
+          rgba(224, 122, 95, 0.03) 50%,
+          rgba(10, 10, 15, 0.95) 100%
+        );
+        overflow: hidden;
+      }
+
+      .manifest-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.015;
+        pointer-events: none;
+      }
+
+      .manifest-container {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      .manifest-content {
+        text-align: left;
+      }
+
+      .manifest-lead {
+        font-family: var(--font-handwriting);
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        color: var(--color-warm);
+        margin: 0 0 0.25rem 0;
+        line-height: 1.2;
+        transform: rotate(-1deg);
+      }
+
+      .manifest-text {
+        font-family: var(--font-handwriting);
+        font-size: clamp(1.3rem, 3vw, 1.8rem);
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        line-height: 1.5;
+        opacity: 0.95;
+      }
+
+      .manifest-break {
+        margin-top: 2.5rem;
+        color: var(--color-warm);
+      }
+
+      .manifest-highlight {
+        color: var(--color-warm);
+        position: relative;
+      }
+
+      .manifest-highlight::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--color-warm);
+        opacity: 0.4;
+        transform: rotate(-1deg);
+      }
+
+      .manifest-small {
+        font-family: var(--font-family);
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin: 2rem 0;
+        line-height: 1.8;
+      }
+
+      .manifest-personal {
+        margin: 3rem 0;
+        padding: 1.5rem 2rem;
+        background: rgba(224, 122, 95, 0.05);
+        border-left: 3px solid var(--color-warm);
+        border-radius: 0 8px 8px 0;
+      }
+
+      .manifest-personal p:first-child {
+        font-family: var(--font-family);
+        font-size: 0.9rem;
+        color: var(--color-warm);
+        margin: 0 0 0.5rem 0;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .manifest-list {
+        font-family: var(--font-handwriting);
+        font-size: 1.4rem;
+        color: var(--text-primary);
+        margin: 0;
+        line-height: 1.8;
+      }
+
+      .manifest-closing {
+        font-family: var(--font-handwriting);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        color: var(--text-primary);
+        margin: 3rem 0 0 0;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Side Notes - Desktop only */
+      .side-notes-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .side-note {
+        position: absolute;
+        font-family: var(--font-handwriting);
+        font-size: 1rem;
+        color: var(--color-warm);
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        max-width: 180px;
+        text-align: center;
+      }
+
+      .side-note[data-position="right-top"] {
+        top: 15%;
+        right: 5%;
+        transform: rotate(5deg);
+      }
+
+      .side-note[data-position="left-mid"] {
+        top: 55%;
+        left: 3%;
+        transform: rotate(-3deg);
+      }
+
+      .side-note.visible {
+        opacity: 0.6;
+      }
+
+      @media (max-width: 1200px) {
+        .side-notes-container {
+          display: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .manifest-section {
+          padding: 4rem 1.5rem;
+        }
+
+        .manifest-personal {
+          padding: 1rem 1.5rem;
+        }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
          PROJECTS SECTION
          ═══════════════════════════════════════════════════════════════ */
 
       .projects-section {
         background: rgba(0, 0, 0, 0.3);
+        padding: 4rem 0;
       }
 
       .projects-grid {
@@ -358,9 +538,47 @@
         gap: 1.5rem;
       }
 
+      .projects-grid-compact {
+        max-width: 1100px;
+        margin: 0 auto;
+        gap: 1.25rem;
+      }
+
       .project-card {
         position: relative;
         overflow: hidden;
+      }
+
+      .project-card-compact {
+        padding: 1.25rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: all 0.3s ease;
+      }
+
+      .project-card-compact:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+      }
+
+      .project-card-compact .project-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .project-card-compact .project-desc {
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .project-story {
+        font-family: var(--font-handwriting);
+        font-size: 1rem;
+        color: var(--color-warm);
+        font-style: italic;
+        margin: 0.75rem 0;
+        opacity: 0.85;
       }
 
       /* Tool-Card Farben - einheitlich Yves Klein Blau */
@@ -1424,26 +1642,76 @@
       </div>
     </section>
 
+    <!-- Manifest Section - Wer ist Wolf? -->
+    <section class="manifest-section" id="manifest">
+      <div class="manifest-container">
+        <div class="manifest-content">
+          <p class="manifest-lead">Ich war 25 Jahre im Film.</p>
+          <p class="manifest-text">Kino-Trailer für die ganze Welt.</p>
+
+          <p class="manifest-text manifest-break">Dann kam KI.</p>
+          <p class="manifest-text">Und ich dachte: Das ist die nächste Revolution.</p>
+
+          <p class="manifest-text">
+            Aber ich wollte nicht einfach mitlaufen.<br>
+            Ich wollte <span class="manifest-highlight">verstehen</span>.<br>
+            Ich wollte <span class="manifest-highlight">selbst bauen</span>.<br>
+            Und ich wollte sicherstellen, dass wir das <span class="manifest-highlight">richtig machen</span>.
+          </p>
+
+          <p class="manifest-text manifest-break">Deshalb bin ich jetzt hier.</p>
+
+          <p class="manifest-small">
+            Mit 4 Projekten. Mit einer TÜV-Zertifizierung.<br>
+            Und mit der Überzeugung, dass Technologie nur dann gut ist,<br>
+            wenn sie von Menschen gemacht wird, die wissen, was Mensch-Sein bedeutet.
+          </p>
+
+          <div class="manifest-personal">
+            <p>Das heißt für mich:</p>
+            <p class="manifest-list">
+              Sonntagsbraten nach Omas Rezept.<br>
+              SC Freiburg, auch wenn sie verlieren.<br>
+              Basquiat in der Galerie. Krausser im Bett.<br>
+              Yoga am Morgen. Code am Nachmittag.
+            </p>
+          </div>
+
+          <p class="manifest-closing">
+            Und dann zurück an den Rechner —<br>
+            und das Beste bauen, was ich kann.
+          </p>
+        </div>
+      </div>
+
+      <!-- Side Notes (Desktop only) -->
+      <div class="side-notes-container" aria-hidden="true">
+        <div class="side-note" data-position="right-top"></div>
+        <div class="side-note" data-position="left-mid"></div>
+      </div>
+    </section>
+
     <!-- Meine Projekte Section -->
     <section class="projects-section" id="projekte">
       <div class="section-container">
         <div class="section-header fade-in">
           <h2 class="section-title hero-style-text">
-            Meine Projekte
+            Was ich baue
           </h2>
           <p class="section-subtitle">
-            4 Live-Projekte – alle mit KI gebaut, alle in Produktion
+            Vier Projekte, vier Probleme, vier Lösungen.
           </p>
         </div>
 
-        <div class="projects-grid">
+        <div class="projects-grid projects-grid-compact">
           <!-- KI-Sicherheit.jetzt -->
-          <article class="glass-card project-card fade-in">
+          <article class="glass-card project-card project-card-compact fade-in">
             <h3 class="project-title">ki-sicherheit.jetzt</h3>
             <p class="project-desc">
               KI-Readiness-Beratung für Unternehmen.
               EU AI Act konform, TÜV-zertifiziert.
             </p>
+            <p class="project-story">Weil ich gesehen habe, wie Firmen KI falsch einsetzen.</p>
             <div class="project-status">
               <span class="status-dot"></span>
               B2B / Beratung
@@ -1454,12 +1722,13 @@
           </article>
 
           <!-- art-radar.berlin -->
-          <article class="glass-card project-card fade-in">
+          <article class="glass-card project-card project-card-compact fade-in">
             <h3 class="project-title">art-radar.berlin</h3>
             <p class="project-desc">
               Dein KI-Kunstguide für Berlin.
               Automatisch aktualisierte Ausstellungen.
             </p>
+            <p class="project-story">Weil ich selbst ständig Ausstellungen verpasse.</p>
             <div class="project-status">
               <span class="status-dot"></span>
               Kultur / App
@@ -1470,12 +1739,13 @@
           </article>
 
           <!-- akut.jetzt -->
-          <article class="glass-card project-card fade-in">
+          <article class="glass-card project-card project-card-compact fade-in">
             <h3 class="project-title">akut.jetzt</h3>
             <p class="project-desc">
               Notfall-App mit KI-Unterstützung.
               Funktioniert offline, versteckter Notruf.
             </p>
+            <p class="project-story">Weil Sicherheit nicht verhandelbar ist.</p>
             <div class="project-status">
               <span class="status-dot"></span>
               Sicherheit / App
@@ -1486,12 +1756,13 @@
           </article>
 
           <!-- achtung.jetzt -->
-          <article class="glass-card project-card fade-in">
+          <article class="glass-card project-card project-card-compact fade-in">
             <h3 class="project-title">achtung.jetzt</h3>
             <p class="project-desc">
               Bevor du sendest: KI checkt Texte.
               Erkennt sensible Daten automatisch.
             </p>
+            <p class="project-story">Weil Datenschutz kein Luxus sein sollte.</p>
             <div class="project-status">
               <span class="status-dot"></span>
               Datenschutz / Tool
@@ -2473,6 +2744,50 @@
         document.addEventListener('visibilitychange', () => {
           if (document.hidden && isPlaying) togglePlay();
         });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // SIDE NOTES - Persönliche Randnotizen (Desktop only)
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const sideNotes = [
+          "Gerade gelesen: Helmut Krausser",
+          "SC Freiburg 2:1 am Wochenende",
+          "Heute: Königsberger Klopse",
+          "Jörg Juretzka wiederlesen",
+          "Yoga am Morgen gemacht",
+          "Die weite Hose ist perfekt",
+          "Basquiat-Ausstellung besucht",
+          "Neues Rezept ausprobiert"
+        ];
+
+        const noteElements = document.querySelectorAll('.side-note');
+        if (noteElements.length === 0) return;
+
+        function setRandomNote(el) {
+          const randomNote = sideNotes[Math.floor(Math.random() * sideNotes.length)];
+          el.textContent = randomNote;
+        }
+
+        // Initial notes with delay
+        noteElements.forEach((el, index) => {
+          setRandomNote(el);
+          setTimeout(() => {
+            el.classList.add('visible');
+          }, 3000 + (index * 1500));
+        });
+
+        // Rotate notes every 45 seconds
+        setInterval(() => {
+          noteElements.forEach(el => {
+            el.classList.remove('visible');
+            setTimeout(() => {
+              setRandomNote(el);
+              el.classList.add('visible');
+            }, 800);
+          });
+        }, 45000);
       });
     </script>
 

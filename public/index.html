@@ -348,49 +348,70 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         MANIFEST SECTION - Scroll-basierter Fade-Effekt
+         MANIFEST SECTION - Scroll-basierter Fade-Effekt (nur 4 Zeilen sichtbar)
          ═══════════════════════════════════════════════════════════════ */
 
       .manifest-section {
         position: relative;
-        padding: 5rem 2rem;
+        padding: 0;
         background: transparent;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
+        min-height: 300vh; /* Großer Scroll-Bereich für sanften Effekt */
       }
 
       .manifest-container {
+        position: sticky;
+        top: 50%;
+        transform: translateY(-50%);
         max-width: 680px;
         margin: 0 auto;
         text-align: left;
+        padding: 2rem;
+        height: auto;
+        overflow: visible;
       }
 
-      /* Scroll-Fade Animation für jeden Absatz */
+      /* Scroll-Fade Animation - Text erscheint/verschwindet aus dem Nichts */
       .manifest-text p,
       .manifest-personal,
       .manifest-signature {
         opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s ease, transform 0.8s ease;
+        transform: translateY(40px) scale(0.95);
+        filter: blur(8px);
+        transition:
+          opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+          filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
       }
 
       .manifest-text p.visible,
       .manifest-personal.visible,
       .manifest-signature.visible {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+        pointer-events: auto;
       }
 
-      /* Staggered delay für schönen Effekt */
+      /* Ausgeblendete Elemente (nach oben gescrollt) */
+      .manifest-text p.hidden-above,
+      .manifest-personal.hidden-above,
+      .manifest-signature.hidden-above {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.95);
+        filter: blur(8px);
+      }
+
+      /* Staggered delay für schönen Kaskadeneffekt */
       .manifest-text p:nth-child(1) { transition-delay: 0s; }
-      .manifest-text p:nth-child(2) { transition-delay: 0.1s; }
-      .manifest-text p:nth-child(3) { transition-delay: 0.2s; }
-      .manifest-text p:nth-child(4) { transition-delay: 0.3s; }
-      .manifest-text p:nth-child(5) { transition-delay: 0.4s; }
-      .manifest-text p:nth-child(6) { transition-delay: 0.5s; }
-      .manifest-personal { transition-delay: 0.6s; }
-      .manifest-signature { transition-delay: 0.7s; }
+      .manifest-text p:nth-child(2) { transition-delay: 0.08s; }
+      .manifest-text p:nth-child(3) { transition-delay: 0.16s; }
+      .manifest-text p:nth-child(4) { transition-delay: 0.24s; }
+      .manifest-text p:nth-child(5) { transition-delay: 0.32s; }
+      .manifest-text p:nth-child(6) { transition-delay: 0.4s; }
+      .manifest-text p:nth-child(7) { transition-delay: 0.48s; }
+      .manifest-personal { transition-delay: 0.56s; }
+      .manifest-signature { transition-delay: 0.64s; }
 
       .manifest-text {
         font-size: clamp(1rem, 2.2vw, 1.15rem);
@@ -432,11 +453,11 @@
 
       @media (max-width: 768px) {
         .manifest-section {
-          padding: 3rem 1.5rem;
+          min-height: 250vh;
         }
 
         .manifest-container {
-          text-align: left;
+          padding: 1.5rem;
         }
       }
 
@@ -466,8 +487,8 @@
         max-width: 600px;
         margin: 0 auto 2.5rem;
         padding: 1.25rem 1.5rem;
-        background: rgba(255, 255, 255, 0.08);
-        border-left: 3px solid rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.03);
+        border-left: 3px solid rgba(255, 255, 255, 0.15);
         border-radius: 0 12px 12px 0;
       }
 
@@ -511,10 +532,10 @@
 
       .prompt-example {
         padding: 0.6rem 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 20px;
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.6);
         font-family: var(--font-family);
         font-size: 0.85rem;
         cursor: pointer;
@@ -522,8 +543,8 @@
       }
 
       .prompt-example:hover {
-        background: rgba(255, 255, 255, 0.2);
-        border-color: rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
         color: #fff;
         transform: translateY(-2px);
       }
@@ -1021,12 +1042,13 @@
          ═══════════════════════════════════════════════════════════════ */
 
       .tools-section {
-        background: linear-gradient(145deg, rgba(0, 47, 140, 0.45) 0%, rgba(0, 30, 90, 0.5) 100%);
-        backdrop-filter: blur(10px);
+        background: linear-gradient(145deg, rgba(0, 47, 140, 0.06) 0%, rgba(0, 30, 90, 0.08) 100%);
+        backdrop-filter: blur(4px);
         padding: 4rem 2rem;
         border-radius: 24px;
         max-width: 1000px;
         margin: 2rem auto;
+        border: 1px solid rgba(255, 255, 255, 0.04);
       }
 
       .tools-grid {
@@ -1096,12 +1118,11 @@
          ═══════════════════════════════════════════════════════════════ */
 
       .ki-chat-section {
-        background: linear-gradient(160deg, rgba(0, 47, 140, 0.45) 0%, rgba(30, 0, 80, 0.5) 100%);
-        backdrop-filter: blur(10px);
-        padding: 3rem 2rem;
-        border-radius: 24px;
-        max-width: 700px;
-        margin: 2rem auto;
+        background: transparent;
+        padding: 6rem 2rem 4rem;
+        max-width: 800px;
+        margin: 0 auto;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
       }
 
       .ki-chat-container {
@@ -1110,85 +1131,87 @@
       }
 
       .ki-chat-header {
-        text-align: center;
+        text-align: left;
         margin-bottom: 2rem;
       }
 
       .ki-chat-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #fff;
-        margin: 0 0 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.4);
+        margin: 0 0 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
       }
 
       .ki-chat-subtitle {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.25);
         margin: 0;
       }
 
       .ki-chat-topics {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
+        justify-content: flex-start;
         gap: 0.5rem;
         margin-bottom: 1.5rem;
       }
 
       .topic-btn {
-        padding: 0.5rem 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 20px;
-        color: rgba(255, 255, 255, 0.8);
+        padding: 0.4rem 0.8rem;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        color: rgba(255, 255, 255, 0.35);
         font-family: var(--font-family);
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         cursor: pointer;
         transition: all 0.25s ease;
+        letter-spacing: 0.02em;
       }
 
       .topic-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: transparent;
         border-color: rgba(255, 255, 255, 0.3);
-        color: #fff;
-        transform: translateY(-1px);
+        color: rgba(255, 255, 255, 0.7);
       }
 
       .ki-chat-input-wrapper {
         display: flex;
-        gap: 0.75rem;
+        gap: 0.5rem;
         margin-bottom: 1rem;
       }
 
       .ki-chat-input {
         flex: 1;
-        padding: 0.875rem 1.25rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 30px;
-        color: #fff;
+        padding: 0.75rem 0;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 0;
+        color: rgba(255, 255, 255, 0.8);
         font-family: var(--font-family);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         outline: none;
         transition: all 0.3s ease;
       }
 
       .ki-chat-input::placeholder {
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.2);
       }
 
       .ki-chat-input:focus {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.4);
+        border-bottom-color: rgba(255, 255, 255, 0.4);
       }
 
       .ki-chat-send {
-        width: 48px;
-        height: 48px;
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.25);
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 50%;
-        color: #fff;
+        color: rgba(255, 255, 255, 0.4);
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -1198,53 +1221,52 @@
       }
 
       .ki-chat-send:hover {
-        background: rgba(255, 255, 255, 0.25);
-        transform: scale(1.05);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.8);
       }
 
       .ki-chat-send:disabled {
-        opacity: 0.5;
+        opacity: 0.3;
         cursor: not-allowed;
-        transform: none;
       }
 
       .ki-chat-response {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 1.25rem 1.5rem;
-        margin-top: 1rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-left: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0;
+        padding: 1rem 1.25rem;
+        margin-top: 1.5rem;
       }
 
       .ki-response-text {
-        font-size: 0.95rem;
-        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
         line-height: 1.7;
       }
 
       .ki-response-text.loading {
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.3);
         font-style: italic;
       }
 
       @media (max-width: 600px) {
         .ki-chat-section {
-          margin: 1rem;
-          padding: 2rem 1.5rem;
+          padding: 4rem 1.5rem 3rem;
         }
 
         .topic-btn {
-          font-size: 0.75rem;
-          padding: 0.4rem 0.8rem;
+          font-size: 0.7rem;
+          padding: 0.35rem 0.6rem;
         }
 
         .ki-chat-input-wrapper {
-          flex-direction: column;
+          flex-direction: row;
         }
 
         .ki-chat-send {
-          width: 100%;
-          border-radius: 30px;
-          height: 44px;
+          width: 36px;
+          border-radius: 50%;
+          height: 36px;
         }
       }
 
@@ -1978,38 +2000,6 @@
       </div>
     </section>
 
-    <!-- KI-Chat Section - Frag Wolf -->
-    <section class="ki-chat-section fade-in" id="frag-wolf">
-      <div class="ki-chat-container">
-        <div class="ki-chat-header">
-          <h2 class="ki-chat-title">Frag mich was</h2>
-          <p class="ki-chat-subtitle">KI-gestützter Dialog über mich, meine Arbeit, oder KI allgemein</p>
-        </div>
-
-        <div class="ki-chat-topics">
-          <button class="topic-btn" data-topic="Erzähl mir von deiner Arbeit bei Trailerhaus">Trailerhaus</button>
-          <button class="topic-btn" data-topic="Was fasziniert dich an KI?">KI-Faszination</button>
-          <button class="topic-btn" data-topic="Warum SC Freiburg?">SC Freiburg</button>
-          <button class="topic-btn" data-topic="Was bedeutet dir Basquiat?">Basquiat</button>
-          <button class="topic-btn" data-topic="Welches Buch von Krausser empfiehlst du?">Krausser</button>
-        </div>
-
-        <div class="ki-chat-input-wrapper">
-          <input type="text" id="ki-chat-input" class="ki-chat-input" placeholder="Oder stell deine eigene Frage..." maxlength="200">
-          <button id="ki-chat-send" class="ki-chat-send" title="Fragen">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-          </button>
-        </div>
-
-        <div id="ki-chat-response" class="ki-chat-response" style="display: none;">
-          <div class="ki-response-text"></div>
-        </div>
-      </div>
-    </section>
-
     <!-- Music Player -->
     <div class="music-player" id="music-player" title="Musik an/aus">
       <div class="music-icon">
@@ -2026,6 +2016,38 @@
       <source src="/audio/ambient_loop.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- Frag Wolf Section - Minimalistisch, ganz unten -->
+    <section class="ki-chat-section fade-in" id="frag-wolf">
+      <div class="ki-chat-container">
+        <div class="ki-chat-header">
+          <h2 class="ki-chat-title">Frag mich was</h2>
+          <p class="ki-chat-subtitle">KI-gestützter Dialog über mich, meine Arbeit, oder KI allgemein</p>
+        </div>
+
+        <div class="ki-chat-topics">
+          <button class="topic-btn" data-topic="Erzähl mir von deiner Arbeit bei Trailerhaus">Trailerhaus</button>
+          <button class="topic-btn" data-topic="Was fasziniert dich an KI?">KI-Faszination</button>
+          <button class="topic-btn" data-topic="Warum SC Freiburg?">SC Freiburg</button>
+          <button class="topic-btn" data-topic="Was bedeutet dir Basquiat?">Basquiat</button>
+          <button class="topic-btn" data-topic="Welches Buch von Krausser empfiehlst du?">Krausser</button>
+        </div>
+
+        <div class="ki-chat-input-wrapper">
+          <input type="text" id="ki-chat-input" class="ki-chat-input" placeholder="Oder stell deine eigene Frage..." maxlength="200" aria-label="Stelle eine Frage an Wolf">
+          <button id="ki-chat-send" class="ki-chat-send" title="Fragen" aria-label="Frage absenden">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+
+        <div id="ki-chat-response" class="ki-chat-response" style="display: none;">
+          <div class="ki-response-text"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="site-footer">
       <p class="footer-quote">
@@ -2039,7 +2061,7 @@
 
       <!-- TÜV Badge - dezent -->
       <div class="footer-tuev">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
@@ -2148,7 +2170,7 @@
 
             <!-- Honeypot gegen Spam (unsichtbar für Nutzer) -->
             <p style="display:none;">
-              <label>Nicht ausfüllen: <input name="bot-field"></label>
+              <label>Nicht ausfüllen: <input type="text" name="bot-field" autocomplete="off"></label>
             </p>
 
             <div class="form-row">
@@ -2283,25 +2305,25 @@
             <div class="studio-section">
               <div class="play-controls">
                 <div class="volume-control">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                   </svg>
-                  <input type="range" id="volume-slider" min="0" max="100" value="30">
+                  <input type="range" id="volume-slider" min="0" max="100" value="30" aria-label="Lautstärke">
                 </div>
 
-                <button class="play-btn" id="studio-play-btn" title="Play/Pause">
-                  <svg id="play-icon" viewBox="0 0 24 24">
+                <button class="play-btn" id="studio-play-btn" title="Play/Pause" aria-label="Musik abspielen oder pausieren">
+                  <svg id="play-icon" viewBox="0 0 24 24" aria-hidden="true">
                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                   </svg>
-                  <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;">
+                  <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;" aria-hidden="true">
                     <rect x="6" y="4" width="4" height="16"></rect>
                     <rect x="14" y="4" width="4" height="16"></rect>
                   </svg>
                 </button>
 
                 <div class="volume-control">
-                  <input type="range" id="volume-slider-2" min="0" max="100" value="30">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <input type="range" id="volume-slider-2" min="0" max="100" value="30" aria-label="Lautstärke rechts">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                   </svg>
@@ -2315,24 +2337,24 @@
               <div class="eq-sliders">
                 <div class="slider-group">
                   <div class="slider-label">
-                    <span>Bass</span>
+                    <span id="bass-label">Bass</span>
                     <span class="slider-value" id="bass-value">0</span>
                   </div>
-                  <input type="range" id="bass-slider" min="-12" max="12" value="0">
+                  <input type="range" id="bass-slider" min="-12" max="12" value="0" aria-labelledby="bass-label">
                 </div>
                 <div class="slider-group">
                   <div class="slider-label">
-                    <span>Mid</span>
+                    <span id="mid-label">Mid</span>
                     <span class="slider-value" id="mid-value">0</span>
                   </div>
-                  <input type="range" id="mid-slider" min="-12" max="12" value="0">
+                  <input type="range" id="mid-slider" min="-12" max="12" value="0" aria-labelledby="mid-label">
                 </div>
                 <div class="slider-group">
                   <div class="slider-label">
-                    <span>Treble</span>
+                    <span id="treble-label">Treble</span>
                     <span class="slider-value" id="treble-value">0</span>
                   </div>
-                  <input type="range" id="treble-slider" min="-12" max="12" value="0">
+                  <input type="range" id="treble-slider" min="-12" max="12" value="0" aria-labelledby="treble-label">
                 </div>
               </div>
             </div>
@@ -2482,30 +2504,63 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // MANIFEST SCROLL-FADE EFFEKT
+      // MANIFEST SCROLL-FADE EFFEKT - Nur 4 Zeilen gleichzeitig sichtbar
       // ═══════════════════════════════════════════════════════════════
 
       document.addEventListener('DOMContentLoaded', () => {
+        const manifestSection = document.querySelector('.manifest-section');
         const manifestElements = document.querySelectorAll('.manifest-text p, .manifest-personal, .manifest-signature');
-        if (manifestElements.length === 0) return;
+        if (manifestElements.length === 0 || !manifestSection) return;
 
-        const manifestObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('visible');
-            } else {
-              entry.target.classList.remove('visible');
+        const VISIBLE_COUNT = 4; // Anzahl gleichzeitig sichtbarer Zeilen
+
+        function updateManifestVisibility() {
+          const sectionRect = manifestSection.getBoundingClientRect();
+          const sectionTop = sectionRect.top;
+          const sectionHeight = sectionRect.height;
+          const viewportHeight = window.innerHeight;
+
+          // Fortschritt durch die Section (0 = Anfang, 1 = Ende)
+          const scrollProgress = Math.max(0, Math.min(1,
+            -sectionTop / (sectionHeight - viewportHeight)
+          ));
+
+          // Berechne welche Elemente sichtbar sein sollten
+          const totalElements = manifestElements.length;
+          const scrollableElements = totalElements - VISIBLE_COUNT;
+          const startIndex = Math.floor(scrollProgress * scrollableElements);
+
+          manifestElements.forEach((el, index) => {
+            el.classList.remove('visible', 'hidden-above');
+
+            if (index >= startIndex && index < startIndex + VISIBLE_COUNT) {
+              // Element ist im sichtbaren Bereich
+              el.classList.add('visible');
+            } else if (index < startIndex) {
+              // Element wurde bereits nach oben gescrollt
+              el.classList.add('hidden-above');
             }
+            // Elemente nach dem sichtbaren Bereich haben den Standardzustand (von unten kommend)
           });
-        }, {
-          threshold: 0.3,
-          rootMargin: '-10% 0px -10% 0px'
-        });
+        }
 
-        manifestElements.forEach(el => manifestObserver.observe(el));
+        // Initial ausführen
+        updateManifestVisibility();
+
+        // Bei Scroll aktualisieren (mit Throttling für Performance)
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            window.requestAnimationFrame(() => {
+              updateManifestVisibility();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }, { passive: true });
 
         window.addEventListener('pagehide', () => {
-          manifestObserver.disconnect();
+          // Cleanup
         });
       });
 
@@ -2733,10 +2788,7 @@
         // PLAYLIST - Tracks hinzufügen/ändern hier
         // ═══════════════════════════════════════════════════════════════
         const tracks = [
-          { title: 'Ambient Dreams', artist: 'hohl.rocks', src: '/audio/ambient_loop.mp3' },
-          { title: 'Deep Focus', artist: 'hohl.rocks', src: '/audio/deep_focus.mp3' },
-          { title: 'Night Drive', artist: 'hohl.rocks', src: '/audio/night_drive.mp3' },
-          { title: 'Digital Rain', artist: 'hohl.rocks', src: '/audio/digital_rain.mp3' }
+          { title: 'Ambient Dreams', artist: 'hohl.rocks', src: '/audio/ambient_loop.mp3' }
         ];
 
         let currentTrackIndex = 0;

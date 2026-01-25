@@ -348,13 +348,16 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         MANIFEST SECTION - Persönliches Statement
+         MANIFEST SECTION - Scroll-basierter Fade-Effekt
          ═══════════════════════════════════════════════════════════════ */
 
       .manifest-section {
         position: relative;
         padding: 5rem 2rem;
         background: transparent;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
       }
 
       .manifest-container {
@@ -362,6 +365,32 @@
         margin: 0 auto;
         text-align: left;
       }
+
+      /* Scroll-Fade Animation für jeden Absatz */
+      .manifest-text p,
+      .manifest-personal,
+      .manifest-signature {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+
+      .manifest-text p.visible,
+      .manifest-personal.visible,
+      .manifest-signature.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Staggered delay für schönen Effekt */
+      .manifest-text p:nth-child(1) { transition-delay: 0s; }
+      .manifest-text p:nth-child(2) { transition-delay: 0.1s; }
+      .manifest-text p:nth-child(3) { transition-delay: 0.2s; }
+      .manifest-text p:nth-child(4) { transition-delay: 0.3s; }
+      .manifest-text p:nth-child(5) { transition-delay: 0.4s; }
+      .manifest-text p:nth-child(6) { transition-delay: 0.5s; }
+      .manifest-personal { transition-delay: 0.6s; }
+      .manifest-signature { transition-delay: 0.7s; }
 
       .manifest-text {
         font-size: clamp(1rem, 2.2vw, 1.15rem);
@@ -411,83 +440,9 @@
         }
       }
 
-      /* ═══════════════════════════════════════════════════════════════
-         PROJECTS SECTION - Mit Blau-Akzent
-         ═══════════════════════════════════════════════════════════════ */
-
-      .projects-section {
-        background: linear-gradient(135deg, rgba(0, 38, 120, 0.85) 0%, rgba(0, 25, 80, 0.9) 100%);
-        padding: 3rem 2rem;
-        border-radius: 24px;
-        max-width: 1000px;
-        margin: 2rem auto;
-      }
-
-      .projects-bar {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        gap: 1.5rem;
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .project-link-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: rgba(255, 255, 255, 0.85);
-        text-decoration: none;
-        font-size: 1rem;
-        font-weight: 500;
-        padding: 0.6rem 1.2rem;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 30px;
-        transition: all 0.25s ease;
-      }
-
-      .project-link-item:hover {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
-      }
-
-      .project-link-item .status-indicator {
-        width: 6px;
-        height: 6px;
-        background: #4ade80;
-        border-radius: 50%;
-      }
-
-      .projects-header {
-        text-align: center;
-        margin-bottom: 1.25rem;
-      }
-
-      .projects-label {
-        font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.5);
-        letter-spacing: 0.25em;
-        text-transform: uppercase;
-        margin: 0;
-      }
-
       @media (max-width: 600px) {
-        .projects-section {
-          margin: 1rem;
-          padding: 2rem 1.5rem;
-          border-radius: 16px;
-        }
-        .projects-bar {
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-        .project-link-item {
-          width: 100%;
-          justify-content: center;
+        .projects-placeholder {
+          display: none;
         }
       }
 
@@ -1066,7 +1021,8 @@
          ═══════════════════════════════════════════════════════════════ */
 
       .tools-section {
-        background: linear-gradient(145deg, rgba(0, 47, 140, 0.88) 0%, rgba(0, 30, 90, 0.92) 100%);
+        background: linear-gradient(145deg, rgba(0, 47, 140, 0.45) 0%, rgba(0, 30, 90, 0.5) 100%);
+        backdrop-filter: blur(10px);
         padding: 4rem 2rem;
         border-radius: 24px;
         max-width: 1000px;
@@ -1136,85 +1092,160 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         INSPIRATIONS SECTION - Kreatives Bento Grid
+         KI-CHAT SECTION - Frag Wolf
          ═══════════════════════════════════════════════════════════════ */
 
-      .inspirations-section {
-        background: linear-gradient(160deg, rgba(30, 0, 80, 0.85) 0%, rgba(0, 40, 120, 0.88) 100%);
+      .ki-chat-section {
+        background: linear-gradient(160deg, rgba(0, 47, 140, 0.45) 0%, rgba(30, 0, 80, 0.5) 100%);
+        backdrop-filter: blur(10px);
         padding: 3rem 2rem;
         border-radius: 24px;
-        max-width: 1000px;
+        max-width: 700px;
         margin: 2rem auto;
       }
 
-      .inspirations-header {
+      .ki-chat-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .ki-chat-header {
         text-align: center;
         margin-bottom: 2rem;
       }
 
-      .inspirations-label {
-        font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.5);
-        letter-spacing: 0.25em;
-        text-transform: uppercase;
+      .ki-chat-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 0.5rem;
+      }
+
+      .ki-chat-subtitle {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
         margin: 0;
       }
 
-      .inspirations-bento {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: auto auto;
-        gap: 1rem;
-        max-width: 800px;
-        margin: 0 auto;
-      }
-
-      .inspiration-tile {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 16px;
-        padding: 1.25rem;
+      .ki-chat-topics {
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
         justify-content: center;
-        align-items: center;
-        text-align: center;
-        cursor: default;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .topic-btn {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: var(--font-family);
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .topic-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #fff;
+        transform: translateY(-1px);
+      }
+
+      .ki-chat-input-wrapper {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .ki-chat-input {
+        flex: 1;
+        padding: 0.875rem 1.25rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 30px;
+        color: #fff;
+        font-family: var(--font-family);
+        font-size: 0.95rem;
+        outline: none;
         transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
       }
 
-      .inspiration-tile::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+      .ki-chat-input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
       }
 
-      .inspiration-tile:hover {
+      .ki-chat-input:focus {
         background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.25);
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.4);
       }
 
-      .inspiration-tile:hover::before {
-        opacity: 1;
+      .ki-chat-send {
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
       }
 
-      /* Verschiedene Größen für visuelles Interesse */
-      .inspiration-tile.large {
-        grid-column: span 2;
-        padding: 1.5rem;
+      .ki-chat-send:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.05);
       }
 
-      .inspiration-tile-icon {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-        opacity: 0.9;
+      .ki-chat-send:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .ki-chat-response {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .ki-response-text {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.7;
+      }
+
+      .ki-response-text.loading {
+        color: rgba(255, 255, 255, 0.5);
+        font-style: italic;
+      }
+
+      @media (max-width: 600px) {
+        .ki-chat-section {
+          margin: 1rem;
+          padding: 2rem 1.5rem;
+        }
+
+        .topic-btn {
+          font-size: 0.75rem;
+          padding: 0.4rem 0.8rem;
+        }
+
+        .ki-chat-input-wrapper {
+          flex-direction: column;
+        }
+
+        .ki-chat-send {
+          width: 100%;
+          border-radius: 30px;
+          height: 44px;
+        }
       }
 
       .inspiration-tile.large .inspiration-tile-icon {
@@ -1327,6 +1358,54 @@
         width: 16px;
         height: 16px;
         stroke: var(--accent-primary);
+      }
+
+      /* Footer Projekte */
+      .footer-projects {
+        margin-bottom: 2rem;
+      }
+
+      .footer-projects-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin: 0 0 1rem;
+      }
+
+      .footer-projects-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+      }
+
+      .footer-project-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.25s ease;
+      }
+
+      .footer-project-link:hover {
+        color: var(--text-primary);
+      }
+
+      .footer-project-link .status-dot {
+        width: 6px;
+        height: 6px;
+        background: #22c55e;
+        border-radius: 50%;
+      }
+
+      @media (max-width: 600px) {
+        .footer-projects-links {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1844,31 +1923,6 @@
       </div>
     </section>
 
-    <!-- Projects Section - Minimale Link-Leiste -->
-    <section class="projects-section" id="projekte">
-      <div class="projects-header">
-        <p class="projects-label">Live-Projekte</p>
-      </div>
-      <nav class="projects-bar" aria-label="Projektlinks">
-        <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="project-link-item">
-          <span class="status-indicator"></span>
-          ki-sicherheit.jetzt
-        </a>
-        <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="project-link-item">
-          <span class="status-indicator"></span>
-          art-radar.berlin
-        </a>
-        <a href="https://akut.jetzt" target="_blank" rel="noopener" class="project-link-item">
-          <span class="status-indicator"></span>
-          akut.jetzt
-        </a>
-        <a href="https://achtung.jetzt" target="_blank" rel="noopener" class="project-link-item">
-          <span class="status-indicator"></span>
-          achtung.jetzt
-        </a>
-      </nav>
-    </section>
-
     <!-- KI Ausprobieren Section -->
     <section class="tools-section" id="ausprobieren">
       <div class="section-container">
@@ -1924,35 +1978,34 @@
       </div>
     </section>
 
-    <!-- Inspirationen Section - Kreatives Bento Grid -->
-    <section class="inspirations-section fade-in" id="inspirationen">
-      <div class="inspirations-header">
-        <p class="inspirations-label">Was mich inspiriert</p>
-      </div>
-      <div class="inspirations-bento" aria-label="Interessen">
-        <div class="inspiration-tile large">
-          <span class="inspiration-tile-icon">*</span>
-          <span class="inspiration-tile-text">SC Freiburg</span>
+    <!-- KI-Chat Section - Frag Wolf -->
+    <section class="ki-chat-section fade-in" id="frag-wolf">
+      <div class="ki-chat-container">
+        <div class="ki-chat-header">
+          <h2 class="ki-chat-title">Frag mich was</h2>
+          <p class="ki-chat-subtitle">KI-gestützter Dialog über mich, meine Arbeit, oder KI allgemein</p>
         </div>
-        <div class="inspiration-tile">
-          <span class="inspiration-tile-icon">~</span>
-          <span class="inspiration-tile-text">Basquiat</span>
+
+        <div class="ki-chat-topics">
+          <button class="topic-btn" data-topic="Erzähl mir von deiner Arbeit bei Trailerhaus">Trailerhaus</button>
+          <button class="topic-btn" data-topic="Was fasziniert dich an KI?">KI-Faszination</button>
+          <button class="topic-btn" data-topic="Warum SC Freiburg?">SC Freiburg</button>
+          <button class="topic-btn" data-topic="Was bedeutet dir Basquiat?">Basquiat</button>
+          <button class="topic-btn" data-topic="Welches Buch von Krausser empfiehlst du?">Krausser</button>
         </div>
-        <div class="inspiration-tile">
-          <span class="inspiration-tile-icon">+</span>
-          <span class="inspiration-tile-text">Yoga</span>
+
+        <div class="ki-chat-input-wrapper">
+          <input type="text" id="ki-chat-input" class="ki-chat-input" placeholder="Oder stell deine eigene Frage..." maxlength="200">
+          <button id="ki-chat-send" class="ki-chat-send" title="Fragen">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
         </div>
-        <div class="inspiration-tile">
-          <span class="inspiration-tile-icon">/</span>
-          <span class="inspiration-tile-text">Krausser</span>
-        </div>
-        <div class="inspiration-tile">
-          <span class="inspiration-tile-icon">/</span>
-          <span class="inspiration-tile-text">Fauser</span>
-        </div>
-        <div class="inspiration-tile large">
-          <span class="inspiration-tile-icon">~</span>
-          <span class="inspiration-tile-text">Omas Rezepte</span>
+
+        <div id="ki-chat-response" class="ki-chat-response" style="display: none;">
+          <div class="ki-response-text"></div>
         </div>
       </div>
     </section>
@@ -1993,11 +2046,27 @@
         <span>TÜV-zertifizierter KI-Manager</span>
       </div>
 
-      <div class="footer-links" style="margin-bottom: 1.5rem;">
-        <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="footer-link">ki-sicherheit.jetzt</a>
-        <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="footer-link">art-radar.berlin</a>
-        <a href="https://akut.jetzt" target="_blank" rel="noopener" class="footer-link">akut.jetzt</a>
-        <a href="https://achtung.jetzt" target="_blank" rel="noopener" class="footer-link">achtung.jetzt</a>
+      <!-- Aktuelle Arbeiten -->
+      <div class="footer-projects">
+        <p class="footer-projects-label">Aktuelle Arbeiten</p>
+        <div class="footer-projects-links">
+          <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="footer-project-link">
+            <span class="status-dot"></span>
+            ki-sicherheit.jetzt
+          </a>
+          <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="footer-project-link">
+            <span class="status-dot"></span>
+            art-radar.berlin
+          </a>
+          <a href="https://akut.jetzt" target="_blank" rel="noopener" class="footer-project-link">
+            <span class="status-dot"></span>
+            akut.jetzt
+          </a>
+          <a href="https://achtung.jetzt" target="_blank" rel="noopener" class="footer-project-link">
+            <span class="status-dot"></span>
+            achtung.jetzt
+          </a>
+        </div>
       </div>
 
       <div class="footer-links">
@@ -2410,6 +2479,34 @@
         } catch (err) {
           // IntersectionObserver not supported
         }
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // MANIFEST SCROLL-FADE EFFEKT
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const manifestElements = document.querySelectorAll('.manifest-text p, .manifest-personal, .manifest-signature');
+        if (manifestElements.length === 0) return;
+
+        const manifestObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            } else {
+              entry.target.classList.remove('visible');
+            }
+          });
+        }, {
+          threshold: 0.3,
+          rootMargin: '-10% 0px -10% 0px'
+        });
+
+        manifestElements.forEach(el => manifestObserver.observe(el));
+
+        window.addEventListener('pagehide', () => {
+          manifestObserver.disconnect();
+        });
       });
 
       // ═══════════════════════════════════════════════════════════════
@@ -2927,6 +3024,83 @@
         // Pause when page is hidden
         document.addEventListener('visibilitychange', () => {
           if (document.hidden && isPlaying) togglePlay();
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // KI-CHAT FEATURE - Frag Wolf
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const chatInput = document.getElementById('ki-chat-input');
+        const chatSend = document.getElementById('ki-chat-send');
+        const chatResponse = document.getElementById('ki-chat-response');
+        const responseText = chatResponse?.querySelector('.ki-response-text');
+        const topicBtns = document.querySelectorAll('.topic-btn');
+
+        if (!chatInput || !chatSend || !chatResponse || !responseText) return;
+
+        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || '';
+
+        // Wolf's Persönlichkeit für die KI
+        const systemPrompt = `Du bist Wolf Hohl, ein TÜV-zertifizierter KI-Manager aus Berlin. Du warst 25 Jahre Geschäftsführer der Trailerhaus GmbH (Kino-Trailer Postproduktion). Deine Interessen: SC Freiburg, Basquiat, Helmut Krausser, Jörg Fauser, Yoga, Kochen nach Omas Rezepten. Du bist freundlich, direkt und teilst gerne dein Wissen über KI. Antworte kurz und persönlich (max 3-4 Sätze).`;
+
+        async function sendMessage(message) {
+          if (!message.trim()) return;
+
+          chatSend.disabled = true;
+          chatResponse.style.display = 'block';
+          responseText.textContent = 'Denke nach...';
+          responseText.classList.add('loading');
+
+          try {
+            const response = await fetch(`${API_BASE}/api/chat`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: message }
+                ],
+                model: 'claude'
+              })
+            });
+
+            if (!response.ok) throw new Error('API Error');
+
+            const data = await response.json();
+            responseText.textContent = data.response || data.content || 'Hmm, da ist was schiefgelaufen.';
+            responseText.classList.remove('loading');
+          } catch (error) {
+            responseText.textContent = 'Entschuldige, gerade kann ich nicht antworten. Probier es später nochmal!';
+            responseText.classList.remove('loading');
+          } finally {
+            chatSend.disabled = false;
+          }
+        }
+
+        // Send on button click
+        chatSend.addEventListener('click', () => {
+          sendMessage(chatInput.value);
+          chatInput.value = '';
+        });
+
+        // Send on Enter
+        chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            sendMessage(chatInput.value);
+            chatInput.value = '';
+          }
+        });
+
+        // Topic buttons
+        topicBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const topic = btn.dataset.topic;
+            chatInput.value = topic;
+            sendMessage(topic);
+            chatInput.value = '';
+          });
         });
       });
 

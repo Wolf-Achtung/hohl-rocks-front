@@ -248,9 +248,9 @@
         transform: translateY(4px);
       }
 
-      /* Scroll Indicator */
+      /* Scroll Indicator - fixiert unten, erscheint verzögert */
       .scroll-indicator {
-        position: absolute;
+        position: fixed;
         bottom: 2rem;
         left: 50%;
         transform: translateX(-50%);
@@ -260,7 +260,20 @@
         gap: 0.5rem;
         color: var(--text-muted);
         font-size: 0.85rem;
+        z-index: 50;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+        pointer-events: none;
+      }
+
+      .scroll-indicator.visible {
+        opacity: 1;
         animation: bounce 2s infinite;
+      }
+
+      /* Verstecken wenn gescrollt */
+      .scroll-indicator.hidden {
+        opacity: 0;
       }
 
       @keyframes bounce {
@@ -466,24 +479,24 @@
         max-width: 600px;
         margin: 0 auto 2.5rem;
         padding: 1.25rem 1.5rem;
-        background: rgba(255, 255, 255, 0.03);
-        border-left: 3px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.04);
+        border-left: 3px solid rgba(255, 255, 255, 0.2);
         border-radius: 0 12px 12px 0;
       }
 
       .ki-context-title {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.9);
+        color: #fff;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.12em;
         margin: 0 0 0.75rem;
       }
 
       .ki-context p {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.75);
-        line-height: 1.6;
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.7;
         margin: 0;
       }
 
@@ -494,12 +507,10 @@
       }
 
       .example-prompts-title {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.5);
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        margin: 0 0 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 1.25rem;
       }
 
       .prompt-examples {
@@ -510,29 +521,22 @@
       }
 
       .prompt-example {
-        padding: 0.6rem 1rem;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 20px;
-        color: rgba(255, 255, 255, 0.6);
+        padding: 0.7rem 1.25rem;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        color: rgba(255, 255, 255, 0.8);
         font-family: var(--font-family);
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         cursor: pointer;
         transition: all 0.25s ease;
       }
 
       .prompt-example:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
         color: #fff;
         transform: translateY(-2px);
-      }
-
-      .example-prompts-hint {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.45);
-        font-style: italic;
-        margin: 1rem 0 0;
       }
 
       @media (max-width: 600px) {
@@ -551,20 +555,9 @@
          MUSIC PLAYER
          ═══════════════════════════════════════════════════════════════ */
 
+      /* Verstecke den separaten Music-Player - jetzt im Footer */
       .music-player {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.75rem 1.25rem;
-        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.98) 100%);
-        border: 1px solid rgba(0, 47, 167, 0.3);
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        display: none;
       }
 
       .music-player:hover {
@@ -609,15 +602,64 @@
       .music-player.playing .music-bar:nth-child(4) { animation: musicBar 0.5s ease-in-out infinite alternate 0.3s; }
 
       @keyframes musicBar {
-        0% { height: 4px; }
-        100% { height: 16px; }
+        0% { height: 3px; }
+        100% { height: 10px; }
       }
 
-      .music-label {
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: var(--text-secondary);
+      /* Music-Toggle im Footer */
+      .footer-separator {
+        opacity: 0.3;
       }
+
+      .footer-music-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.6rem;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: rgba(255, 255, 255, 0.4);
+        font-family: var(--font-family);
+        font-size: 0.75rem;
+        vertical-align: middle;
+        margin-left: 0.25rem;
+      }
+
+      .footer-music-toggle:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .footer-music-toggle.playing {
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+      }
+
+      .footer-music-bars {
+        display: inline-flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 10px;
+      }
+
+      .footer-music-bar {
+        width: 2px;
+        background: currentColor;
+        border-radius: 1px;
+        transition: height 0.2s ease;
+      }
+
+      .footer-music-toggle:not(.playing) .footer-music-bar {
+        height: 3px !important;
+      }
+
+      .footer-music-toggle.playing .footer-music-bar:nth-child(1) { animation: musicBar 0.5s ease-in-out infinite alternate; }
+      .footer-music-toggle.playing .footer-music-bar:nth-child(2) { animation: musicBar 0.5s ease-in-out infinite alternate 0.1s; }
+      .footer-music-toggle.playing .footer-music-bar:nth-child(3) { animation: musicBar 0.5s ease-in-out infinite alternate 0.2s; }
+      .footer-music-toggle.playing .footer-music-bar:nth-child(4) { animation: musicBar 0.5s ease-in-out infinite alternate 0.3s; }
 
       @media (max-width: 768px) {
         .music-player {
@@ -1925,37 +1967,13 @@
       </video>
     </div>
 
-    <!-- Hero Section -->
-    <section class="hero" id="main">
-      <div class="hero-content">
-        <h1 class="hero-name">WOLF HOHL</h1>
-        <div class="hero-divider"></div>
+    <!-- Scroll-Indicator (erscheint verzögert) -->
+    <div class="scroll-indicator delayed" id="scroll-indicator" aria-hidden="true">
+      <span>Scroll</span>
+      <span>↓</span>
+    </div>
 
-        <!-- Tagline Ticker -->
-        <div class="tagline-ticker" aria-live="polite">
-          <div class="tagline-item active">
-            <span class="tagline-highlight">TÜV-zertifizierter</span> KI-Manager
-          </div>
-          <div class="tagline-item">
-            25 Jahre <span class="tagline-highlight">Medien & Film</span>
-          </div>
-          <div class="tagline-item">
-            <span class="tagline-highlight">4 Live-Projekte</span> mit KI
-          </div>
-          <div class="tagline-item">
-            Baut heute, was andere <span class="tagline-highlight">morgen verstehen</span>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="scroll-indicator" aria-hidden="true">
-        <span>Scroll</span>
-        <span>↓</span>
-      </div>
-    </section>
-
-    <!-- Manifest Section - Persönliches Statement -->
+    <!-- Manifest Section - Persönliches Statement (Startpunkt) -->
     <section class="manifest-section fade-in" id="manifest">
       <div class="manifest-container">
         <div class="manifest-text">
@@ -1977,12 +1995,11 @@
           Und mit der Überzeugung, dass Technologie nur dann gut ist,<br>
           wenn sie von Menschen gemacht wird, die wissen, was Mensch-Sein bedeutet.</p>
 
-          <p class="manifest-personal">Das heißt für mich:<br>
-          Sonntagsbraten nach Omas Rezept kochen.<br>
-          SC Freiburg gucken, auch wenn sie verlieren.<br>
-          Mit dem Hund durch den Park.<br>
-          Basquiat in der Galerie.<br>
-          Krausser im Bett.</p>
+          <p class="manifest-personal">Mensch sein heißt für mich:<br>
+          Der Duft von Omas Sonntagsbraten am Herd.<br>
+          Ein Nachmittag mit dem Hund im Tiergarten.<br>
+          Krausser lesen, bis die Augen zufallen.<br>
+          Vor einem Basquiat stehen und nichts verstehen müssen.</p>
 
           <p>Und dann zurück an den Rechner<br>
           und das Beste bauen, was ich kann.</p>
@@ -1992,22 +2009,23 @@
       </div>
     </section>
 
-    <!-- KI Ausprobieren Section -->
+    <!-- KI Live erleben -->
     <section class="tools-section" id="ausprobieren">
       <div class="section-container">
         <div class="section-header fade-in">
           <h2 class="section-title hero-style-text">
-            KI ausprobieren
+            KI live erleben
           </h2>
           <p class="section-subtitle">
-            Erlebe selbst, wie unterschiedlich KI-Modelle denken
+            Drei Modelle. Eine Frage. Drei verschiedene Antworten.
           </p>
         </div>
 
         <!-- Kontext-Box -->
         <div class="ki-context fade-in">
           <h3 class="ki-context-title">Warum das wichtig ist</h3>
-          <p>Jedes KI-Modell hat seine eigene "Persönlichkeit". Claude argumentiert anders als GPT, Perplexity recherchiert anders als beide. Wer KI verstehen will, muss diese Unterschiede kennen – nicht aus Büchern, sondern aus eigener Erfahrung.</p>
+          <p>Claude, GPT und Perplexity denken unterschiedlich.<br>
+          Den Unterschied versteht man erst, wenn man ihn selbst erlebt.</p>
         </div>
 
         <div class="tools-grid" style="max-width: 700px; margin: 0 auto;">
@@ -2016,12 +2034,12 @@
             <div class="glass-card">
               <div class="tool-header">
                 <div>
-                  <h3 class="tool-title">KI-Vergleich</h3>
+                  <h3 class="tool-title">KI-Vergleich starten</h3>
                   <p class="tool-subtitle">Claude · GPT · Perplexity</p>
                 </div>
               </div>
               <p class="tool-desc">
-                Schicke denselben Prompt an 3 KI-Modelle gleichzeitig und vergleiche die Antworten live.
+                Stelle eine Frage – alle drei antworten gleichzeitig.
               </p>
               <div class="tool-arrow">Jetzt vergleichen →</div>
             </div>
@@ -2030,19 +2048,18 @@
 
         <!-- Beispiel-Prompts -->
         <div class="example-prompts fade-in">
-          <h3 class="example-prompts-title">Probier mal diese Prompts:</h3>
+          <h3 class="example-prompts-title">Oder probier gleich einen davon:</h3>
           <div class="prompt-examples">
             <button class="prompt-example" data-prompt="Erkläre mir in 3 Sätzen, warum der Himmel blau ist.">
-              „Erkläre mir in 3 Sätzen, warum der Himmel blau ist."
+              Warum ist der Himmel blau?
             </button>
             <button class="prompt-example" data-prompt="Schreibe einen Haiku über künstliche Intelligenz.">
-              „Schreibe einen Haiku über KI."
+              Schreib einen Haiku über KI
             </button>
             <button class="prompt-example" data-prompt="Was würde passieren, wenn Menschen nicht schlafen müssten?">
-              „Was wäre, wenn Menschen nicht schlafen müssten?"
+              Was wäre ohne Schlaf?
             </button>
           </div>
-          <p class="example-prompts-hint">Die Unterschiede in den Antworten werden dich überraschen.</p>
         </div>
       </div>
     </section>
@@ -2118,6 +2135,16 @@
       <p class="footer-contact">
         Wolf Hohl · Berlin ·
         <a href="#" data-action="kontakt">Kontakt aufnehmen</a>
+        <span class="footer-separator">·</span>
+        <button class="footer-music-toggle" id="footer-music-toggle" aria-label="Musik an/aus">
+          <span class="footer-music-bars">
+            <span class="footer-music-bar" style="height: 4px;"></span>
+            <span class="footer-music-bar" style="height: 8px;"></span>
+            <span class="footer-music-bar" style="height: 3px;"></span>
+            <span class="footer-music-bar" style="height: 6px;"></span>
+          </span>
+          <span>Musik</span>
+        </button>
       </p>
 
       <!-- TÜV Badge - dezent -->
@@ -2611,6 +2638,36 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
+      // SCROLL-INDICATOR - Erscheint verzögert, verschwindet beim Scrollen
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const scrollIndicator = document.getElementById('scroll-indicator');
+        if (!scrollIndicator) return;
+
+        let hasScrolled = false;
+        let indicatorTimeout = null;
+
+        // Nach 4 Sekunden anzeigen, wenn nicht gescrollt wurde
+        indicatorTimeout = setTimeout(() => {
+          if (!hasScrolled) {
+            scrollIndicator.classList.add('visible');
+          }
+        }, 4000);
+
+        // Bei Scroll verstecken
+        window.addEventListener('scroll', () => {
+          hasScrolled = true;
+          scrollIndicator.classList.remove('visible');
+          scrollIndicator.classList.add('hidden');
+          if (indicatorTimeout) {
+            clearTimeout(indicatorTimeout);
+            indicatorTimeout = null;
+          }
+        }, { passive: true, once: true });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
       // SCROLL ANIMATIONS (Intersection Observer)
       // ═══════════════════════════════════════════════════════════════
 
@@ -2806,6 +2863,7 @@
 
       document.addEventListener('DOMContentLoaded', () => {
         const playerBtn = document.getElementById('music-player');
+        const footerMusicToggle = document.getElementById('footer-music-toggle');
         const audio = document.getElementById('bg-music');
         const studioOverlay = document.getElementById('ov-music-studio');
         const studioPlayBtn = document.getElementById('studio-play-btn');
@@ -2828,7 +2886,7 @@
         const prevBtn = document.getElementById('prev-track');
         const nextBtn = document.getElementById('next-track');
 
-        if (!playerBtn || !audio || !canvas) return;
+        if (!audio || !canvas) return;
 
         // ═══════════════════════════════════════════════════════════════
         // PLAYLIST - Tracks hinzufügen/ändern hier
@@ -2901,9 +2959,10 @@
             audioContext.resume();
           }
           audio.play().then(() => {
-            playerBtn.classList.add('playing');
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = '';
+            if (playerBtn) playerBtn.classList.add('playing');
+            if (footerMusicToggle) footerMusicToggle.classList.add('playing');
+            if (playIcon) playIcon.style.display = 'none';
+            if (pauseIcon) pauseIcon.style.display = '';
             drawVisualizer();
             isPlaying = true;
           }).catch(() => { /* Audio playback blocked - silent */ });
@@ -2934,11 +2993,20 @@
         nextBtn?.addEventListener('click', nextTrack);
 
         // Open studio overlay when clicking the player button
-        playerBtn.addEventListener('click', () => {
-          studioOverlay.classList.add('active');
-          studioOverlay.setAttribute('aria-hidden', 'false');
-          document.body.style.overflow = 'hidden';
-        });
+        if (playerBtn) {
+          playerBtn.addEventListener('click', () => {
+            studioOverlay.classList.add('active');
+            studioOverlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+          });
+        }
+
+        // Footer music toggle - einfaches Play/Pause
+        if (footerMusicToggle) {
+          footerMusicToggle.addEventListener('click', () => {
+            togglePlay();
+          });
+        }
 
         // Initialize Web Audio API
         function initAudio() {
@@ -3031,9 +3099,10 @@
         function togglePlay() {
           if (isPlaying) {
             audio.pause();
-            playerBtn.classList.remove('playing');
-            playIcon.style.display = '';
-            pauseIcon.style.display = 'none';
+            if (playerBtn) playerBtn.classList.remove('playing');
+            if (footerMusicToggle) footerMusicToggle.classList.remove('playing');
+            if (playIcon) playIcon.style.display = '';
+            if (pauseIcon) pauseIcon.style.display = 'none';
             stopVisualizer();
             isPlaying = false;
           } else {

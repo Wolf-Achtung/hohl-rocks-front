@@ -354,11 +354,10 @@
       .manifest-section {
         position: relative;
         padding: 5rem 2rem;
-        background: linear-gradient(180deg,
-          transparent 0%,
-          rgba(0, 47, 167, 0.03) 50%,
-          transparent 100%
-        );
+        background: rgba(10, 10, 20, 0.6);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       .manifest-container {
@@ -421,7 +420,7 @@
 
       .projects-section {
         background: transparent;
-        padding: 3rem 2rem;
+        padding: 4rem 2rem;
       }
 
       .projects-bar {
@@ -1049,7 +1048,11 @@
          ═══════════════════════════════════════════════════════════════ */
 
       .tools-section {
-        background: transparent;
+        background: rgba(10, 10, 20, 0.5);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 5rem 1.5rem;
       }
 
       .tools-grid {
@@ -1115,61 +1118,77 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         INSPIRATIONS SECTION - Persönliche Interessen
+         INSPIRATIONS SECTION - Persönliche Interessen (aufgewertet)
          ═══════════════════════════════════════════════════════════════ */
 
       .inspirations-section {
         background: transparent;
-        padding: 2.5rem 2rem;
+        padding: 4rem 2rem;
       }
 
       .inspirations-header {
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
       }
 
       .inspirations-label {
-        font-size: 0.7rem;
+        font-size: 0.8rem;
         color: var(--text-muted);
-        letter-spacing: 0.2em;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
         margin: 0;
-        opacity: 0.7;
       }
 
-      .inspirations-bar {
+      .inspirations-grid {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
-        max-width: 800px;
+        gap: 1rem;
+        max-width: 900px;
         margin: 0 auto;
       }
 
-      .inspiration-item {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        font-weight: 400;
-        transition: color 0.25s ease;
-      }
-
-      .inspiration-item:hover {
+      .inspiration-card {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.7rem 1.2rem;
+        background: rgba(0, 47, 167, 0.08);
+        border: 1px solid rgba(0, 47, 167, 0.15);
+        border-radius: 30px;
         color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: default;
+        transition: all 0.3s ease;
       }
 
-      .inspiration-divider {
-        color: rgba(0, 47, 167, 0.4);
-        font-size: 0.8rem;
+      .inspiration-card:hover {
+        background: rgba(0, 47, 167, 0.15);
+        border-color: rgba(0, 47, 167, 0.4);
+        color: var(--text-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 47, 167, 0.15);
+      }
+
+      .inspiration-icon {
+        font-size: 1.1rem;
+        line-height: 1;
+        opacity: 0.8;
+      }
+
+      .inspiration-card:hover .inspiration-icon {
+        opacity: 1;
       }
 
       @media (max-width: 600px) {
-        .inspirations-bar {
-          gap: 0.4rem;
+        .inspirations-grid {
+          gap: 0.75rem;
         }
 
-        .inspiration-item {
-          font-size: 0.8rem;
+        .inspiration-card {
+          padding: 0.6rem 1rem;
+          font-size: 0.85rem;
         }
       }
 
@@ -1841,24 +1860,39 @@
     </section>
 
     <!-- Inspirationen Section - Persönliche Interessen -->
-    <section class="inspirations-section" id="inspirationen">
+    <section class="inspirations-section fade-in" id="inspirationen">
       <div class="inspirations-header">
         <p class="inspirations-label">Was mich inspiriert</p>
       </div>
-      <div class="inspirations-bar" aria-label="Interessen">
-        <span class="inspiration-item">SC Freiburg</span>
-        <span class="inspiration-divider">·</span>
-        <span class="inspiration-item">Basquiat</span>
-        <span class="inspiration-divider">·</span>
-        <span class="inspiration-item">Helmut Krausser</span>
-        <span class="inspiration-divider">·</span>
-        <span class="inspiration-item">Jörg Fauser</span>
-        <span class="inspiration-divider">·</span>
-        <span class="inspiration-item">Yoga</span>
-        <span class="inspiration-divider">·</span>
-        <span class="inspiration-item">Omas Rezepte</span>
-        <span class="inspiration-divider">·</span>
-        <span class="inspiration-item">Hund</span>
+      <div class="inspirations-grid" aria-label="Interessen">
+        <div class="inspiration-card">
+          <span class="inspiration-icon">*</span>
+          <span>SC Freiburg</span>
+        </div>
+        <div class="inspiration-card">
+          <span class="inspiration-icon">~</span>
+          <span>Basquiat</span>
+        </div>
+        <div class="inspiration-card">
+          <span class="inspiration-icon">/</span>
+          <span>Helmut Krausser</span>
+        </div>
+        <div class="inspiration-card">
+          <span class="inspiration-icon">/</span>
+          <span>Jörg Fauser</span>
+        </div>
+        <div class="inspiration-card">
+          <span class="inspiration-icon">+</span>
+          <span>Yoga</span>
+        </div>
+        <div class="inspiration-card">
+          <span class="inspiration-icon">~</span>
+          <span>Omas Rezepte</span>
+        </div>
+        <div class="inspiration-card">
+          <span class="inspiration-icon">*</span>
+          <span>Hund</span>
+        </div>
       </div>
     </section>
 

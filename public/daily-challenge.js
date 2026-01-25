@@ -21,30 +21,30 @@ const getApiBase = () => {
   // Priority 1: window.API.base() (from api-config.js)
   if (window.API && typeof window.API.base === 'function') {
     const base = window.API.base();
-    console.log('[Daily Challenge] Using API.base():', base);
+    debugLog('Daily Challenge', 'Using API.base():', base);
     return base;
   }
-  
+
   // Priority 2: window.api instance
   if (window.api && typeof window.api.getBaseUrl === 'function') {
     const base = window.api.getBaseUrl();
-    console.log('[Daily Challenge] Using api.getBaseUrl():', base);
+    debugLog('Daily Challenge', 'Using api.getBaseUrl():', base);
     return base;
   }
-  
+
   // Priority 3: Meta tag fallback
-  console.warn('[Daily Challenge] api-config.js nicht geladen, using fallbacks');
+  debugWarn('Daily Challenge', 'api-config.js nicht geladen, using fallbacks');
   const metaTag = document.querySelector('meta[name="x-api-base"]');
   if (metaTag) {
     const base = metaTag.getAttribute('content');
     if (base) {
-      console.log('[Daily Challenge] Using meta tag fallback:', base);
+      debugLog('Daily Challenge', 'Using meta tag fallback:', base);
       return base;
     }
   }
-  
+
   // Priority 4: Production fallback
-  console.warn('[Daily Challenge] Using hardcoded production fallback');
+  debugWarn('Daily Challenge', 'Using hardcoded production fallback');
   return 'https://hohl-rocks-back-production.up.railway.app';
 };
 
@@ -55,34 +55,34 @@ const getApiBase = () => {
 document.addEventListener('DOMContentLoaded', () => {
   // Page Detection - only initialize on daily-challenge.html
   const isOnFeaturePage = window.location.pathname.includes('daily-challenge.html');
-  
+
   if (!isOnFeaturePage) {
-    console.log('[Daily Challenge] Not on feature page, skipping initialization');
+    debugLog('Daily Challenge', 'Not on feature page, skipping initialization');
     return;
   }
-  
-  console.log('[Daily Challenge] Initializing...');
-  
+
+  debugLog('Daily Challenge', 'Initializing...');
+
   // Initialize DOM elements safely
   loadingState = document.getElementById('loading-state');
   challengeSelection = document.getElementById('challenge-selection');
   challengeActive = document.getElementById('challenge-active');
   challengeResult = document.getElementById('challenge-result');
   historySection = document.getElementById('history-section');
-  
+
   // Validate critical DOM elements
   if (!loadingState || !challengeSelection) {
-    console.error('[Daily Challenge] Critical DOM elements not found!');
+    debugError('Daily Challenge', 'Critical DOM elements not found!');
     return;
   }
-  
+
   todayDate = getTodayDate();
   loadStats();
   checkIfCompletedToday();
   loadChallenge();
   setupEventListeners();
-  
-  console.log('[Daily Challenge] Initialized successfully');
+
+  debugLog('Daily Challenge', 'Initialized successfully');
 });
 
 // ===================================================================
@@ -111,7 +111,7 @@ function getLocalData() {
   try {
     return JSON.parse(localStorage.getItem('dailyChallengeData') || '{}');
   } catch (error) {
-    console.error('Error reading localStorage:', error);
+    debugError('Error reading localStorage:', error);
     return {};
   }
 }
@@ -120,7 +120,7 @@ function saveLocalData(data) {
   try {
     localStorage.setItem('dailyChallengeData', JSON.stringify(data));
   } catch (error) {
-    console.error('Error saving to localStorage:', error);
+    debugError('Error saving to localStorage:', error);
   }
 }
 
@@ -301,42 +301,42 @@ function setupEventListeners() {
 
 async function loadChallenge() {
   if (!loadingState || !challengeSelection) {
-    console.error('[Daily Challenge] Required DOM elements not found');
+    debugError('Daily Challenge', 'Required DOM elements not found');
     return;
   }
   
   try {
-    console.log('🎯 [Daily Challenge] Loading...');
+    debugLog('Daily Challenge', 'Loading...');
     loadingState.style.display = 'block';
     challengeSelection.style.display = 'none';
 
     const API_BASE = getApiBase();
-    
-    // ✅ WICHTIG: Validiere API Base
+
+    // Validate API Base
     if (!API_BASE) {
       throw new Error('API Base URL not available');
     }
-    
+
     const url = `${API_BASE}/api/daily-challenge`;
-    console.log('📡 [Daily Challenge] Fetching from:', url);
-    
+    debugLog('Daily Challenge', 'Fetching from:', url);
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
     });
-    
-    console.log('📥 [Daily Challenge] Response status:', response.status);
-    
+
+    debugLog('Daily Challenge', 'Response status:', response.status);
+
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No error text');
-      console.error('❌ [Daily Challenge] Response not OK:', errorText);
+      debugError('Daily Challenge', 'Response not OK:', errorText);
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('✅ [Daily Challenge] Data received:', data);
+    debugLog('Daily Challenge', 'Data received:', data);
     
     // ✅ WICHTIG: Validiere Response Format
     if (!data) {
@@ -354,10 +354,10 @@ async function loadChallenge() {
 
     loadingState.style.display = 'none';
     challengeSelection.style.display = 'block';
-    console.log('✨ [Daily Challenge] Displayed successfully!');
+    debugLog('Daily Challenge', 'Displayed successfully!');
 
   } catch (error) {
-    console.error('💥 [Daily Challenge] Load error:', error);
+    debugError('Daily Challenge', 'Load error:', error);
     const API_BASE = getApiBase();
     
     // ✅ BESSERE Fehlermeldung mit mehr Details
@@ -393,7 +393,7 @@ async function loadChallenge() {
 function displayChallengeSelection(challenge) {
   // ✅ Validiere Challenge Daten
   if (!challenge) {
-    console.error('[Daily Challenge] Challenge data is null');
+    debugError('Daily Challenge', 'Challenge data is null');
     return;
   }
   
@@ -406,7 +406,7 @@ function displayChallengeSelection(challenge) {
   // Difficulties
   ['beginner', 'intermediate', 'expert'].forEach(difficulty => {
     if (!challenge.challenges || !challenge.challenges[difficulty]) {
-      console.warn(`[Daily Challenge] Missing data for difficulty: ${difficulty}`);
+      debugWarn(`[Daily Challenge] Missing data for difficulty: ${difficulty}`);
       return;
     }
     
@@ -427,12 +427,12 @@ function displayChallengeSelection(challenge) {
 
 function startChallenge(difficulty) {
   if (!challengeSelection || !challengeActive) {
-    console.error('[Daily Challenge] Required DOM elements not found for startChallenge');
+    debugError('Daily Challenge', 'Required DOM elements not found for startChallenge');
     return;
   }
   
   if (!currentChallenge || !currentChallenge.challenges || !currentChallenge.challenges[difficulty]) {
-    console.error('[Daily Challenge] Invalid challenge data');
+    debugError('Daily Challenge', 'Invalid challenge data');
     showToast('Challenge-Daten nicht verfügbar', 'error');
     return;
   }
@@ -507,7 +507,7 @@ async function submitAnswer() {
     const API_BASE = getApiBase();
     const url = `${API_BASE}/api/submit-challenge`;
     
-    console.log('[Daily Challenge] Submitting to:', url);
+    debugLog('Daily Challenge', 'Submitting to:', url);
     
     const response = await fetch(url, {
       method: 'POST',
@@ -547,7 +547,7 @@ async function submitAnswer() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch (error) {
-    console.error('[Daily Challenge] Submit error:', error);
+    debugError('Daily Challenge', 'Submit error:', error);
     showToast('Fehler beim Einreichen. Bitte versuche es erneut.', 'error');
     
     // Re-enable button
@@ -719,11 +719,11 @@ function showToast(message, type = 'success') {
 // ===================================================================
 
 window.addEventListener('error', (e) => {
-  console.error('[Daily Challenge] Global error:', e.error);
+  debugError('Daily Challenge', 'Global error:', e.error);
 });
 
 window.addEventListener('unhandledrejection', (e) => {
-  console.error('[Daily Challenge] Unhandled promise rejection:', e.reason);
+  debugError('Daily Challenge', 'Unhandled promise rejection:', e.reason);
 });
 
 })(); // End IIFE

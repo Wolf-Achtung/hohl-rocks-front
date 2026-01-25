@@ -20,20 +20,20 @@ const getApiBase = () => {
   if (window.API && typeof window.API.base === 'function') {
     return window.API.base();
   }
-  
+
   // Priority 2: Meta tag fallback
-  console.error('[Model Battle] api-config.js nicht geladen!');
+  debugError('Model Battle', 'api-config.js nicht geladen!');
   const metaTag = document.querySelector('meta[name="x-api-base"]');
   if (metaTag) {
     const base = metaTag.getAttribute('content');
     if (base) {
-      console.log('[Model Battle] Using meta tag fallback:', base);
+      debugLog('Model Battle', 'Using meta tag fallback:', base);
       return base;
     }
   }
-  
+
   // Priority 3: Production fallback
-  console.warn('[Model Battle] Using hardcoded production fallback');
+  debugWarn('Model Battle', 'Using hardcoded production fallback');
   return 'https://hohl-rocks-back-production.up.railway.app';
 };
 
@@ -44,14 +44,14 @@ const getApiBase = () => {
 document.addEventListener('DOMContentLoaded', () => {
   // Page Detection - only initialize on model-battle.html
   const isOnFeaturePage = window.location.pathname.includes('model-battle.html');
-  
+
   if (!isOnFeaturePage) {
-    console.log('[Model Battle] Not on feature page, skipping initialization');
+    debugLog('Model Battle', 'Not on feature page, skipping initialization');
     return;
   }
-  
-  console.log('[Model Battle] Initializing...');
-  
+
+  debugLog('Model Battle', 'Initializing...');
+
   // Initialize DOM elements safely
   promptInput = document.getElementById('battle-prompt');
   charCurrent = document.getElementById('char-current');
@@ -60,17 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
   newBattleBtn = document.getElementById('new-battle-btn');
   quickBtns = document.querySelectorAll('.quick-btn');
   toast = document.getElementById('toast');
-  
+
   // Validate critical DOM elements
   if (!promptInput || !startBattleBtn) {
-    console.error('[Model Battle] Critical DOM elements not found!');
+    debugError('Model Battle', 'Critical DOM elements not found!');
     return;
   }
-  
+
   setupEventListeners();
   loadStats();
-  
-  console.log('[Model Battle] Initialized successfully');
+
+  debugLog('Model Battle', 'Initialized successfully');
 });
 
 // ===================================================================
@@ -126,7 +126,7 @@ function setupEventListeners() {
 
 async function startBattle() {
   if (!promptInput || !startBattleBtn || !resultsSection) {
-    console.error('[Model Battle] Required DOM elements not found');
+    debugError('Model Battle', 'Required DOM elements not found');
     return;
   }
   
@@ -181,7 +181,7 @@ async function startBattle() {
     showToast('Battle abgeschlossen! 🎉');
 
   } catch (error) {
-    console.error('[Model Battle] Battle error:', error);
+    debugError('Model Battle', 'Battle error:', error);
     showToast('Fehler beim Battle. Bitte versuche es erneut.', 'error');
     
     // Re-enable button
@@ -357,7 +357,7 @@ async function copyResponse(model, text) {
     showToast('Antwort kopiert! 📋');
 
   } catch (error) {
-    console.error('[Model Battle] Copy failed:', error);
+    debugError('Model Battle', 'Copy failed:', error);
     showToast('Fehler beim Kopieren', 'error');
   }
 }
@@ -408,7 +408,7 @@ function saveBattleToHistory(prompt, results) {
 
     localStorage.setItem('battleHistory', JSON.stringify(history));
   } catch (error) {
-    console.error('[Model Battle] Error saving to history:', error);
+    debugError('Model Battle', 'Error saving to history:', error);
   }
 }
 
@@ -426,18 +426,18 @@ function saveVote(model) {
 
     localStorage.setItem('battleStats', JSON.stringify(stats));
   } catch (error) {
-    console.error('[Model Battle] Error saving vote:', error);
+    debugError('Model Battle', 'Error saving vote:', error);
   }
 }
 
 function loadStats() {
   try {
     const stats = JSON.parse(localStorage.getItem('battleStats') || '{}');
-    console.log('[Model Battle] Stats:', stats);
+    debugLog('Model Battle', 'Stats:', stats);
     
     // Could be used to display stats in UI later
   } catch (error) {
-    console.error('[Model Battle] Error loading stats:', error);
+    debugError('Model Battle', 'Error loading stats:', error);
   }
 }
 
@@ -471,11 +471,11 @@ function showToast(message, type = 'success') {
 // ===================================================================
 
 window.addEventListener('error', (e) => {
-  console.error('[Model Battle] Global error:', e.error);
+  debugError('Model Battle', 'Global error:', e.error);
 });
 
 window.addEventListener('unhandledrejection', (e) => {
-  console.error('[Model Battle] Unhandled promise rejection:', e.reason);
+  debugError('Model Battle', 'Unhandled promise rejection:', e.reason);
 });
 
 })(); // End IIFE

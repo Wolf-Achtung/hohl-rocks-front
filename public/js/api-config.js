@@ -1,15 +1,44 @@
 /* ═══════════════════════════════════════════════════════════════
  * HOHL.ROCKS - ZENTRALE API CONFIGURATION
  * ═══════════════════════════════════════════════════════════════
- * Version: 1.0
+ * Version: 1.1
  * Purpose: Einheitliche API Base URL Detection für alle Features
- * 
+ *
  * WICHTIG: Diese Datei MUSS als ERSTES Script geladen werden!
  * ═══════════════════════════════════════════════════════════════
  */
 
 (function() {
   'use strict';
+
+  // ═══════════════════════════════════════════════════════════════
+  // DEBUG MODE - Nur in Development aktiv
+  // ═══════════════════════════════════════════════════════════════
+
+  const IS_DEV = window.location.hostname === 'localhost' ||
+                 window.location.hostname === '127.0.0.1' ||
+                 window.location.search.includes('debug=true');
+
+  // Global debug function - only logs in development
+  window.debugLog = function(prefix, ...args) {
+    if (IS_DEV) {
+      console.log(`[${prefix}]`, ...args);
+    }
+  };
+
+  window.debugWarn = function(prefix, ...args) {
+    if (IS_DEV) {
+      console.warn(`[${prefix}]`, ...args);
+    }
+  };
+
+  window.debugError = function(prefix, ...args) {
+    // Errors always log, even in production
+    console.error(`[${prefix}]`, ...args);
+  };
+
+  // Expose IS_DEV globally
+  window.IS_DEV = IS_DEV;
 
   // ═══════════════════════════════════════════════════════════════
   // API BASE DETECTION MIT FALLBACKS
@@ -24,21 +53,20 @@
     // Priority 1: Meta-Tag (Production & Development)
     const metaBase = getMetaTag('x-api-base');
     if (metaBase) {
-      console.log('[API Config] Using API Base from meta tag:', metaBase);
+      debugLog('API Config', 'Using API Base from meta tag:', metaBase);
       return metaBase;
     }
 
     // Priority 2: Development Mode (localhost detection)
-    if (window.location.hostname === 'localhost' || 
-        window.location.hostname === '127.0.0.1') {
+    if (IS_DEV) {
       const devBase = 'http://localhost:8080';
-      console.log('[API Config] Development mode detected, using:', devBase);
+      debugLog('API Config', 'Development mode detected, using:', devBase);
       return devBase;
     }
 
     // Priority 3: Production Fallback
     const prodBase = 'https://hohl-rocks-back-production.up.railway.app';
-    console.log('[API Config] Using production fallback:', prodBase);
+    debugLog('API Config', 'Using production fallback:', prodBase);
     return prodBase;
   }
 
@@ -57,17 +85,18 @@
       
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Backend connection verified:', {
+        debugLog('API Config', '✅ Backend connection verified:', {
           status: data.status,
           environment: data.environment?.nodeEnv || 'unknown'
         });
         return true;
       } else {
-        console.warn('⚠️ Backend health check failed:', response.status);
+        debugWarn('API Config', '⚠️ Backend health check failed:', response.status);
         return false;
       }
     } catch (error) {
-      console.error('❌ Backend unreachable:', error.message);
+      // Only log in dev - connection errors are expected if backend is down
+      debugWarn('API Config', '❌ Backend unreachable:', error.message);
       return false;
     }
   }
@@ -94,7 +123,7 @@
   // setBase() Funktion hinzufügen (für app.js)
   window.API.setBase = function(newBase) {
     // This will be overridden by api.js, but provide a stub for early access
-    console.log('[API Config] setBase called before api.js loaded:', newBase);
+    debugLog('API Config', 'setBase called before api.js loaded:', newBase);
   };
 
   // Proxy-Funktionen für API-Methoden (werden später von api.js überschrieben)
@@ -124,15 +153,17 @@
   // ═══════════════════════════════════════════════════════════════
   // INITIALIZATION & CONSOLE OUTPUT
   // ═══════════════════════════════════════════════════════════════
-  
-  console.log(`
+
+  if (IS_DEV) {
+    console.log(`
 ╔════════════════════════════════════════╗
 ║   HOHL.ROCKS API Configuration Ready   ║
 ╚════════════════════════════════════════╝
 API Base URL: ${API_BASE}
-Environment: ${window.location.hostname === 'localhost' ? 'Development' : 'Production'}
+Environment: Development
 Ready: ${window.API.isReady()}
-  `);
+    `);
+  }
 
   // Backend Health Check (non-blocking)
   checkBackendHealth(API_BASE).then(healthy => {
@@ -140,7 +171,7 @@ Ready: ${window.API.isReady()}
       window.API.healthy = true;
     } else {
       window.API.healthy = false;
-      console.warn('⚠️ Backend health check failed - Features may not work properly');
+      debugWarn('API Config', '⚠️ Backend health check failed - Features may not work properly');
     }
   });
 

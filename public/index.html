@@ -348,55 +348,70 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         STATEMENT SECTION - Elegant & Professional
+         MANIFEST SECTION - Persönliches Statement
          ═══════════════════════════════════════════════════════════════ */
 
-      .statement-section {
+      .manifest-section {
         position: relative;
         padding: 5rem 2rem;
-        background: transparent;
+        background: linear-gradient(180deg,
+          transparent 0%,
+          rgba(0, 47, 167, 0.03) 50%,
+          transparent 100%
+        );
       }
 
-      .statement-container {
-        max-width: 720px;
+      .manifest-container {
+        max-width: 680px;
         margin: 0 auto;
-        text-align: center;
+        text-align: left;
       }
 
-      .statement-quote {
-        font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-        font-weight: 400;
+      .manifest-text {
+        font-size: clamp(1rem, 2.2vw, 1.15rem);
         color: var(--text-secondary);
         line-height: 1.9;
-        margin: 0;
+      }
+
+      .manifest-text p {
+        margin: 0 0 1.5rem;
+      }
+
+      .manifest-text p:last-child {
+        margin-bottom: 0;
+      }
+
+      .manifest-text em {
+        color: var(--text-primary);
         font-style: italic;
       }
 
-      .statement-quote strong {
+      .manifest-text strong {
         color: var(--text-primary);
-        font-weight: 500;
-        font-style: normal;
+        font-weight: 600;
       }
 
-      .statement-divider {
-        width: 60px;
-        height: 2px;
-        background: var(--accent-primary);
-        margin: 2rem auto;
-        opacity: 0.6;
+      .manifest-personal {
+        padding-left: 1.5rem;
+        border-left: 2px solid rgba(0, 47, 167, 0.4);
+        color: var(--text-muted);
+        font-size: 0.95em;
       }
 
-      .statement-tagline {
+      .manifest-signature {
+        margin-top: 2.5rem;
         font-size: 0.9rem;
         color: var(--text-muted);
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        margin: 0;
+        letter-spacing: 0.05em;
       }
 
       @media (max-width: 768px) {
-        .statement-section {
+        .manifest-section {
           padding: 3rem 1.5rem;
+        }
+
+        .manifest-container {
+          text-align: left;
         }
       }
 
@@ -469,6 +484,95 @@
       .tool-card .glass-card {
         background: linear-gradient(145deg, rgba(0, 47, 167, 0.2) 0%, rgba(20, 20, 35, 0.95) 100%);
         border-color: rgba(0, 47, 167, 0.4);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         KI AUSPROBIEREN - Kontext & Beispiele
+         ═══════════════════════════════════════════════════════════════ */
+
+      .ki-context {
+        max-width: 600px;
+        margin: 0 auto 3rem;
+        padding: 1.5rem 2rem;
+        background: rgba(0, 47, 167, 0.08);
+        border-left: 3px solid var(--accent-primary);
+        border-radius: 0 12px 12px 0;
+      }
+
+      .ki-context-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--accent-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 0.75rem;
+      }
+
+      .ki-context p {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .example-prompts {
+        max-width: 700px;
+        margin: 3rem auto 0;
+        text-align: center;
+      }
+
+      .example-prompts-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 1.25rem;
+      }
+
+      .prompt-examples {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+
+      .prompt-example {
+        padding: 0.6rem 1rem;
+        background: rgba(0, 47, 167, 0.1);
+        border: 1px solid rgba(0, 47, 167, 0.25);
+        border-radius: 20px;
+        color: var(--text-secondary);
+        font-family: var(--font-family);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .prompt-example:hover {
+        background: rgba(0, 47, 167, 0.2);
+        border-color: rgba(0, 47, 167, 0.5);
+        color: var(--text-primary);
+        transform: translateY(-2px);
+      }
+
+      .example-prompts-hint {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-style: italic;
+        margin: 1.25rem 0 0;
+      }
+
+      @media (max-width: 600px) {
+        .prompt-examples {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .prompt-example {
+          width: 100%;
+          max-width: 300px;
+        }
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1011,68 +1115,62 @@
       }
 
       /* ═══════════════════════════════════════════════════════════════
-         TIMELINE SECTION
+         INSPIRATIONS SECTION - Persönliche Interessen
          ═══════════════════════════════════════════════════════════════ */
 
-      .timeline-section {
-        background: rgba(0, 0, 0, 0.3);
+      .inspirations-section {
+        background: transparent;
+        padding: 2.5rem 2rem;
       }
 
-      .timeline {
-        max-width: 700px;
-        margin: 0 auto;
-        position: relative;
-        padding-left: 2rem;
+      .inspirations-header {
+        text-align: center;
+        margin-bottom: 1rem;
       }
 
-      .timeline::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary), transparent);
-      }
-
-      .timeline-item {
-        position: relative;
-        padding-bottom: 2rem;
-      }
-
-      .timeline-item:last-child {
-        padding-bottom: 0;
-      }
-
-      .timeline-dot {
-        position: absolute;
-        left: -2rem;
-        top: 0;
-        width: 14px;
-        height: 14px;
-        background: var(--accent-gradient);
-        border-radius: 50%;
-        transform: translateX(-6px);
-        box-shadow: 0 0 20px rgba(0, 47, 167, 0.5);
-      }
-
-      .timeline-year {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--accent-primary);
-        margin-bottom: 0.25rem;
-      }
-
-      .timeline-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin: 0 0 0.25rem;
-      }
-
-      .timeline-desc {
-        font-size: 0.95rem;
-        color: var(--text-secondary);
+      .inspirations-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
         margin: 0;
+        opacity: 0.7;
+      }
+
+      .inspirations-bar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .inspiration-item {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 400;
+        transition: color 0.25s ease;
+      }
+
+      .inspiration-item:hover {
+        color: var(--text-secondary);
+      }
+
+      .inspiration-divider {
+        color: rgba(0, 47, 167, 0.4);
+        font-size: 0.8rem;
+      }
+
+      @media (max-width: 600px) {
+        .inspirations-bar {
+          gap: 0.4rem;
+        }
+
+        .inspiration-item {
+          font-size: 0.8rem;
+        }
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1129,6 +1227,22 @@
 
       .footer-link:hover {
         color: var(--text-primary);
+      }
+
+      .footer-tuev {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--accent-primary);
+        margin-bottom: 2rem;
+        opacity: 0.8;
+      }
+
+      .footer-tuev svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--accent-primary);
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1254,6 +1368,94 @@
 
       .imp-section li {
         margin: 0.35rem 0;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         ÜBER WOLF HOHL OVERLAY
+         ═══════════════════════════════════════════════════════════════ */
+
+      .ueber-content {
+        padding: 1.5rem;
+      }
+
+      .ueber-tuev {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
+        border: 1px solid rgba(0, 47, 167, 0.4);
+        border-radius: 12px;
+        margin-bottom: 2rem;
+      }
+
+      .ueber-tuev-icon {
+        width: 44px;
+        height: 44px;
+        background: rgba(0, 47, 167, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(0, 47, 167, 0.5);
+        flex-shrink: 0;
+      }
+
+      .ueber-tuev-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+      }
+
+      .ueber-tuev-sub {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+
+      .ueber-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .ueber-timeline-item {
+        display: flex;
+        gap: 1rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .ueber-timeline-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .ueber-year {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-primary);
+        min-width: 70px;
+        flex-shrink: 0;
+      }
+
+      .ueber-timeline-item strong {
+        display: block;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .ueber-timeline-item p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      .ueber-cta {
+        margin-top: 2rem;
+        text-align: center;
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1514,10 +1716,6 @@
           </div>
         </div>
 
-        <a href="#projekte" class="hero-cta">
-          Entdecke meine Projekte
-          <span class="arrow">↓</span>
-        </a>
       </div>
 
       <div class="scroll-indicator" aria-hidden="true">
@@ -1526,16 +1724,39 @@
       </div>
     </section>
 
-    <!-- Statement Section - Elegant & Kurz -->
-    <section class="statement-section fade-in" id="statement">
-      <div class="statement-container">
-        <p class="statement-quote">
-          25 Jahre Film und Medien. Dann kam KI.<br>
-          <strong>Nicht mitlaufen — verstehen. Nicht konsumieren — bauen.</strong><br>
-          Technologie, die dem Menschen dient.
-        </p>
-        <div class="statement-divider"></div>
-        <p class="statement-tagline">TÜV-zertifizierter KI-Manager · Berlin</p>
+    <!-- Manifest Section - Persönliches Statement -->
+    <section class="manifest-section fade-in" id="manifest">
+      <div class="manifest-container">
+        <div class="manifest-text">
+          <p>Ich war 25 Jahre im Film.<br>
+          Kino-Trailer für die ganze Welt.</p>
+
+          <p>Dann kam KI.<br>
+          Und ich dachte: <em>Das ist die nächste Revolution.</em></p>
+
+          <p>Aber ich wollte nicht einfach mitlaufen.<br>
+          Ich wollte verstehen.<br>
+          Ich wollte selbst bauen.<br>
+          Und ich wollte sicherstellen, dass wir das richtig machen.</p>
+
+          <p><strong>Deshalb bin ich jetzt hier.</strong></p>
+
+          <p>Mit 4 Projekten.<br>
+          Mit einer TÜV-Zertifizierung.<br>
+          Und mit der Überzeugung, dass Technologie nur dann gut ist,<br>
+          wenn sie von Menschen gemacht wird, die wissen, was Mensch-Sein bedeutet.</p>
+
+          <p class="manifest-personal">Das heißt für mich:<br>
+          Sonntagsbraten nach Omas Rezept kochen.<br>
+          SC Freiburg gucken, auch wenn sie verlieren.<br>
+          Mit dem Hund durch den Park.<br>
+          Basquiat in der Galerie.<br>
+          Krausser im Bett.</p>
+
+          <p>Und dann zurück an den Rechner<br>
+          und das Beste bauen, was ich kann.</p>
+        </div>
+        <div class="manifest-signature">— Wolf Hohl, Berlin</div>
       </div>
     </section>
 
@@ -1572,88 +1793,72 @@
             KI ausprobieren
           </h2>
           <p class="section-subtitle">
-            Erlebe selbst, wie unterschiedlich KI-Modelle antworten
+            Erlebe selbst, wie unterschiedlich KI-Modelle denken
           </p>
         </div>
 
-        <div class="tools-grid" style="max-width: 600px; margin: 0 auto;">
-          <!-- Model Battle - Hauptfeature -->
+        <!-- Kontext-Box -->
+        <div class="ki-context fade-in">
+          <h3 class="ki-context-title">Warum das wichtig ist</h3>
+          <p>Jedes KI-Modell hat seine eigene "Persönlichkeit". Claude argumentiert anders als GPT, Perplexity recherchiert anders als beide. Wer KI verstehen will, muss diese Unterschiede kennen – nicht aus Büchern, sondern aus eigener Erfahrung.</p>
+        </div>
+
+        <div class="tools-grid" style="max-width: 700px; margin: 0 auto;">
+          <!-- KI-Vergleich - Hauptfeature -->
           <a href="/model-battle.html" class="tool-card fade-in">
             <div class="glass-card">
               <div class="tool-header">
                 <div>
-                  <h3 class="tool-title">Model Battle Arena</h3>
-                  <p class="tool-subtitle">Claude vs GPT vs Perplexity</p>
+                  <h3 class="tool-title">KI-Vergleich</h3>
+                  <p class="tool-subtitle">Claude · GPT · Perplexity</p>
                 </div>
               </div>
               <p class="tool-desc">
-                Schicke denselben Prompt an 3 KI-Modelle gleichzeitig und vergleiche
-                die Antworten live. Wer ist schneller? Wer besser?
+                Schicke denselben Prompt an 3 KI-Modelle gleichzeitig und vergleiche die Antworten live.
               </p>
-              <div class="tool-arrow">Jetzt Battle starten →</div>
+              <div class="tool-arrow">Jetzt vergleichen →</div>
             </div>
           </a>
+        </div>
+
+        <!-- Beispiel-Prompts -->
+        <div class="example-prompts fade-in">
+          <h3 class="example-prompts-title">Probier mal diese Prompts:</h3>
+          <div class="prompt-examples">
+            <button class="prompt-example" data-prompt="Erkläre mir in 3 Sätzen, warum der Himmel blau ist.">
+              „Erkläre mir in 3 Sätzen, warum der Himmel blau ist."
+            </button>
+            <button class="prompt-example" data-prompt="Schreibe einen Haiku über künstliche Intelligenz.">
+              „Schreibe einen Haiku über KI."
+            </button>
+            <button class="prompt-example" data-prompt="Was würde passieren, wenn Menschen nicht schlafen müssten?">
+              „Was wäre, wenn Menschen nicht schlafen müssten?"
+            </button>
+          </div>
+          <p class="example-prompts-hint">Die Unterschiede in den Antworten werden dich überraschen.</p>
         </div>
       </div>
     </section>
 
-    <!-- Über Wolf Section -->
-    <section class="timeline-section" id="ueber">
-      <div class="section-container">
-        <div class="section-header fade-in">
-          <h2 class="section-title hero-style-text">
-            Über Wolf Hohl
-          </h2>
-          <p class="section-subtitle">
-            Vom Kino-Trailer zur KI. 25 Jahre Erfahrung, neu gedacht.
-          </p>
-        </div>
-
-        <!-- TÜV Badge prominent -->
-        <div class="fade-in" style="text-align: center; margin-bottom: 3rem;">
-          <div style="display: inline-flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%); border: 1px solid rgba(0, 47, 167, 0.4); border-radius: 16px;">
-            <div style="width: 48px; height: 48px; background: rgba(0, 47, 167, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(0, 47, 167, 0.5);">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002FA7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </div>
-            <div style="text-align: left;">
-              <div style="font-size: 1.25rem; font-weight: 700; color: #002FA7;">TÜV-zertifizierter KI-Manager</div>
-              <div style="font-size: 0.9rem; color: var(--text-secondary);">TÜV Austria · Zertifiziert 2024</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="timeline fade-in">
-          <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-year">2024</div>
-            <h3 class="timeline-title">TÜV-Zertifizierung & 4 Live-Projekte</h3>
-            <p class="timeline-desc">KI-Manager Ausbildung abgeschlossen. ki-sicherheit.jetzt, art-radar.berlin, akut.jetzt und achtung.jetzt gelauncht.</p>
-          </div>
-
-          <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-year">2023</div>
-            <h3 class="timeline-title">Deep Dive in KI</h3>
-            <p class="timeline-desc">Intensive Beschäftigung mit GPT-4, Claude, Prompt Engineering und KI-Anwendungen für Business.</p>
-          </div>
-
-          <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-year">1999–2024</div>
-            <h3 class="timeline-title">25 Jahre Trailerhaus GmbH</h3>
-            <p class="timeline-desc">Geschäftsführer der führenden Post-Produktion für Kino-Trailer in Deutschland. Heute noch Mitgesellschafter.</p>
-          </div>
-
-          <div class="timeline-item">
-            <div class="timeline-dot"></div>
-            <div class="timeline-year">Heute</div>
-            <h3 class="timeline-title">KI-Berater & Entwickler</h3>
-            <p class="timeline-desc">Ich helfe Unternehmen, KI sicher zu integrieren – und baue selbst KI-Anwendungen, die echte Probleme lösen.</p>
-          </div>
-        </div>
+    <!-- Inspirationen Section - Persönliche Interessen -->
+    <section class="inspirations-section" id="inspirationen">
+      <div class="inspirations-header">
+        <p class="inspirations-label">Was mich inspiriert</p>
+      </div>
+      <div class="inspirations-bar" aria-label="Interessen">
+        <span class="inspiration-item">SC Freiburg</span>
+        <span class="inspiration-divider">·</span>
+        <span class="inspiration-item">Basquiat</span>
+        <span class="inspiration-divider">·</span>
+        <span class="inspiration-item">Helmut Krausser</span>
+        <span class="inspiration-divider">·</span>
+        <span class="inspiration-item">Jörg Fauser</span>
+        <span class="inspiration-divider">·</span>
+        <span class="inspiration-item">Yoga</span>
+        <span class="inspiration-divider">·</span>
+        <span class="inspiration-item">Omas Rezepte</span>
+        <span class="inspiration-divider">·</span>
+        <span class="inspiration-item">Hund</span>
       </div>
     </section>
 
@@ -1684,6 +1889,15 @@
         <a href="#" data-action="kontakt">Kontakt aufnehmen</a>
       </p>
 
+      <!-- TÜV Badge - dezent -->
+      <div class="footer-tuev">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>TÜV-zertifizierter KI-Manager</span>
+      </div>
+
       <div class="footer-links" style="margin-bottom: 1.5rem;">
         <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="footer-link">ki-sicherheit.jetzt</a>
         <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="footer-link">art-radar.berlin</a>
@@ -1692,6 +1906,7 @@
       </div>
 
       <div class="footer-links">
+        <a href="#" class="footer-link" data-action="ueber">Über Wolf Hohl</a>
         <a href="#" class="footer-link" data-action="kontakt">Kontakt</a>
         <a href="#" class="footer-link" data-action="impressum">Impressum</a>
         <a href="#" class="footer-link" data-action="impressum">Datenschutz</a>
@@ -1816,6 +2031,68 @@
             </div>
             <h3>Nachricht gesendet</h3>
             <p>Vielen Dank für Ihre Nachricht. Ich melde mich zeitnah bei Ihnen.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Über Wolf Hohl Overlay -->
+    <div id="ov-ueber" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close></div>
+      <section class="dialog" role="dialog" aria-labelledby="ueber-title">
+        <header class="head">
+          <h2 id="ueber-title">Über Wolf Hohl</h2>
+          <button class="close" aria-label="Schließen" data-close>×</button>
+        </header>
+        <div class="ueber-content">
+          <!-- TÜV Badge -->
+          <div class="ueber-tuev">
+            <div class="ueber-tuev-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002FA7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="ueber-tuev-title">TÜV-zertifizierter KI-Manager</div>
+              <div class="ueber-tuev-sub">TÜV Austria · Zertifiziert 2024</div>
+            </div>
+          </div>
+
+          <!-- Timeline kompakt -->
+          <div class="ueber-timeline">
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">2024</span>
+              <div>
+                <strong>TÜV-Zertifizierung & 4 Live-Projekte</strong>
+                <p>ki-sicherheit.jetzt, art-radar.berlin, akut.jetzt, achtung.jetzt</p>
+              </div>
+            </div>
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">2023</span>
+              <div>
+                <strong>Deep Dive in KI</strong>
+                <p>GPT-4, Claude, Prompt Engineering, KI für Business</p>
+              </div>
+            </div>
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">1999–2024</span>
+              <div>
+                <strong>25 Jahre Trailerhaus GmbH</strong>
+                <p>Geschäftsführer Post-Produktion für Kino-Trailer</p>
+              </div>
+            </div>
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">Heute</span>
+              <div>
+                <strong>KI-Berater & Entwickler</strong>
+                <p>Sichere KI-Integration für Unternehmen</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ueber-cta">
+            <a href="#" class="btn-submit" data-action="kontakt" style="display: inline-block; text-decoration: none; text-align: center;">Kontakt aufnehmen</a>
           </div>
         </div>
       </section>
@@ -2105,17 +2382,24 @@
         document.querySelectorAll('[data-action="kontakt"]').forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.preventDefault();
-            // Close impressum if open (for link from impressum)
-            const impressumOverlay = document.getElementById('ov-impressum');
-            if (impressumOverlay && impressumOverlay.classList.contains('active')) {
-              closeOverlay(impressumOverlay);
-            }
+            // Close any open overlay
+            document.querySelectorAll('.overlay.active').forEach(overlay => {
+              closeOverlay(overlay);
+            });
             // Reset form if needed
             const form = document.getElementById('contact-form');
             const success = document.getElementById('contact-success');
             if (form) form.style.display = '';
             if (success) success.style.display = 'none';
             openOverlay('ov-kontakt');
+          });
+        });
+
+        // Open über overlay
+        document.querySelectorAll('[data-action="ueber"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openOverlay('ov-ueber');
           });
         });
 
@@ -2202,6 +2486,22 @@
             if (target) {
               e.preventDefault();
               target.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // PROMPT EXAMPLES - Klickbar zur Model Battle Seite
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.prompt-example').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const prompt = btn.dataset.prompt;
+            if (prompt) {
+              // Navigiere zur Model Battle Seite mit dem Prompt als URL-Parameter
+              window.location.href = `/model-battle.html?prompt=${encodeURIComponent(prompt)}`;
             }
           });
         });

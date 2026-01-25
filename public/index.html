@@ -1953,8 +1953,9 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         z-index: 9999;
         display: flex;
         align-items: center;
@@ -1964,16 +1965,21 @@
       }
 
       .battle-modal {
-        background: rgba(15, 15, 25, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 24px;
         width: 100%;
-        max-width: 1000px;
+        max-width: 1100px;
         max-height: 90vh;
         overflow-y: auto;
         padding: 2rem;
         position: relative;
-        box-shadow: 0 25px 80px rgba(0, 47, 167, 0.3);
+        box-shadow:
+          0 25px 80px rgba(0, 47, 167, 0.15),
+          0 8px 32px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
       }
 
       .battle-modal-close {
@@ -1982,8 +1988,8 @@
         right: 1rem;
         width: 40px;
         height: 40px;
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 50%;
         cursor: pointer;
         display: flex;
@@ -1993,13 +1999,14 @@
       }
 
       .battle-modal-close svg {
-        width: 20px;
-        height: 20px;
-        stroke: rgba(255, 255, 255, 0.7);
+        width: 18px;
+        height: 18px;
+        stroke: rgba(255, 255, 255, 0.8);
       }
 
       .battle-modal-close:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.4);
+        transform: scale(1.05);
       }
 
       .battle-modal-header {
@@ -2015,7 +2022,7 @@
       }
 
       .battle-modal-subtitle {
-        color: var(--text-secondary);
+        color: rgba(255, 255, 255, 0.7);
         font-size: 0.95rem;
         margin: 0;
       }
@@ -2029,10 +2036,10 @@
 
       .battle-prompt-input {
         flex: 1;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 14px;
         color: var(--text-primary);
         font-family: var(--font-family);
         font-size: 1rem;
@@ -2042,19 +2049,20 @@
 
       .battle-prompt-input:focus {
         outline: none;
-        border-color: var(--accent-primary);
-        background: rgba(0, 47, 167, 0.1);
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 20px rgba(0, 47, 167, 0.15);
       }
 
       .battle-prompt-input::placeholder {
-        color: var(--text-muted);
+        color: rgba(255, 255, 255, 0.5);
       }
 
       .battle-start-btn {
         padding: 1rem 1.5rem;
         background: var(--accent-gradient);
         border: none;
-        border-radius: 12px;
+        border-radius: 14px;
         color: white;
         font-family: var(--font-family);
         font-size: 1rem;
@@ -2081,7 +2089,7 @@
         margin-bottom: 1.5rem;
       }
 
-      @media (max-width: 800px) {
+      @media (max-width: 900px) {
         .battle-responses {
           grid-template-columns: 1fr;
         }
@@ -2090,16 +2098,22 @@
           flex-direction: column;
           align-items: stretch;
         }
+
+        .battle-modal {
+          padding: 1.5rem;
+        }
       }
 
       .battle-response-card {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 16px;
-        padding: 1rem;
+        padding: 1.25rem;
         display: flex;
         flex-direction: column;
-        min-height: 200px;
+        min-height: 250px;
+        max-height: 450px;
+        overflow: hidden;
       }
 
       .battle-card-header {
@@ -2108,35 +2122,36 @@
         gap: 0.75rem;
         margin-bottom: 1rem;
         padding-bottom: 0.75rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
       }
 
       .battle-model-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         flex-shrink: 0;
       }
 
       .battle-model-info {
         display: flex;
         flex-direction: column;
-        gap: 0.15rem;
+        gap: 0.2rem;
       }
 
       .battle-model-name {
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         color: var(--text-primary);
       }
 
       .battle-model-time {
-        font-size: 0.75rem;
-        color: var(--text-muted);
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
       }
 
       .battle-loading {
@@ -2145,15 +2160,15 @@
         align-items: center;
         justify-content: center;
         gap: 0.75rem;
-        padding: 2rem 0;
-        color: var(--text-muted);
-        font-size: 0.85rem;
+        padding: 3rem 0;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
       }
 
       .battle-spinner {
-        width: 28px;
-        height: 28px;
-        border: 3px solid rgba(255, 255, 255, 0.1);
+        width: 32px;
+        height: 32px;
+        border: 3px solid rgba(255, 255, 255, 0.15);
         border-top-color: var(--accent-primary);
         border-radius: 50%;
         animation: battle-spin 0.8s linear infinite;
@@ -2166,22 +2181,85 @@
       .battle-response-text {
         flex: 1;
         font-size: 0.9rem;
-        line-height: 1.6;
-        color: var(--text-secondary);
-        white-space: pre-wrap;
-        word-break: break-word;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.9);
+        overflow-y: auto;
+        padding-right: 0.5rem;
         display: none;
+      }
+
+      /* Scrollbar styling for response text */
+      .battle-response-text::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .battle-response-text::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+      }
+
+      .battle-response-text::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+      }
+
+      .battle-response-text::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Markdown formatting in responses */
+      .battle-response-text h1,
+      .battle-response-text h2,
+      .battle-response-text h3 {
+        font-weight: 600;
+        margin: 0.75rem 0 0.5rem 0;
+        color: var(--text-primary);
+      }
+
+      .battle-response-text h2 { font-size: 1rem; }
+      .battle-response-text h3 { font-size: 0.95rem; }
+
+      .battle-response-text p {
+        margin: 0 0 0.75rem 0;
+      }
+
+      .battle-response-text ul,
+      .battle-response-text ol {
+        margin: 0.5rem 0;
+        padding-left: 1.25rem;
+      }
+
+      .battle-response-text li {
+        margin-bottom: 0.35rem;
+      }
+
+      .battle-response-text strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .battle-response-text em {
+        font-style: italic;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .battle-response-text code {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Consolas', monospace;
+        font-size: 0.85em;
       }
 
       .battle-new-btn {
         display: block;
         width: 100%;
-        max-width: 300px;
+        max-width: 280px;
         margin: 0 auto;
         padding: 0.875rem 1.5rem;
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
+        border-radius: 14px;
         color: var(--text-primary);
         font-family: var(--font-family);
         font-size: 1rem;
@@ -2192,6 +2270,7 @@
       .battle-new-btn:hover {
         background: rgba(255, 255, 255, 0.15);
         border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-1px);
       }
     </style>
   </head>
@@ -3199,6 +3278,55 @@
 
         const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || 'https://hohl-rocks-back-production.up.railway.app';
 
+        // Simple Markdown to HTML converter
+        function renderMarkdown(text) {
+          if (!text) return '';
+
+          // Escape HTML first to prevent XSS
+          let html = text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+          // Headers (## and ###)
+          html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+          html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+
+          // Bold (**text**)
+          html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+          // Italic (*text* or _text_)
+          html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+          html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+          // Inline code (`code`)
+          html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+          // List items (- item or * item or numbered)
+          html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+          html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+          // Wrap consecutive <li> in <ul>
+          html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+
+          // Paragraphs: split by double newlines
+          html = html
+            .split(/\n\n+/)
+            .map(block => {
+              block = block.trim();
+              if (!block) return '';
+              // Don't wrap if already a block element
+              if (block.startsWith('<h') || block.startsWith('<ul') || block.startsWith('<ol')) {
+                return block;
+              }
+              // Replace single newlines with <br> within paragraphs
+              return '<p>' + block.replace(/\n/g, '<br>') + '</p>';
+            })
+            .join('');
+
+          return html;
+        }
+
         // Open Modal
         function openBattleModal(initialPrompt = '') {
           battleOverlay.style.display = 'flex';
@@ -3230,7 +3358,7 @@
             const response = document.getElementById(`battle-response-${model}`);
             const time = document.getElementById(`battle-time-${model}`);
             if (loading) loading.style.display = 'flex';
-            if (response) { response.style.display = 'none'; response.textContent = ''; }
+            if (response) { response.style.display = 'none'; response.innerHTML = ''; }
             if (time) time.textContent = '-';
           });
         }
@@ -3250,7 +3378,7 @@
             const response = document.getElementById(`battle-response-${model}`);
             const time = document.getElementById(`battle-time-${model}`);
             if (loading) loading.style.display = 'flex';
-            if (response) { response.style.display = 'none'; response.textContent = ''; }
+            if (response) { response.style.display = 'none'; response.innerHTML = ''; }
             if (time) time.textContent = '-';
           });
 
@@ -3275,7 +3403,7 @@
 
                 if (loading) loading.style.display = 'none';
                 if (responseEl) {
-                  responseEl.textContent = result.response || 'Keine Antwort erhalten.';
+                  responseEl.innerHTML = renderMarkdown(result.response) || '<p>Keine Antwort erhalten.</p>';
                   responseEl.style.display = 'block';
                 }
                 if (time && result.responseTime) {
@@ -3293,7 +3421,7 @@
               const response = document.getElementById(`battle-response-${model}`);
               if (loading) loading.style.display = 'none';
               if (response) {
-                response.textContent = 'Fehler beim Laden. Bitte versuche es erneut.';
+                response.innerHTML = '<p>Fehler beim Laden. Bitte versuche es erneut.</p>';
                 response.style.display = 'block';
               }
             });

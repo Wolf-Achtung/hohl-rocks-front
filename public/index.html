@@ -1942,6 +1942,257 @@
         opacity: 1;
         transform: translateY(0);
       }
+
+      /* ═══════════════════════════════════════════════════════════════
+         BATTLE MODAL - KI-Vergleich
+         ═══════════════════════════════════════════════════════════════ */
+
+      .battle-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        overflow-y: auto;
+      }
+
+      .battle-modal {
+        background: rgba(15, 15, 25, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 1000px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 2rem;
+        position: relative;
+        box-shadow: 0 25px 80px rgba(0, 47, 167, 0.3);
+      }
+
+      .battle-modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .battle-modal-close svg {
+        width: 20px;
+        height: 20px;
+        stroke: rgba(255, 255, 255, 0.7);
+      }
+
+      .battle-modal-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .battle-modal-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .battle-modal-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+      }
+
+      .battle-modal-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+
+      .battle-input-wrapper {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        align-items: flex-end;
+      }
+
+      .battle-prompt-input {
+        flex: 1;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-family: var(--font-family);
+        font-size: 1rem;
+        resize: none;
+        transition: all 0.3s ease;
+      }
+
+      .battle-prompt-input:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        background: rgba(0, 47, 167, 0.1);
+      }
+
+      .battle-prompt-input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .battle-start-btn {
+        padding: 1rem 1.5rem;
+        background: var(--accent-gradient);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-family: var(--font-family);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
+
+      .battle-start-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 47, 167, 0.4);
+      }
+
+      .battle-start-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .battle-responses {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      @media (max-width: 800px) {
+        .battle-responses {
+          grid-template-columns: 1fr;
+        }
+
+        .battle-input-wrapper {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+
+      .battle-response-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        min-height: 200px;
+      }
+
+      .battle-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .battle-model-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .battle-model-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+
+      .battle-model-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+      }
+
+      .battle-model-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .battle-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 2rem 0;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      .battle-spinner {
+        width: 28px;
+        height: 28px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--accent-primary);
+        border-radius: 50%;
+        animation: battle-spin 0.8s linear infinite;
+      }
+
+      @keyframes battle-spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .battle-response-text {
+        flex: 1;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+        word-break: break-word;
+        display: none;
+      }
+
+      .battle-new-btn {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 0.875rem 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-family: var(--font-family);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .battle-new-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
     </style>
   </head>
   <body>
@@ -2030,7 +2281,7 @@
 
         <div class="tools-grid" style="max-width: 700px; margin: 0 auto;">
           <!-- KI-Vergleich - Hauptfeature -->
-          <a href="/model-battle.html" class="tool-card fade-in">
+          <button id="open-battle-modal" class="tool-card fade-in" style="border: none; cursor: pointer; text-align: left; width: 100%;">
             <div class="glass-card">
               <div class="tool-header">
                 <div>
@@ -2043,7 +2294,7 @@
               </p>
               <div class="tool-arrow">Jetzt vergleichen →</div>
             </div>
-          </a>
+          </button>
         </div>
 
         <!-- Beispiel-Prompts -->
@@ -2063,6 +2314,95 @@
         </div>
       </div>
     </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MODEL BATTLE MODAL - KI-Vergleich direkt auf der Startseite
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="battle-modal-overlay" id="battle-modal-overlay" style="display: none;">
+      <div class="battle-modal" id="battle-modal">
+        <button class="battle-modal-close" id="battle-modal-close" aria-label="Modal schließen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <div class="battle-modal-header">
+          <h2 class="battle-modal-title">⚔️ KI-Vergleich</h2>
+          <p class="battle-modal-subtitle">Claude, GPT und Perplexity antworten gleichzeitig</p>
+        </div>
+
+        <!-- Prompt Input -->
+        <div class="battle-input-wrapper">
+          <textarea
+            id="battle-prompt-input"
+            class="battle-prompt-input"
+            placeholder="Stelle deine Frage an alle drei KIs..."
+            rows="2"
+            maxlength="1000"
+          ></textarea>
+          <button id="battle-start-btn" class="battle-start-btn" disabled>
+            ⚔️ Vergleich starten
+          </button>
+        </div>
+
+        <!-- Response Grid -->
+        <div class="battle-responses" id="battle-responses" style="display: none;">
+          <!-- Claude -->
+          <div class="battle-response-card" data-model="claude">
+            <div class="battle-card-header">
+              <span class="battle-model-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🤖</span>
+              <div class="battle-model-info">
+                <span class="battle-model-name">Claude Sonnet 4</span>
+                <span class="battle-model-time" id="battle-time-claude">-</span>
+              </div>
+            </div>
+            <div class="battle-loading" id="battle-loading-claude">
+              <div class="battle-spinner"></div>
+              <span>Denkt nach...</span>
+            </div>
+            <div class="battle-response-text" id="battle-response-claude"></div>
+          </div>
+
+          <!-- GPT -->
+          <div class="battle-response-card" data-model="gpt">
+            <div class="battle-card-header">
+              <span class="battle-model-icon" style="background: linear-gradient(135deg, #10a37f 0%, #059669 100%);">✨</span>
+              <div class="battle-model-info">
+                <span class="battle-model-name">GPT-4o Mini</span>
+                <span class="battle-model-time" id="battle-time-gpt">-</span>
+              </div>
+            </div>
+            <div class="battle-loading" id="battle-loading-gpt">
+              <div class="battle-spinner"></div>
+              <span>Denkt nach...</span>
+            </div>
+            <div class="battle-response-text" id="battle-response-gpt"></div>
+          </div>
+
+          <!-- Perplexity -->
+          <div class="battle-response-card" data-model="perplexity">
+            <div class="battle-card-header">
+              <span class="battle-model-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);">🔍</span>
+              <div class="battle-model-info">
+                <span class="battle-model-name">Perplexity Sonar</span>
+                <span class="battle-model-time" id="battle-time-perplexity">-</span>
+              </div>
+            </div>
+            <div class="battle-loading" id="battle-loading-perplexity">
+              <div class="battle-spinner"></div>
+              <span>Denkt nach...</span>
+            </div>
+            <div class="battle-response-text" id="battle-response-perplexity"></div>
+          </div>
+        </div>
+
+        <!-- New Battle -->
+        <button id="battle-new-btn" class="battle-new-btn" style="display: none;">
+          🔄 Neuer Vergleich
+        </button>
+      </div>
+    </div>
 
     <!-- Music Player -->
     <div class="music-player" id="music-player" title="Musik an/aus">
@@ -2842,16 +3182,171 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // PROMPT EXAMPLES - Klickbar zur Model Battle Seite
+      // BATTLE MODAL - KI-Vergleich direkt auf der Startseite
       // ═══════════════════════════════════════════════════════════════
 
       document.addEventListener('DOMContentLoaded', () => {
+        const battleOverlay = document.getElementById('battle-modal-overlay');
+        const battleModal = document.getElementById('battle-modal');
+        const battleCloseBtn = document.getElementById('battle-modal-close');
+        const battlePromptInput = document.getElementById('battle-prompt-input');
+        const battleStartBtn = document.getElementById('battle-start-btn');
+        const battleResponses = document.getElementById('battle-responses');
+        const battleNewBtn = document.getElementById('battle-new-btn');
+        const openBattleModalBtn = document.getElementById('open-battle-modal');
+
+        if (!battleOverlay || !battleModal || !battlePromptInput || !battleStartBtn) return;
+
+        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || 'https://hohl-rocks-back-production.up.railway.app';
+
+        // Open Modal
+        function openBattleModal(initialPrompt = '') {
+          battleOverlay.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          battlePromptInput.value = initialPrompt;
+          battleStartBtn.disabled = !initialPrompt.trim();
+          if (initialPrompt) {
+            setTimeout(() => battlePromptInput.focus(), 100);
+          } else {
+            setTimeout(() => battlePromptInput.focus(), 100);
+          }
+        }
+
+        // Close Modal
+        function closeBattleModal() {
+          battleOverlay.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+
+        // Reset Battle
+        function resetBattle() {
+          battlePromptInput.value = '';
+          battleStartBtn.disabled = true;
+          battleResponses.style.display = 'none';
+          battleNewBtn.style.display = 'none';
+
+          ['claude', 'gpt', 'perplexity'].forEach(model => {
+            const loading = document.getElementById(`battle-loading-${model}`);
+            const response = document.getElementById(`battle-response-${model}`);
+            const time = document.getElementById(`battle-time-${model}`);
+            if (loading) loading.style.display = 'flex';
+            if (response) { response.style.display = 'none'; response.textContent = ''; }
+            if (time) time.textContent = '-';
+          });
+        }
+
+        // Start Battle
+        async function startBattle() {
+          const prompt = battlePromptInput.value.trim();
+          if (!prompt) return;
+
+          battleStartBtn.disabled = true;
+          battleStartBtn.textContent = '⏳ Läuft...';
+          battleResponses.style.display = 'grid';
+
+          // Reset responses
+          ['claude', 'gpt', 'perplexity'].forEach(model => {
+            const loading = document.getElementById(`battle-loading-${model}`);
+            const response = document.getElementById(`battle-response-${model}`);
+            const time = document.getElementById(`battle-time-${model}`);
+            if (loading) loading.style.display = 'flex';
+            if (response) { response.style.display = 'none'; response.textContent = ''; }
+            if (time) time.textContent = '-';
+          });
+
+          try {
+            const response = await fetch(`${API_BASE}/api/model-battle`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt })
+            });
+
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
+            const data = await response.json();
+
+            // Display results
+            if (data.responses) {
+              data.responses.forEach(result => {
+                const modelKey = result.model;
+                const loading = document.getElementById(`battle-loading-${modelKey}`);
+                const responseEl = document.getElementById(`battle-response-${modelKey}`);
+                const time = document.getElementById(`battle-time-${modelKey}`);
+
+                if (loading) loading.style.display = 'none';
+                if (responseEl) {
+                  responseEl.textContent = result.response || 'Keine Antwort erhalten.';
+                  responseEl.style.display = 'block';
+                }
+                if (time && result.responseTime) {
+                  time.textContent = `${(result.responseTime / 1000).toFixed(2)}s`;
+                }
+              });
+            }
+
+            battleNewBtn.style.display = 'block';
+
+          } catch (error) {
+            console.error('Battle error:', error);
+            ['claude', 'gpt', 'perplexity'].forEach(model => {
+              const loading = document.getElementById(`battle-loading-${model}`);
+              const response = document.getElementById(`battle-response-${model}`);
+              if (loading) loading.style.display = 'none';
+              if (response) {
+                response.textContent = 'Fehler beim Laden. Bitte versuche es erneut.';
+                response.style.display = 'block';
+              }
+            });
+            battleNewBtn.style.display = 'block';
+          } finally {
+            battleStartBtn.disabled = false;
+            battleStartBtn.textContent = '⚔️ Vergleich starten';
+          }
+        }
+
+        // Event Listeners
+        if (openBattleModalBtn) {
+          openBattleModalBtn.addEventListener('click', () => openBattleModal());
+        }
+
+        if (battleCloseBtn) {
+          battleCloseBtn.addEventListener('click', closeBattleModal);
+        }
+
+        battleOverlay.addEventListener('click', (e) => {
+          if (e.target === battleOverlay) closeBattleModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && battleOverlay.style.display === 'flex') {
+            closeBattleModal();
+          }
+        });
+
+        battlePromptInput.addEventListener('input', () => {
+          battleStartBtn.disabled = !battlePromptInput.value.trim();
+        });
+
+        battlePromptInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && e.ctrlKey && !battleStartBtn.disabled) {
+            startBattle();
+          }
+        });
+
+        battleStartBtn.addEventListener('click', startBattle);
+
+        if (battleNewBtn) {
+          battleNewBtn.addEventListener('click', resetBattle);
+        }
+
+        // Prompt Examples - Open Modal with prompt
         document.querySelectorAll('.prompt-example').forEach(btn => {
           btn.addEventListener('click', () => {
             const prompt = btn.dataset.prompt;
             if (prompt) {
-              // Navigiere zur Model Battle Seite mit dem Prompt als URL-Parameter
-              window.location.href = `/model-battle.html?prompt=${encodeURIComponent(prompt)}`;
+              openBattleModal(prompt);
+              // Auto-start after opening
+              setTimeout(() => startBattle(), 300);
             }
           });
         });

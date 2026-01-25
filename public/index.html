@@ -1897,7 +1897,10 @@
 
       document.addEventListener('DOMContentLoaded', () => {
         const taglines = document.querySelectorAll('.tagline-item');
+        if (taglines.length === 0) return;
+
         let currentIndex = 0;
+        let taglineInterval = null;
 
         function rotateTagline() {
           const current = taglines[currentIndex];
@@ -1914,7 +1917,12 @@
           }, 300);
         }
 
-        setInterval(rotateTagline, 3000);
+        taglineInterval = setInterval(rotateTagline, 3000);
+
+        // Cleanup on page unload to prevent memory leak
+        window.addEventListener('pagehide', () => {
+          if (taglineInterval) clearInterval(taglineInterval);
+        });
       });
 
       // ═══════════════════════════════════════════════════════════════
@@ -1929,7 +1937,7 @@
           const playPromise = video.play();
           if (playPromise !== undefined) {
             playPromise.catch(error => {
-              console.log('Autoplay blocked, waiting for interaction');
+              // Autoplay blocked - silent fallback to user interaction
               const onFirstInteract = () => {
                 video.play().catch(() => {});
                 document.removeEventListener('click', onFirstInteract);
@@ -1944,8 +1952,9 @@
         playVideo();
 
         // Pause when not visible
+        let videoObserver = null;
         try {
-          const observer = new IntersectionObserver(
+          videoObserver = new IntersectionObserver(
             entries => {
               entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1957,8 +1966,18 @@
             },
             { threshold: 0.35 }
           );
-          observer.observe(video);
-        } catch (err) {}
+          videoObserver.observe(video);
+
+          // Cleanup on page unload
+          window.addEventListener('pagehide', () => {
+            if (videoObserver) {
+              videoObserver.disconnect();
+              videoObserver = null;
+            }
+          });
+        } catch (err) {
+          // IntersectionObserver not supported
+        }
       });
 
       // ═══════════════════════════════════════════════════════════════
@@ -1967,11 +1986,14 @@
 
       document.addEventListener('DOMContentLoaded', () => {
         const fadeElements = document.querySelectorAll('.fade-in');
+        if (fadeElements.length === 0) return;
 
-        const observer = new IntersectionObserver((entries) => {
+        const fadeObserver = new IntersectionObserver((entries, observer) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
               entry.target.classList.add('visible');
+              // Unobserve after animation triggered (one-time effect)
+              observer.unobserve(entry.target);
             }
           });
         }, {
@@ -1979,7 +2001,12 @@
           rootMargin: '0px 0px -50px 0px'
         });
 
-        fadeElements.forEach(el => observer.observe(el));
+        fadeElements.forEach(el => fadeObserver.observe(el));
+
+        // Cleanup on page unload
+        window.addEventListener('pagehide', () => {
+          fadeObserver.disconnect();
+        });
       });
 
       // ═══════════════════════════════════════════════════════════════
@@ -2086,8 +2113,7 @@
               throw new Error('Form submission failed');
             }
           } catch (error) {
-            console.error('Error:', error);
-            // Fallback to mailto
+            // Form failed - silent fallback to mailto
             const name = formData.get('name');
             const email = formData.get('email');
             const betreff = formData.get('betreff');
@@ -2230,7 +2256,7 @@
             pauseIcon.style.display = '';
             drawVisualizer();
             isPlaying = true;
-          }).catch(err => console.log('Audio playback failed:', err));
+          }).catch(() => { /* Audio playback blocked - silent */ });
         }
 
         // Next/Previous Track

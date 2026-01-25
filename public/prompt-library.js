@@ -25,18 +25,18 @@ const getApiBase = () => {
   }
   
   // Priority 2: Meta tag fallback
-  console.error('[Prompt Library] api-config.js nicht geladen!');
+  debugError('Prompt Library', api-config.js nicht geladen!');
   const metaTag = document.querySelector('meta[name="x-api-base"]');
   if (metaTag) {
     const base = metaTag.getAttribute('content');
     if (base) {
-      console.log('[Prompt Library] Using meta tag fallback:', base);
+      debugLog('Prompt Library', Using meta tag fallback:', base);
       return base;
     }
   }
   
   // Priority 3: Production fallback
-  console.warn('[Prompt Library] Using hardcoded production fallback');
+  debugWarn('Prompt Library', Using hardcoded production fallback');
   return 'https://hohl-rocks-back-production.up.railway.app';
 };
 
@@ -49,11 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const isOnFeaturePage = window.location.pathname.includes('prompt-library.html');
   
   if (!isOnFeaturePage) {
-    console.log('[Prompt Library] Not on feature page, skipping initialization');
+    debugLog('Prompt Library', Not on feature page, skipping initialization');
     return;
   }
   
-  console.log('[Prompt Library] Initializing...');
+  debugLog('Prompt Library', Initializing...');
   
   // Initialize DOM elements safely
   searchInput = document.getElementById('search-input');
@@ -71,14 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Validate critical DOM elements
   if (!loadingState || !promptsGrid) {
-    console.error('[Prompt Library] Critical DOM elements not found!');
+    debugError('Prompt Library', Critical DOM elements not found!');
     return;
   }
   
   loadPrompts();
   setupEventListeners();
   
-  console.log('[Prompt Library] Initialized successfully');
+  debugLog('Prompt Library', Initialized successfully');
 });
 
 // ===================================================================
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadPrompts() {
   if (!loadingState || !promptsGrid) {
-    console.error('[Prompt Library] Required DOM elements not found');
+    debugError('Prompt Library', Required DOM elements not found');
     return;
   }
   
@@ -116,7 +116,7 @@ async function loadPrompts() {
     if (resultsInfo) resultsInfo.style.display = 'block';
 
   } catch (error) {
-    console.error('[Prompt Library] Error loading prompts:', error);
+    debugError('Prompt Library', Error loading prompts:', error);
     const API_BASE = getApiBase();
     loadingState.innerHTML = `
       <p style="color: #ef4444;">❌ Fehler beim Laden der Prompts</p>
@@ -314,20 +314,20 @@ function createPromptCard(prompt) {
   };
 
   return `
-    <div class="prompt-card" data-id="${prompt.id}">
+    <div class="prompt-card" data-id="${escapeHtml(prompt.id)}">
       ${prompt.featured ? '<div class="featured-badge">Featured</div>' : ''}
-      
+
       <div class="card-header">
-        <h3 class="card-title">${prompt.title}</h3>
+        <h3 class="card-title">${escapeHtml(prompt.title)}</h3>
         <span class="card-category">
-          ${categoryEmojis[prompt.category] || ''} ${capitalizeFirst(prompt.category)}
+          ${categoryEmojis[prompt.category] || ''} ${capitalizeFirst(escapeHtml(prompt.category))}
         </span>
       </div>
 
-      <p class="card-prompt">${prompt.prompt}</p>
+      <p class="card-prompt">${escapeHtml(prompt.prompt)}</p>
 
       <div class="card-tags">
-        ${prompt.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+        ${prompt.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
       </div>
 
       <div class="card-footer">
@@ -364,10 +364,10 @@ function openModal(prompt) {
   const modalAuthor = document.getElementById('modal-author');
   if (modalAuthor) modalAuthor.textContent = prompt.author || 'hohl.rocks';
 
-  // Tags
+  // Tags (with XSS protection)
   const modalTags = document.getElementById('modal-tags');
   if (modalTags) {
-    modalTags.innerHTML = prompt.tags.map(tag => `<span class="tag">#${tag}</span>`).join('');
+    modalTags.innerHTML = prompt.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('');
   }
 
   // Copy button
@@ -422,7 +422,7 @@ async function copyPrompt(text, button) {
     }
 
   } catch (error) {
-    console.error('[Prompt Library] Copy failed:', error);
+    debugError('Prompt Library', Copy failed:', error);
     showToast('Fehler beim Kopieren ❌', 'error');
   }
 }
@@ -469,6 +469,14 @@ function capitalizeFirst(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// XSS Protection - escape HTML entities
+function escapeHtml(str) {
+  if (typeof str !== 'string') return str;
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 function formatNumber(num) {
   if (num >= 1000) {
     return (num / 1000).toFixed(1) + 'k';
@@ -481,11 +489,11 @@ function formatNumber(num) {
 // ===================================================================
 
 window.addEventListener('error', (e) => {
-  console.error('[Prompt Library] Global error:', e.error);
+  debugError('Prompt Library', Global error:', e.error);
 });
 
 window.addEventListener('unhandledrejection', (e) => {
-  console.error('[Prompt Library] Unhandled promise rejection:', e.reason);
+  debugError('Prompt Library', Unhandled promise rejection:', e.reason);
 });
 
 })(); // End IIFE

@@ -368,7 +368,7 @@
         position: relative;
         padding: 0;
         background: transparent;
-        min-height: 750vh; /* Längerer Scroll-Bereich für Pausen */
+        min-height: 1200vh; /* Sehr langer Scroll-Bereich - ein Block pro Viewport */
         margin-bottom: 0;
       }
 
@@ -418,14 +418,19 @@
         margin-bottom: 0;
       }
 
-      /* Erster Absatz - extra Abstand für Wirkung */
+      /* Große Abstände - immer nur ein Block sichtbar */
+      .manifest-text p {
+        margin-bottom: 18rem;
+      }
+
+      /* Erster Absatz */
       .manifest-opening {
-        margin-bottom: 8rem !important;
+        margin-bottom: 18rem !important;
       }
 
       /* Pausen zwischen wichtigen Absätzen */
       .manifest-pause {
-        margin-bottom: 8rem !important;
+        margin-bottom: 18rem !important;
       }
 
       .manifest-text em {
@@ -517,24 +522,28 @@
 
       @media (max-width: 768px) {
         .manifest-section {
-          min-height: 650vh;
+          min-height: 1000vh;
         }
 
         .manifest-container {
           padding: 1.5rem;
-          height: 260px;
+          height: 220px;
+        }
+
+        .manifest-text p {
+          margin-bottom: 14rem;
         }
 
         .manifest-opening {
-          margin-bottom: 6rem !important;
+          margin-bottom: 14rem !important;
         }
 
         .manifest-pause {
-          margin-bottom: 6rem !important;
+          margin-bottom: 14rem !important;
         }
 
         .manifest-end-spacer {
-          height: 150px;
+          height: 200px;
         }
       }
 

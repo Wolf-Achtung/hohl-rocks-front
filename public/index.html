@@ -449,7 +449,7 @@
       }
 
       .manifest-finale.glow {
-        animation: intoTheLight 2.5s ease-out forwards;
+        animation: intoTheLight 5s ease-out forwards;
       }
 
       @keyframes intoTheLight {
@@ -459,7 +459,7 @@
           transform: scale(1);
           text-shadow: none;
         }
-        30% {
+        25% {
           opacity: 1;
           filter: blur(0);
           transform: scale(1.02);
@@ -469,18 +469,28 @@
             0 0 60px rgba(255, 255, 255, 0.4);
           color: #fff;
         }
-        60% {
-          opacity: 0.8;
-          filter: blur(2px);
-          transform: scale(1.05);
+        50% {
+          opacity: 1;
+          filter: blur(0);
+          transform: scale(1.03);
           text-shadow:
             0 0 30px rgba(255, 255, 255, 0.9),
             0 0 60px rgba(255, 255, 255, 0.7),
             0 0 100px rgba(255, 255, 255, 0.5);
+          color: #fff;
+        }
+        75% {
+          opacity: 0.7;
+          filter: blur(3px);
+          transform: scale(1.06);
+          text-shadow:
+            0 0 40px rgba(255, 255, 255, 0.8),
+            0 0 80px rgba(255, 255, 255, 0.5),
+            0 0 120px rgba(255, 255, 255, 0.3);
         }
         100% {
           opacity: 0;
-          filter: blur(8px);
+          filter: blur(10px);
           transform: scale(1.15);
           text-shadow:
             0 0 50px rgba(255, 255, 255, 0),
@@ -2236,6 +2246,47 @@
           width: 100%;
           justify-content: center;
         }
+
+        .battle-examples {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .battle-example-btns {
+          gap: 0.5rem;
+        }
+
+        .prompt-example-inline {
+          padding: 0.6rem 1rem;
+          font-size: 0.8rem;
+        }
+
+        .battle-card {
+          min-height: 200px;
+        }
+
+        .battle-card-content {
+          max-height: 250px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .battle-input-area {
+          padding: 1rem;
+        }
+
+        .battle-inline-input {
+          font-size: 0.95rem;
+        }
+
+        .prompt-example-inline {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.75rem;
+        }
+
+        .ki-battle-inline {
+          padding: 0 0.5rem;
+        }
       }
 
       .battle-card {
@@ -3161,12 +3212,12 @@
             // 2 Sekunden warten, dann Animation starten
             finaleTimeout = setTimeout(() => {
               manifestFinale.classList.add('glow');
-              // Nach Animation (2.5s) die nächste Sektion einblenden
+              // Nach Animation (5s) die nächste Sektion einblenden
               setTimeout(() => {
                 if (delayedSection) {
                   delayedSection.classList.add('visible');
                 }
-              }, 2500);
+              }, 5000);
             }, 2000);
           }
 

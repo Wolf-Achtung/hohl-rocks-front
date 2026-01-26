@@ -428,9 +428,54 @@
         font-weight: 600;
       }
 
+      /* Finale Zeile - "Into the Light" Animation */
+      .manifest-finale {
+        transition: all 0.3s ease;
+      }
+
+      .manifest-finale.glow {
+        animation: intoTheLight 2.5s ease-out forwards;
+      }
+
+      @keyframes intoTheLight {
+        0% {
+          opacity: 1;
+          filter: blur(0);
+          transform: scale(1);
+          text-shadow: none;
+        }
+        30% {
+          opacity: 1;
+          filter: blur(0);
+          transform: scale(1.02);
+          text-shadow:
+            0 0 20px rgba(255, 255, 255, 0.8),
+            0 0 40px rgba(255, 255, 255, 0.6),
+            0 0 60px rgba(255, 255, 255, 0.4);
+          color: #fff;
+        }
+        60% {
+          opacity: 0.8;
+          filter: blur(2px);
+          transform: scale(1.05);
+          text-shadow:
+            0 0 30px rgba(255, 255, 255, 0.9),
+            0 0 60px rgba(255, 255, 255, 0.7),
+            0 0 100px rgba(255, 255, 255, 0.5);
+        }
+        100% {
+          opacity: 0;
+          filter: blur(8px);
+          transform: scale(1.15);
+          text-shadow:
+            0 0 50px rgba(255, 255, 255, 0),
+            0 0 100px rgba(255, 255, 255, 0);
+        }
+      }
+
       /* Spacer am Ende für den letzten Satz */
       .manifest-end-spacer {
-        height: 200px; /* Extra Scroll-Raum nach dem letzten Satz */
+        height: 280px; /* Extra Scroll-Raum - Satz steht alleine */
       }
 
       /* Verzögerte Einblendung der nächsten Sektion */
@@ -2397,7 +2442,7 @@
           <p>Ich mag Systeme,<br>
           die den Menschen nicht vergessen.</p>
 
-          <p><strong>Alles andere ist nur Technik.</strong></p>
+          <p class="manifest-finale"><strong>Alles andere ist nur Technik.</strong></p>
 
           <!-- Spacer für Scroll-Endpunkt -->
           <div class="manifest-end-spacer"></div>
@@ -3053,8 +3098,12 @@
       document.addEventListener('DOMContentLoaded', () => {
         const manifestSection = document.querySelector('.manifest-section');
         const manifestText = document.querySelector('.manifest-text');
+        const manifestFinale = document.querySelector('.manifest-finale');
         const delayedSection = document.querySelector('.delayed-section');
         if (!manifestSection || !manifestText) return;
+
+        let finaleTriggered = false;
+        let finaleTimeout = null;
 
         function updateManifestScroll() {
           const sectionRect = manifestSection.getBoundingClientRect();
@@ -3076,13 +3125,27 @@
           const translateY = -scrollProgress * maxScroll;
           manifestText.style.transform = `translateY(${translateY}px)`;
 
-          // Nächste Sektion erst einblenden wenn Manifest fast fertig (95%)
-          if (delayedSection) {
-            if (scrollProgress > 0.92) {
-              delayedSection.classList.add('visible');
-            } else {
-              delayedSection.classList.remove('visible');
-            }
+          // "Into the Light" Animation - wenn der letzte Satz erreicht ist
+          if (manifestFinale && scrollProgress > 0.88 && !finaleTriggered) {
+            finaleTriggered = true;
+            // 2 Sekunden warten, dann Animation starten
+            finaleTimeout = setTimeout(() => {
+              manifestFinale.classList.add('glow');
+              // Nach Animation (2.5s) die nächste Sektion einblenden
+              setTimeout(() => {
+                if (delayedSection) {
+                  delayedSection.classList.add('visible');
+                }
+              }, 2500);
+            }, 2000);
+          }
+
+          // Reset wenn zurückgescrollt wird
+          if (scrollProgress < 0.85 && finaleTriggered) {
+            finaleTriggered = false;
+            if (finaleTimeout) clearTimeout(finaleTimeout);
+            if (manifestFinale) manifestFinale.classList.remove('glow');
+            if (delayedSection) delayedSection.classList.remove('visible');
           }
         }
 

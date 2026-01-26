@@ -368,7 +368,8 @@
         position: relative;
         padding: 0;
         background: transparent;
-        min-height: 400vh; /* Langer Scroll-Bereich */
+        min-height: 550vh; /* Längerer Scroll-Bereich für mehr Wirkung */
+        margin-bottom: 0;
       }
 
       .manifest-container {
@@ -427,6 +428,23 @@
         font-weight: 600;
       }
 
+      /* Spacer am Ende für den letzten Satz */
+      .manifest-end-spacer {
+        height: 200px; /* Extra Scroll-Raum nach dem letzten Satz */
+      }
+
+      /* Verzögerte Einblendung der nächsten Sektion */
+      .delayed-section {
+        opacity: 0;
+        transform: translateY(60px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+
+      .delayed-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
       .manifest-personal {
         padding-left: 1.5rem;
         border-left: 2px solid rgba(0, 47, 167, 0.4);
@@ -444,12 +462,16 @@
 
       @media (max-width: 768px) {
         .manifest-section {
-          min-height: 350vh;
+          min-height: 450vh;
         }
 
         .manifest-container {
           padding: 1.5rem;
           height: 260px;
+        }
+
+        .manifest-end-spacer {
+          height: 150px;
         }
       }
 
@@ -2376,12 +2398,15 @@
           die den Menschen nicht vergessen.</p>
 
           <p><strong>Alles andere ist nur Technik.</strong></p>
+
+          <!-- Spacer für Scroll-Endpunkt -->
+          <div class="manifest-end-spacer"></div>
         </div>
       </div>
     </section>
 
     <!-- KI Live erleben -->
-    <section class="tools-section" id="ausprobieren">
+    <section class="tools-section delayed-section" id="ausprobieren">
       <div class="section-container">
         <div class="section-header fade-in">
           <h2 class="section-title hero-style-text">
@@ -3028,6 +3053,7 @@
       document.addEventListener('DOMContentLoaded', () => {
         const manifestSection = document.querySelector('.manifest-section');
         const manifestText = document.querySelector('.manifest-text');
+        const delayedSection = document.querySelector('.delayed-section');
         if (!manifestSection || !manifestText) return;
 
         function updateManifestScroll() {
@@ -3049,6 +3075,15 @@
           // Bewege den Text nach oben basierend auf Scroll-Progress
           const translateY = -scrollProgress * maxScroll;
           manifestText.style.transform = `translateY(${translateY}px)`;
+
+          // Nächste Sektion erst einblenden wenn Manifest fast fertig (95%)
+          if (delayedSection) {
+            if (scrollProgress > 0.92) {
+              delayedSection.classList.add('visible');
+            } else {
+              delayedSection.classList.remove('visible');
+            }
+          }
         }
 
         // Initial ausführen

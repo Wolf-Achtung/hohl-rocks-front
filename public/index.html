@@ -368,7 +368,7 @@
         position: relative;
         padding: 0;
         background: transparent;
-        min-height: 550vh; /* Längerer Scroll-Bereich für mehr Wirkung */
+        min-height: 750vh; /* Längerer Scroll-Bereich für Pausen */
         margin-bottom: 0;
       }
 
@@ -420,7 +420,12 @@
 
       /* Erster Absatz - extra Abstand für Wirkung */
       .manifest-opening {
-        margin-bottom: 8rem !important; /* Viel Abstand nach dem ersten Absatz */
+        margin-bottom: 8rem !important;
+      }
+
+      /* Pausen zwischen wichtigen Absätzen */
+      .manifest-pause {
+        margin-bottom: 6rem !important;
       }
 
       .manifest-text em {
@@ -512,12 +517,20 @@
 
       @media (max-width: 768px) {
         .manifest-section {
-          min-height: 450vh;
+          min-height: 650vh;
         }
 
         .manifest-container {
           padding: 1.5rem;
           height: 260px;
+        }
+
+        .manifest-opening {
+          margin-bottom: 6rem !important;
+        }
+
+        .manifest-pause {
+          margin-bottom: 5rem !important;
         }
 
         .manifest-end-spacer {
@@ -2424,27 +2437,27 @@
           Kino-Trailer.<br>
           Timing, Wirkung, Aufmerksamkeit.</p>
 
-          <p>Dann kam KI.<br>
+          <p class="manifest-pause">Dann kam KI.<br>
           Und ich dachte: Das ist die nächste Revolution.</p>
 
           <p>Aber ich wollte nicht einfach mitlaufen.<br>
           Ich wollte verstehen.<br>
           Ich wollte selbst bauen.</p>
 
-          <p>Und ich wollte sicherstellen, dass wir das richtig machen.</p>
+          <p class="manifest-pause">Und ich wollte sicherstellen, dass wir das richtig machen.</p>
 
           <p>Deshalb bin ich heute hier.</p>
 
-          <p>Mit aufregenden Projekten.<br>
+          <p class="manifest-pause">Mit aufregenden Projekten.<br>
           Mit einer TÜV-Zertifizierung.</p>
 
           <p>Und mit dem, was mich prägt:</p>
 
-          <p>Ich mag Basquiat, weil er nichts erklärt.<br>
+          <p class="manifest-pause">Ich mag Basquiat, weil er nichts erklärt.<br>
           Fauser, weil er nichts beschönigt.<br>
           SC Freiburg, weil Haltung mehr zählt als Trophäen.</p>
 
-          <p>Ich mag Systeme,<br>
+          <p class="manifest-pause">Ich mag Systeme,<br>
           die den Menschen nicht vergessen.</p>
 
           <p class="manifest-finale"><strong>Alles andere ist nur Technik.</strong></p>

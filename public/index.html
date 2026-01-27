@@ -2490,6 +2490,7 @@
     </div>
 
     <!-- Manifest Section - Persönliches Statement (Startpunkt) -->
+    <!-- FIX: "fade-in" entfernt - Section ist zu groß (1200vh) für IntersectionObserver threshold -->
     <section class="manifest-section" id="manifest">
       <div class="manifest-container">
         <div class="manifest-text">
@@ -2533,10 +2534,13 @@
       <div class="section-container">
         <div class="section-header fade-in">
           <h2 class="section-title hero-style-text">
-            KI live erleben
+            Apropos Technik...
           </h2>
           <p class="section-subtitle">
-            Drei Modelle. Eine Frage. Drei verschiedene Antworten.
+            Eine Frage. Drei Modelle. Drei verschiedene Antworten.
+          </p>
+          <p class="section-subtitle" style="margin-top: 1rem; font-style: italic; opacity: 0.85;">
+            Claude analysiert, GPT formuliert, Perplexity recherchiert – gleiche Frage, unterschiedliche Zugänge. Wer das versteht, nutzt KI nicht nur – sondern führt sie.
           </p>
         </div>
 
@@ -2833,7 +2837,7 @@
         </header>
         <div id="kontakt-body">
           <!-- Form - Netlify Forms -->
-          <form id="contact-form" class="contact-form" name="kontakt" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <form class='contact-form' id='contact-form' method='POST' name='kontakt'>
             <!-- Verstecktes Feld: Form-Name (wichtig für Netlify) -->
             <input type="hidden" name="form-name" value="kontakt">
 
@@ -3212,12 +3216,12 @@
             // 2 Sekunden warten, dann Animation starten
             finaleTimeout = setTimeout(() => {
               manifestFinale.classList.add('glow');
-              // Nach Animation (5s) die nächste Sektion einblenden
+              // Nach 2.5s (während Glow am hellsten) die nächste Sektion einblenden
               setTimeout(() => {
                 if (delayedSection) {
                   delayedSection.classList.add('visible');
                 }
-              }, 5000);
+              }, 2500);
             }, 2000);
           }
 

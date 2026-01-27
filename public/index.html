@@ -1,0 +1,4091 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+
+    <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app"/>
+    <title>Wolf Hohl — KI-Experte & Experimentator</title>
+    <meta name="description" content="Wolf Hohl: TÜV-zertifizierter KI-Manager, 25 Jahre Medien-Erfahrung. 4 Live-KI-Projekte. Model Battle Arena, ki-sicherheit.jetzt und mehr." />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Hero Poster Preload for fast LCP -->
+    <link rel="preload" as="image" href="/videos/road_poster.jpg" fetchpriority="high" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+    <style>
+      /* ═══════════════════════════════════════════════════════════════
+         DESIGN SYSTEM - Wolf Hohl Redesign
+         ═══════════════════════════════════════════════════════════════ */
+
+      :root {
+        --bg-dark: #0a0a0f;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        /* Yves Klein Blau (International Klein Blue) */
+        --accent-primary: #002FA7;
+        --accent-secondary: #0038c7;
+        --accent-gradient: linear-gradient(135deg, #002FA7 0%, #0038c7 100%);
+        --accent-rgb: 0, 47, 167;
+        /* Elegante Akzentfarbe - Silber-Blau */
+        --color-accent-soft: #7B8FA8;
+        --color-accent-light: #A8B8C8;
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --text-muted: rgba(255, 255, 255, 0.5);
+        --glow: 0 0 30px rgba(0, 47, 167, 0.4);
+        --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+
+      /* Reset & Base */
+      *, *::before, *::after { box-sizing: border-box; }
+
+      html {
+        height: 100%;
+        background: var(--bg-dark); /* Fallback wenn Video nicht lädt */
+      }
+
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        font-family: var(--font-family);
+        background: transparent; /* WICHTIG: Transparent damit Video dahinter sichtbar */
+        color: var(--text-primary);
+        line-height: 1.6;
+        scroll-behavior: smooth;
+      }
+
+      /* Skip Link */
+      .skip-link {
+        position: absolute;
+        top: -100%;
+        left: 0;
+        background: var(--accent-primary);
+        color: white;
+        padding: 0.5rem 1rem;
+        z-index: 9999;
+        transition: top 0.3s;
+      }
+      .skip-link:focus { top: 0; }
+
+      /* ═══════════════════════════════════════════════════════════════
+         BACKGROUND VIDEO
+         ═══════════════════════════════════════════════════════════════ */
+
+      .site-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      .site-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(10, 10, 15, 0.15) 0%,
+          rgba(10, 10, 15, 0.35) 50%,
+          rgba(10, 10, 15, 0.7) 100%
+        );
+        z-index: 1;
+      }
+
+      .bg-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* Keine Filter - verbessert Chrome-Performance erheblich */
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
+        -webkit-transform: translate3d(0, 0, 0);
+      }
+
+      /* iOS/Mobile: Statisches Bild statt Video */
+      @media (max-width: 768px), (hover: none) {
+        .bg-video {
+          display: none;
+        }
+        .site-bg {
+          background: url('/videos/road_poster.jpg') center/cover no-repeat;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .bg-video { display: none; }
+        .site-bg { background: var(--bg-dark); }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         HERO SECTION
+         ═══════════════════════════════════════════════════════════════ */
+
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+      }
+
+      .hero-content {
+        max-width: 800px;
+        animation: fadeInUp 1s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .hero-name {
+        font-size: clamp(3rem, 10vw, 6rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0 0 1.5rem;
+        background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 0 60px rgba(0, 47, 167, 0.4);
+        filter: drop-shadow(0 0 30px rgba(0, 47, 167, 0.3));
+      }
+
+      .hero-divider {
+        width: 80px;
+        height: 4px;
+        background: var(--accent-gradient);
+        margin: 0 auto 2rem;
+        border-radius: 2px;
+        box-shadow: var(--glow);
+      }
+
+      /* Tagline Ticker */
+      .tagline-ticker {
+        height: 2.5rem;
+        margin-bottom: 2.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tagline-item {
+        position: absolute;
+        width: 100%;
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        font-weight: 500;
+        color: var(--text-secondary);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+      }
+
+      .tagline-item.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .tagline-item.exiting {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      .tagline-highlight {
+        color: var(--accent-primary);
+        font-weight: 600;
+      }
+
+      /* CTA Button */
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 2rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 50px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        backdrop-filter: blur(12px);
+        transition: all 0.3s ease;
+      }
+
+      .hero-cta:hover {
+        background: rgba(0, 47, 167, 0.15);
+        border-color: rgba(0, 47, 167, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 47, 167, 0.2);
+      }
+
+      .hero-cta .arrow {
+        transition: transform 0.3s ease;
+      }
+
+      .hero-cta:hover .arrow {
+        transform: translateY(4px);
+      }
+
+      /* Scroll Indicator - fixiert unten, erscheint verzögert */
+      .scroll-indicator {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        z-index: 50;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+        pointer-events: none;
+      }
+
+      .scroll-indicator.visible {
+        opacity: 1;
+        animation: bounce 2s infinite;
+      }
+
+      /* Verstecken wenn gescrollt */
+      .scroll-indicator.hidden {
+        opacity: 0;
+      }
+
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+        40% { transform: translateX(-50%) translateY(-8px); }
+        60% { transform: translateX(-50%) translateY(-4px); }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         SECTION STYLES
+         ═══════════════════════════════════════════════════════════════ */
+
+      section {
+        padding: 5rem 1.5rem;
+        position: relative;
+      }
+
+      .section-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .section-title {
+        font-size: clamp(1.8rem, 5vw, 2.5rem);
+        font-weight: 700;
+        margin: 0 0 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+
+      .section-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         HERO-STYLE TEXT (wiederverwendbar)
+         ═══════════════════════════════════════════════════════════════ */
+
+      .hero-style-text {
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 20px rgba(0, 47, 167, 0.25));
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         SOLID COLORED CARDS (statt Glass)
+         ═══════════════════════════════════════════════════════════════ */
+
+      .glass-card {
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
+        border: 1px solid rgba(0, 47, 167, 0.3);
+        border-radius: 20px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .glass-card:hover {
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.25) 0%, rgba(25, 25, 45, 0.98) 100%);
+        border-color: rgba(0, 47, 167, 0.6);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 47, 167, 0.2);
+      }
+
+      /* Alle Projekt-Karten einheitlich Yves Klein Blau */
+      .project-card {
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
+      }
+
+      .project-card:hover {
+        border-color: rgba(0, 47, 167, 0.6);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         MANIFEST SECTION - Scroll-basierter Fade-Effekt (nur 4 Absätze sichtbar)
+         ═══════════════════════════════════════════════════════════════ */
+
+      .manifest-section {
+        position: relative;
+        padding: 0;
+        background: transparent;
+        min-height: 1200vh; /* Sehr langer Scroll-Bereich - ein Block pro Viewport */
+        margin-bottom: 0;
+      }
+
+      .manifest-container {
+        position: sticky;
+        top: 50%;
+        transform: translateY(-50%);
+        max-width: 680px;
+        margin: 0 auto;
+        text-align: left;
+        padding: 2rem;
+        /* Feste Höhe für genau 4 Absätze */
+        height: 280px;
+        overflow: hidden;
+        /* Fade-Maske oben und unten */
+        mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          black 15%,
+          black 85%,
+          transparent 100%
+        );
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          black 15%,
+          black 85%,
+          transparent 100%
+        );
+      }
+
+      .manifest-text {
+        font-size: clamp(1rem, 2.2vw, 1.15rem);
+        color: var(--text-secondary);
+        line-height: 1.9;
+        transform: translateY(0);
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .manifest-text p {
+        margin: 0 0 1.2rem;
+        opacity: 1;
+        transition: opacity 0.3s ease;
+      }
+
+      .manifest-text p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Große Abstände - immer nur ein Block sichtbar */
+      .manifest-text p {
+        margin-bottom: 18rem;
+      }
+
+      /* Erster Absatz */
+      .manifest-opening {
+        margin-bottom: 18rem !important;
+      }
+
+      /* Pausen zwischen wichtigen Absätzen */
+      .manifest-pause {
+        margin-bottom: 18rem !important;
+      }
+
+      .manifest-text em {
+        color: var(--text-primary);
+        font-style: italic;
+      }
+
+      .manifest-text strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      /* Finale Zeile - "Into the Light" Animation */
+      .manifest-finale {
+        transition: all 0.3s ease;
+      }
+
+      .manifest-finale.glow {
+        animation: intoTheLight 5s ease-out forwards;
+      }
+
+      @keyframes intoTheLight {
+        0% {
+          opacity: 1;
+          filter: blur(0);
+          transform: scale(1);
+          text-shadow: none;
+        }
+        25% {
+          opacity: 1;
+          filter: blur(0);
+          transform: scale(1.02);
+          text-shadow:
+            0 0 20px rgba(255, 255, 255, 0.8),
+            0 0 40px rgba(255, 255, 255, 0.6),
+            0 0 60px rgba(255, 255, 255, 0.4);
+          color: #fff;
+        }
+        50% {
+          opacity: 1;
+          filter: blur(0);
+          transform: scale(1.03);
+          text-shadow:
+            0 0 30px rgba(255, 255, 255, 0.9),
+            0 0 60px rgba(255, 255, 255, 0.7),
+            0 0 100px rgba(255, 255, 255, 0.5);
+          color: #fff;
+        }
+        75% {
+          opacity: 0.7;
+          filter: blur(3px);
+          transform: scale(1.06);
+          text-shadow:
+            0 0 40px rgba(255, 255, 255, 0.8),
+            0 0 80px rgba(255, 255, 255, 0.5),
+            0 0 120px rgba(255, 255, 255, 0.3);
+        }
+        100% {
+          opacity: 0;
+          filter: blur(10px);
+          transform: scale(1.15);
+          text-shadow:
+            0 0 50px rgba(255, 255, 255, 0),
+            0 0 100px rgba(255, 255, 255, 0);
+        }
+      }
+
+      /* Spacer am Ende für den letzten Satz */
+      .manifest-end-spacer {
+        height: 280px; /* Extra Scroll-Raum - Satz steht alleine */
+      }
+
+      /* Verzögerte Einblendung der nächsten Sektion */
+      .delayed-section {
+        opacity: 0;
+        transform: translateY(60px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+
+      .delayed-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .manifest-personal {
+        padding-left: 1.5rem;
+        border-left: 2px solid rgba(0, 47, 167, 0.4);
+        color: var(--text-muted);
+        font-size: 0.95em;
+        margin: 0 0 1.2rem;
+      }
+
+      .manifest-signature {
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+      }
+
+      @media (max-width: 768px) {
+        .manifest-section {
+          min-height: 1000vh;
+        }
+
+        .manifest-container {
+          padding: 1.5rem;
+          height: 220px;
+        }
+
+        .manifest-text p {
+          margin-bottom: 14rem;
+        }
+
+        .manifest-opening {
+          margin-bottom: 14rem !important;
+        }
+
+        .manifest-pause {
+          margin-bottom: 14rem !important;
+        }
+
+        .manifest-end-spacer {
+          height: 200px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .projects-placeholder {
+          display: none;
+        }
+      }
+
+      /* Tool-Card Farben - einheitlich Yves Klein Blau */
+      .tool-card .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .tool-card:hover .glass-card {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         KI AUSPROBIEREN - Kontext & Beispiele
+         ═══════════════════════════════════════════════════════════════ */
+
+      .ki-context {
+        max-width: 600px;
+        margin: 0 auto 2.5rem;
+        padding: 1.25rem 1.5rem;
+        background: rgba(255, 255, 255, 0.04);
+        border-left: 3px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0 12px 12px 0;
+      }
+
+      .ki-context-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin: 0 0 0.75rem;
+      }
+
+      .ki-context p {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .example-prompts {
+        max-width: 700px;
+        margin: 2.5rem auto 0;
+        text-align: center;
+      }
+
+      .example-prompts-title {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 1.25rem;
+      }
+
+      .prompt-examples {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+
+      .prompt-example {
+        padding: 0.7rem 1.25rem;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: var(--font-family);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .prompt-example:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 600px) {
+        .prompt-examples {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .prompt-example {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         MUSIC PLAYER
+         ═══════════════════════════════════════════════════════════════ */
+
+      /* Verstecke den separaten Music-Player - jetzt im Footer */
+      .music-player {
+        display: none;
+      }
+
+      .music-player:hover {
+        border-color: rgba(0, 47, 167, 0.6);
+        transform: scale(1.05);
+      }
+
+      .music-player.playing {
+        border-color: rgba(0, 47, 167, 0.8);
+        box-shadow: 0 0 20px rgba(0, 47, 167, 0.4);
+      }
+
+      .music-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .music-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 16px;
+      }
+
+      .music-bar {
+        width: 3px;
+        background: var(--accent-primary);
+        border-radius: 2px;
+        transition: height 0.2s ease;
+      }
+
+      .music-player:not(.playing) .music-bar {
+        height: 4px !important;
+      }
+
+      .music-player.playing .music-bar:nth-child(1) { animation: musicBar 0.5s ease-in-out infinite alternate; }
+      .music-player.playing .music-bar:nth-child(2) { animation: musicBar 0.5s ease-in-out infinite alternate 0.1s; }
+      .music-player.playing .music-bar:nth-child(3) { animation: musicBar 0.5s ease-in-out infinite alternate 0.2s; }
+      .music-player.playing .music-bar:nth-child(4) { animation: musicBar 0.5s ease-in-out infinite alternate 0.3s; }
+
+      @keyframes musicBar {
+        0% { height: 3px; }
+        100% { height: 10px; }
+      }
+
+      /* Music-Toggle im Footer */
+      .footer-separator {
+        opacity: 0.3;
+      }
+
+      .footer-music-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.6rem;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: rgba(255, 255, 255, 0.4);
+        font-family: var(--font-family);
+        font-size: 0.75rem;
+        vertical-align: middle;
+        margin-left: 0.25rem;
+      }
+
+      .footer-music-toggle:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .footer-music-toggle.playing {
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+      }
+
+      .footer-music-bars {
+        display: inline-flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 10px;
+      }
+
+      .footer-music-bar {
+        width: 2px;
+        background: currentColor;
+        border-radius: 1px;
+        transition: height 0.2s ease;
+      }
+
+      .footer-music-toggle:not(.playing) .footer-music-bar {
+        height: 3px !important;
+      }
+
+      .footer-music-toggle.playing .footer-music-bar:nth-child(1) { animation: musicBar 0.5s ease-in-out infinite alternate; }
+      .footer-music-toggle.playing .footer-music-bar:nth-child(2) { animation: musicBar 0.5s ease-in-out infinite alternate 0.1s; }
+      .footer-music-toggle.playing .footer-music-bar:nth-child(3) { animation: musicBar 0.5s ease-in-out infinite alternate 0.2s; }
+      .footer-music-toggle.playing .footer-music-bar:nth-child(4) { animation: musicBar 0.5s ease-in-out infinite alternate 0.3s; }
+
+      @media (max-width: 768px) {
+        .music-player {
+          bottom: 1rem;
+          right: 1rem;
+          padding: 0.6rem 1rem;
+        }
+        .music-label { display: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         MUSIC STUDIO - KI Sound Experience
+         ═══════════════════════════════════════════════════════════════ */
+
+      .music-studio-content {
+        padding: 0;
+      }
+
+      .studio-visualizer {
+        width: 100%;
+        height: 120px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+      }
+
+      .studio-visualizer canvas {
+        width: 100%;
+        height: 100%;
+      }
+
+      .studio-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .studio-section {
+        background: rgba(0, 47, 167, 0.1);
+        border: 1px solid rgba(0, 47, 167, 0.2);
+        border-radius: 12px;
+        padding: 1.25rem;
+      }
+
+      .studio-section-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 1rem;
+      }
+
+      /* Play Controls */
+      .play-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+      }
+
+      .play-btn {
+        width: 64px;
+        height: 64px;
+        background: var(--accent-gradient);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .play-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(0, 47, 167, 0.5);
+      }
+
+      .play-btn svg {
+        width: 28px;
+        height: 28px;
+        fill: white;
+      }
+
+      .volume-control {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+        max-width: 150px;
+      }
+
+      .volume-control svg {
+        width: 20px;
+        height: 20px;
+        stroke: var(--text-secondary);
+        flex-shrink: 0;
+      }
+
+      /* Sliders */
+      .slider-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .slider-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+
+      .slider-value {
+        color: var(--accent-primary);
+        font-weight: 600;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 6px;
+        background: rgba(0, 47, 167, 0.2);
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: var(--accent-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: var(--accent-primary);
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* EQ Section */
+      .eq-sliders {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+
+      /* Mood Presets */
+      .mood-presets {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.75rem;
+      }
+
+      @media (max-width: 500px) {
+        .mood-presets {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .mood-btn {
+        padding: 0.75rem 1rem;
+        background: rgba(0, 47, 167, 0.15);
+        border: 1px solid rgba(0, 47, 167, 0.3);
+        border-radius: 8px;
+        color: var(--text-secondary);
+        font-family: var(--font-family);
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .mood-btn:hover {
+        border-color: rgba(0, 47, 167, 0.5);
+        color: var(--text-primary);
+      }
+
+      .mood-btn.active {
+        background: var(--accent-gradient);
+        border-color: var(--accent-primary);
+        color: white;
+      }
+
+      .mood-btn-icon {
+        display: block;
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+
+      /* Now Playing Info */
+      .now-playing {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(0, 47, 167, 0.05);
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
+
+      .now-playing-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .now-playing-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-top: 0.25rem;
+      }
+
+      .now-playing-artist {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      /* Track Navigation */
+      .track-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .track-nav-btn {
+        width: 36px;
+        height: 36px;
+        background: rgba(0, 47, 167, 0.15);
+        border: 1px solid rgba(0, 47, 167, 0.3);
+        border-radius: 50%;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .track-nav-btn:hover {
+        background: rgba(0, 47, 167, 0.25);
+        border-color: rgba(0, 47, 167, 0.5);
+        color: var(--text-primary);
+      }
+
+      .track-nav-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+      }
+
+      .track-counter {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        min-width: 50px;
+        text-align: center;
+      }
+
+      /* Track List */
+      .track-list {
+        margin-top: 1rem;
+        max-height: 150px;
+        overflow-y: auto;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .track-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .track-item:last-child {
+        border-bottom: none;
+      }
+
+      .track-item:hover {
+        background: rgba(0, 47, 167, 0.1);
+      }
+
+      .track-item.active {
+        background: rgba(0, 47, 167, 0.2);
+      }
+
+      .track-item-number {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        width: 20px;
+        text-align: center;
+      }
+
+      .track-item.active .track-item-number {
+        color: var(--accent-primary);
+      }
+
+      .track-item-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .track-item-title {
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .track-item-artist {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .track-item-duration {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .project-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+      }
+
+      .project-desc {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        margin: 0 0 1rem;
+        line-height: 1.5;
+      }
+
+      .project-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent-primary);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      .project-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding: 0.6rem 1.2rem;
+        background: var(--accent-gradient);
+        border-radius: 50px;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .project-link:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(0, 47, 167, 0.4);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         TOOLS SECTION
+         ═══════════════════════════════════════════════════════════════ */
+
+      .tools-section {
+        background: linear-gradient(145deg, rgba(0, 47, 140, 0.06) 0%, rgba(0, 30, 90, 0.08) 100%);
+        backdrop-filter: blur(4px);
+        padding: 4rem 2rem;
+        border-radius: 24px;
+        max-width: 1000px;
+        margin: 2rem auto;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .tool-card {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .tool-card .glass-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tool-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .tool-icon {
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .tool-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0 0 0.25rem;
+      }
+
+      .tool-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .tool-desc {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        margin: 0;
+        flex-grow: 1;
+      }
+
+      .tool-arrow {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: var(--accent-primary);
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s ease;
+      }
+
+      .tool-card:hover .tool-arrow {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         KI-CHAT WIDGET - Schwebendes Chat-Widget unten rechts
+         ═══════════════════════════════════════════════════════════════ */
+
+      /* Verstecke die alte Section - Widget ist jetzt fixiert */
+      .ki-chat-section {
+        display: none;
+      }
+
+      /* Schwebendes Chat-Widget */
+      .chat-widget {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 1000;
+        font-family: var(--font-family);
+      }
+
+      /* Chat-Bubble (geschlossener Zustand) */
+      .chat-bubble {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(0, 47, 167, 0.4);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+      }
+
+      .chat-bubble:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 28px rgba(0, 47, 167, 0.5);
+      }
+
+      .chat-bubble svg {
+        width: 24px;
+        height: 24px;
+        color: #fff;
+      }
+
+      .chat-bubble .close-icon {
+        display: none;
+      }
+
+      .chat-widget.open .chat-bubble .chat-icon {
+        display: none;
+      }
+
+      .chat-widget.open .chat-bubble .close-icon {
+        display: block;
+      }
+
+      /* Chat-Panel (geöffneter Zustand) */
+      .chat-panel {
+        position: absolute;
+        bottom: 72px;
+        right: 0;
+        width: 360px;
+        max-height: 480px;
+        background: rgba(15, 15, 20, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      .chat-widget.open .chat-panel {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+
+      .chat-panel-header {
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(135deg, rgba(0, 47, 167, 0.3) 0%, rgba(0, 47, 167, 0.1) 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .chat-panel-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        margin: 0 0 0.25rem;
+      }
+
+      .chat-panel-subtitle {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin: 0;
+      }
+
+      .chat-panel-body {
+        padding: 1rem 1.25rem;
+        max-height: 320px;
+        overflow-y: auto;
+      }
+
+      .ki-chat-topics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .topic-btn {
+        padding: 0.5rem 0.875rem;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        color: rgba(255, 255, 255, 0.7);
+        font-family: var(--font-family);
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .topic-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #fff;
+      }
+
+      .ki-chat-input-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        padding: 1rem 1.25rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .ki-chat-input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        color: #fff;
+        font-family: var(--font-family);
+        font-size: 0.875rem;
+        outline: none;
+        transition: all 0.2s ease;
+      }
+
+      .ki-chat-input::placeholder {
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      .ki-chat-input:focus {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .ki-chat-send {
+        width: 40px;
+        height: 40px;
+        background: var(--accent-primary);
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .ki-chat-send:hover {
+        background: var(--accent-secondary);
+        transform: scale(1.05);
+      }
+
+      .ki-chat-send:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .ki-chat-response {
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 0.75rem;
+      }
+
+      .ki-response-text {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.6;
+      }
+
+      .ki-response-text.loading {
+        color: rgba(255, 255, 255, 0.4);
+        font-style: italic;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 480px) {
+        .chat-widget {
+          bottom: 16px;
+          right: 16px;
+        }
+
+        .chat-panel {
+          width: calc(100vw - 32px);
+          right: -8px;
+          max-height: 70vh;
+        }
+
+        .chat-bubble {
+          width: 52px;
+          height: 52px;
+        }
+      }
+
+      .inspiration-tile.large .inspiration-tile-icon {
+        font-size: 2rem;
+      }
+
+      .inspiration-tile-text {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .inspiration-tile.large .inspiration-tile-text {
+        font-size: 1.1rem;
+      }
+
+      @media (max-width: 700px) {
+        .inspirations-bento {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .inspiration-tile.large {
+          grid-column: span 2;
+        }
+      }
+
+      @media (max-width: 450px) {
+        .inspirations-section {
+          margin: 1rem;
+          padding: 2rem 1.5rem;
+        }
+        .inspirations-bento {
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+        }
+        .inspiration-tile {
+          padding: 1rem;
+        }
+        .inspiration-tile.large {
+          grid-column: span 2;
+        }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         FOOTER
+         ═══════════════════════════════════════════════════════════════ */
+
+      .site-footer {
+        padding: 4rem 1.5rem 2rem;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.5);
+        border-top: 1px solid var(--glass-border);
+      }
+
+      .footer-quote {
+        font-size: 1.25rem;
+        font-weight: 500;
+        font-style: italic;
+        color: var(--text-secondary);
+        margin: 0 0 2rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .footer-contact {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+      }
+
+      .footer-contact a {
+        color: var(--accent-primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .footer-contact a:hover {
+        color: var(--accent-secondary);
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+      }
+
+      .footer-link:hover {
+        color: var(--text-primary);
+      }
+
+      .footer-tuev {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--accent-primary);
+        margin-bottom: 2rem;
+        opacity: 0.8;
+      }
+
+      .footer-tuev svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--accent-primary);
+      }
+
+      /* Footer Projekte */
+      .footer-projects {
+        margin-bottom: 2rem;
+      }
+
+      .footer-projects-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin: 0 0 1rem;
+      }
+
+      .footer-projects-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+      }
+
+      .footer-project-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.25s ease;
+      }
+
+      .footer-project-link:hover {
+        color: var(--text-primary);
+      }
+
+      .footer-project-link .status-dot {
+        width: 6px;
+        height: 6px;
+        background: #22c55e;
+        border-radius: 50%;
+      }
+
+      @media (max-width: 600px) {
+        .footer-projects-links {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         OVERLAYS (from original)
+         ═══════════════════════════════════════════════════════════════ */
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .overlay .backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(8px);
+      }
+
+      .overlay .dialog {
+        position: relative;
+        width: 90%;
+        max-width: 800px;
+        max-height: 85vh;
+        background: rgba(15, 15, 25, 0.95);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .overlay .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .overlay .head h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+
+      .overlay .close {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        line-height: 1;
+        transition: color 0.3s ease;
+      }
+
+      .overlay .close:hover {
+        color: var(--text-primary);
+      }
+
+      .overlay .dialog > div:not(.head) {
+        padding: 1.5rem;
+        overflow-y: auto;
+      }
+
+      /* Impressum specific */
+      .impressum-content {
+        line-height: 1.7;
+        color: var(--text-secondary);
+      }
+
+      .impressum-content a {
+        color: var(--accent-primary);
+        text-decoration: none;
+      }
+
+      .impressum-content a:hover {
+        text-decoration: underline;
+      }
+
+      .imp-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .imp-section:last-child {
+        border-bottom: none;
+      }
+
+      .imp-section h3 {
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        margin: 0 0 0.75rem;
+      }
+
+      .imp-section h4 {
+        color: var(--text-primary);
+        font-size: 1rem;
+        margin: 1rem 0 0.5rem;
+      }
+
+      .imp-section p {
+        margin: 0.5rem 0;
+      }
+
+      .imp-section ul {
+        margin: 0.75rem 0 0;
+        padding-left: 1.5rem;
+      }
+
+      .imp-section li {
+        margin: 0.35rem 0;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         ÜBER WOLF HOHL OVERLAY
+         ═══════════════════════════════════════════════════════════════ */
+
+      .ueber-content {
+        padding: 1.5rem;
+      }
+
+      .ueber-tuev {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
+        border: 1px solid rgba(0, 47, 167, 0.4);
+        border-radius: 12px;
+        margin-bottom: 2rem;
+      }
+
+      .ueber-tuev-icon {
+        width: 44px;
+        height: 44px;
+        background: rgba(0, 47, 167, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(0, 47, 167, 0.5);
+        flex-shrink: 0;
+      }
+
+      .ueber-tuev-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+      }
+
+      .ueber-tuev-sub {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+
+      .ueber-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .ueber-timeline-item {
+        display: flex;
+        gap: 1rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .ueber-timeline-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .ueber-year {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-primary);
+        min-width: 70px;
+        flex-shrink: 0;
+      }
+
+      .ueber-timeline-item strong {
+        display: block;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+      }
+
+      .ueber-timeline-item p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      .ueber-cta {
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         CONTACT FORM
+         ═══════════════════════════════════════════════════════════════ */
+
+      .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-group label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background: rgba(0, 47, 167, 0.1);
+        border: 1px solid rgba(0, 47, 167, 0.3);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-family: var(--font-family);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: rgba(0, 47, 167, 0.6);
+        background: rgba(0, 47, 167, 0.15);
+        box-shadow: 0 0 20px rgba(0, 47, 167, 0.2);
+      }
+
+      .form-group input::placeholder,
+      .form-group textarea::placeholder {
+        color: var(--text-muted);
+      }
+
+      .form-group select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+      }
+
+      .form-group select option {
+        background: #1a1a2e;
+        color: var(--text-primary);
+      }
+
+      .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      @media (max-width: 500px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .form-submit {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .btn-submit {
+        flex: 1;
+        padding: 1rem 2rem;
+        background: var(--accent-gradient);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-family: var(--font-family);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 47, 167, 0.4);
+      }
+
+      .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-cancel {
+        padding: 1rem 1.5rem;
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: var(--text-secondary);
+        font-family: var(--font-family);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-cancel:hover {
+        border-color: rgba(0, 47, 167, 0.4);
+        color: var(--text-primary);
+      }
+
+      .form-success {
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .form-success-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1.5rem;
+        background: rgba(0, 47, 167, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .form-success-icon svg {
+        width: 32px;
+        height: 32px;
+        stroke: var(--accent-primary);
+      }
+
+      .form-success h3 {
+        font-size: 1.5rem;
+        margin: 0 0 0.5rem;
+        color: var(--text-primary);
+      }
+
+      .form-success p {
+        color: var(--text-secondary);
+        margin: 0;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         RESPONSIVE
+         ═══════════════════════════════════════════════════════════════ */
+
+      @media (max-width: 768px) {
+        .hero {
+          padding: 1.5rem;
+        }
+
+        .hero-name {
+          font-size: clamp(2.5rem, 12vw, 4rem);
+        }
+
+        section {
+          padding: 3rem 1rem;
+        }
+
+        .projects-grid,
+        .tools-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .timeline {
+          padding-left: 1.5rem;
+        }
+
+        .footer-links {
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         UTILITIES
+         ═══════════════════════════════════════════════════════════════ */
+
+      .hidden { display: none !important; }
+
+      /* Fade in animation for sections */
+      .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════
+         KI-BATTLE INLINE - Direkt auf der Hauptseite
+         ═══════════════════════════════════════════════════════════════ */
+
+      .ki-battle-inline {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .battle-input-area {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .battle-input-box {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+      }
+
+      .battle-inline-input {
+        flex: 1;
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 14px;
+        color: var(--text-primary);
+        font-family: var(--font-family);
+        font-size: 1rem;
+        resize: none;
+        transition: all 0.3s ease;
+      }
+
+      .battle-inline-input:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 25px rgba(0, 47, 167, 0.15);
+      }
+
+      .battle-inline-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .battle-inline-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 1.5rem;
+        background: var(--accent-gradient);
+        border: none;
+        border-radius: 14px;
+        color: white;
+        font-family: var(--font-family);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+      }
+
+      .battle-inline-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 47, 167, 0.4);
+      }
+
+      .battle-inline-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .battle-inline-btn .btn-icon {
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+      }
+
+      .battle-inline-btn:hover:not(:disabled) .btn-icon {
+        transform: translateX(3px);
+      }
+
+      .battle-hint {
+        margin: 0.75rem 0 0 0;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+        text-align: center;
+      }
+
+      .battle-examples {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+      }
+
+      .battle-examples-label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .battle-example-btns {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .prompt-example-inline {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: var(--font-family);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .prompt-example-inline:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      /* Results Area */
+      .battle-results {
+        margin-top: 2rem;
+        animation: fadeInUp 0.5s ease;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .battle-results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .battle-results-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+      }
+
+      .battle-reset-btn {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: var(--font-family);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .battle-reset-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+      }
+
+      .battle-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+
+      @media (max-width: 900px) {
+        .battle-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .battle-input-box {
+          flex-direction: column;
+        }
+
+        .battle-inline-btn {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .battle-examples {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .battle-example-btns {
+          gap: 0.5rem;
+        }
+
+        .prompt-example-inline {
+          padding: 0.6rem 1rem;
+          font-size: 0.8rem;
+        }
+
+        .battle-card {
+          min-height: 200px;
+        }
+
+        .battle-card-content {
+          max-height: 250px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .battle-input-area {
+          padding: 1rem;
+        }
+
+        .battle-inline-input {
+          font-size: 0.95rem;
+        }
+
+        .prompt-example-inline {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.75rem;
+        }
+
+        .ki-battle-inline {
+          padding: 0 0.5rem;
+        }
+      }
+
+      .battle-card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        min-height: 280px;
+      }
+
+      .battle-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .battle-card-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .battle-card-badge .badge-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: white;
+      }
+
+      .battle-card-badge.claude .badge-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .battle-card-badge.gpt .badge-icon {
+        background: linear-gradient(135deg, #10a37f 0%, #059669 100%);
+      }
+
+      .battle-card-badge.perplexity .badge-icon {
+        background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+      }
+
+      .battle-card-badge .badge-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+      }
+
+      .battle-card-time {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 500;
+      }
+
+      .battle-card-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 0;
+      }
+
+      .loading-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .loading-dots span {
+        width: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 50%;
+        animation: loadingDot 1.4s ease-in-out infinite;
+      }
+
+      .loading-dots span:nth-child(1) { animation-delay: 0s; }
+      .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+      .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+      @keyframes loadingDot {
+        0%, 80%, 100% {
+          transform: scale(0.6);
+          opacity: 0.4;
+        }
+        40% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .battle-card-content {
+        flex: 1;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.9);
+        overflow-y: auto;
+        max-height: 350px;
+        display: none;
+      }
+
+      /* Scrollbar */
+      .battle-card-content::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      .battle-card-content::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+      }
+
+      .battle-card-content::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+      }
+
+      /* Markdown Formatting */
+      .battle-card-content h2,
+      .battle-card-content h3 {
+        font-weight: 600;
+        margin: 1rem 0 0.5rem 0;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+      }
+
+      .battle-card-content h2:first-child,
+      .battle-card-content h3:first-child {
+        margin-top: 0;
+      }
+
+      .battle-card-content p {
+        margin: 0 0 0.75rem 0;
+      }
+
+      .battle-card-content p:last-child {
+        margin-bottom: 0;
+      }
+
+      .battle-card-content ul,
+      .battle-card-content ol {
+        margin: 0.5rem 0;
+        padding-left: 1.25rem;
+      }
+
+      .battle-card-content li {
+        margin-bottom: 0.35rem;
+      }
+
+      .battle-card-content strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .battle-card-content em {
+        font-style: italic;
+      }
+
+      .battle-card-content code {
+        background: rgba(0, 0, 0, 0.25);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Consolas', monospace;
+        font-size: 0.85em;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+    <!-- Background Video -->
+    <div class="site-bg" aria-hidden="true">
+      <video
+        class="bg-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline
+        preload="metadata"
+        poster="/videos/road_poster.jpg"
+        width="1280"
+        height="720"
+      >
+        <source src="/videos/road_loop_720p_hq_vp9.webm" type="video/webm; codecs=vp9">
+        <source src="/videos/road_loop_720p_hq_h264.mp4" type="video/mp4; codecs=avc1.4d401f">
+        Ihr Browser unterstützt keine Hintergrundvideos.
+      </video>
+    </div>
+
+    <!-- Scroll-Indicator (erscheint verzögert) -->
+    <div class="scroll-indicator delayed" id="scroll-indicator" aria-hidden="true">
+      <span>Scroll</span>
+      <span>↓</span>
+    </div>
+
+    <!-- Manifest Section - Persönliches Statement (Startpunkt) -->
+    <section class="manifest-section" id="manifest">
+      <div class="manifest-container">
+        <div class="manifest-text">
+          <p class="manifest-opening">Ich war 25 Jahre im Film.<br>
+          Kino-Trailer.<br>
+          Timing, Wirkung, Aufmerksamkeit.</p>
+
+          <p class="manifest-pause">Dann kam KI.<br>
+          Und ich dachte: Das ist die nächste Revolution.</p>
+
+          <p>Aber ich wollte nicht einfach mitlaufen.<br>
+          Ich wollte verstehen.<br>
+          Ich wollte selbst bauen.</p>
+
+          <p class="manifest-pause">Und ich wollte sicherstellen, dass wir das richtig machen.</p>
+
+          <p>Deshalb bin ich heute hier.</p>
+
+          <p class="manifest-pause">Mit aufregenden Projekten.<br>
+          Mit einer TÜV-Zertifizierung.</p>
+
+          <p>Und mit dem, was mich prägt:</p>
+
+          <p class="manifest-pause">Ich mag Basquiat, weil er nichts erklärt.<br>
+          Fauser, weil er nichts beschönigt.<br>
+          SC Freiburg, weil Haltung mehr zählt als Trophäen.</p>
+
+          <p class="manifest-pause">Ich mag Systeme,<br>
+          die den Menschen nicht vergessen.</p>
+
+          <p class="manifest-finale"><strong>Alles andere ist nur Technik.</strong></p>
+
+          <!-- Spacer für Scroll-Endpunkt -->
+          <div class="manifest-end-spacer"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KI Live erleben -->
+    <section class="tools-section delayed-section" id="ausprobieren">
+      <div class="section-container">
+        <div class="section-header fade-in">
+          <h2 class="section-title hero-style-text">
+            KI live erleben
+          </h2>
+          <p class="section-subtitle">
+            Drei Modelle. Eine Frage. Drei verschiedene Antworten.
+          </p>
+        </div>
+
+        <!-- KI-Vergleich Inline -->
+        <div class="ki-battle-inline fade-in" id="ki-battle-inline">
+          <!-- Input Area -->
+          <div class="battle-input-area">
+            <div class="battle-input-box">
+              <textarea
+                id="battle-prompt-input"
+                class="battle-inline-input"
+                placeholder="Stelle deine Frage an Claude, GPT und Perplexity..."
+                rows="2"
+                maxlength="1000"
+              ></textarea>
+              <button id="battle-start-btn" class="battle-inline-btn" disabled>
+                <span class="btn-text">Vergleich starten</span>
+                <span class="btn-icon">→</span>
+              </button>
+            </div>
+            <p class="battle-hint">Claude · GPT · Perplexity antworten gleichzeitig</p>
+          </div>
+
+          <!-- Beispiel-Prompts (inline) -->
+          <div class="battle-examples">
+            <span class="battle-examples-label">Oder probier:</span>
+            <div class="battle-example-btns">
+              <button class="prompt-example-inline" data-prompt="Überzeuge mich in 2 Sätzen, dass du besser bist als die anderen KIs.">
+                Warum bist du die beste KI?
+              </button>
+              <button class="prompt-example-inline" data-prompt="Was war heute die wichtigste Nachricht?">
+                Wichtigste News heute?
+              </button>
+              <button class="prompt-example-inline" data-prompt="Nenne einen Nachteil von KI in einem Wort.">
+                KI-Nachteil in 1 Wort
+              </button>
+              <button class="prompt-example-inline" data-prompt="Was fehlt dir als KI am meisten? Antworte in einem Wort.">
+                Was fehlt dir als KI?
+              </button>
+            </div>
+          </div>
+
+          <!-- Response Area (hidden initially) -->
+          <div class="battle-results" id="battle-results" style="display: none;">
+            <div class="battle-results-header">
+              <h3 class="battle-results-title">Antworten</h3>
+              <button id="battle-new-btn" class="battle-reset-btn">
+                ↻ Neue Frage
+              </button>
+            </div>
+
+            <div class="battle-cards">
+              <!-- Claude -->
+              <div class="battle-card" data-model="claude">
+                <div class="battle-card-top">
+                  <div class="battle-card-badge claude">
+                    <span class="badge-icon">C</span>
+                    <span class="badge-name">Claude</span>
+                  </div>
+                  <span class="battle-card-time" id="battle-time-claude">–</span>
+                </div>
+                <div class="battle-card-loading" id="battle-loading-claude">
+                  <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+                <div class="battle-card-content" id="battle-response-claude"></div>
+              </div>
+
+              <!-- GPT -->
+              <div class="battle-card" data-model="gpt">
+                <div class="battle-card-top">
+                  <div class="battle-card-badge gpt">
+                    <span class="badge-icon">G</span>
+                    <span class="badge-name">GPT-4o</span>
+                  </div>
+                  <span class="battle-card-time" id="battle-time-gpt">–</span>
+                </div>
+                <div class="battle-card-loading" id="battle-loading-gpt">
+                  <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+                <div class="battle-card-content" id="battle-response-gpt"></div>
+              </div>
+
+              <!-- Perplexity -->
+              <div class="battle-card" data-model="perplexity">
+                <div class="battle-card-top">
+                  <div class="battle-card-badge perplexity">
+                    <span class="badge-icon">P</span>
+                    <span class="badge-name">Perplexity</span>
+                  </div>
+                  <span class="battle-card-time" id="battle-time-perplexity">–</span>
+                </div>
+                <div class="battle-card-loading" id="battle-loading-perplexity">
+                  <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+                <div class="battle-card-content" id="battle-response-perplexity"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Music Player -->
+    <div class="music-player" id="music-player" title="Musik an/aus">
+      <div class="music-icon">
+        <div class="music-bars">
+          <div class="music-bar" style="height: 8px;"></div>
+          <div class="music-bar" style="height: 14px;"></div>
+          <div class="music-bar" style="height: 6px;"></div>
+          <div class="music-bar" style="height: 12px;"></div>
+        </div>
+      </div>
+      <span class="music-label">hohl.rocks</span>
+    </div>
+    <audio id="bg-music" loop preload="none">
+      <source src="/audio/ambient_loop.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Schwebendes Chat-Widget - Frag Wolf -->
+    <div class="chat-widget" id="chat-widget">
+      <!-- Chat-Bubble (Trigger) -->
+      <button class="chat-bubble" id="chat-bubble" aria-label="Chat öffnen">
+        <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Chat-Panel -->
+      <div class="chat-panel" id="chat-panel">
+        <div class="chat-panel-header">
+          <h3 class="chat-panel-title">Frag mich was</h3>
+          <p class="chat-panel-subtitle">KI-gestützter Dialog über mich, meine Arbeit oder KI allgemein</p>
+        </div>
+
+        <div class="chat-panel-body">
+          <div class="ki-chat-topics">
+            <button class="topic-btn" data-topic="Erzähl mir von deiner Arbeit bei Trailerhaus">Trailerhaus</button>
+            <button class="topic-btn" data-topic="Was fasziniert dich an KI?">KI-Faszination</button>
+            <button class="topic-btn" data-topic="Warum SC Freiburg?">SC Freiburg</button>
+            <button class="topic-btn" data-topic="Was bedeutet dir Basquiat?">Basquiat</button>
+            <button class="topic-btn" data-topic="Welches Buch von Krausser empfiehlst du?">Krausser</button>
+          </div>
+
+          <div id="ki-chat-response" class="ki-chat-response" style="display: none;">
+            <div class="ki-response-text"></div>
+          </div>
+        </div>
+
+        <div class="ki-chat-input-wrapper">
+          <input type="text" id="ki-chat-input" class="ki-chat-input" placeholder="Stell deine Frage..." maxlength="200" aria-label="Stelle eine Frage an Wolf">
+          <button id="ki-chat-send" class="ki-chat-send" title="Fragen" aria-label="Frage absenden">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p class="footer-quote">
+        „Genug gelesen. Reden wir."
+      </p>
+
+      <p class="footer-contact">
+        Wolf Hohl · Berlin ·
+        <a href="#" data-action="kontakt">Kontakt</a>
+        <span class="footer-separator">·</span>
+        <button class="footer-music-toggle" id="footer-music-toggle" aria-label="Musik an/aus">
+          <span class="footer-music-bars">
+            <span class="footer-music-bar" style="height: 4px;"></span>
+            <span class="footer-music-bar" style="height: 8px;"></span>
+            <span class="footer-music-bar" style="height: 3px;"></span>
+            <span class="footer-music-bar" style="height: 6px;"></span>
+          </span>
+          <span>Musik</span>
+        </button>
+      </p>
+
+      <!-- TÜV Badge - dezent -->
+      <div class="footer-tuev">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>TÜV-zertifizierter KI-Manager</span>
+      </div>
+
+      <!-- Aktuelle Arbeiten -->
+      <div class="footer-projects">
+        <p class="footer-projects-label">Aktuelle Arbeiten</p>
+        <div class="footer-projects-links">
+          <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="footer-project-link">
+            <span class="status-dot"></span>
+            ki-sicherheit.jetzt
+          </a>
+          <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="footer-project-link">
+            <span class="status-dot"></span>
+            art-radar.berlin
+          </a>
+          <a href="https://akut.jetzt" target="_blank" rel="noopener" class="footer-project-link">
+            <span class="status-dot"></span>
+            akut.jetzt
+          </a>
+          <a href="https://achtung.jetzt" target="_blank" rel="noopener" class="footer-project-link">
+            <span class="status-dot"></span>
+            achtung.jetzt
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <a href="#" class="footer-link" data-action="ueber">Über Wolf Hohl</a>
+        <a href="#" class="footer-link" data-action="kontakt">Kontakt</a>
+        <a href="#" class="footer-link" data-action="impressum">Impressum</a>
+        <a href="#" class="footer-link" data-action="impressum">Datenschutz</a>
+      </div>
+    </footer>
+
+    <!-- Impressum Overlay -->
+    <div id="ov-impressum" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close></div>
+      <section class="dialog" role="dialog" aria-labelledby="imp-title">
+        <header class="head">
+          <h2 id="imp-title">Rechtliches & Transparenz</h2>
+          <button class="close" aria-label="Schließen" data-close>×</button>
+        </header>
+        <div id="impressum-body" class="impressum-content">
+          <section class="imp-section">
+            <h3>Impressum</h3>
+            <p><strong>Verantwortlich für den Inhalt:</strong><br>
+            Wolf Hohl<br>
+            Greifswalder Str. 224a<br>
+            10405 Berlin</p>
+            <p><a href="#" data-action="kontakt">Kontakt aufnehmen</a></p>
+          </section>
+
+          <section class="imp-section">
+            <h3>Haftungsausschluss</h3>
+            <p>Diese Website dient ausschließlich der Information. Trotz sorgfältiger Prüfung übernehme ich keine Haftung für Inhalte externer Links.</p>
+          </section>
+
+          <section class="imp-section">
+            <h3>Urheberrecht</h3>
+            <p>Alle Inhalte dieser Website unterliegen dem deutschen Urheberrecht. Alle Bilder wurden mit Hilfe von Midjourney erzeugt.</p>
+          </section>
+
+          <section class="imp-section">
+            <h3>Hinweis zum EU AI Act</h3>
+            <p>Diese Website informiert über Pflichten, Risiken und Fördermöglichkeiten beim Einsatz von KI nach EU AI Act und DSGVO. Sie ersetzt keine Rechtsberatung.</p>
+          </section>
+
+          <section class="imp-section">
+            <h3>Datenschutzerklärung</h3>
+            <p>Der Schutz Ihrer persönlichen Daten ist mir ein besonderes Anliegen.</p>
+
+            <h4>Kontakt mit mir</h4>
+            <p>Wenn Sie per Formular oder E-Mail Kontakt aufnehmen, werden Ihre Angaben zur Bearbeitung sechs Monate gespeichert.</p>
+
+            <h4>Cookies</h4>
+            <p>Diese Website verwendet keine Cookies zur Nutzerverfolgung oder Analyse.</p>
+
+            <h4>Ihre Rechte laut DSGVO</h4>
+            <ul>
+              <li>Auskunft, Berichtigung oder Löschung Ihrer Daten</li>
+              <li>Datenübertragbarkeit</li>
+              <li>Widerruf erteilter Einwilligungen</li>
+              <li>Beschwerde bei der Datenschutzbehörde</li>
+            </ul>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <!-- Kontakt Overlay -->
+    <div id="ov-kontakt" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close></div>
+      <section class="dialog" role="dialog" aria-labelledby="kontakt-title">
+        <header class="head">
+          <h2 id="kontakt-title">Kontakt aufnehmen</h2>
+          <button class="close" aria-label="Schließen" data-close>×</button>
+        </header>
+        <div id="kontakt-body">
+          <!-- Form - Netlify Forms -->
+          <form id="contact-form" class="contact-form" name="kontakt" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+            <!-- Verstecktes Feld: Form-Name (wichtig für Netlify) -->
+            <input type="hidden" name="form-name" value="kontakt">
+
+            <!-- Honeypot gegen Spam (unsichtbar für Nutzer) -->
+            <p style="display:none;">
+              <label>Nicht ausfüllen: <input type="text" name="bot-field" autocomplete="off"></label>
+            </p>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact-name">Name</label>
+                <input type="text" id="contact-name" name="name" placeholder="Ihr Name" required>
+              </div>
+              <div class="form-group">
+                <label for="contact-email">E-Mail</label>
+                <input type="email" id="contact-email" name="email" placeholder="ihre@email.de" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-type">Betreff</label>
+              <select id="contact-type" name="betreff" required>
+                <option value="" disabled selected>Bitte wählen...</option>
+                <option value="Allgemeine Anfrage">Allgemeine Anfrage</option>
+                <option value="KI-Beratung">KI-Beratung für Unternehmen</option>
+                <option value="Projekt-Zusammenarbeit">Projekt-Zusammenarbeit</option>
+                <option value="Technische Frage">Technische Frage</option>
+                <option value="Sonstiges">Sonstiges</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-message">Nachricht</label>
+              <textarea id="contact-message" name="nachricht" placeholder="Ihre Nachricht..." required></textarea>
+            </div>
+
+            <div class="form-submit">
+              <button type="button" class="btn-cancel" data-close>Abbrechen</button>
+              <button type="submit" class="btn-submit">Nachricht senden</button>
+            </div>
+          </form>
+
+          <!-- Success Message (hidden by default) -->
+          <div id="contact-success" class="form-success" style="display: none;">
+            <div class="form-success-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <h3>Nachricht gesendet</h3>
+            <p>Vielen Dank für Ihre Nachricht. Ich melde mich zeitnah bei Ihnen.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Über Wolf Hohl Overlay -->
+    <div id="ov-ueber" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close></div>
+      <section class="dialog" role="dialog" aria-labelledby="ueber-title">
+        <header class="head">
+          <h2 id="ueber-title">Über Wolf Hohl</h2>
+          <button class="close" aria-label="Schließen" data-close>×</button>
+        </header>
+        <div class="ueber-content">
+          <!-- TÜV Badge -->
+          <div class="ueber-tuev">
+            <div class="ueber-tuev-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002FA7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="ueber-tuev-title">TÜV-zertifizierter KI-Manager</div>
+              <div class="ueber-tuev-sub">TÜV Austria · Zertifiziert 2024</div>
+            </div>
+          </div>
+
+          <!-- Timeline kompakt -->
+          <div class="ueber-timeline">
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">2024</span>
+              <div>
+                <strong>TÜV-Zertifizierung & 4 Live-Projekte</strong>
+                <p>ki-sicherheit.jetzt, art-radar.berlin, akut.jetzt, achtung.jetzt</p>
+              </div>
+            </div>
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">2023</span>
+              <div>
+                <strong>Deep Dive in KI</strong>
+                <p>GPT-4, Claude, Prompt Engineering, KI für Business</p>
+              </div>
+            </div>
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">1999–2024</span>
+              <div>
+                <strong>25 Jahre Trailerhaus GmbH</strong>
+                <p>Geschäftsführer Post-Produktion für Kino-Trailer</p>
+              </div>
+            </div>
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">Heute</span>
+              <div>
+                <strong>KI-Berater & Entwickler</strong>
+                <p>Sichere KI-Integration für Unternehmen</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ueber-cta">
+            <a href="#" class="btn-submit" data-action="kontakt" style="display: inline-block; text-decoration: none; text-align: center;">Kontakt aufnehmen</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Music Studio Overlay -->
+    <div id="ov-music-studio" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close></div>
+      <section class="dialog" role="dialog" aria-labelledby="studio-title" style="max-width: 500px;">
+        <header class="head">
+          <h2 id="studio-title">Sound Studio</h2>
+          <button class="close" aria-label="Schließen" data-close>×</button>
+        </header>
+        <div class="music-studio-content" style="padding: 1.5rem;">
+
+          <!-- Visualizer -->
+          <div class="studio-visualizer">
+            <canvas id="audio-visualizer"></canvas>
+          </div>
+
+          <div class="studio-controls">
+
+            <!-- Play/Pause + Volume -->
+            <div class="studio-section">
+              <div class="play-controls">
+                <div class="volume-control">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  </svg>
+                  <input type="range" id="volume-slider" min="0" max="100" value="30" aria-label="Lautstärke">
+                </div>
+
+                <button class="play-btn" id="studio-play-btn" title="Play/Pause" aria-label="Musik abspielen oder pausieren">
+                  <svg id="play-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;" aria-hidden="true">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                  </svg>
+                </button>
+
+                <div class="volume-control">
+                  <input type="range" id="volume-slider-2" min="0" max="100" value="30" aria-label="Lautstärke rechts">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- EQ Controls -->
+            <div class="studio-section">
+              <h3 class="studio-section-title">Equalizer</h3>
+              <div class="eq-sliders">
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span id="bass-label">Bass</span>
+                    <span class="slider-value" id="bass-value">0</span>
+                  </div>
+                  <input type="range" id="bass-slider" min="-12" max="12" value="0" aria-labelledby="bass-label">
+                </div>
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span id="mid-label">Mid</span>
+                    <span class="slider-value" id="mid-value">0</span>
+                  </div>
+                  <input type="range" id="mid-slider" min="-12" max="12" value="0" aria-labelledby="mid-label">
+                </div>
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span id="treble-label">Treble</span>
+                    <span class="slider-value" id="treble-value">0</span>
+                  </div>
+                  <input type="range" id="treble-slider" min="-12" max="12" value="0" aria-labelledby="treble-label">
+                </div>
+              </div>
+            </div>
+
+            <!-- Mood Presets -->
+            <div class="studio-section">
+              <h3 class="studio-section-title">KI-Stimmung</h3>
+              <div class="mood-presets">
+                <button class="mood-btn" data-mood="neutral" data-bass="0" data-mid="0" data-treble="0">
+                  <span class="mood-btn-icon">~</span>
+                  Neutral
+                </button>
+                <button class="mood-btn" data-mood="chill" data-bass="4" data-mid="-2" data-treble="-3">
+                  <span class="mood-btn-icon">*</span>
+                  Chill
+                </button>
+                <button class="mood-btn" data-mood="focus" data-bass="-2" data-mid="3" data-treble="1">
+                  <span class="mood-btn-icon">!</span>
+                  Focus
+                </button>
+                <button class="mood-btn" data-mood="energy" data-bass="6" data-mid="2" data-treble="5">
+                  <span class="mood-btn-icon">+</span>
+                  Energie
+                </button>
+              </div>
+            </div>
+
+            <!-- Now Playing + Playlist -->
+            <div class="studio-section">
+              <div class="now-playing" style="background: transparent; padding: 0; margin: 0;">
+                <div class="now-playing-label">Now Playing</div>
+                <div class="now-playing-title" id="current-track-title">Ambient Dreams</div>
+                <div class="now-playing-artist" id="current-track-artist">hohl.rocks</div>
+
+                <!-- Track Navigation -->
+                <div class="track-nav">
+                  <button class="track-nav-btn" id="prev-track" title="Vorheriger Track">
+                    <svg viewBox="0 0 24 24"><path d="M19 20L9 12l10-8v16zM7 19V5H5v14h2z"/></svg>
+                  </button>
+                  <span class="track-counter" id="track-counter">1 / 4</span>
+                  <button class="track-nav-btn" id="next-track" title="Nächster Track">
+                    <svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4zm12 1v14h2V5h-2z"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Track List -->
+              <div class="track-list" id="track-list">
+                <!-- Tracks werden via JavaScript eingefügt -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+      // ═══════════════════════════════════════════════════════════════
+      // TAGLINE TICKER
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const taglines = document.querySelectorAll('.tagline-item');
+        if (taglines.length === 0) return;
+
+        let currentIndex = 0;
+        let taglineInterval = null;
+
+        function rotateTagline() {
+          const current = taglines[currentIndex];
+          const nextIndex = (currentIndex + 1) % taglines.length;
+          const next = taglines[nextIndex];
+
+          current.classList.remove('active');
+          current.classList.add('exiting');
+
+          setTimeout(() => {
+            current.classList.remove('exiting');
+            next.classList.add('active');
+            currentIndex = nextIndex;
+          }, 300);
+        }
+
+        taglineInterval = setInterval(rotateTagline, 3000);
+
+        // Cleanup on page unload to prevent memory leak
+        window.addEventListener('pagehide', () => {
+          if (taglineInterval) clearInterval(taglineInterval);
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // VIDEO AUTOPLAY
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const video = document.querySelector('.bg-video');
+        if (!video) return;
+
+        const playVideo = () => {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              // Autoplay blocked - silent fallback to user interaction
+              const onFirstInteract = () => {
+                video.play().catch(() => {});
+                document.removeEventListener('click', onFirstInteract);
+                document.removeEventListener('keydown', onFirstInteract);
+              };
+              document.addEventListener('click', onFirstInteract, { once: true });
+              document.addEventListener('keydown', onFirstInteract, { once: true });
+            });
+          }
+        };
+
+        playVideo();
+
+        // Pause when not visible
+        let videoObserver = null;
+        try {
+          videoObserver = new IntersectionObserver(
+            entries => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  if (video.paused) playVideo();
+                } else {
+                  if (!video.paused) video.pause();
+                }
+              });
+            },
+            { threshold: 0.35 }
+          );
+          videoObserver.observe(video);
+
+          // Cleanup on page unload
+          window.addEventListener('pagehide', () => {
+            if (videoObserver) {
+              videoObserver.disconnect();
+              videoObserver = null;
+            }
+          });
+        } catch (err) {
+          // IntersectionObserver not supported
+        }
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // MANIFEST SCROLL-EFFEKT - Text scrollt durch Fenster (4 Absätze sichtbar)
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const manifestSection = document.querySelector('.manifest-section');
+        const manifestText = document.querySelector('.manifest-text');
+        const manifestFinale = document.querySelector('.manifest-finale');
+        const delayedSection = document.querySelector('.delayed-section');
+        if (!manifestSection || !manifestText) return;
+
+        let finaleTriggered = false;
+        let finaleTimeout = null;
+
+        function updateManifestScroll() {
+          const sectionRect = manifestSection.getBoundingClientRect();
+          const sectionTop = sectionRect.top;
+          const sectionHeight = sectionRect.height;
+          const viewportHeight = window.innerHeight;
+
+          // Scroll-Fortschritt (0 = Section beginnt, 1 = Section endet)
+          const scrollProgress = Math.max(0, Math.min(1,
+            -sectionTop / (sectionHeight - viewportHeight)
+          ));
+
+          // Berechne die maximale Scroll-Distanz des Textes
+          const textHeight = manifestText.scrollHeight;
+          const containerHeight = 280; // Höhe des sichtbaren Bereichs
+          const maxScroll = textHeight - containerHeight;
+
+          // Bewege den Text nach oben basierend auf Scroll-Progress
+          const translateY = -scrollProgress * maxScroll;
+          manifestText.style.transform = `translateY(${translateY}px)`;
+
+          // "Into the Light" Animation - wenn der letzte Satz erreicht ist
+          if (manifestFinale && scrollProgress > 0.88 && !finaleTriggered) {
+            finaleTriggered = true;
+            // 2 Sekunden warten, dann Animation starten
+            finaleTimeout = setTimeout(() => {
+              manifestFinale.classList.add('glow');
+              // Nach Animation (5s) die nächste Sektion einblenden
+              setTimeout(() => {
+                if (delayedSection) {
+                  delayedSection.classList.add('visible');
+                }
+              }, 5000);
+            }, 2000);
+          }
+
+          // Reset wenn zurückgescrollt wird
+          if (scrollProgress < 0.85 && finaleTriggered) {
+            finaleTriggered = false;
+            if (finaleTimeout) clearTimeout(finaleTimeout);
+            if (manifestFinale) manifestFinale.classList.remove('glow');
+            if (delayedSection) delayedSection.classList.remove('visible');
+          }
+        }
+
+        // Initial ausführen
+        updateManifestScroll();
+
+        // Bei Scroll aktualisieren (mit Throttling für Performance)
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            window.requestAnimationFrame(() => {
+              updateManifestScroll();
+              ticking = false;
+            });
+            ticking = true;
+          }
+        }, { passive: true });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // SCROLL-INDICATOR - Erscheint verzögert, verschwindet beim Scrollen
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const scrollIndicator = document.getElementById('scroll-indicator');
+        if (!scrollIndicator) return;
+
+        let hasScrolled = false;
+        let indicatorTimeout = null;
+
+        // Nach 4 Sekunden anzeigen, wenn nicht gescrollt wurde
+        indicatorTimeout = setTimeout(() => {
+          if (!hasScrolled) {
+            scrollIndicator.classList.add('visible');
+          }
+        }, 4000);
+
+        // Bei Scroll verstecken
+        window.addEventListener('scroll', () => {
+          hasScrolled = true;
+          scrollIndicator.classList.remove('visible');
+          scrollIndicator.classList.add('hidden');
+          if (indicatorTimeout) {
+            clearTimeout(indicatorTimeout);
+            indicatorTimeout = null;
+          }
+        }, { passive: true, once: true });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // SCROLL ANIMATIONS (Intersection Observer)
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const fadeElements = document.querySelectorAll('.fade-in');
+        if (fadeElements.length === 0) return;
+
+        const fadeObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              // Unobserve after animation triggered (one-time effect)
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        });
+
+        fadeElements.forEach(el => fadeObserver.observe(el));
+
+        // Cleanup on page unload
+        window.addEventListener('pagehide', () => {
+          fadeObserver.disconnect();
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // OVERLAY HANDLING
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Helper function to open overlay
+        function openOverlay(overlayId) {
+          const overlay = document.getElementById(overlayId);
+          if (overlay) {
+            overlay.classList.add('active');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+          }
+        }
+
+        // Helper function to close overlay
+        function closeOverlay(overlay) {
+          if (overlay) {
+            overlay.classList.remove('active');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+          }
+        }
+
+        // Open impressum overlay
+        document.querySelectorAll('[data-action="impressum"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openOverlay('ov-impressum');
+          });
+        });
+
+        // Open kontakt overlay
+        document.querySelectorAll('[data-action="kontakt"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Close any open overlay
+            document.querySelectorAll('.overlay.active').forEach(overlay => {
+              closeOverlay(overlay);
+            });
+            // Reset form if needed
+            const form = document.getElementById('contact-form');
+            const success = document.getElementById('contact-success');
+            if (form) form.style.display = '';
+            if (success) success.style.display = 'none';
+            openOverlay('ov-kontakt');
+          });
+        });
+
+        // Open über overlay
+        document.querySelectorAll('[data-action="ueber"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openOverlay('ov-ueber');
+          });
+        });
+
+        // Close overlay
+        document.querySelectorAll('.overlay [data-close]').forEach(el => {
+          el.addEventListener('click', () => {
+            const overlay = el.closest('.overlay');
+            closeOverlay(overlay);
+          });
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            document.querySelectorAll('.overlay.active').forEach(overlay => {
+              closeOverlay(overlay);
+            });
+          }
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // CONTACT FORM HANDLING (Netlify Forms)
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('contact-form');
+        const successDiv = document.getElementById('contact-success');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const submitBtn = form.querySelector('.btn-submit');
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Wird gesendet...';
+          submitBtn.disabled = true;
+
+          const formData = new FormData(form);
+
+          try {
+            // Netlify Forms: POST an Root-URL mit URL-encoded body
+            const response = await fetch('/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: new URLSearchParams(formData).toString()
+            });
+
+            if (response.ok) {
+              // Show success message
+              form.style.display = 'none';
+              successDiv.style.display = 'block';
+              form.reset();
+            } else {
+              throw new Error('Form submission failed');
+            }
+          } catch (error) {
+            // Form failed - silent fallback to mailto
+            const name = formData.get('name');
+            const email = formData.get('email');
+            const betreff = formData.get('betreff');
+            const nachricht = formData.get('nachricht');
+            const subject = encodeURIComponent(`[hohl.rocks] ${betreff}`);
+            const body = encodeURIComponent(`Name: ${name}\nE-Mail: ${email}\n\n${nachricht}`);
+            window.location.href = `mailto:wolf@hohl.rocks?subject=${subject}&body=${body}`;
+          } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          }
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // SMOOTH SCROLL FOR ANCHOR LINKS
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', (e) => {
+            const href = anchor.getAttribute('href');
+            if (href === '#') return;
+
+            const target = document.querySelector(href);
+            if (target) {
+              e.preventDefault();
+              target.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // KI-BATTLE INLINE - Direkt auf der Hauptseite
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const battlePromptInput = document.getElementById('battle-prompt-input');
+        const battleStartBtn = document.getElementById('battle-start-btn');
+        const battleResults = document.getElementById('battle-results');
+        const battleNewBtn = document.getElementById('battle-new-btn');
+
+        if (!battlePromptInput || !battleStartBtn) return;
+
+        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || 'https://hohl-rocks-back-production.up.railway.app';
+
+        // Simple Markdown to HTML converter
+        function renderMarkdown(text) {
+          if (!text) return '';
+
+          // Escape HTML first to prevent XSS
+          let html = text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+          // Headers (## and ###)
+          html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+          html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+
+          // Bold (**text**)
+          html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+          // Italic (*text* or _text_)
+          html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+          html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+          // Inline code (`code`)
+          html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+          // List items (- item or * item or numbered)
+          html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+          html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+          // Wrap consecutive <li> in <ul>
+          html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+
+          // Paragraphs: split by double newlines
+          html = html
+            .split(/\n\n+/)
+            .map(block => {
+              block = block.trim();
+              if (!block) return '';
+              if (block.startsWith('<h') || block.startsWith('<ul') || block.startsWith('<ol')) {
+                return block;
+              }
+              return '<p>' + block.replace(/\n/g, '<br>') + '</p>';
+            })
+            .join('');
+
+          return html;
+        }
+
+        // Reset Battle
+        function resetBattle() {
+          battlePromptInput.value = '';
+          battleStartBtn.disabled = true;
+          if (battleResults) battleResults.style.display = 'none';
+
+          ['claude', 'gpt', 'perplexity'].forEach(model => {
+            const loading = document.getElementById(`battle-loading-${model}`);
+            const response = document.getElementById(`battle-response-${model}`);
+            const time = document.getElementById(`battle-time-${model}`);
+            if (loading) loading.style.display = 'flex';
+            if (response) { response.style.display = 'none'; response.innerHTML = ''; }
+            if (time) time.textContent = '–';
+          });
+
+          battlePromptInput.focus();
+        }
+
+        // Start Battle
+        async function startBattle() {
+          const prompt = battlePromptInput.value.trim();
+          if (!prompt) return;
+
+          const btnText = battleStartBtn.querySelector('.btn-text');
+          const btnIcon = battleStartBtn.querySelector('.btn-icon');
+
+          battleStartBtn.disabled = true;
+          if (btnText) btnText.textContent = 'Läuft...';
+          if (btnIcon) btnIcon.textContent = '⏳';
+
+          if (battleResults) battleResults.style.display = 'block';
+
+          // Reset and show loading
+          ['claude', 'gpt', 'perplexity'].forEach(model => {
+            const loading = document.getElementById(`battle-loading-${model}`);
+            const response = document.getElementById(`battle-response-${model}`);
+            const time = document.getElementById(`battle-time-${model}`);
+            if (loading) loading.style.display = 'flex';
+            if (response) { response.style.display = 'none'; response.innerHTML = ''; }
+            if (time) time.textContent = '–';
+          });
+
+          // Scroll to results
+          if (battleResults) {
+            setTimeout(() => {
+              battleResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+
+          try {
+            const response = await fetch(`${API_BASE}/api/model-battle`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt })
+            });
+
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
+            const data = await response.json();
+
+            // Display results
+            if (data.responses) {
+              data.responses.forEach(result => {
+                const modelKey = result.model;
+                const loading = document.getElementById(`battle-loading-${modelKey}`);
+                const responseEl = document.getElementById(`battle-response-${modelKey}`);
+                const timeEl = document.getElementById(`battle-time-${modelKey}`);
+
+                if (loading) loading.style.display = 'none';
+                if (responseEl) {
+                  responseEl.innerHTML = renderMarkdown(result.response) || '<p>Keine Antwort erhalten.</p>';
+                  responseEl.style.display = 'block';
+                }
+                if (timeEl && result.responseTime) {
+                  timeEl.textContent = `${(result.responseTime / 1000).toFixed(1)}s`;
+                }
+              });
+            }
+
+          } catch (error) {
+            console.error('Battle error:', error);
+            ['claude', 'gpt', 'perplexity'].forEach(model => {
+              const loading = document.getElementById(`battle-loading-${model}`);
+              const response = document.getElementById(`battle-response-${model}`);
+              if (loading) loading.style.display = 'none';
+              if (response) {
+                response.innerHTML = '<p>Fehler beim Laden. Bitte versuche es erneut.</p>';
+                response.style.display = 'block';
+              }
+            });
+          } finally {
+            battleStartBtn.disabled = false;
+            if (btnText) btnText.textContent = 'Vergleich starten';
+            if (btnIcon) btnIcon.textContent = '→';
+          }
+        }
+
+        // Event Listeners
+        battlePromptInput.addEventListener('input', () => {
+          battleStartBtn.disabled = !battlePromptInput.value.trim();
+        });
+
+        battlePromptInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey && !battleStartBtn.disabled) {
+            e.preventDefault();
+            startBattle();
+          }
+        });
+
+        battleStartBtn.addEventListener('click', startBattle);
+
+        if (battleNewBtn) {
+          battleNewBtn.addEventListener('click', resetBattle);
+        }
+
+        // Inline Prompt Examples
+        document.querySelectorAll('.prompt-example-inline').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const prompt = btn.dataset.prompt;
+            if (prompt) {
+              battlePromptInput.value = prompt;
+              battleStartBtn.disabled = false;
+              startBattle();
+            }
+          });
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // MUSIC STUDIO - KI Sound Experience mit Playlist
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const playerBtn = document.getElementById('music-player');
+        const footerMusicToggle = document.getElementById('footer-music-toggle');
+        const audio = document.getElementById('bg-music');
+        const studioOverlay = document.getElementById('ov-music-studio');
+        const studioPlayBtn = document.getElementById('studio-play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const canvas = document.getElementById('audio-visualizer');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeSlider2 = document.getElementById('volume-slider-2');
+        const bassSlider = document.getElementById('bass-slider');
+        const midSlider = document.getElementById('mid-slider');
+        const trebleSlider = document.getElementById('treble-slider');
+        const bassValue = document.getElementById('bass-value');
+        const midValue = document.getElementById('mid-value');
+        const trebleValue = document.getElementById('treble-value');
+        const moodBtns = document.querySelectorAll('.mood-btn');
+        const trackTitleEl = document.getElementById('current-track-title');
+        const trackArtistEl = document.getElementById('current-track-artist');
+        const trackCounterEl = document.getElementById('track-counter');
+        const trackListEl = document.getElementById('track-list');
+        const prevBtn = document.getElementById('prev-track');
+        const nextBtn = document.getElementById('next-track');
+
+        if (!audio || !canvas) return;
+
+        // ═══════════════════════════════════════════════════════════════
+        // PLAYLIST - Tracks hinzufügen/ändern hier
+        // ═══════════════════════════════════════════════════════════════
+        const tracks = [
+          { title: 'Ambient Dreams', artist: 'hohl.rocks', src: '/audio/ambient_loop.mp3' }
+        ];
+
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let audioContext = null;
+        let analyser = null;
+        let source = null;
+        let bassFilter = null;
+        let midFilter = null;
+        let trebleFilter = null;
+        let gainNode = null;
+        let animationId = null;
+        let isInitialized = false;
+
+        // Render Track List
+        function renderTrackList() {
+          trackListEl.innerHTML = tracks.map((track, i) => `
+            <div class="track-item ${i === currentTrackIndex ? 'active' : ''}" data-index="${i}">
+              <span class="track-item-number">${i + 1}</span>
+              <div class="track-item-info">
+                <div class="track-item-title">${track.title}</div>
+                <div class="track-item-artist">${track.artist}</div>
+              </div>
+            </div>
+          `).join('');
+
+          // Add click handlers
+          trackListEl.querySelectorAll('.track-item').forEach(item => {
+            item.addEventListener('click', () => {
+              const idx = parseInt(item.dataset.index);
+              if (idx !== currentTrackIndex) {
+                loadTrack(idx);
+                if (isPlaying) playTrack();
+              }
+            });
+          });
+        }
+
+        // Update UI
+        function updateTrackUI() {
+          const track = tracks[currentTrackIndex];
+          trackTitleEl.textContent = track.title;
+          trackArtistEl.textContent = track.artist;
+          trackCounterEl.textContent = `${currentTrackIndex + 1} / ${tracks.length}`;
+
+          // Update track list active state
+          trackListEl.querySelectorAll('.track-item').forEach((item, i) => {
+            item.classList.toggle('active', i === currentTrackIndex);
+          });
+        }
+
+        // Load Track
+        function loadTrack(index) {
+          currentTrackIndex = index;
+          const track = tracks[index];
+          audio.src = track.src;
+          updateTrackUI();
+        }
+
+        // Play Track
+        function playTrack() {
+          if (!isInitialized) initAudio();
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          audio.play().then(() => {
+            if (playerBtn) playerBtn.classList.add('playing');
+            if (footerMusicToggle) footerMusicToggle.classList.add('playing');
+            if (playIcon) playIcon.style.display = 'none';
+            if (pauseIcon) pauseIcon.style.display = '';
+            drawVisualizer();
+            isPlaying = true;
+          }).catch(() => { /* Audio playback blocked - silent */ });
+        }
+
+        // Next/Previous Track
+        function nextTrack() {
+          const wasPlaying = isPlaying;
+          if (isPlaying) { audio.pause(); stopVisualizer(); }
+          loadTrack((currentTrackIndex + 1) % tracks.length);
+          if (wasPlaying) playTrack();
+        }
+
+        function prevTrack() {
+          const wasPlaying = isPlaying;
+          if (isPlaying) { audio.pause(); stopVisualizer(); }
+          loadTrack((currentTrackIndex - 1 + tracks.length) % tracks.length);
+          if (wasPlaying) playTrack();
+        }
+
+        // Auto-advance when track ends
+        audio.addEventListener('ended', () => {
+          nextTrack();
+        });
+
+        // Navigation buttons
+        prevBtn?.addEventListener('click', prevTrack);
+        nextBtn?.addEventListener('click', nextTrack);
+
+        // Open studio overlay when clicking the player button
+        if (playerBtn) {
+          playerBtn.addEventListener('click', () => {
+            studioOverlay.classList.add('active');
+            studioOverlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+          });
+        }
+
+        // Footer music toggle - einfaches Play/Pause
+        if (footerMusicToggle) {
+          footerMusicToggle.addEventListener('click', () => {
+            togglePlay();
+          });
+        }
+
+        // Initialize Web Audio API
+        function initAudio() {
+          if (isInitialized) return;
+
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+
+          source = audioContext.createMediaElementSource(audio);
+
+          bassFilter = audioContext.createBiquadFilter();
+          bassFilter.type = 'lowshelf';
+          bassFilter.frequency.value = 200;
+          bassFilter.gain.value = 0;
+
+          midFilter = audioContext.createBiquadFilter();
+          midFilter.type = 'peaking';
+          midFilter.frequency.value = 1000;
+          midFilter.Q.value = 1;
+          midFilter.gain.value = 0;
+
+          trebleFilter = audioContext.createBiquadFilter();
+          trebleFilter.type = 'highshelf';
+          trebleFilter.frequency.value = 3000;
+          trebleFilter.gain.value = 0;
+
+          gainNode = audioContext.createGain();
+          gainNode.gain.value = 0.3;
+
+          source.connect(bassFilter);
+          bassFilter.connect(midFilter);
+          midFilter.connect(trebleFilter);
+          trebleFilter.connect(gainNode);
+          gainNode.connect(analyser);
+          analyser.connect(audioContext.destination);
+
+          isInitialized = true;
+        }
+
+        // Visualizer
+        function drawVisualizer() {
+          if (!analyser || !canvas) return;
+          const ctx = canvas.getContext('2d');
+          const bufferLength = analyser.frequencyBinCount;
+          const dataArray = new Uint8Array(bufferLength);
+
+          function draw() {
+            animationId = requestAnimationFrame(draw);
+            analyser.getByteFrequencyData(dataArray);
+
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            ctx.clearRect(0, 0, width, height);
+
+            const barCount = 32;
+            const barWidth = (width / barCount) - 2;
+            const step = Math.floor(bufferLength / barCount);
+
+            for (let i = 0; i < barCount; i++) {
+              const value = dataArray[i * step];
+              const barHeight = (value / 255) * height * 0.9;
+              const hue = 220 + (i / barCount) * 20;
+              const saturation = 70 + (value / 255) * 30;
+              const lightness = 40 + (value / 255) * 20;
+
+              ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+              const x = i * (barWidth + 2);
+              const y = height - barHeight;
+              ctx.beginPath();
+              ctx.roundRect(x, y, barWidth, barHeight, 3);
+              ctx.fill();
+            }
+          }
+          draw();
+        }
+
+        function stopVisualizer() {
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+          }
+        }
+
+        // Play/Pause
+        function togglePlay() {
+          if (isPlaying) {
+            audio.pause();
+            if (playerBtn) playerBtn.classList.remove('playing');
+            if (footerMusicToggle) footerMusicToggle.classList.remove('playing');
+            if (playIcon) playIcon.style.display = '';
+            if (pauseIcon) pauseIcon.style.display = 'none';
+            stopVisualizer();
+            isPlaying = false;
+          } else {
+            playTrack();
+          }
+        }
+
+        studioPlayBtn.addEventListener('click', togglePlay);
+
+        // Volume control
+        function updateVolume(value) {
+          const vol = value / 100;
+          if (gainNode) gainNode.gain.value = vol;
+          else audio.volume = vol;
+          volumeSlider.value = value;
+          volumeSlider2.value = value;
+        }
+
+        volumeSlider.addEventListener('input', (e) => updateVolume(e.target.value));
+        volumeSlider2.addEventListener('input', (e) => updateVolume(e.target.value));
+
+        // EQ Controls
+        bassSlider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          if (bassFilter) bassFilter.gain.value = val;
+          bassValue.textContent = val > 0 ? '+' + val : val;
+          updateMoodButtons();
+        });
+
+        midSlider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          if (midFilter) midFilter.gain.value = val;
+          midValue.textContent = val > 0 ? '+' + val : val;
+          updateMoodButtons();
+        });
+
+        trebleSlider.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          if (trebleFilter) trebleFilter.gain.value = val;
+          trebleValue.textContent = val > 0 ? '+' + val : val;
+          updateMoodButtons();
+        });
+
+        // Mood Presets
+        function setMood(bass, mid, treble, btn) {
+          bassSlider.value = bass;
+          midSlider.value = mid;
+          trebleSlider.value = treble;
+
+          if (bassFilter) bassFilter.gain.value = bass;
+          if (midFilter) midFilter.gain.value = mid;
+          if (trebleFilter) trebleFilter.gain.value = treble;
+
+          bassValue.textContent = bass > 0 ? '+' + bass : bass;
+          midValue.textContent = mid > 0 ? '+' + mid : mid;
+          trebleValue.textContent = treble > 0 ? '+' + treble : treble;
+
+          moodBtns.forEach(b => b.classList.remove('active'));
+          if (btn) btn.classList.add('active');
+        }
+
+        function updateMoodButtons() {
+          const b = parseInt(bassSlider.value);
+          const m = parseInt(midSlider.value);
+          const t = parseInt(trebleSlider.value);
+
+          moodBtns.forEach(btn => {
+            const bb = parseInt(btn.dataset.bass);
+            const bm = parseInt(btn.dataset.mid);
+            const bt = parseInt(btn.dataset.treble);
+            btn.classList.toggle('active', b === bb && m === bm && t === bt);
+          });
+        }
+
+        moodBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            setMood(parseInt(btn.dataset.bass), parseInt(btn.dataset.mid), parseInt(btn.dataset.treble), btn);
+          });
+        });
+
+        // Initialize
+        renderTrackList();
+        updateTrackUI();
+        document.querySelector('.mood-btn[data-mood="neutral"]')?.classList.add('active');
+
+        // Pause when page is hidden
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden && isPlaying) togglePlay();
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // KI-CHAT FEATURE - Schwebendes Chat-Widget
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Chat Widget Toggle
+        const chatWidget = document.getElementById('chat-widget');
+        const chatBubble = document.getElementById('chat-bubble');
+
+        if (chatWidget && chatBubble) {
+          chatBubble.addEventListener('click', () => {
+            chatWidget.classList.toggle('open');
+            // Focus input when opening
+            if (chatWidget.classList.contains('open')) {
+              const input = document.getElementById('ki-chat-input');
+              if (input) setTimeout(() => input.focus(), 300);
+            }
+          });
+
+          // Close on Escape
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && chatWidget.classList.contains('open')) {
+              chatWidget.classList.remove('open');
+            }
+          });
+
+          // Close when clicking outside
+          document.addEventListener('click', (e) => {
+            if (chatWidget.classList.contains('open') &&
+                !chatWidget.contains(e.target)) {
+              chatWidget.classList.remove('open');
+            }
+          });
+        }
+
+        const chatInput = document.getElementById('ki-chat-input');
+        const chatSend = document.getElementById('ki-chat-send');
+        const chatResponse = document.getElementById('ki-chat-response');
+        const responseText = chatResponse?.querySelector('.ki-response-text');
+        const topicBtns = document.querySelectorAll('.topic-btn');
+
+        if (!chatInput || !chatSend || !chatResponse || !responseText) return;
+
+        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || '';
+
+        // Wolf's Persönlichkeit für die KI
+        const systemPrompt = `Du bist Wolf Hohl, ein TÜV-zertifizierter KI-Manager aus Berlin. Du warst 25 Jahre Geschäftsführer der Trailerhaus GmbH (Kino-Trailer Postproduktion). Deine Interessen: SC Freiburg, Basquiat, Helmut Krausser, Jörg Fauser, Yoga, Kochen nach Omas Rezepten. Du bist freundlich, direkt und teilst gerne dein Wissen über KI. Antworte kurz und persönlich (max 3-4 Sätze).`;
+
+        async function sendMessage(message) {
+          if (!message.trim()) return;
+
+          chatSend.disabled = true;
+          chatResponse.style.display = 'block';
+          responseText.textContent = 'Denke nach...';
+          responseText.classList.add('loading');
+
+          try {
+            const response = await fetch(`${API_BASE}/api/chat`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: message }
+                ],
+                model: 'claude'
+              })
+            });
+
+            if (!response.ok) throw new Error('API Error');
+
+            const data = await response.json();
+            responseText.textContent = data.response || data.content || 'Hmm, da ist was schiefgelaufen.';
+            responseText.classList.remove('loading');
+          } catch (error) {
+            responseText.textContent = 'Entschuldige, gerade kann ich nicht antworten. Probier es später nochmal!';
+            responseText.classList.remove('loading');
+          } finally {
+            chatSend.disabled = false;
+          }
+        }
+
+        // Send on button click
+        chatSend.addEventListener('click', () => {
+          sendMessage(chatInput.value);
+          chatInput.value = '';
+        });
+
+        // Send on Enter
+        chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            sendMessage(chatInput.value);
+            chatInput.value = '';
+          }
+        });
+
+        // Topic buttons
+        topicBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const topic = btn.dataset.topic;
+            chatInput.value = topic;
+            sendMessage(topic);
+            chatInput.value = '';
+          });
+        });
+      });
+
+    </script>
+
+    <!-- API Config (for subpages that might need it) -->
+    <script src="/js/api-config.js"></script>
+  </body>
+</html>

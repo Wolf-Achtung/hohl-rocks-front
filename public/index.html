@@ -1568,10 +1568,16 @@
         opacity: 0.8;
       }
 
-      .footer-tuev svg {
-        width: 16px;
-        height: 16px;
-        stroke: var(--accent-primary);
+      .tuev-logo {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+        filter: brightness(1.1);
+        transition: transform 0.3s ease;
+      }
+
+      .footer-tuev:hover .tuev-logo {
+        transform: scale(1.05);
       }
 
       /* Footer Projekte */
@@ -2732,12 +2738,9 @@
         </button>
       </p>
 
-      <!-- TÜV Badge - dezent -->
+      <!-- TÜV Badge mit Logo -->
       <div class="footer-tuev">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-          <polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
+        <img src="/images/tuev-austria.png" alt="TÜV Austria Zertifiziert" class="tuev-logo" width="60" height="60">
         <span>TÜV-zertifizierter KI-Manager</span>
       </div>
 
@@ -2752,14 +2755,6 @@
           <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="footer-project-link">
             <span class="status-dot"></span>
             art-radar.berlin
-          </a>
-          <a href="https://akut.jetzt" target="_blank" rel="noopener" class="footer-project-link">
-            <span class="status-dot"></span>
-            akut.jetzt
-          </a>
-          <a href="https://achtung.jetzt" target="_blank" rel="noopener" class="footer-project-link">
-            <span class="status-dot"></span>
-            achtung.jetzt
           </a>
         </div>
       </div>

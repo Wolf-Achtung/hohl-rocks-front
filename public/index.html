@@ -7,7 +7,7 @@
 
     <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app"/>
     <title>Wolf Hohl — KI-Experte & Experimentator</title>
-    <meta name="description" content="Wolf Hohl: TÜV-zertifizierter KI-Manager, 25 Jahre Medien-Erfahrung. 4 Live-KI-Projekte. Model Battle Arena, ki-sicherheit.jetzt und mehr." />
+    <meta name="description" content="Wolf Hohl: TÜV-zertifiziertes KI-Management, 25 Jahre Medien-Erfahrung. 4 Live-KI-Projekte. Model Battle Arena, ki-sicherheit.jetzt und mehr." />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1531,13 +1531,13 @@
       }
 
       .footer-contact a {
-        color: var(--accent-primary);
+        color: var(--text-primary);
         text-decoration: none;
         transition: color 0.3s ease;
       }
 
       .footer-contact a:hover {
-        color: var(--accent-secondary);
+        color: var(--text-secondary);
       }
 
       .footer-links {
@@ -1581,7 +1581,9 @@
         width: 56px;
         height: 56px;
         object-fit: contain;
-        filter: brightness(1.2) contrast(1.1);
+        background: #ffffff;
+        padding: 6px;
+        border-radius: 6px;
         transition: transform 0.3s ease;
       }
 
@@ -1626,7 +1628,7 @@
       .footer-project-link .status-dot {
         width: 6px;
         height: 6px;
-        background: #22c55e;
+        background: #ffffff;
         border-radius: 50%;
       }
 
@@ -2116,10 +2118,10 @@
         align-items: center;
         gap: 0.5rem;
         padding: 1rem 1.5rem;
-        background: var(--accent-gradient);
+        background: rgba(255, 255, 255, 0.95);
         border: none;
         border-radius: 14px;
-        color: white;
+        color: #1a1a1a;
         font-family: var(--font-family);
         font-size: 1rem;
         font-weight: 600;
@@ -2130,7 +2132,8 @@
 
       .battle-inline-btn:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 8px 30px rgba(0, 47, 167, 0.4);
+        box-shadow: 0 8px 30px rgba(255, 255, 255, 0.2);
+        background: #ffffff;
       }
 
       .battle-inline-btn:disabled {
@@ -2244,8 +2247,14 @@
 
       .battle-cards {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 1rem;
+      }
+
+      @media (max-width: 1200px) {
+        .battle-cards {
+          grid-template-columns: repeat(2, 1fr);
+        }
       }
 
       @media (max-width: 900px) {
@@ -2351,6 +2360,10 @@
 
       .battle-card-badge.perplexity .badge-icon {
         background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+      }
+
+      .battle-card-badge.gemini .badge-icon {
+        background: linear-gradient(135deg, #4285f4 0%, #9b72cb 50%, #d96570 100%);
       }
 
       .battle-card-badge .badge-name {
@@ -2577,7 +2590,7 @@
                 <span class="btn-icon">→</span>
               </button>
             </div>
-            <p class="battle-hint">Claude · GPT · Perplexity antworten gleichzeitig</p>
+            <p class="battle-hint">Claude · GPT · Perplexity · Gemini antworten gleichzeitig</p>
           </div>
 
           <!-- Beispiel-Prompts (inline) -->
@@ -2658,6 +2671,23 @@
                   </div>
                 </div>
                 <div class="battle-card-content" id="battle-response-perplexity"></div>
+              </div>
+
+              <!-- Gemini -->
+              <div class="battle-card" data-model="gemini">
+                <div class="battle-card-top">
+                  <div class="battle-card-badge gemini">
+                    <span class="badge-icon">G</span>
+                    <span class="badge-name">Gemini</span>
+                  </div>
+                  <span class="battle-card-time" id="battle-time-gemini">–</span>
+                </div>
+                <div class="battle-card-loading" id="battle-loading-gemini">
+                  <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+                <div class="battle-card-content" id="battle-response-gemini"></div>
               </div>
             </div>
           </div>
@@ -2751,7 +2781,7 @@
       <!-- TÜV Badge mit Logo -->
       <div class="footer-tuev">
         <img src="/images/tuev-austria.png" alt="TÜV Austria Zertifiziert" class="tuev-logo" width="60" height="60">
-        <span>TÜV-zertifizierter KI-Manager</span>
+        <span>TÜV-zertifiziertes KI-Management</span>
       </div>
 
       <!-- Aktuelle Arbeiten -->
@@ -2918,7 +2948,7 @@
               </svg>
             </div>
             <div>
-              <div class="ueber-tuev-title">TÜV-zertifizierter KI-Manager</div>
+              <div class="ueber-tuev-title">TÜV-zertifiziertes KI-Management</div>
               <div class="ueber-tuev-sub">TÜV Austria · Zertifiziert 2025</div>
             </div>
           </div>
@@ -3526,7 +3556,7 @@
           battleStartBtn.disabled = true;
           if (battleResults) battleResults.style.display = 'none';
 
-          ['claude', 'gpt', 'perplexity'].forEach(model => {
+          ['claude', 'gpt', 'perplexity', 'gemini'].forEach(model => {
             const loading = document.getElementById(`battle-loading-${model}`);
             const response = document.getElementById(`battle-response-${model}`);
             const time = document.getElementById(`battle-time-${model}`);
@@ -3553,7 +3583,7 @@
           if (battleResults) battleResults.style.display = 'block';
 
           // Reset and show loading
-          ['claude', 'gpt', 'perplexity'].forEach(model => {
+          ['claude', 'gpt', 'perplexity', 'gemini'].forEach(model => {
             const loading = document.getElementById(`battle-loading-${model}`);
             const response = document.getElementById(`battle-response-${model}`);
             const time = document.getElementById(`battle-time-${model}`);
@@ -3601,7 +3631,7 @@
 
           } catch (error) {
             console.error('Battle error:', error);
-            ['claude', 'gpt', 'perplexity'].forEach(model => {
+            ['claude', 'gpt', 'perplexity', 'gemini'].forEach(model => {
               const loading = document.getElementById(`battle-loading-${model}`);
               const response = document.getElementById(`battle-response-${model}`);
               if (loading) loading.style.display = 'none';
@@ -4031,7 +4061,7 @@
         const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || '';
 
         // Wolf's Persönlichkeit für die KI
-        const systemPrompt = `Du bist Wolf Hohl, ein TÜV-zertifizierter KI-Manager aus Berlin. Du warst 25 Jahre Geschäftsführer der Trailerhaus GmbH (Kino-Trailer Postproduktion). Deine Interessen: SC Freiburg, Basquiat, Helmut Krausser, Jörg Fauser, Yoga, Kochen nach Omas Rezepten. Du bist freundlich, direkt und teilst gerne dein Wissen über KI. Antworte kurz und persönlich (max 3-4 Sätze).`;
+        const systemPrompt = `Du bist Wolf Hohl, ein TÜV-zertifiziertes KI-Management aus Berlin. Du warst 25 Jahre Geschäftsführer der Trailerhaus GmbH (Kino-Trailer Postproduktion). Deine Interessen: SC Freiburg, Basquiat, Helmut Krausser, Jörg Fauser, Yoga, Kochen nach Omas Rezepten. Du bist freundlich, direkt und teilst gerne dein Wissen über KI. Antworte kurz und persönlich (max 3-4 Sätze).`;
 
         async function sendMessage(message) {
           if (!message.trim()) return;

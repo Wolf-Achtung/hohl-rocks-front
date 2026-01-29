@@ -1132,7 +1132,7 @@
       .status-dot {
         width: 8px;
         height: 8px;
-        background: var(--accent-primary);
+        background: #ffffff;
         border-radius: 50%;
         animation: pulse 2s infinite;
       }
@@ -1561,23 +1561,32 @@
       .footer-tuev {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 0.85rem;
-        color: var(--accent-primary);
+        gap: 1rem;
+        font-size: 0.95rem;
+        color: var(--text-primary);
         margin-bottom: 2rem;
-        opacity: 0.8;
+        padding: 0.8rem 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .footer-tuev:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
       }
 
       .tuev-logo {
-        width: 48px;
-        height: 48px;
+        width: 56px;
+        height: 56px;
         object-fit: contain;
-        filter: brightness(1.1);
+        filter: brightness(1.2) contrast(1.1);
         transition: transform 0.3s ease;
       }
 
       .footer-tuev:hover .tuev-logo {
-        transform: scale(1.05);
+        transform: scale(1.08);
       }
 
       /* Footer Projekte */
@@ -2520,8 +2529,9 @@
 
           <p>Und mit dem, was mich prägt:</p>
 
-          <p class="manifest-pause">Ich mag Basquiat, weil er nichts erklärt.<br>
+          <p class="manifest-pause">Basquiat, weil er nichts erklärt.<br>
           Fauser, weil er nichts beschönigt.<br>
+          Stephenson, weil Unwissen keine Ausrede ist.<br>
           SC Freiburg, weil Haltung mehr zählt als Trophäen.</p>
 
           <p class="manifest-pause">Ich mag Systeme,<br>
@@ -2909,17 +2919,17 @@
             </div>
             <div>
               <div class="ueber-tuev-title">TÜV-zertifizierter KI-Manager</div>
-              <div class="ueber-tuev-sub">TÜV Austria · Zertifiziert 2024</div>
+              <div class="ueber-tuev-sub">TÜV Austria · Zertifiziert 2025</div>
             </div>
           </div>
 
           <!-- Timeline kompakt -->
           <div class="ueber-timeline">
             <div class="ueber-timeline-item">
-              <span class="ueber-year">2024</span>
+              <span class="ueber-year">2025</span>
               <div>
-                <strong>TÜV-Zertifizierung & 4 Live-Projekte</strong>
-                <p>ki-sicherheit.jetzt, art-radar.berlin, akut.jetzt, achtung.jetzt</p>
+                <strong>TÜV-Zertifizierung & Live-Projekte</strong>
+                <p>ki-sicherheit.jetzt, art-radar.berlin</p>
               </div>
             </div>
             <div class="ueber-timeline-item">
@@ -2933,7 +2943,7 @@
               <span class="ueber-year">1999–2024</span>
               <div>
                 <strong>25 Jahre Trailerhaus GmbH</strong>
-                <p>Geschäftsführer Post-Produktion für Kino-Trailer</p>
+                <p>Geschäftsführer Trailerhaus / Kreation</p>
               </div>
             </div>
             <div class="ueber-timeline-item">

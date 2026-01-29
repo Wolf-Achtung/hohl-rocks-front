@@ -7,7 +7,7 @@
 
     <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app"/>
     <title>Wolf Hohl — KI-Experte & Experimentator</title>
-    <meta name="description" content="Wolf Hohl: TÜV-zertifizierter KI-Manager, 25 Jahre Medien-Erfahrung. 4 Live-KI-Projekte. Model Battle Arena, ki-sicherheit.jetzt und mehr." />
+    <meta name="description" content="Wolf Hohl: TÜV-zertifiziertes KI-Management, 25 Jahre Medien-Erfahrung. 4 Live-KI-Projekte. Model Battle Arena, ki-sicherheit.jetzt und mehr." />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1531,13 +1531,13 @@
       }
 
       .footer-contact a {
-        color: var(--accent-primary);
+        color: var(--text-primary);
         text-decoration: none;
         transition: color 0.3s ease;
       }
 
       .footer-contact a:hover {
-        color: var(--accent-secondary);
+        color: var(--text-secondary);
       }
 
       .footer-links {
@@ -1581,7 +1581,9 @@
         width: 56px;
         height: 56px;
         object-fit: contain;
-        filter: brightness(1.2) contrast(1.1);
+        background: #ffffff;
+        padding: 6px;
+        border-radius: 6px;
         transition: transform 0.3s ease;
       }
 
@@ -1626,7 +1628,7 @@
       .footer-project-link .status-dot {
         width: 6px;
         height: 6px;
-        background: #22c55e;
+        background: #ffffff;
         border-radius: 50%;
       }
 
@@ -2747,7 +2749,7 @@
       <!-- TÜV Badge mit Logo -->
       <div class="footer-tuev">
         <img src="/images/tuev-austria.png" alt="TÜV Austria Zertifiziert" class="tuev-logo" width="60" height="60">
-        <span>TÜV-zertifizierter KI-Manager</span>
+        <span>TÜV-zertifiziertes KI-Management</span>
       </div>
 
       <!-- Aktuelle Arbeiten -->
@@ -2914,7 +2916,7 @@
               </svg>
             </div>
             <div>
-              <div class="ueber-tuev-title">TÜV-zertifizierter KI-Manager</div>
+              <div class="ueber-tuev-title">TÜV-zertifiziertes KI-Management</div>
               <div class="ueber-tuev-sub">TÜV Austria · Zertifiziert 2025</div>
             </div>
           </div>
@@ -4027,7 +4029,7 @@
         const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || '';
 
         // Wolf's Persönlichkeit für die KI
-        const systemPrompt = `Du bist Wolf Hohl, ein TÜV-zertifizierter KI-Manager aus Berlin. Du warst 25 Jahre Geschäftsführer der Trailerhaus GmbH (Kino-Trailer Postproduktion). Deine Interessen: SC Freiburg, Basquiat, Helmut Krausser, Jörg Fauser, Yoga, Kochen nach Omas Rezepten. Du bist freundlich, direkt und teilst gerne dein Wissen über KI. Antworte kurz und persönlich (max 3-4 Sätze).`;
+        const systemPrompt = `Du bist Wolf Hohl, ein TÜV-zertifiziertes KI-Management aus Berlin. Du warst 25 Jahre Geschäftsführer der Trailerhaus GmbH (Kino-Trailer Postproduktion). Deine Interessen: SC Freiburg, Basquiat, Helmut Krausser, Jörg Fauser, Yoga, Kochen nach Omas Rezepten. Du bist freundlich, direkt und teilst gerne dein Wissen über KI. Antworte kurz und persönlich (max 3-4 Sätze).`;
 
         async function sendMessage(message) {
           if (!message.trim()) return;

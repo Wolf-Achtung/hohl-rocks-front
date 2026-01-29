@@ -2486,6 +2486,38 @@
         font-family: 'Monaco', 'Consolas', monospace;
         font-size: 0.85em;
       }
+
+      /* Sound Toggle Button */
+      .sound-toggle {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        color: var(--text-muted);
+        font-size: 1.4rem;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(8px);
+      }
+      .sound-toggle:hover {
+        background: rgba(30, 41, 59, 0.95);
+        border-color: var(--accent);
+        color: var(--text-bright);
+        transform: scale(1.05);
+      }
+      .sound-toggle[aria-pressed="true"] {
+        background: rgba(124, 58, 237, 0.3);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
     </style>
   </head>
   <body>
@@ -2516,6 +2548,11 @@
       <span>Scroll</span>
       <span>↓</span>
     </div>
+
+    <!-- Sound Toggle Button -->
+    <button class="sound-toggle" id="sound-toggle" aria-pressed="false" aria-label="Sound ein/aus" title="Sound ein/aus">
+      <span id="sound-icon">🔇</span>
+    </button>
 
     <!-- Manifest Section - Persönliches Statement (Startpunkt) -->
     <!-- FIX: "fade-in" entfernt - Section ist zu groß (1200vh) für IntersectionObserver threshold -->
@@ -4124,5 +4161,24 @@
 
     <!-- API Config (for subpages that might need it) -->
     <script src="/js/api-config.js"></script>
+
+    <!-- Audio Controller -->
+    <script type="module" src="/js/audio.js"></script>
+    <script>
+      // Sound Toggle Button Handler
+      document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('sound-toggle');
+        const icon = document.getElementById('sound-icon');
+        if (!btn) return;
+
+        btn.addEventListener('click', () => {
+          if (window.AudioController) {
+            const isPlaying = window.AudioController.toggle();
+            btn.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
+            icon.textContent = isPlaying ? '🔊' : '🔇';
+          }
+        });
+      });
+    </script>
   </body>
 </html>

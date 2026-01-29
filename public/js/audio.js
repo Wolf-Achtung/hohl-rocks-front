@@ -1,6 +1,6 @@
 // public/js/audio.js
 // Minimaler Ambient-Player (dezent, loop). Startet nur nach User-Interaktion.
-const src = './audio/ambient_loop.mp3'; // Bitte Datei bereitstellen
+const src = './audio/road_trip.mp3';
 let playing = false;
 const audio = new Audio(src);
 audio.loop = true;

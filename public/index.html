@@ -2581,7 +2581,7 @@
               <textarea
                 id="battle-prompt-input"
                 class="battle-inline-input"
-                placeholder="Stelle deine Frage an Claude, GPT und Perplexity..."
+                placeholder="Stelle deine Frage an Claude, GPT, Perplexity und Gemini..."
                 rows="2"
                 maxlength="1000"
               ></textarea>
@@ -3248,16 +3248,14 @@
           // "Into the Light" Animation - wenn der letzte Satz erreicht ist
           if (manifestFinale && scrollProgress > 0.88 && !finaleTriggered) {
             finaleTriggered = true;
-            // 2 Sekunden warten, dann Animation starten
+            // 1 Sekunde warten, dann Animation starten
             finaleTimeout = setTimeout(() => {
               manifestFinale.classList.add('glow');
-              // Nach 2.5s (während Glow am hellsten) die nächste Sektion einblenden
-              setTimeout(() => {
-                if (delayedSection) {
-                  delayedSection.classList.add('visible');
-                }
-              }, 2500);
-            }, 2000);
+              // Sektion gleichzeitig mit Animation einblenden (nicht danach)
+              if (delayedSection) {
+                delayedSection.classList.add('visible');
+              }
+            }, 1000);
           }
 
           // Reset wenn zurückgescrollt wird

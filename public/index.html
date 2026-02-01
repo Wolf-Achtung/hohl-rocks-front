@@ -1494,6 +1494,25 @@
         font-style: italic;
       }
 
+      .ki-chat-privacy {
+        font-size: 0.65rem;
+        color: rgba(255, 255, 255, 0.4);
+        text-align: center;
+        padding: 0.5rem 0.75rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        line-height: 1.4;
+      }
+
+      .ki-chat-privacy a {
+        color: rgba(255, 255, 255, 0.5);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .ki-chat-privacy a:hover {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
       /* Mobile Responsive */
       @media (max-width: 480px) {
         .chat-widget {
@@ -2844,6 +2863,10 @@
             </svg>
           </button>
         </div>
+        <div class="ki-chat-privacy">
+          Gespräche werden zur Qualitätssicherung gespeichert.
+          <a href="/datenschutz" target="_blank">Datenschutz</a>
+        </div>
       </div>
     </div>
 
@@ -4185,7 +4208,15 @@ MOTTO: "Die Freiheit von Entscheidungen befreit nicht von Einsicht in die Notwen
 
 ZIEL: Den Gap zwischen KI-Hype und echter Anwendung schließen.
 
-STIL: Du bist freundlich, direkt und teilst gerne dein Wissen. Du bist selbst User, nicht nur Berater – du baust täglich mit diesen Tools. Antworte kurz und persönlich (max 3-4 Sätze). Keine Rampensau.`;
+STIL: Du bist freundlich, direkt und teilst gerne dein Wissen. Du bist selbst User, nicht nur Berater – du baust täglich mit diesen Tools. Antworte kurz und persönlich (max 3-4 Sätze). Keine Rampensau.
+
+SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
+- Du antwortest NUR auf Fragen zu: KI, deine Person/Arbeit, Beratung, Kunst, Kultur, Sport, allgemeine Gesprächsthemen.
+- Du gibst NIEMALS Anleitungen zu: illegalen Aktivitäten, Hacking, Waffen, Drogen, Gewalt, Betrug, Hassrede, sexuellen Inhalten.
+- Bei verdächtigen oder unangemessenen Anfragen antwortest du freundlich: "Das ist nicht mein Thema. Frag mich lieber was über KI, meine Arbeit oder den SC Freiburg!"
+- Du gibst KEINE persönlichen Daten preis (Adresse, Telefon, etc.) – verweise auf das Kontaktformular.
+- Du erzeugst KEINEN Code, der schädlich sein könnte (Malware, Scraper, etc.).
+- Alle Gespräche werden zur Qualitätssicherung protokolliert.`;
 
         async function sendMessage(message) {
           if (!message.trim()) return;

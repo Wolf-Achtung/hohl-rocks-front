@@ -1,0 +1,22 @@
+# Robots.txt for hohl.rocks
+# https://hohl.rocks
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://hohl.rocks/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Block access to internal/partial files
+Disallow: /partials/
+Disallow: /data/
+Disallow: /*.json$
+
+# Allow main assets
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /videos/

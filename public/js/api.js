@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
-// HOHL.ROCKS - API CLIENT (KOMPLETT KORRIGIERT)
-// Alle Endpoints mit /api/ Prefix - Ready to Deploy
-// Version: 2.1 - Final Fix
+// HOHL.ROCKS - API CLIENT
+// All endpoints with /api/ prefix - API v2.8.0 compatible
+// Version: 3.0
 // ═══════════════════════════════════════════════════════════════
 
 class HohlRocksAPI {
@@ -10,36 +10,71 @@ class HohlRocksAPI {
   }
 
   // ═══════════════════════════════════════════════════════════════
+  // INTERNAL: Unified fetch with credentials
+  // ═══════════════════════════════════════════════════════════════
+
+  async _fetch(url, options = {}) {
+    const response = await fetch(url, {
+      credentials: 'include',
+      ...options,
+      headers: {
+        ...options.headers
+      }
+    });
+
+    // Handle rate limiting globally
+    if (response.status === 429) {
+      const data = await response.json().catch(() => ({}));
+      const error = new Error(data.message || 'Rate limit exceeded');
+      error.status = 429;
+      error.retryAfter = data.retryAfter || 60;
+      throw error;
+    }
+
+    if (!response.ok) {
+      const error = new Error(`API Error: ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
+
+    return response.json();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
   // HEALTH & STATUS
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Health Check - Backend Status
-   * @returns {Promise<Object>}
-   */
   async health() {
     try {
-      const response = await fetch(`${this.baseUrl}/health`);
-      if (!response.ok) throw new Error(`Health check failed: ${response.status}`);
-      return await response.json();
+      return await this._fetch(`${this.baseUrl}/health`);
     } catch (error) {
       console.error('[API] Health check error:', error);
       throw error;
     }
   }
 
-  /**
-   * Self Check - Backend Self-Test
-   * ✅ KORRIGIERT: /self → /api/self
-   * @returns {Promise<Object>}
-   */
   async self() {
     try {
-      const response = await fetch(`${this.baseUrl}/api/self`);
-      if (!response.ok) throw new Error(`Self check failed: ${response.status}`);
-      return await response.json();
+      return await this._fetch(`${this.baseUrl}/api/self`);
     } catch (error) {
       console.error('[API] Self check error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // CHAT
+  // ═══════════════════════════════════════════════════════════════
+
+  async chat(data) {
+    try {
+      return await this._fetch(`${this.baseUrl}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } catch (error) {
+      console.error('[API] Chat error:', error);
       throw error;
     }
   }
@@ -48,21 +83,13 @@ class HohlRocksAPI {
   // PROMPT GENERATOR
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Generate Prompt
-   * @param {Object} data - { task, style, context }
-   * @returns {Promise<Object>}
-   */
   async generatePrompt(data) {
     try {
-      const response = await fetch(`${this.baseUrl}/api/prompt-generator`, {
+      return await this._fetch(`${this.baseUrl}/api/prompt-generator`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      
-      if (!response.ok) throw new Error(`Generate failed: ${response.status}`);
-      return await response.json();
     } catch (error) {
       console.error('[API] Generate prompt error:', error);
       throw error;
@@ -73,21 +100,13 @@ class HohlRocksAPI {
   // PROMPT OPTIMIZER
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Optimize Prompt
-   * @param {Object} data - { prompt }
-   * @returns {Promise<Object>}
-   */
   async optimizePrompt(data) {
     try {
-      const response = await fetch(`${this.baseUrl}/api/prompt-optimizer`, {
+      return await this._fetch(`${this.baseUrl}/api/prompt-optimizer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      
-      if (!response.ok) throw new Error(`Optimize failed: ${response.status}`);
-      return await response.json();
     } catch (error) {
       console.error('[API] Optimize prompt error:', error);
       throw error;
@@ -98,35 +117,20 @@ class HohlRocksAPI {
   // PROMPT LIBRARY
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Get All Prompts
-   * @param {Object} filters - { category, featured, search }
-   * @returns {Promise<Object>}
-   */
   async getPrompts(filters = {}) {
     try {
       const params = new URLSearchParams(filters);
       const url = `${this.baseUrl}/api/prompts${params.toString() ? '?' + params.toString() : ''}`;
-      
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Get prompts failed: ${response.status}`);
-      return await response.json();
+      return await this._fetch(url);
     } catch (error) {
       console.error('[API] Get prompts error:', error);
       throw error;
     }
   }
 
-  /**
-   * Get Single Prompt by ID
-   * @param {number} id - Prompt ID
-   * @returns {Promise<Object>}
-   */
   async getPrompt(id) {
     try {
-      const response = await fetch(`${this.baseUrl}/api/prompts/${id}`);
-      if (!response.ok) throw new Error(`Get prompt failed: ${response.status}`);
-      return await response.json();
+      return await this._fetch(`${this.baseUrl}/api/prompts/${id}`);
     } catch (error) {
       console.error('[API] Get prompt error:', error);
       throw error;
@@ -137,21 +141,13 @@ class HohlRocksAPI {
   // MODEL BATTLE
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Start Model Battle
-   * @param {Object} data - { prompt }
-   * @returns {Promise<Object>}
-   */
   async modelBattle(data) {
     try {
-      const response = await fetch(`${this.baseUrl}/api/model-battle`, {
+      return await this._fetch(`${this.baseUrl}/api/model-battle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      
-      if (!response.ok) throw new Error(`Battle failed: ${response.status}`);
-      return await response.json();
     } catch (error) {
       console.error('[API] Model battle error:', error);
       throw error;
@@ -162,36 +158,22 @@ class HohlRocksAPI {
   // DAILY CHALLENGE
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Get Daily Challenge
-   * @returns {Promise<Object>}
-   */
   async getDailyChallenge() {
     try {
-      const response = await fetch(`${this.baseUrl}/api/daily-challenge`);
-      if (!response.ok) throw new Error(`Get challenge failed: ${response.status}`);
-      return await response.json();
+      return await this._fetch(`${this.baseUrl}/api/daily-challenge`);
     } catch (error) {
       console.error('[API] Get daily challenge error:', error);
       throw error;
     }
   }
 
-  /**
-   * Submit Challenge Solution
-   * @param {Object} data - { solution }
-   * @returns {Promise<Object>}
-   */
   async submitChallenge(data) {
     try {
-      const response = await fetch(`${this.baseUrl}/api/submit-challenge`, {
+      return await this._fetch(`${this.baseUrl}/api/submit-challenge`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      
-      if (!response.ok) throw new Error(`Submit failed: ${response.status}`);
-      return await response.json();
     } catch (error) {
       console.error('[API] Submit challenge error:', error);
       throw error;
@@ -199,19 +181,14 @@ class HohlRocksAPI {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // NEWS (NEU!)
+  // NEWS
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Get AI News
-   * ✅ NEU: News Endpoint
-   * @returns {Promise<Object>}
-   */
-  async getNews() {
+  async getNews(options = {}) {
     try {
-      const response = await fetch(`${this.baseUrl}/api/news`);
-      if (!response.ok) throw new Error(`Get news failed: ${response.status}`);
-      return await response.json();
+      const params = new URLSearchParams(options);
+      const url = `${this.baseUrl}/api/news${params.toString() ? '?' + params.toString() : ''}`;
+      return await this._fetch(url);
     } catch (error) {
       console.error('[API] Get news error:', error);
       throw error;
@@ -219,21 +196,38 @@ class HohlRocksAPI {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // SPARK OF THE DAY (NEU!)
+  // SPARK OF THE DAY
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Get Spark of the Day
-   * ✅ KORRIGIERT: /spark/today → /api/spark/today
-   * @returns {Promise<Object>}
-   */
   async getSparkOfTheDay() {
     try {
-      const response = await fetch(`${this.baseUrl}/api/spark/today`);
-      if (!response.ok) throw new Error(`Get spark failed: ${response.status}`);
-      return await response.json();
+      return await this._fetch(`${this.baseUrl}/api/spark/today`);
     } catch (error) {
       console.error('[API] Get spark of the day error:', error);
+      throw error;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // GDPR / USER DATA
+  // ═══════════════════════════════════════════════════════════════
+
+  async getMyData() {
+    try {
+      return await this._fetch(`${this.baseUrl}/api/my-data`);
+    } catch (error) {
+      console.error('[API] Get my data error:', error);
+      throw error;
+    }
+  }
+
+  async deleteMyData() {
+    try {
+      return await this._fetch(`${this.baseUrl}/api/my-data`, {
+        method: 'DELETE'
+      });
+    } catch (error) {
+      console.error('[API] Delete my data error:', error);
       throw error;
     }
   }
@@ -242,10 +236,6 @@ class HohlRocksAPI {
   // UTILITY METHODS
   // ═══════════════════════════════════════════════════════════════
 
-  /**
-   * Test Backend Connection
-   * @returns {Promise<boolean>}
-   */
   async testConnection() {
     try {
       const health = await this.health();
@@ -255,18 +245,10 @@ class HohlRocksAPI {
     }
   }
 
-  /**
-   * Get API Base URL
-   * @returns {string}
-   */
   getBaseUrl() {
     return this.baseUrl;
   }
 
-  /**
-   * Update API Base URL
-   * @param {string} newBaseUrl
-   */
   setBaseUrl(newBaseUrl) {
     this.baseUrl = newBaseUrl;
     console.log('[API] Base URL updated:', newBaseUrl);
@@ -277,41 +259,32 @@ class HohlRocksAPI {
 // EXPORT & GLOBAL INSTANCE
 // ═══════════════════════════════════════════════════════════════
 
-// Create global instance
 if (typeof window !== 'undefined') {
   window.HohlRocksAPI = HohlRocksAPI;
 
-  // Auto-initialize with correct base URL
   const apiInstance = window.API && typeof window.API.base === 'function'
     ? new HohlRocksAPI(window.API.base())
     : new HohlRocksAPI();
 
-  // Make instance available as both window.api (lowercase) and add methods to window.API (uppercase)
   window.api = apiInstance;
 
-  // Copy all API methods to window.API for unified access
   if (window.API) {
-    // Preserve existing API config methods (base, isReady, setBase)
     const configMethods = {
       base: window.API.base,
       isReady: window.API.isReady,
       setBase: window.API.setBase
     };
 
-    // Copy all methods from the instance to window.API
     Object.getOwnPropertyNames(Object.getPrototypeOf(apiInstance)).forEach(method => {
-      if (method !== 'constructor' && typeof apiInstance[method] === 'function') {
+      if (method !== 'constructor' && method !== '_fetch' && typeof apiInstance[method] === 'function') {
         window.API[method] = apiInstance[method].bind(apiInstance);
       }
     });
 
-    // Restore config methods (in case they were overwritten)
     Object.assign(window.API, configMethods);
 
-    // Add special aliases
     window.API.sparkToday = apiInstance.getSparkOfTheDay.bind(apiInstance);
 
-    // Override setBase to update the instance's baseUrl
     window.API.setBase = function(newBase) {
       apiInstance.setBaseUrl(newBase);
       console.log('[API] Base URL updated via setBase:', newBase);
@@ -324,55 +297,6 @@ if (typeof window !== 'undefined') {
   }
 }
 
-// Export for modules
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = HohlRocksAPI;
 }
-
-// ═══════════════════════════════════════════════════════════════
-// USAGE EXAMPLES
-// ═══════════════════════════════════════════════════════════════
-
-/*
-
-// Health Check
-const health = await api.health();
-console.log('Backend healthy:', health.status === 'healthy');
-
-// Self Check
-const self = await api.self();
-console.log('Self check:', self);
-
-// Generate Prompt
-const generated = await api.generatePrompt({
-  task: 'Marketing campaign',
-  style: 'professional',
-  context: 'B2B tech startup'
-});
-console.log('Generated:', generated);
-
-// Get All Prompts
-const prompts = await api.getPrompts({ category: 'creative', featured: true });
-console.log('Prompts:', prompts);
-
-// Model Battle
-const battle = await api.modelBattle({ prompt: 'Explain quantum computing' });
-console.log('Battle results:', battle);
-
-// Daily Challenge
-const challenge = await api.getDailyChallenge();
-console.log('Today\'s challenge:', challenge);
-
-// Get News (NEU!)
-const news = await api.getNews();
-console.log('AI News:', news);
-
-// Get Spark of the Day (NEU!)
-const spark = await api.getSparkOfTheDay();
-console.log('Spark:', spark);
-
-// Test Connection
-const isConnected = await api.testConnection();
-console.log('Backend connected:', isConnected);
-
-*/

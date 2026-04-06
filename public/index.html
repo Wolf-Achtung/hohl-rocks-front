@@ -1494,6 +1494,13 @@
         font-style: italic;
       }
 
+      .ki-response-text.moderation-hint {
+        color: rgba(245, 158, 11, 0.9);
+        font-style: italic;
+        border-left: 3px solid rgba(245, 158, 11, 0.5);
+        padding-left: 0.75rem;
+      }
+
       .ki-chat-privacy {
         font-size: 0.65rem;
         color: rgba(255, 255, 255, 0.4);
@@ -4225,10 +4232,12 @@ SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
           chatResponse.style.display = 'block';
           responseText.textContent = 'Denke nach...';
           responseText.classList.add('loading');
+          responseText.classList.remove('moderation-hint');
 
           try {
             const response = await fetch(`${API_BASE}/api/chat`, {
               method: 'POST',
+              credentials: 'include',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 messages: [
@@ -4239,13 +4248,28 @@ SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
               })
             });
 
+            if (response.status === 429) {
+              const errData = await response.json().catch(() => ({}));
+              const wait = errData.retryAfter || 60;
+              responseText.textContent = `Zu viele Anfragen. Bitte warte ${wait} Sekunden.`;
+              responseText.classList.remove('loading');
+              return;
+            }
+
             if (!response.ok) throw new Error('API Error');
 
             const data = await response.json();
-            responseText.textContent = data.response || data.content || 'Hmm, da ist was schiefgelaufen.';
+
+            // Content moderation detection
+            if (data.model === 'moderation' || data.flagged) {
+              responseText.textContent = data.response || 'Das ist nicht mein Thema.';
+              responseText.classList.add('moderation-hint');
+            } else {
+              responseText.textContent = data.response || data.content || 'Hmm, da ist was schiefgelaufen.';
+            }
             responseText.classList.remove('loading');
           } catch (error) {
-            responseText.textContent = 'Entschuldige, gerade kann ich nicht antworten. Probier es später nochmal!';
+            responseText.textContent = 'Entschuldige, gerade kann ich nicht antworten. Probier es spaeter nochmal!';
             responseText.classList.remove('loading');
           } finally {
             chatSend.disabled = false;

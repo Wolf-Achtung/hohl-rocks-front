@@ -1668,51 +1668,197 @@
         transform: scale(1.08);
       }
 
-      /* Footer Projekte */
-      .footer-projects {
-        margin-bottom: 2rem;
+      /* ═══════════════════════════════════════════════════════════
+         PORTFOLIO GRID SECTION
+         ═══════════════════════════════════════════════════════════ */
+      .portfolio-section {
+        position: relative;
+        z-index: 2;
+        padding: 5rem 1.5rem 4rem;
+        max-width: 1100px;
+        margin: 0 auto;
       }
 
-      .footer-projects-label {
+      .portfolio-inner {
+        text-align: center;
+      }
+
+      .portfolio-label {
         font-size: 0.7rem;
         color: var(--text-muted);
         letter-spacing: 0.2em;
         text-transform: uppercase;
-        margin: 0 0 1rem;
+        margin: 0 0 0.75rem;
       }
 
-      .footer-projects-links {
+      .portfolio-heading {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 2rem;
+      }
+
+      /* Filter Buttons */
+      .portfolio-filters {
         display: flex;
-        flex-wrap: wrap;
         justify-content: center;
-        gap: 1.5rem;
-      }
-
-      .footer-project-link {
-        display: flex;
-        align-items: center;
+        flex-wrap: wrap;
         gap: 0.5rem;
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: color 0.25s ease;
+        margin-bottom: 2.5rem;
       }
 
-      .footer-project-link:hover {
+      .portfolio-filter {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--text-secondary);
+        padding: 0.45rem 1.1rem;
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      .portfolio-filter:hover {
+        background: rgba(255, 255, 255, 0.1);
         color: var(--text-primary);
       }
 
-      .footer-project-link .status-dot {
-        width: 6px;
-        height: 6px;
-        background: #ffffff;
+      .portfolio-filter.active {
+        background: var(--accent-primary);
+        border-color: var(--accent-primary);
+        color: #fff;
+      }
+
+      /* Grid */
+      .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
+        text-align: left;
+      }
+
+      /* Card */
+      .portfolio-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+
+      .portfolio-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0, 47, 167, 0.15) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .portfolio-card:hover {
+        border-color: rgba(0, 47, 167, 0.4);
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .portfolio-card:hover::before {
+        opacity: 1;
+      }
+
+      .portfolio-card.hidden {
+        display: none;
+      }
+
+      /* Card Status Dot */
+      .portfolio-card-status {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 6px rgba(52, 211, 153, 0.5);
+      }
+
+      /* Card Content */
+      .portfolio-card-category {
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
+
+      .portfolio-card-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.6rem;
+      }
+
+      .portfolio-card-desc {
+        font-size: 0.85rem;
+        line-height: 1.55;
+        color: var(--text-secondary);
+        margin: 0;
+        flex: 1;
+      }
+
+      .portfolio-card-arrow {
+        display: inline-block;
+        margin-top: 1rem;
+        font-size: 1.1rem;
+        color: var(--accent-primary);
+        transition: transform 0.25s ease;
+      }
+
+      .portfolio-card:hover .portfolio-card-arrow {
+        transform: translateX(4px);
+      }
+
+      /* CTA Card */
+      .portfolio-card-cta {
+        border-style: dashed;
+        border-color: rgba(255, 255, 255, 0.15);
+        background: transparent;
+        cursor: default;
+      }
+
+      .portfolio-card-cta:hover {
+        border-color: rgba(0, 47, 167, 0.3);
+        transform: translateY(-4px);
+        background: rgba(0, 47, 167, 0.05);
+      }
+
+      .portfolio-cta-link {
+        display: inline-block;
+        margin-top: 1rem;
+        color: var(--accent-primary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: color 0.25s ease;
+      }
+
+      .portfolio-cta-link:hover {
+        color: #fff;
       }
 
       @media (max-width: 600px) {
-        .footer-projects-links {
-          flex-direction: column;
-          gap: 0.75rem;
+        .portfolio-section {
+          padding: 3rem 1rem 2.5rem;
+        }
+        .portfolio-grid {
+          grid-template-columns: 1fr;
         }
       }
 
@@ -2877,6 +3023,91 @@
       </div>
     </div>
 
+    <!-- Portfolio Grid Section -->
+    <section class="portfolio-section" id="portfolio">
+      <div class="portfolio-inner">
+        <p class="portfolio-label">Aktuelle Arbeiten</p>
+        <h2 class="portfolio-heading">KI-Projekte, die laufen.</h2>
+
+        <!-- Category Filter -->
+        <div class="portfolio-filters">
+          <button class="portfolio-filter active" data-filter="alle">Alle</button>
+          <button class="portfolio-filter" data-filter="beratung">Beratung</button>
+          <button class="portfolio-filter" data-filter="tools">Tools</button>
+          <button class="portfolio-filter" data-filter="kultur">Kultur & Web</button>
+          <button class="portfolio-filter" data-filter="safety">Safety</button>
+        </div>
+
+        <!-- Project Grid -->
+        <div class="portfolio-grid">
+
+          <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="beratung">
+            <span class="portfolio-card-status live"></span>
+            <span class="portfolio-card-category">KI-Beratung</span>
+            <h3 class="portfolio-card-title">ki-sicherheit.jetzt</h3>
+            <p class="portfolio-card-desc">TÜV-zertifizierte KI-Beratung. EU AI Act, DSGVO, KI-Readiness-Reports für Unternehmen.</p>
+            <span class="portfolio-card-arrow">&rarr;</span>
+          </a>
+
+          <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="portfolio-card" data-category="kultur">
+            <span class="portfolio-card-status live"></span>
+            <span class="portfolio-card-category">Kunst & Kultur</span>
+            <h3 class="portfolio-card-title">art-radar.berlin</h3>
+            <p class="portfolio-card-desc">Tagesaktueller KI-kuratierter Überblick über Berlins Kunstszene. Ausstellungen, Galerien, Vernissagen.</p>
+            <span class="portfolio-card-arrow">&rarr;</span>
+          </a>
+
+          <a href="https://akut.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="safety">
+            <span class="portfolio-card-status live"></span>
+            <span class="portfolio-card-category">Safety</span>
+            <h3 class="portfolio-card-title">akut.jetzt</h3>
+            <p class="portfolio-card-desc">Notfall-App mit KI-Support. Funktioniert offline. Versteckter Notruf per Schütteln.</p>
+            <span class="portfolio-card-arrow">&rarr;</span>
+          </a>
+
+          <a href="https://achtung.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="safety">
+            <span class="portfolio-card-status live"></span>
+            <span class="portfolio-card-category">Datenschutz</span>
+            <h3 class="portfolio-card-title">achtung.jetzt</h3>
+            <p class="portfolio-card-desc">KI-Text-Check: Erkennt sensible Daten, Vertrauliches und Kritisches vor dem Senden.</p>
+            <span class="portfolio-card-arrow">&rarr;</span>
+          </a>
+
+          <a href="/model-battle.html" class="portfolio-card" data-category="tools">
+            <span class="portfolio-card-status live"></span>
+            <span class="portfolio-card-category">KI-Tool</span>
+            <h3 class="portfolio-card-title">Model Battle Arena</h3>
+            <p class="portfolio-card-desc">Claude, GPT, Perplexity und Gemini im direkten Vergleich. Gleiche Frage, vier Antworten.</p>
+            <span class="portfolio-card-arrow">&rarr;</span>
+          </a>
+
+          <a href="/prompt-library.html" class="portfolio-card" data-category="tools">
+            <span class="portfolio-card-status live"></span>
+            <span class="portfolio-card-category">KI-Tool</span>
+            <h3 class="portfolio-card-title">Prompt Library</h3>
+            <p class="portfolio-card-desc">30+ kuratierte Premium-Prompts für Business, Creative, Technical und mehr.</p>
+            <span class="portfolio-card-arrow">&rarr;</span>
+          </a>
+
+          <a href="https://kerstingeffert.de" target="_blank" rel="noopener" class="portfolio-card" data-category="kultur">
+            <span class="portfolio-card-status live"></span>
+            <span class="portfolio-card-category">Webdesign</span>
+            <h3 class="portfolio-card-title">kerstingeffert.de</h3>
+            <p class="portfolio-card-desc">KI-gestütztes Webdesign und Entwicklung für eine geschätzte Künstlerin.</p>
+            <span class="portfolio-card-arrow">&rarr;</span>
+          </a>
+
+          <div class="portfolio-card portfolio-card-cta" data-category="alle">
+            <span class="portfolio-card-category">Und weiter geht's</span>
+            <h3 class="portfolio-card-title">Nächstes Projekt?</h3>
+            <p class="portfolio-card-desc">Jedes dieser Projekte ist mit KI gebaut, getestet und deployed. Deins könnte das nächste sein.</p>
+            <a href="#" data-action="kontakt" class="portfolio-cta-link">Kontakt &rarr;</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="site-footer">
       <p class="footer-quote">
@@ -2902,25 +3133,6 @@
       <div class="footer-tuev">
         <img src="/images/tuev-austria.png" alt="TÜV Austria Zertifiziert" class="tuev-logo" width="60" height="60" loading="lazy" decoding="async">
         <span>TÜV-zertifiziertes KI-Management</span>
-      </div>
-
-      <!-- Aktuelle Arbeiten -->
-      <div class="footer-projects">
-        <p class="footer-projects-label">Aktuelle Arbeiten</p>
-        <div class="footer-projects-links">
-          <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="footer-project-link" title="TÜV-zertifizierte KI-Beratung: EU AI Act, DSGVO, KI-Readiness-Report">
-            <span class="status-dot"></span>
-            ki-sicherheit.jetzt
-          </a>
-          <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="footer-project-link" title="Tagesaktueller KI-kuratierter Überblick über Berlins Kunstszene">
-            <span class="status-dot"></span>
-            art-radar.berlin
-          </a>
-          <a href="https://kerstingeffert.de" target="_blank" rel="noopener" class="footer-project-link" title="Website für eine Person, die ich sehr schätze">
-            <span class="status-dot"></span>
-            kerstingeffert.de
-          </a>
-        </div>
       </div>
 
       <div class="footer-links">
@@ -3092,7 +3304,7 @@
               <span class="ueber-year">2025</span>
               <div>
                 <strong>TÜV-Zertifizierung & Live-Projekte</strong>
-                <p>ki-sicherheit.jetzt, art-radar.berlin, KI-Readiness-Report</p>
+                <p>ki-sicherheit.jetzt, art-radar.berlin, akut.jetzt, achtung.jetzt, Model Battle Arena, Prompt Library, kerstingeffert.de</p>
               </div>
             </div>
             <div class="ueber-timeline-item">
@@ -3263,6 +3475,33 @@
     <!-- Scripts -->
     <script>
       // ═══════════════════════════════════════════════════════════════
+      // PORTFOLIO FILTER
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const filterBtns = document.querySelectorAll('.portfolio-filter');
+        const cards = document.querySelectorAll('.portfolio-card');
+        if (!filterBtns.length) return;
+
+        filterBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const filter = btn.dataset.filter;
+
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            cards.forEach(card => {
+              const cat = card.dataset.category;
+              if (filter === 'alle' || cat === filter || cat === 'alle') {
+                card.classList.remove('hidden');
+              } else {
+                card.classList.add('hidden');
+              }
+            });
+          });
+        });
+      });
+
       // TAGLINE TICKER
       // ═══════════════════════════════════════════════════════════════
 
@@ -4205,7 +4444,7 @@ BERUFLICH: 25 Jahre Geschäftsführer Trailerhaus GmbH (Kino-Trailer). Der stolz
 
 EXPERTISE: Workflow-Automatisierung mit LLMs, KI-Strategie & Change Management, KI-Integration in bestehende Systeme. Du kommst aus der echten Wirtschaft, nicht aus dem Hörsaal. 25 Jahre Deadline-Druck – du weißt, dass Theorie nichts wert ist, wenn's nicht funktioniert.
 
-PROJEKTE: ki-sicherheit.jetzt (TÜV-zertifizierte KI-Beratung, EU AI Act, DSGVO), art-radar.berlin (KI-kuratierter Überblick über Berlins Kunstszene), KI-Readiness-Report.
+PROJEKTE (alle selbst gebaut und live): ki-sicherheit.jetzt (TÜV-zertifizierte KI-Beratung, EU AI Act, DSGVO, KI-Readiness-Reports), art-radar.berlin (KI-kuratierter tagesaktueller Überblick über Berlins Kunstszene), akut.jetzt (Notfall-App mit KI-Support, funktioniert offline), achtung.jetzt (KI-Text-Check für sensible Daten vor dem Senden), Model Battle Arena auf hohl.rocks (4 KI-Modelle im direkten Vergleich), Prompt Library auf hohl.rocks (30+ kuratierte Premium-Prompts), kerstingeffert.de (Webdesign für eine geschätzte Künstlerin).
 
 PERSÖNLICH: SC Freiburg – Finke, Streich, Schuster. Haltung vor Erfolg. Basquiat – die Energie, die Wut, die Schönheit im Krickelkrakel. Helmut Krausser (Melodien, Thanatos, UC, Tagebücher). Jörg Fauser und Neal Stephenson – einfach alles. Yoga (der Stil ist egal, das Machen zählt). Omas Rezepte (Spätzle mit Soß' wenns schnell gehen muss).
 

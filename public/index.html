@@ -1751,6 +1751,19 @@
         color: var(--text-secondary);
         transition: all 0.3s ease;
         overflow: hidden;
+        background-size: cover;
+        background-position: center top;
+      }
+
+      /* Dark overlay for text readability over screenshot */
+      .portfolio-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(10, 10, 15, 0.88) 0%, rgba(10, 10, 15, 0.92) 100%);
+        transition: background 0.4s ease;
+        pointer-events: none;
+        z-index: 1;
       }
 
       .portfolio-card::before {
@@ -1761,12 +1774,21 @@
         opacity: 0;
         transition: opacity 0.3s ease;
         pointer-events: none;
+        z-index: 2;
+      }
+
+      .portfolio-card > * {
+        position: relative;
+        z-index: 3;
       }
 
       .portfolio-card:hover {
         border-color: rgba(0, 47, 167, 0.4);
         transform: translateY(-4px);
-        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .portfolio-card:hover::after {
+        background: linear-gradient(180deg, rgba(10, 10, 15, 0.72) 0%, rgba(10, 10, 15, 0.82) 100%);
       }
 
       .portfolio-card:hover::before {
@@ -3041,7 +3063,7 @@
         <!-- Project Grid -->
         <div class="portfolio-grid">
 
-          <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="beratung">
+          <a href="https://ki-sicherheit.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="beratung" data-thumb="https://ki-sicherheit.jetzt">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">KI-Beratung</span>
             <h3 class="portfolio-card-title">ki-sicherheit.jetzt</h3>
@@ -3049,7 +3071,7 @@
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
-          <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="portfolio-card" data-category="kultur">
+          <a href="https://art-radar.berlin" target="_blank" rel="noopener" class="portfolio-card" data-category="kultur" data-thumb="https://art-radar.berlin">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">Kunst & Kultur</span>
             <h3 class="portfolio-card-title">art-radar.berlin</h3>
@@ -3057,7 +3079,7 @@
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
-          <a href="https://akut.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="safety">
+          <a href="https://akut.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="safety" data-thumb="https://akut.jetzt">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">Safety</span>
             <h3 class="portfolio-card-title">akut.jetzt</h3>
@@ -3065,7 +3087,7 @@
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
-          <a href="https://achtung.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="safety">
+          <a href="https://achtung.jetzt" target="_blank" rel="noopener" class="portfolio-card" data-category="safety" data-thumb="https://achtung.jetzt">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">Datenschutz</span>
             <h3 class="portfolio-card-title">achtung.jetzt</h3>
@@ -3073,7 +3095,7 @@
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
-          <a href="/model-battle.html" class="portfolio-card" data-category="tools">
+          <a href="/model-battle.html" class="portfolio-card" data-category="tools" data-thumb="https://hohl.rocks/model-battle.html">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">KI-Tool</span>
             <h3 class="portfolio-card-title">Model Battle Arena</h3>
@@ -3081,7 +3103,7 @@
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
-          <a href="/prompt-library.html" class="portfolio-card" data-category="tools">
+          <a href="/prompt-library.html" class="portfolio-card" data-category="tools" data-thumb="https://hohl.rocks/prompt-library.html">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">KI-Tool</span>
             <h3 class="portfolio-card-title">Prompt Library</h3>
@@ -3089,7 +3111,7 @@
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
-          <a href="https://kerstingeffert.de" target="_blank" rel="noopener" class="portfolio-card" data-category="kultur">
+          <a href="https://kerstingeffert.de" target="_blank" rel="noopener" class="portfolio-card" data-category="kultur" data-thumb="https://kerstingeffert.de">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">Webdesign</span>
             <h3 class="portfolio-card-title">kerstingeffert.de</h3>
@@ -3500,6 +3522,40 @@
             });
           });
         });
+      });
+
+      // PORTFOLIO THUMBNAIL LOADER (lazy via IntersectionObserver)
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const thumbCards = document.querySelectorAll('.portfolio-card[data-thumb]');
+        if (!thumbCards.length) return;
+
+        const loadThumb = (card) => {
+          const url = card.dataset.thumb;
+          if (!url) return;
+          const thumbUrl = `https://image.thum.io/get/width/600/crop/400/${url}`;
+          const img = new Image();
+          img.onload = () => {
+            card.style.backgroundImage = `url(${thumbUrl})`;
+          };
+          img.src = thumbUrl;
+        };
+
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                loadThumb(entry.target);
+                observer.unobserve(entry.target);
+              }
+            });
+          }, { rootMargin: '200px' });
+
+          thumbCards.forEach(card => observer.observe(card));
+        } else {
+          thumbCards.forEach(loadThumb);
+        }
       });
 
       // TAGLINE TICKER

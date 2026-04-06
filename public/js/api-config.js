@@ -142,6 +142,7 @@
   window.API.self = createApiProxy('self');
   window.API.sparkToday = createApiProxy('getSparkOfTheDay');
   window.API.health = createApiProxy('health');
+  window.API.chat = createApiProxy('chat');
   window.API.generatePrompt = createApiProxy('generatePrompt');
   window.API.optimizePrompt = createApiProxy('optimizePrompt');
   window.API.getPrompts = createApiProxy('getPrompts');
@@ -149,6 +150,8 @@
   window.API.getDailyChallenge = createApiProxy('getDailyChallenge');
   window.API.submitChallenge = createApiProxy('submitChallenge');
   window.API.getNews = createApiProxy('getNews');
+  window.API.getMyData = createApiProxy('getMyData');
+  window.API.deleteMyData = createApiProxy('deleteMyData');
 
   // ═══════════════════════════════════════════════════════════════
   // INITIALIZATION & CONSOLE OUTPUT

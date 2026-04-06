@@ -248,10 +248,10 @@ body {
   color: #fff;
 }
 
-/* Responses Grid */
+/* Responses Grid - 2x2 layout for 4 models */
 .responses-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 32px;
 }
@@ -378,6 +378,40 @@ body {
   color: rgba(255, 255, 255, 0.9);
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+/* Error State for failed models */
+.response-card.model-error {
+  border-color: rgba(239, 68, 68, 0.3);
+  opacity: 0.85;
+}
+
+.response-card.model-error:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.error-response .model-error-message {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.error-response .error-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.error-response .model-error-message strong {
+  display: block;
+  font-size: 16px;
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+
+.error-response .model-error-message p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
 }
 
 /* Card Footer */
@@ -537,6 +571,12 @@ body {
 @media (max-width: 1200px) {
   .responses-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1201px) and (max-width: 1600px) {
+  .responses-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

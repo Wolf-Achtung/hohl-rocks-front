@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Model Battle Arena — hohl.rocks</title>
-  <meta name="description" content="Vergleiche Claude, GPT und Perplexity direkt: Wer antwortet am besten?">
+  <meta name="description" content="Vergleiche Claude, GPT, Perplexity und Gemini direkt: Wer antwortet am besten?">
   <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app"/>
   
   <!-- Fonts -->
@@ -32,13 +32,13 @@
     <header class="battle-header">
       <a href="/" class="back-link">← Zurück zu hohl.rocks</a>
       <h1>⚔️ Model Battle Arena</h1>
-      <p class="battle-subtitle">Vergleiche Claude Sonnet 4, GPT-4o Mini und Perplexity Sonar Pro direkt</p>
+      <p class="battle-subtitle">Vergleiche Claude Sonnet 4, GPT-4o Mini, Perplexity Sonar Pro und Gemini 2.0 Flash direkt</p>
     </header>
 
     <!-- Input Section -->
     <div class="battle-input-section">
       <div class="input-container">
-        <label for="battle-prompt">Dein Prompt für alle 3 Modelle:</label>
+        <label for="battle-prompt">Dein Prompt für alle 4 Modelle:</label>
         <textarea 
           id="battle-prompt" 
           placeholder="z.B. 'Erkläre Quantencomputing in einfachen Worten' oder 'Schreibe einen kreativen Slogan für ein Café'"
@@ -78,6 +78,14 @@
         <div class="stat-card">
           <span class="stat-label">Schnellster</span>
           <span class="stat-value" id="fastest-model">-</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Durchschnitt</span>
+          <span class="stat-value" id="avg-response-time">-</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Modelle</span>
+          <span class="stat-value" id="successful-models">-</span>
         </div>
         <div class="stat-card">
           <span class="stat-label">Dein Favorit</span>
@@ -174,7 +182,7 @@
               <span id="time-perplexity">-</span>
             </div>
           </div>
-          
+
           <div class="card-body">
             <div class="loading-indicator" id="loading-perplexity">
               <div class="spinner"></div>
@@ -188,6 +196,41 @@
               👍 Vote
             </button>
             <button class="copy-btn" data-model="perplexity" disabled>
+              📋 Kopieren
+            </button>
+          </div>
+        </div>
+
+        <!-- Gemini Response -->
+        <div class="response-card" data-model="gemini">
+          <div class="card-header">
+            <div class="model-info">
+              <div class="model-icon" style="background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);">
+                💎
+              </div>
+              <div>
+                <h3 class="model-name">Gemini 2.0 Flash</h3>
+                <p class="model-desc">Google</p>
+              </div>
+            </div>
+            <div class="response-time">
+              <span id="time-gemini">-</span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="loading-indicator" id="loading-gemini">
+              <div class="spinner"></div>
+              <p>Denkt nach...</p>
+            </div>
+            <div class="response-text" id="response-gemini" style="display: none;"></div>
+          </div>
+
+          <div class="card-footer">
+            <button class="vote-btn" data-model="gemini" disabled>
+              👍 Vote
+            </button>
+            <button class="copy-btn" data-model="gemini" disabled>
               📋 Kopieren
             </button>
           </div>
@@ -214,7 +257,7 @@
         </div>
         <div class="info-card">
           <div class="info-icon">2️⃣</div>
-          <p>Alle 3 Modelle beantworten gleichzeitig</p>
+          <p>Alle 4 Modelle beantworten gleichzeitig</p>
         </div>
         <div class="info-card">
           <div class="info-icon">3️⃣</div>

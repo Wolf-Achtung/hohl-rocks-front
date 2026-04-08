@@ -7,38 +7,23 @@
 (function() {
 'use strict';
 
+// Safe debug functions with fallbacks (api-config.js may or may not be loaded)
+const log = (...args) => (window.debugLog ? window.debugLog('Prompt Library', ...args) : console.log('[Prompt Library]', ...args));
+const warn = (...args) => (window.debugWarn ? window.debugWarn('Prompt Library', ...args) : console.warn('[Prompt Library]', ...args));
+const err = (...args) => (window.debugError ? window.debugError('Prompt Library', ...args) : console.error('[Prompt Library]', ...args));
+
 // State
 let allPrompts = [];
 let filteredPrompts = [];
 let currentCategory = 'all';
 let currentSort = 'featured';
 
+// Local data source — always works, no backend dependency
+const LOCAL_PROMPTS_URL = '/data/prompts-library.json';
+
 // DOM Elements (will be initialized in DOMContentLoaded)
 let searchInput, filterButtons, sortSelect, promptsGrid, loadingState;
 let resultsInfo, resultsCount, emptyState, modal, closeModalBtn, closeModalBtn2, toast;
-
-// API Base - use centralized API with comprehensive fallbacks
-const getApiBase = () => {
-  // Priority 1: window.API.base() (from api-config.js)
-  if (window.API && typeof window.API.base === 'function') {
-    return window.API.base();
-  }
-  
-  // Priority 2: Meta tag fallback
-  debugError('Prompt Library', api-config.js nicht geladen!');
-  const metaTag = document.querySelector('meta[name="x-api-base"]');
-  if (metaTag) {
-    const base = metaTag.getAttribute('content');
-    if (base) {
-      debugLog('Prompt Library', Using meta tag fallback:', base);
-      return base;
-    }
-  }
-  
-  // Priority 3: Production fallback
-  debugWarn('Prompt Library', Using hardcoded production fallback');
-  return 'https://hohl-rocks-back-production.up.railway.app';
-};
 
 // ===================================================================
 // INITIALIZATION
@@ -47,14 +32,14 @@ const getApiBase = () => {
 document.addEventListener('DOMContentLoaded', () => {
   // Page Detection - only initialize on prompt-library.html
   const isOnFeaturePage = window.location.pathname.includes('prompt-library.html');
-  
+
   if (!isOnFeaturePage) {
-    debugLog('Prompt Library', Not on feature page, skipping initialization');
+    log('Not on feature page, skipping initialization');
     return;
   }
-  
-  debugLog('Prompt Library', Initializing...');
-  
+
+  log('Initializing...');
+
   // Initialize DOM elements safely
   searchInput = document.getElementById('search-input');
   filterButtons = document.querySelectorAll('.filter-btn');
@@ -68,17 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
   closeModalBtn = document.getElementById('close-modal');
   closeModalBtn2 = document.getElementById('close-modal-btn');
   toast = document.getElementById('toast');
-  
+
   // Validate critical DOM elements
   if (!loadingState || !promptsGrid) {
-    debugError('Prompt Library', Critical DOM elements not found!');
+    err('Critical DOM elements not found!');
     return;
   }
-  
+
   loadPrompts();
   setupEventListeners();
-  
-  debugLog('Prompt Library', Initialized successfully');
+
+  log('Initialized successfully');
 });
 
 // ===================================================================
@@ -87,42 +72,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadPrompts() {
   if (!loadingState || !promptsGrid) {
-    debugError('Prompt Library', Required DOM elements not found');
+    err('Required DOM elements not found');
     return;
   }
-  
+
   try {
     loadingState.style.display = 'block';
     promptsGrid.style.display = 'none';
     if (resultsInfo) resultsInfo.style.display = 'none';
     if (emptyState) emptyState.style.display = 'none';
 
-    const API_BASE = getApiBase();
-    const response = await fetch(`${API_BASE}/api/prompts`);
-    
+    // Load from local JSON file — no backend dependency
+    const response = await fetch(LOCAL_PROMPTS_URL, { cache: 'no-cache' });
+
     if (!response.ok) {
-      throw new Error('Failed to load prompts');
+      throw new Error(`Failed to load prompts: ${response.status}`);
     }
 
     const data = await response.json();
-    allPrompts = data.prompts || [];
+    allPrompts = Array.isArray(data) ? data : (data.prompts || []);
     filteredPrompts = [...allPrompts];
 
     updateCategoryCounts();
+    sortPrompts();
     renderPrompts();
-    
+
     loadingState.style.display = 'none';
     promptsGrid.style.display = 'grid';
     if (resultsInfo) resultsInfo.style.display = 'block';
 
   } catch (error) {
-    debugError('Prompt Library', Error loading prompts:', error);
-    const API_BASE = getApiBase();
+    err('Error loading prompts:', error);
     loadingState.innerHTML = `
       <p style="color: #ef4444;">❌ Fehler beim Laden der Prompts</p>
       <p style="font-size: 14px; color: rgba(255,255,255,0.5);">
-        Bitte versuche es später erneut<br>
-        Backend: ${API_BASE}
+        Bitte lade die Seite erneut.
       </p>
     `;
   }
@@ -188,12 +172,19 @@ function handleSearch() {
 
     // Search filter
     if (searchTerm) {
-      const matchTitle = prompt.title.toLowerCase().includes(searchTerm);
-      const matchPrompt = prompt.prompt.toLowerCase().includes(searchTerm);
-      const matchTags = prompt.tags.some(tag => tag.toLowerCase().includes(searchTerm));
-      const matchCategory = prompt.category.toLowerCase().includes(searchTerm);
-      
-      return matchTitle || matchPrompt || matchTags || matchCategory;
+      const title = (prompt.title || '').toLowerCase();
+      const text = (prompt.prompt || '').toLowerCase();
+      const desc = (prompt.desc || '').toLowerCase();
+      const tags = Array.isArray(prompt.tags) ? prompt.tags : [];
+      const category = (prompt.category || '').toLowerCase();
+
+      const matchTitle = title.includes(searchTerm);
+      const matchPrompt = text.includes(searchTerm);
+      const matchDesc = desc.includes(searchTerm);
+      const matchTags = tags.some(tag => tag.toLowerCase().includes(searchTerm));
+      const matchCategory = category.includes(searchTerm);
+
+      return matchTitle || matchPrompt || matchDesc || matchTags || matchCategory;
     }
 
     return true;
@@ -252,22 +243,26 @@ function handleSort() {
 }
 
 function sortPrompts() {
+  const r = (p) => (typeof p.rating === 'number' ? p.rating : 0);
+  const u = (p) => (typeof p.uses === 'number' ? p.uses : 0);
+  const i = (p) => (typeof p.id === 'number' ? p.id : 0);
+
   switch (currentSort) {
     case 'rating':
-      filteredPrompts.sort((a, b) => b.rating - a.rating);
+      filteredPrompts.sort((a, b) => r(b) - r(a));
       break;
     case 'uses':
-      filteredPrompts.sort((a, b) => b.uses - a.uses);
+      filteredPrompts.sort((a, b) => u(b) - u(a));
       break;
     case 'newest':
-      filteredPrompts.sort((a, b) => b.id - a.id);
+      filteredPrompts.sort((a, b) => i(b) - i(a));
       break;
     case 'featured':
     default:
       filteredPrompts.sort((a, b) => {
         if (a.featured && !b.featured) return -1;
         if (!a.featured && b.featured) return 1;
-        return b.rating - a.rating;
+        return r(b) - r(a);
       });
   }
 }
@@ -313,26 +308,32 @@ function createPromptCard(prompt) {
     productivity: '⚡'
   };
 
+  // Use desc as short summary on the card, fallback to truncated prompt
+  const summary = prompt.desc || (prompt.prompt || '').slice(0, 180);
+  const rating = typeof prompt.rating === 'number' ? prompt.rating.toFixed(1) : '5.0';
+  const uses = typeof prompt.uses === 'number' ? prompt.uses : 0;
+  const tags = Array.isArray(prompt.tags) ? prompt.tags : [];
+
   return `
-    <div class="prompt-card" data-id="${escapeHtml(prompt.id)}">
-      ${prompt.featured ? '<div class="featured-badge">Featured</div>' : ''}
+    <div class="prompt-card" data-id="${escapeHtml(String(prompt.id || ''))}">
+      ${prompt.featured ? '<div class="featured-badge">★ Featured</div>' : ''}
 
       <div class="card-header">
         <h3 class="card-title">${escapeHtml(prompt.title)}</h3>
         <span class="card-category">
-          ${categoryEmojis[prompt.category] || ''} ${capitalizeFirst(escapeHtml(prompt.category))}
+          ${categoryEmojis[prompt.category] || ''} ${capitalizeFirst(escapeHtml(prompt.category || ''))}
         </span>
       </div>
 
-      <p class="card-prompt">${escapeHtml(prompt.prompt)}</p>
+      <p class="card-prompt">${escapeHtml(summary)}</p>
 
       <div class="card-tags">
-        ${prompt.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
+        ${tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
       </div>
 
       <div class="card-footer">
-        <span class="card-rating">⭐ ${prompt.rating.toFixed(1)}</span>
-        <span class="card-uses">${formatNumber(prompt.uses)} Uses</span>
+        <span class="card-rating">⭐ ${rating}</span>
+        <span class="card-uses">${formatNumber(uses)} Uses</span>
       </div>
     </div>
   `;
@@ -344,30 +345,32 @@ function createPromptCard(prompt) {
 
 function openModal(prompt) {
   if (!modal) return;
-  
+
   // Populate modal with defensive checks
   const modalTitle = document.getElementById('modal-title');
-  if (modalTitle) modalTitle.textContent = prompt.title;
-  
+  if (modalTitle) modalTitle.textContent = prompt.title || '';
+
   const modalCategory = document.getElementById('modal-category');
-  if (modalCategory) modalCategory.textContent = capitalizeFirst(prompt.category);
-  
+  if (modalCategory) modalCategory.textContent = capitalizeFirst(prompt.category || '');
+
   const modalRating = document.getElementById('modal-rating');
-  if (modalRating) modalRating.textContent = `⭐ ${prompt.rating.toFixed(1)}`;
-  
+  const rating = typeof prompt.rating === 'number' ? prompt.rating.toFixed(1) : '5.0';
+  if (modalRating) modalRating.textContent = `⭐ ${rating}`;
+
   const modalPrompt = document.getElementById('modal-prompt');
-  if (modalPrompt) modalPrompt.textContent = prompt.prompt;
-  
+  if (modalPrompt) modalPrompt.textContent = prompt.prompt || '';
+
   const modalUses = document.getElementById('modal-uses');
-  if (modalUses) modalUses.textContent = formatNumber(prompt.uses);
-  
+  if (modalUses) modalUses.textContent = formatNumber(prompt.uses || 0);
+
   const modalAuthor = document.getElementById('modal-author');
   if (modalAuthor) modalAuthor.textContent = prompt.author || 'hohl.rocks';
 
   // Tags (with XSS protection)
   const modalTags = document.getElementById('modal-tags');
   if (modalTags) {
-    modalTags.innerHTML = prompt.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('');
+    const tags = Array.isArray(prompt.tags) ? prompt.tags : [];
+    modalTags.innerHTML = tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('');
   }
 
   // Copy button
@@ -422,7 +425,7 @@ async function copyPrompt(text, button) {
     }
 
   } catch (error) {
-    debugError('Prompt Library', Copy failed:', error);
+    err('Copy failed:', error);
     showToast('Fehler beim Kopieren ❌', 'error');
   }
 }
@@ -489,11 +492,11 @@ function formatNumber(num) {
 // ===================================================================
 
 window.addEventListener('error', (e) => {
-  debugError('Prompt Library', Global error:', e.error);
+  err('Global error:', e.error);
 });
 
 window.addEventListener('unhandledrejection', (e) => {
-  debugError('Prompt Library', Unhandled promise rejection:', e.reason);
+  err('Unhandled promise rejection:', e.reason);
 });
 
 })(); // End IIFE

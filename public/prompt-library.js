@@ -316,8 +316,6 @@ function createPromptCard(prompt) {
 
   return `
     <div class="prompt-card" data-id="${escapeHtml(String(prompt.id || ''))}">
-      ${prompt.featured ? '<div class="featured-badge">★ Featured</div>' : ''}
-
       <div class="card-header">
         <h3 class="card-title">${escapeHtml(prompt.title)}</h3>
         <span class="card-category">
@@ -330,11 +328,6 @@ function createPromptCard(prompt) {
       <div class="card-tags">
         ${tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
       </div>
-
-      <div class="card-footer">
-        <span class="card-rating">⭐ ${rating}</span>
-        <span class="card-uses">${formatNumber(uses)} Uses</span>
-      </div>
     </div>
   `;
 }
@@ -346,27 +339,18 @@ function createPromptCard(prompt) {
 function openModal(prompt) {
   if (!modal) return;
 
-  // Populate modal with defensive checks
+  // Title & category
   const modalTitle = document.getElementById('modal-title');
   if (modalTitle) modalTitle.textContent = prompt.title || '';
 
   const modalCategory = document.getElementById('modal-category');
   if (modalCategory) modalCategory.textContent = capitalizeFirst(prompt.category || '');
 
-  const modalRating = document.getElementById('modal-rating');
-  const rating = typeof prompt.rating === 'number' ? prompt.rating.toFixed(1) : '5.0';
-  if (modalRating) modalRating.textContent = `⭐ ${rating}`;
-
+  // Prompt text
   const modalPrompt = document.getElementById('modal-prompt');
   if (modalPrompt) modalPrompt.textContent = prompt.prompt || '';
 
-  const modalUses = document.getElementById('modal-uses');
-  if (modalUses) modalUses.textContent = formatNumber(prompt.uses || 0);
-
-  const modalAuthor = document.getElementById('modal-author');
-  if (modalAuthor) modalAuthor.textContent = prompt.author || 'hohl.rocks';
-
-  // Tags (with XSS protection)
+  // Tags
   const modalTags = document.getElementById('modal-tags');
   if (modalTags) {
     const tags = Array.isArray(prompt.tags) ? prompt.tags : [];
@@ -376,15 +360,9 @@ function openModal(prompt) {
   // Copy button
   const copyBtn = document.getElementById('copy-prompt-btn');
   if (copyBtn) {
-    copyBtn.textContent = '📋 Kopieren';
+    copyBtn.textContent = 'Prompt kopieren';
     copyBtn.classList.remove('copied');
     copyBtn.onclick = () => copyPrompt(prompt.prompt, copyBtn);
-  }
-
-  // Use prompt button
-  const useBtn = document.getElementById('use-prompt-btn');
-  if (useBtn) {
-    useBtn.onclick = () => usePrompt(prompt);
   }
 
   // Show modal

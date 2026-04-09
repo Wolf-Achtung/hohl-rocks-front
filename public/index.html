@@ -790,60 +790,9 @@
         100% { height: 10px; }
       }
 
-      /* Music-Toggle im Footer */
       .footer-separator {
         opacity: 0.3;
       }
-
-      .footer-music-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.3rem 0.6rem;
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        color: rgba(255, 255, 255, 0.4);
-        font-family: var(--font-family);
-        font-size: 0.75rem;
-        vertical-align: middle;
-        margin-left: 0.25rem;
-      }
-
-      .footer-music-toggle:hover {
-        border-color: rgba(255, 255, 255, 0.3);
-        color: rgba(255, 255, 255, 0.7);
-      }
-
-      .footer-music-toggle.playing {
-        border-color: var(--accent-primary);
-        color: var(--accent-primary);
-      }
-
-      .footer-music-bars {
-        display: inline-flex;
-        align-items: flex-end;
-        gap: 2px;
-        height: 10px;
-      }
-
-      .footer-music-bar {
-        width: 2px;
-        background: currentColor;
-        border-radius: 1px;
-        transition: height 0.2s ease;
-      }
-
-      .footer-music-toggle:not(.playing) .footer-music-bar {
-        height: 3px !important;
-      }
-
-      .footer-music-toggle.playing .footer-music-bar:nth-child(1) { animation: musicBar 0.5s ease-in-out infinite alternate; }
-      .footer-music-toggle.playing .footer-music-bar:nth-child(2) { animation: musicBar 0.5s ease-in-out infinite alternate 0.1s; }
-      .footer-music-toggle.playing .footer-music-bar:nth-child(3) { animation: musicBar 0.5s ease-in-out infinite alternate 0.2s; }
-      .footer-music-toggle.playing .footer-music-bar:nth-child(4) { animation: musicBar 0.5s ease-in-out infinite alternate 0.3s; }
 
       @media (max-width: 768px) {
         .music-player {
@@ -2740,35 +2689,65 @@
       }
 
       /* Sound Toggle Button */
-      .sound-toggle {
+      /* Floating Sound Button (bottom-left) */
+      .sound-float {
         position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: rgba(15, 23, 42, 0.85);
-        border: 1px solid rgba(148, 163, 184, 0.3);
-        color: var(--text-muted);
-        font-size: 1.4rem;
-        cursor: pointer;
-        z-index: 1000;
-        display: flex;
+        bottom: 24px;
+        left: 24px;
+        z-index: 100;
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.75rem;
+        background: rgba(15, 15, 20, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        cursor: pointer;
         transition: all 0.3s ease;
-        backdrop-filter: blur(8px);
+        color: rgba(255, 255, 255, 0.35);
+        font-family: var(--font-family);
+        font-size: 0.75rem;
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
       }
-      .sound-toggle:hover {
-        background: rgba(30, 41, 59, 0.95);
-        border-color: var(--accent);
-        color: var(--text-bright);
-        transform: scale(1.05);
+      .sound-float.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
       }
-      .sound-toggle[aria-pressed="true"] {
-        background: rgba(124, 58, 237, 0.3);
-        border-color: var(--accent);
-        color: var(--accent);
+      .sound-float:hover {
+        border-color: rgba(255, 255, 255, 0.25);
+        color: rgba(255, 255, 255, 0.6);
+        background: rgba(15, 15, 20, 0.85);
+      }
+      .sound-float.playing {
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+      }
+      .sound-float-bars {
+        display: inline-flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 10px;
+      }
+      .sound-float-bar {
+        width: 2px;
+        background: currentColor;
+        border-radius: 1px;
+        transition: height 0.2s ease;
+      }
+      .sound-float:not(.playing) .sound-float-bar {
+        height: 3px !important;
+      }
+      .sound-float.playing .sound-float-bar:nth-child(1) { animation: soundBar 0.5s ease-in-out infinite alternate; }
+      .sound-float.playing .sound-float-bar:nth-child(2) { animation: soundBar 0.5s ease-in-out infinite alternate 0.1s; }
+      .sound-float.playing .sound-float-bar:nth-child(3) { animation: soundBar 0.5s ease-in-out infinite alternate 0.2s; }
+      .sound-float.playing .sound-float-bar:nth-child(4) { animation: soundBar 0.5s ease-in-out infinite alternate 0.3s; }
+      @keyframes soundBar {
+        0% { height: 3px; }
+        100% { height: 10px; }
       }
     </style>
   </head>
@@ -2806,9 +2785,15 @@
       Direkt zu den Tools ↓
     </a>
 
-    <!-- Sound Toggle Button -->
-    <button class="sound-toggle" id="sound-toggle" aria-pressed="false" aria-label="Sound ein/aus" title="Sound ein/aus">
-      <span id="sound-icon">🔇</span>
+    <!-- Sound Toggle Button (fixed, bottom-left) -->
+    <button class="sound-float" id="sound-float" aria-label="Sound an/aus" title="Sound an/aus">
+      <span class="sound-float-bars">
+        <span class="sound-float-bar" style="height: 4px;"></span>
+        <span class="sound-float-bar" style="height: 8px;"></span>
+        <span class="sound-float-bar" style="height: 3px;"></span>
+        <span class="sound-float-bar" style="height: 6px;"></span>
+      </span>
+      <span class="sound-float-label">Sound</span>
     </button>
 
     <!-- Manifest Section - Persönliches Statement (Startpunkt) -->
@@ -3028,12 +3013,12 @@
 
         <div class="chat-panel-body">
           <div class="ki-chat-topics">
-            <button class="topic-btn" data-topic="Was war dein stolzester Moment bei Trailerhaus?">Trailerhaus</button>
-            <button class="topic-btn" data-topic="Was unterscheidet dich von anderen KI-Beratern?">KI-Expertise</button>
-            <button class="topic-btn" data-topic="Warum Finke, Streich, Schuster – was bedeutet Freiburg für dich?">SC Freiburg</button>
-            <button class="topic-btn" data-topic="Was bedeutet dir Basquiat – die Energie, die Wut, die Schönheit im Krickelkrakel?">Basquiat</button>
-            <button class="topic-btn" data-topic="Melodien, Thanatos, UC oder die Tagebücher – welches Krausser-Buch empfiehlst du?">Krausser</button>
-            <button class="topic-btn" data-topic="Guilty Pleasure? Lieblingsort in Berlin? Morgens Kaffee oder Tee?">Quick Picks</button>
+            <button class="topic-btn" data-topic="Wie startet ein mittelständisches Unternehmen sinnvoll mit KI?">KI-Strategie</button>
+            <button class="topic-btn" data-topic="Was müssen Unternehmen beim EU AI Act beachten?">EU AI Act</button>
+            <button class="topic-btn" data-topic="Welche KI-Projekte hast du gerade live?">Live-Projekte</button>
+            <button class="topic-btn" data-topic="Was macht einen richtig guten Prompt aus?">Prompt-Tipps</button>
+            <button class="topic-btn" data-topic="Was macht Berlin für dich aus – Lieblingsort, Lieblingskiez?">Berlin</button>
+            <button class="topic-btn" data-topic="Kaffee oder Tee? Guilty Pleasure? Bestes Kinoerlebnis?">Quick Picks</button>
           </div>
 
           <div id="ki-chat-response" class="ki-chat-response" style="display: none;">
@@ -3170,16 +3155,6 @@
 
       <p class="footer-meta">
         <span>© 2026 Wolf Hohl · Berlin</span>
-        <span class="footer-separator">·</span>
-        <button class="footer-music-toggle" id="footer-music-toggle" aria-label="Sound an/aus">
-          <span class="footer-music-bars">
-            <span class="footer-music-bar" style="height: 4px;"></span>
-            <span class="footer-music-bar" style="height: 8px;"></span>
-            <span class="footer-music-bar" style="height: 3px;"></span>
-            <span class="footer-music-bar" style="height: 6px;"></span>
-          </span>
-          <span>Sound</span>
-        </button>
       </p>
     </footer>
 
@@ -4150,7 +4125,7 @@
 
       document.addEventListener('DOMContentLoaded', () => {
         const playerBtn = document.getElementById('music-player');
-        const footerMusicToggle = document.getElementById('footer-music-toggle');
+        const footerMusicToggle = document.getElementById('sound-float');
         const audio = document.getElementById('bg-music');
         const studioOverlay = document.getElementById('ov-music-studio');
         const studioPlayBtn = document.getElementById('studio-play-btn');
@@ -4288,11 +4263,20 @@
           });
         }
 
-        // Footer music toggle - einfaches Play/Pause
+        // Floating sound button - einfaches Play/Pause
         if (footerMusicToggle) {
           footerMusicToggle.addEventListener('click', () => {
             togglePlay();
           });
+
+          // Sound-Button nach kurzem Scroll einblenden
+          const showSoundAfterScroll = () => {
+            if (window.scrollY > 200) {
+              footerMusicToggle.classList.add('visible');
+              window.removeEventListener('scroll', showSoundAfterScroll);
+            }
+          };
+          window.addEventListener('scroll', showSoundAfterScroll, { passive: true });
         }
 
         // Initialize Web Audio API
@@ -4637,17 +4621,14 @@ SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
     <!-- Audio Controller -->
     <script type="module" src="/js/audio.js"></script>
     <script>
-      // Sound Toggle Button Handler
+      // Sound Float Button - Fallback für AudioController
       document.addEventListener('DOMContentLoaded', () => {
-        const btn = document.getElementById('sound-toggle');
-        const icon = document.getElementById('sound-icon');
+        const btn = document.getElementById('sound-float');
         if (!btn) return;
 
         btn.addEventListener('click', () => {
           if (window.AudioController) {
-            const isPlaying = window.AudioController.toggle();
-            btn.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
-            icon.textContent = isPlaying ? '🔊' : '🔇';
+            window.AudioController.toggle();
           }
         });
       });

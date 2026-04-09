@@ -88,6 +88,8 @@
         /* Elegante Akzentfarbe - Silber-Blau */
         --color-accent-soft: #7B8FA8;
         --color-accent-light: #A8B8C8;
+        /* Helle Variante für Text auf dunklem Hintergrund */
+        --accent-light: #7ba3ff;
         --text-primary: #ffffff;
         --text-secondary: rgba(255, 255, 255, 0.7);
         --text-muted: rgba(255, 255, 255, 0.5);
@@ -1971,7 +1973,7 @@
       }
 
       .impressum-content a {
-        color: var(--accent-primary);
+        color: var(--accent-light);
         text-decoration: none;
       }
 
@@ -2027,8 +2029,8 @@
         align-items: center;
         gap: 1rem;
         padding: 1.25rem 1.5rem;
-        background: linear-gradient(145deg, rgba(0, 47, 167, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
-        border: 1px solid rgba(0, 47, 167, 0.3);
+        background: linear-gradient(145deg, rgba(123, 163, 255, 0.1) 0%, rgba(255, 255, 255, 0.06) 100%);
+        border: 1px solid rgba(123, 163, 255, 0.25);
         border-radius: 12px;
         margin-bottom: 2rem;
       }
@@ -2036,19 +2038,19 @@
       .ueber-tuev-icon {
         width: 44px;
         height: 44px;
-        background: rgba(0, 47, 167, 0.2);
+        background: rgba(123, 163, 255, 0.15);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid rgba(0, 47, 167, 0.5);
+        border: 2px solid rgba(123, 163, 255, 0.4);
         flex-shrink: 0;
       }
 
       .ueber-tuev-title {
         font-size: 1.1rem;
         font-weight: 700;
-        color: var(--accent-primary);
+        color: var(--accent-light);
       }
 
       .ueber-tuev-sub {
@@ -2077,7 +2079,7 @@
       .ueber-year {
         font-size: 0.8rem;
         font-weight: 600;
-        color: var(--accent-primary);
+        color: var(--accent-light);
         min-width: 70px;
         flex-shrink: 0;
       }
@@ -3316,7 +3318,7 @@
           <!-- TÜV Badge -->
           <div class="ueber-tuev">
             <div class="ueber-tuev-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002FA7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7ba3ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>

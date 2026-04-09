@@ -30,8 +30,8 @@ let resultsInfo, resultsCount, emptyState, modal, closeModalBtn, closeModalBtn2,
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Page Detection - only initialize on prompt-library.html
-  const isOnFeaturePage = window.location.pathname.includes('prompt-library.html');
+  // Page Detection - initialize on prompt-library (with or without .html)
+  const isOnFeaturePage = window.location.pathname.includes('prompt-library');
 
   if (!isOnFeaturePage) {
     log('Not on feature page, skipping initialization');

@@ -260,22 +260,6 @@ body {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(var(--accent-rgb), 0.15);
 }
 
-/* Featured Badge */
-.featured-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  background: var(--accent-gradient);
-  color: #fff;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  z-index: 1;
-}
-
 /* Card Header */
 .card-header {
   position: relative;
@@ -327,29 +311,6 @@ body {
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-secondary);
   border-radius: 6px;
-}
-
-/* Card Footer */
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.card-rating {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fbbf24;
-}
-
-.card-uses {
-  font-size: 12px;
-  color: var(--text-muted);
 }
 
 /* Empty State */
@@ -465,12 +426,6 @@ body {
   border-radius: 8px;
 }
 
-.modal-rating {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fbbf24;
-}
-
 /* Modal Body */
 .modal-body {
   margin-bottom: 24px;
@@ -495,30 +450,11 @@ body {
   margin: 0;
 }
 
-.copy-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  background: rgba(var(--accent-rgb), 0.12);
-  border: 1px solid rgba(var(--accent-rgb), 0.3);
-  border-radius: 8px;
-  color: #5a8af2;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.copy-btn:hover {
-  background: rgba(var(--accent-rgb), 0.2);
-  border-color: rgba(var(--accent-rgb), 0.5);
-}
-
 .copy-btn.copied {
-  background: rgba(34, 197, 94, 0.15);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+  color: #22c55e !important;
+  box-shadow: none !important;
 }
 
 /* Modal Tags */
@@ -532,36 +468,6 @@ body {
 .modal-tags .tag {
   padding: 6px 14px;
   font-size: 13px;
-}
-
-/* Modal Stats */
-.modal-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.stat {
-  text-align: center;
-  padding: 16px;
-  background: var(--glass-bg);
-  border-radius: 12px;
-}
-
-.stat-value {
-  display: block;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 /* Modal Footer */

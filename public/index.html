@@ -333,6 +333,33 @@
         60% { transform: translateX(-50%) translateY(-4px); }
       }
 
+      /* Skip-Intro Button für wiederkehrende Besucher */
+      .skip-intro {
+        position: fixed;
+        bottom: 5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.6rem 1.5rem;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        color: var(--text-secondary);
+        font-family: var(--font-family);
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        z-index: 51;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .skip-intro:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--text-primary);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+
       /* ═══════════════════════════════════════════════════════════════
          SECTION STYLES
          ═══════════════════════════════════════════════════════════════ */
@@ -1885,8 +1912,8 @@
       .overlay .backdrop {
         position: absolute;
         inset: 0;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(12px);
       }
 
       .overlay .dialog {
@@ -1894,8 +1921,9 @@
         width: 90%;
         max-width: 800px;
         max-height: 85vh;
-        background: rgba(15, 15, 25, 0.95);
-        border: 1px solid var(--glass-border);
+        background: rgba(40, 45, 60, 0.92);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 20px;
         overflow: hidden;
         display: flex;
@@ -1999,8 +2027,8 @@
         align-items: center;
         gap: 1rem;
         padding: 1.25rem 1.5rem;
-        background: linear-gradient(145deg, rgba(0, 47, 167, 0.15) 0%, rgba(20, 20, 35, 0.95) 100%);
-        border: 1px solid rgba(0, 47, 167, 0.4);
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+        border: 1px solid rgba(0, 47, 167, 0.3);
         border-radius: 12px;
         margin-bottom: 2rem;
       }
@@ -2101,8 +2129,8 @@
       .form-group textarea {
         width: 100%;
         padding: 0.875rem 1rem;
-        background: rgba(0, 47, 167, 0.1);
-        border: 1px solid rgba(0, 47, 167, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 12px;
         color: var(--text-primary);
         font-family: var(--font-family);
@@ -2114,9 +2142,9 @@
       .form-group select:focus,
       .form-group textarea:focus {
         outline: none;
-        border-color: rgba(0, 47, 167, 0.6);
-        background: rgba(0, 47, 167, 0.15);
-        box-shadow: 0 0 20px rgba(0, 47, 167, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 20px rgba(0, 47, 167, 0.15);
       }
 
       .form-group input::placeholder,
@@ -2134,7 +2162,7 @@
       }
 
       .form-group select option {
-        background: #1a1a2e;
+        background: #2d3248;
         color: var(--text-primary);
       }
 
@@ -2770,6 +2798,11 @@
       <span>Scroll</span>
       <span>↓</span>
     </div>
+
+    <!-- Skip-Button für wiederkehrende Besucher -->
+    <a href="#ausprobieren" class="skip-intro" id="skip-intro" style="display:none;" aria-label="Direkt zu den Tools springen">
+      Direkt zu den Tools ↓
+    </a>
 
     <!-- Sound Toggle Button -->
     <button class="sound-toggle" id="sound-toggle" aria-pressed="false" aria-label="Sound ein/aus" title="Sound ein/aus">
@@ -3695,6 +3728,45 @@
             indicatorTimeout = null;
           }
         }, { passive: true, once: true });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // SKIP-INTRO FÜR WIEDERKEHRENDE BESUCHER
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const skipBtn = document.getElementById('skip-intro');
+        if (!skipBtn) return;
+
+        const visited = localStorage.getItem('hohl_visited');
+        if (visited) {
+          // Wiederkehrender Besucher — Button nach kurzer Verzögerung zeigen
+          setTimeout(() => {
+            skipBtn.style.display = 'block';
+          }, 1500);
+        }
+        // Besuch merken
+        localStorage.setItem('hohl_visited', '1');
+
+        // Button verstecken sobald User bei den Tools ist
+        const target = document.getElementById('ausprobieren');
+        if (target) {
+          const obs = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+              skipBtn.style.display = 'none';
+              obs.disconnect();
+            }
+          }, { threshold: 0.1 });
+          obs.observe(target);
+        }
+
+        // Smooth-Scroll
+        skipBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const dest = document.getElementById('ausprobieren');
+          if (dest) dest.scrollIntoView({ behavior: 'smooth' });
+          skipBtn.style.display = 'none';
+        });
       });
 
       // ═══════════════════════════════════════════════════════════════

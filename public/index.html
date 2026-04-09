@@ -3341,17 +3341,17 @@
           <!-- Timeline kompakt -->
           <div class="ueber-timeline">
             <div class="ueber-timeline-item">
-              <span class="ueber-year">2025</span>
+              <span class="ueber-year">Start</span>
               <div>
-                <strong>TÜV-Zertifizierung & Live-Projekte</strong>
-                <p>ki-sicherheit.jetzt, report.ki-sicherheit.jetzt, art-radar.berlin, nicht-anerkannt.info, nah.jetzt, achtung.live, horoscop.one, Prompt Library, kerstingeffert.de</p>
+                <strong>Der erste Schritt</strong>
+                <p>3 Wochen Praktikum bei einer Werbeagentur. In der 4. Woche: Festvertrag.</p>
               </div>
             </div>
             <div class="ueber-timeline-item">
-              <span class="ueber-year">2023</span>
+              <span class="ueber-year">1993–1999</span>
               <div>
-                <strong>Deep Dive in KI</strong>
-                <p>Das verändert alles – also selbst ran. GPT-4, Claude, Prompt Engineering</p>
+                <strong>artgenossen communications</strong>
+                <p>Geschäftsführer klassische Werbung mit Schwerpunkt Kinomarketing</p>
               </div>
             </div>
             <div class="ueber-timeline-item">
@@ -3362,10 +3362,17 @@
               </div>
             </div>
             <div class="ueber-timeline-item">
-              <span class="ueber-year">Start</span>
+              <span class="ueber-year">2023</span>
               <div>
-                <strong>Der erste Schritt</strong>
-                <p>3 Wochen Praktikum bei einer Werbeagentur. In der 4. Woche: Festvertrag.</p>
+                <strong>Deep Dive in KI</strong>
+                <p>Das verändert alles – also selbst ran. GPT-4, Claude, Prompt Engineering</p>
+              </div>
+            </div>
+            <div class="ueber-timeline-item">
+              <span class="ueber-year">2025</span>
+              <div>
+                <strong>TÜV-Zertifizierung & Live-Projekte</strong>
+                <p>ki-sicherheit.jetzt, report.ki-sicherheit.jetzt, art-radar.berlin, nicht-anerkannt.info, nah.jetzt, achtung.live, horoscop.one, Prompt Library, kerstingeffert.de</p>
               </div>
             </div>
             <div class="ueber-timeline-item">
@@ -3742,21 +3749,24 @@
 
         const visited = localStorage.getItem('hohl_visited');
         if (visited) {
-          // Wiederkehrender Besucher — Button nach kurzer Verzögerung zeigen
+          // Wiederkehrender Besucher — Button nach kurzer Verzögerung zeigen,
+          // aber nur wenn "Apropos Technik" noch nicht sichtbar ist
           setTimeout(() => {
-            skipBtn.style.display = 'block';
+            const target = document.getElementById('ausprobieren');
+            if (target && target.getBoundingClientRect().top > window.innerHeight) {
+              skipBtn.style.display = 'block';
+            }
           }, 1500);
         }
         // Besuch merken
         localStorage.setItem('hohl_visited', '1');
 
-        // Button verstecken sobald User bei den Tools ist
+        // Button verstecken sobald "Apropos Technik" sichtbar wird
         const target = document.getElementById('ausprobieren');
         if (target) {
           const obs = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
               skipBtn.style.display = 'none';
-              obs.disconnect();
             }
           }, { threshold: 0.1 });
           obs.observe(target);

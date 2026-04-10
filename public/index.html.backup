@@ -24,7 +24,6 @@
     <link rel="stylesheet" href="/modal-glassmorphism.css" />
     <link rel="stylesheet" href="/prompt-generator.css" />
     <link rel="stylesheet" href="/prompt-optimizer.css" />
-    <link rel="stylesheet" href="/prompt-library.css" />
     <link rel="stylesheet" href="/model-battle.css" />
     <link rel="stylesheet" href="/daily-challenge.css" />
 
@@ -542,29 +541,6 @@
       <!-- Quick Links zu Features -->
       <div style="margin-top: 2.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; max-width: 900px; margin-left: auto; margin-right: auto; padding: 0 1rem;">
         
-        <!-- Feature #5: Prompt Library - Schrill Neon Magenta -->
-        <a href="/prompt-library.html" 
-           class="jellyfish-card jellyfish-magenta"
-           style="padding: 20px 24px; 
-                  background: rgba(255, 0, 255, 0.25); 
-                  color: white; 
-                  border-radius: 35px 15px 28px 18px; 
-                  text-decoration: none; 
-                  font-weight: 600;
-                  text-align: center;
-                  box-shadow: 0 12px 48px rgba(255, 0, 255, 0.7),
-                              0 0 60px rgba(255, 0, 255, 0.5),
-                              inset 0 0 40px rgba(255, 0, 255, 0.3); 
-                  transition: all 0.3s ease;
-                  display: block;
-                  border: 2px solid rgba(255, 0, 255, 0.6);
-                  backdrop-filter: blur(12px);
-                  position: relative;
-                  overflow: hidden;">
-          <div style="font-size: 18px; font-weight: 700; text-shadow: 0 0 20px rgba(255, 0, 255, 1), 0 0 40px rgba(255, 0, 255, 0.8);">Prompt Library</div>
-          <div style="font-size: 12px; opacity: 0.95; margin-top: 4px; text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);">30+ Pro Templates</div>
-        </a>
-
         <!-- Feature #2: Model Battle Arena - Schrill Neon Lime -->
         <a href="/model-battle.html" 
            class="jellyfish-card jellyfish-lime"
@@ -1234,9 +1210,6 @@
     
     <!-- Prompt Optimizer -->
     <script src="/prompt-optimizer.js"></script>
-    
-    <!-- Prompt Library (Feature #5) -->
-    <script src="/prompt-library.js"></script>
     
     <!-- Model Battle Arena (Feature #2) -->
     <script src="/model-battle.js"></script>

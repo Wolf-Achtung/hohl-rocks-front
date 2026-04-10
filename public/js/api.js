@@ -114,30 +114,6 @@ class HohlRocksAPI {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // PROMPT LIBRARY
-  // ═══════════════════════════════════════════════════════════════
-
-  async getPrompts(filters = {}) {
-    try {
-      const params = new URLSearchParams(filters);
-      const url = `${this.baseUrl}/api/prompts${params.toString() ? '?' + params.toString() : ''}`;
-      return await this._fetch(url);
-    } catch (error) {
-      console.error('[API] Get prompts error:', error);
-      throw error;
-    }
-  }
-
-  async getPrompt(id) {
-    try {
-      return await this._fetch(`${this.baseUrl}/api/prompts/${id}`);
-    } catch (error) {
-      console.error('[API] Get prompt error:', error);
-      throw error;
-    }
-  }
-
-  // ═══════════════════════════════════════════════════════════════
   // MODEL BATTLE
   // ═══════════════════════════════════════════════════════════════
 

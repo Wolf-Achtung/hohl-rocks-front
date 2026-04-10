@@ -18,10 +18,6 @@ window.TIPS_DATA = {
       title: "Prompt Optimizer",
       description: "Verbessere deine bestehenden Prompts mit KI-Analyse"
     },
-    promptLibrary: {
-      title: "Prompt Library",
-      description: "Durchsuche 30+ kuratierte Premium-Prompts"
-    },
     modelBattle: {
       title: "Model Battle Arena",
       description: "Vergleiche Claude, GPT-4 und Perplexity direkt"
@@ -53,12 +49,6 @@ window.TIPS_DATA = {
       analyzeButton: "Lasse deinen Prompt analysieren",
       improvements: "Erhalte konkrete Verbesserungsvorschläge"
     },
-    library: {
-      search: "Suche nach Prompts nach Kategorie oder Keyword",
-      categories: "Filtere nach Creative, Business, Technical oder Learning",
-      featured: "Zeige nur Featured Prompts",
-      copy: "Kopiere Prompts direkt in die Zwischenablage"
-    },
     battle: {
       promptInput: "Gib deinen Prompt ein",
       startBattle: "Starte den Vergleich zwischen allen 3 Modellen",
@@ -82,7 +72,7 @@ window.TIPS_DATA = {
       steps: [
         "Wähle ein Feature aus der Navigation",
         "Probiere den Prompt Generator für einen ersten Test",
-        "Erkunde die Prompt Library für Inspiration",
+        "Erkunde die Model Battle Arena für KI-Vergleiche",
         "Nimm an der Daily Challenge teil"
       ]
     },

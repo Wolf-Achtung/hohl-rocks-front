@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
 
-    <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app"/>
     <title>Wolf Hohl — KI-Experte & Experimentator</title>
     <meta name="description" content="Wolf Hohl: TÜV-zertifizierter KI-Manager aus Berlin. 25 Jahre Medien-Erfahrung. Workflow-Automatisierung, KI-Strategie, sichere Integration. Für Mittelständler, die KI wollen – ohne Bullshit." />
     <link rel="canonical" href="https://hohl.rocks/" />
@@ -3935,7 +3934,7 @@
 
         if (!battlePromptInput || !battleStartBtn) return;
 
-        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || 'https://hohl-rocks-back-production.up.railway.app';
+        const API_BASE = window.API && typeof window.API.base === 'function' ? window.API.base() : '';
 
         // Simple Markdown to HTML converter
         function renderMarkdown(text) {
@@ -4036,15 +4035,16 @@
           try {
             const response = await fetch(`${API_BASE}/api/model-battle`, {
               method: 'POST',
+              credentials: 'include',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ prompt })
             });
 
-            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+            if (!response.ok) throw await window.API.parseError(response);
 
             const data = await response.json();
 
-            // Display results
+            // Display results - render each model independently, including failures
             if (data.responses) {
               data.responses.forEach(result => {
                 const modelKey = result.model;
@@ -4054,7 +4054,11 @@
 
                 if (loading) loading.style.display = 'none';
                 if (responseEl) {
-                  responseEl.innerHTML = renderMarkdown(result.response) || '<p>Keine Antwort erhalten.</p>';
+                  if (result.success) {
+                    responseEl.innerHTML = renderMarkdown(result.response) || '<p>Keine Antwort erhalten.</p>';
+                  } else {
+                    responseEl.innerHTML = `<p>⚠️ ${result.error || 'Dieses Modell hat nicht geantwortet.'}</p>`;
+                  }
                   responseEl.style.display = 'block';
                 }
                 if (timeEl && result.responseTime) {
@@ -4065,12 +4069,15 @@
 
           } catch (error) {
             console.error('Battle error:', error);
+            const message = error.status === 429
+              ? `Zu viele Anfragen. Bitte warte ${error.retryAfter || 60} Sekunden.`
+              : (error.message || 'Fehler beim Laden. Bitte versuche es erneut.');
             ['claude', 'gpt', 'perplexity', 'gemini'].forEach(model => {
               const loading = document.getElementById(`battle-loading-${model}`);
               const response = document.getElementById(`battle-response-${model}`);
               if (loading) loading.style.display = 'none';
               if (response) {
-                response.innerHTML = '<p>Fehler beim Laden. Bitte versuche es erneut.</p>';
+                response.innerHTML = `<p>${message}</p>`;
                 response.style.display = 'block';
               }
             });
@@ -4501,7 +4508,7 @@
 
         if (!chatInput || !chatSend || !chatResponse || !responseText) return;
 
-        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || '';
+        const API_BASE = window.API && typeof window.API.base === 'function' ? window.API.base() : '';
 
         // Wolf's Persönlichkeit für die KI
         const systemPrompt = `Du bist Wolf Hohl – kreativ, höflich, hartnäckig. TÜV-zertifizierter KI-Manager aus Berlin (seit 1987, aufgewachsen in Oberschwaben, geboren in den Golden Sixties).
@@ -4561,7 +4568,7 @@ SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
               return;
             }
 
-            if (!response.ok) throw new Error('API Error');
+            if (!response.ok) throw await window.API.parseError(response);
 
             const data = await response.json();
 
@@ -4574,7 +4581,7 @@ SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
             }
             responseText.classList.remove('loading');
           } catch (error) {
-            responseText.textContent = 'Entschuldige, gerade kann ich nicht antworten. Probier es spaeter nochmal!';
+            responseText.textContent = error.message || 'Entschuldige, gerade kann ich nicht antworten. Probier es spaeter nochmal!';
             responseText.classList.remove('loading');
           } finally {
             chatSend.disabled = false;

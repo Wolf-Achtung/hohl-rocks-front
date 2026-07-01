@@ -64,10 +64,12 @@
       return devBase;
     }
 
-    // Priority 3: Production Fallback
-    const prodBase = 'https://hohl-rocks-back-production.up.railway.app';
-    debugLog('API Config', 'Using production fallback:', prodBase);
-    return prodBase;
+    // Priority 3: Production - use a relative base so requests stay same-origin
+    // and go through the Netlify /api/* proxy (see netlify.toml). This matters
+    // because the backend's session cookie is SameSite=Lax/Strict: a direct
+    // cross-site fetch to the Railway domain would silently drop it.
+    debugLog('API Config', 'Using relative production base (same-origin proxy)');
+    return '';
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -124,6 +126,34 @@
   window.API.setBase = function(newBase) {
     // This will be overridden by api.js, but provide a stub for early access
     debugLog('API Config', 'setBase called before api.js loaded:', newBase);
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  // ERROR PARSING - Shared across all fetch call sites
+  // Backend uses two error shapes: {error, message} and
+  // {success:false, error:{code, message}}. Parse both, fall back
+  // to a generic message if the body isn't JSON or doesn't match.
+  // ═══════════════════════════════════════════════════════════════
+
+  window.API.parseError = async function(response) {
+    let data = {};
+    try {
+      data = await response.json();
+    } catch (e) {
+      // Body wasn't JSON - keep data = {}
+    }
+
+    const message =
+      (data.error && typeof data.error === 'object' && data.error.message) ||
+      data.message ||
+      (typeof data.error === 'string' ? data.error : null) ||
+      `Serverfehler (${response.status})`;
+
+    const err = new Error(message);
+    err.status = response.status;
+    err.code = (data.error && typeof data.error === 'object' && data.error.code) || data.code;
+    err.retryAfter = data.retryAfter;
+    return err;
   };
 
   // Proxy-Funktionen für API-Methoden (werden später von api.js überschrieben)

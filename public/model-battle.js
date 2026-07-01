@@ -47,8 +47,8 @@ const getApiBase = () => {
     }
   }
 
-  debugWarn('Model Battle', 'Using hardcoded production fallback');
-  return 'https://hohl-rocks-back-production.up.railway.app';
+  debugWarn('Model Battle', 'api-config.js and meta tag both unavailable, using relative base');
+  return '';
 };
 
 // ===================================================================
@@ -251,7 +251,7 @@ async function startBattle() {
     }
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+      throw await window.API.parseError(response);
     }
 
     const data = await response.json();
@@ -271,7 +271,7 @@ async function startBattle() {
   } catch (error) {
     stopLoadingHints();
     debugError('Model Battle', 'Battle error:', error);
-    showToast('Fehler beim Battle. Bitte versuche es erneut.', 'error');
+    showToast(error.message || 'Fehler beim Battle. Bitte versuche es erneut.', 'error');
   } finally {
     if (startBattleBtn && rateLimitCooldown <= 0) {
       startBattleBtn.disabled = false;

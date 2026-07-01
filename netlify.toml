@@ -26,6 +26,12 @@
   force  = true
 
 [[redirects]]
+  from = "/health"
+  to   = "https://hohl-rocks-back-production.up.railway.app/health"
+  status = 200
+  force  = true
+
+[[redirects]]
   from = "/*"
   to   = "/index.html"
   status = 200

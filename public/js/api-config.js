@@ -50,10 +50,12 @@
   }
 
   function detectApiBase() {
-    // Priority 1: Meta-Tag (Production & Development)
+    // Priority 1: Meta-Tag (Production & Development). An empty-string
+    // content means "same origin" - checked with !== null (not truthiness)
+    // so that case is respected instead of falling through to Priority 3.
     const metaBase = getMetaTag('x-api-base');
-    if (metaBase) {
-      debugLog('API Config', 'Using API Base from meta tag:', metaBase);
+    if (metaBase !== null) {
+      debugLog('API Config', 'Using API Base from meta tag:', metaBase || '(same-origin)');
       return metaBase;
     }
 
@@ -64,10 +66,12 @@
       return devBase;
     }
 
-    // Priority 3: Production Fallback
-    const prodBase = 'https://hohl-rocks-back-production.up.railway.app';
-    debugLog('API Config', 'Using production fallback:', prodBase);
-    return prodBase;
+    // Priority 3: Production fallback - same-origin, routed through the
+    // Netlify proxy (netlify.toml) rather than calling the Railway backend
+    // directly cross-site. A direct cross-site fallback here previously
+    // bypassed the proxy and defeated its same-origin protections.
+    debugLog('API Config', 'Using production fallback: same-origin');
+    return '';
   }
 
   // ═══════════════════════════════════════════════════════════════

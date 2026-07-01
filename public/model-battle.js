@@ -39,16 +39,14 @@ const getApiBase = () => {
 
   debugError('Model Battle', 'api-config.js nicht geladen!');
   const metaTag = document.querySelector('meta[name="x-api-base"]');
-  if (metaTag) {
+  if (metaTag && metaTag.getAttribute('content') !== null) {
     const base = metaTag.getAttribute('content');
-    if (base) {
-      debugLog('Model Battle', 'Using meta tag fallback:', base);
-      return base;
-    }
+    debugLog('Model Battle', 'Using meta tag fallback:', base || '(same-origin)');
+    return base;
   }
 
-  debugWarn('Model Battle', 'Using hardcoded production fallback');
-  return 'https://hohl-rocks-back-production.up.railway.app';
+  debugWarn('Model Battle', 'Using same-origin fallback');
+  return '';
 };
 
 // ===================================================================

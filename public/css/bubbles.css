@@ -1,5 +1,0 @@
-files["public/css/bubbles.css"] = r"""/* public/css/bubbles.css (UTF-8) */
-#jelly-canvas { pointer-events: none; }
-#bubbles, #bubbles * { pointer-events: auto; }
-#bubbles .ai-bubble { cursor: pointer; }
-"""

@@ -1,4 +1,5 @@
 /api/*    https://hohl-rocks-back-production.up.railway.app/api/:splat   200!
 /_api/*   https://hohl-rocks-back-production.up.railway.app/api/:splat   200!
+/health   https://hohl-rocks-back-production.up.railway.app/health       200!
 /healthz  https://hohl-rocks-back-production.up.railway.app/healthz      200!
 /readyz   https://hohl-rocks-back-production.up.railway.app/readyz       200!

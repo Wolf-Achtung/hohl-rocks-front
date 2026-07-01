@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
 
-    <meta name="x-api-base" content="https://hohl-rocks-back-production.up.railway.app"/>
+    <meta name="x-api-base" content=""/>
     <title>Wolf Hohl — KI-Experte & Experimentator</title>
     <meta name="description" content="Wolf Hohl: TÜV-zertifizierter KI-Manager aus Berlin. 25 Jahre Medien-Erfahrung. Workflow-Automatisierung, KI-Strategie, sichere Integration. Für Mittelständler, die KI wollen – ohne Bullshit." />
     <link rel="canonical" href="https://hohl.rocks/" />
@@ -22,7 +22,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Wolf Hohl — KI-Experte & Experimentator" />
-    <meta name="twitter:description" content="Wolf Hohl: TÜV-zertifiziertes KI-Management, 25 Jahre Medien-Erfahrung. 4 Live-KI-Projekte." />
+    <meta name="twitter:description" content="Wolf Hohl: TÜV-zertifiziertes KI-Management, 25 Jahre Medien-Erfahrung. 8 Live-KI-Projekte." />
     <meta name="twitter:image" content="https://hohl.rocks/videos/road_poster.jpg" />
 
     <!-- Additional SEO -->
@@ -50,7 +50,7 @@
       "@type": "WebSite",
       "name": "Wolf Hohl",
       "url": "https://hohl.rocks",
-      "description": "Wolf Hohl: TÜV-zertifiziertes KI-Management, 25 Jahre Medien-Erfahrung. 4 Live-KI-Projekte.",
+      "description": "Wolf Hohl: TÜV-zertifiziertes KI-Management, 25 Jahre Medien-Erfahrung. 8 Live-KI-Projekte.",
       "inLanguage": "de-DE"
     }
     </script>
@@ -3935,7 +3935,7 @@
 
         if (!battlePromptInput || !battleStartBtn) return;
 
-        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || 'https://hohl-rocks-back-production.up.railway.app';
+        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content ?? '';
 
         // Simple Markdown to HTML converter
         function renderMarkdown(text) {

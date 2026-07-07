@@ -1,10 +1,15 @@
 /* ═══════════════════════════════════════════════════════════════
  * HOHL.ROCKS - ZENTRALE API CONFIGURATION
  * ═══════════════════════════════════════════════════════════════
- * Version: 1.1
+ * Version: 1.2
  * Purpose: Einheitliche API Base URL Detection für alle Features
  *
- * WICHTIG: Diese Datei MUSS als ERSTES Script geladen werden!
+ * WICHTIG: Diese Datei MUSS vor Feature-Skripten geladen werden,
+ * die window.API.base() nutzen (z. B. model-battle.js).
+ *
+ * v1.2: Tote Proxy-Methoden entfernt - sie warteten auf ein api.js,
+ * das nicht existiert, und warfen bei jedem Aufruf. Verbraucher
+ * nutzen ausschließlich API.base() bzw. lesen das Meta-Tag direkt.
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -43,7 +48,7 @@
   // ═══════════════════════════════════════════════════════════════
   // API BASE DETECTION MIT FALLBACKS
   // ═══════════════════════════════════════════════════════════════
-  
+
   function getMetaTag(name) {
     const meta = document.querySelector(`meta[name="${name}"]`);
     return meta ? meta.getAttribute('content') : null;
@@ -77,16 +82,16 @@
   // ═══════════════════════════════════════════════════════════════
   // BACKEND HEALTH CHECK
   // ═══════════════════════════════════════════════════════════════
-  
+
   async function checkBackendHealth(baseUrl) {
     try {
       const response = await fetch(`${baseUrl}/health`, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
         cache: 'no-cache',
-        timeout: 5000
+        signal: AbortSignal.timeout(5000)
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         debugLog('API Config', '✅ Backend connection verified:', {
@@ -94,10 +99,9 @@
           environment: data.environment?.nodeEnv || 'unknown'
         });
         return true;
-      } else {
-        debugWarn('API Config', '⚠️ Backend health check failed:', response.status);
-        return false;
       }
+      debugWarn('API Config', '⚠️ Backend health check failed:', response.status);
+      return false;
     } catch (error) {
       // Only log in dev - connection errors are expected if backend is down
       debugWarn('API Config', '❌ Backend unreachable:', error.message);
@@ -111,79 +115,31 @@
 
   const API_BASE = detectApiBase();
 
-  // Globales API Object erstellen
   window.API = window.API || {};
 
-  // base() Funktion hinzufügen (für Feature-Files)
+  // base() Funktion (für Feature-Files wie model-battle.js)
   window.API.base = function() {
     return API_BASE;
   };
 
-  // isReady() Funktion hinzufügen
   window.API.isReady = function() {
     return true;
   };
 
-  // setBase() Funktion hinzufügen (für app.js)
-  window.API.setBase = function(newBase) {
-    // This will be overridden by api.js, but provide a stub for early access
-    debugLog('API Config', 'setBase called before api.js loaded:', newBase);
-  };
-
-  // Proxy-Funktionen für API-Methoden (werden später von api.js überschrieben)
-  // Diese stellen sicher, dass Aufrufe funktionieren, auch wenn api.js später lädt
-  const createApiProxy = (methodName) => {
-    return async function(...args) {
-      // Warte auf die echte API-Instanz
-      if (window.api && typeof window.api[methodName] === 'function') {
-        return await window.api[methodName](...args);
-      }
-      throw new Error(`API method ${methodName} not yet initialized. Please wait for api.js to load.`);
-    };
-  };
-
-  // Proxy für alle wichtigen API-Methoden
-  window.API.self = createApiProxy('self');
-  window.API.sparkToday = createApiProxy('getSparkOfTheDay');
-  window.API.health = createApiProxy('health');
-  window.API.chat = createApiProxy('chat');
-  window.API.generatePrompt = createApiProxy('generatePrompt');
-  window.API.optimizePrompt = createApiProxy('optimizePrompt');
-  window.API.getPrompts = createApiProxy('getPrompts');
-  window.API.modelBattle = createApiProxy('modelBattle');
-  window.API.getDailyChallenge = createApiProxy('getDailyChallenge');
-  window.API.submitChallenge = createApiProxy('submitChallenge');
-  window.API.getNews = createApiProxy('getNews');
-  window.API.getMyData = createApiProxy('getMyData');
-  window.API.deleteMyData = createApiProxy('deleteMyData');
-
   // ═══════════════════════════════════════════════════════════════
-  // INITIALIZATION & CONSOLE OUTPUT
+  // INITIALIZATION
   // ═══════════════════════════════════════════════════════════════
 
-  if (IS_DEV) {
-    console.log(`
-╔════════════════════════════════════════╗
-║   HOHL.ROCKS API Configuration Ready   ║
-╚════════════════════════════════════════╝
-API Base URL: ${API_BASE}
-Environment: Development
-Ready: ${window.API.isReady()}
-    `);
-  }
-
-  // Backend Health Check (non-blocking)
+  // Backend Health Check (non-blocking; wärmt nebenbei das Railway-Backend auf)
   checkBackendHealth(API_BASE).then(healthy => {
-    if (healthy) {
-      window.API.healthy = true;
-    } else {
-      window.API.healthy = false;
+    window.API.healthy = healthy;
+    if (!healthy) {
       debugWarn('API Config', '⚠️ Backend health check failed - Features may not work properly');
     }
   });
 
   // Custom Event dispatchen für andere Scripts
-  document.dispatchEvent(new CustomEvent('api:config:ready', { 
+  document.dispatchEvent(new CustomEvent('api:config:ready', {
     detail: { baseUrl: API_BASE }
   }));
 

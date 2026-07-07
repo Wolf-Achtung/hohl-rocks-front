@@ -54,7 +54,9 @@ const getApiBase = () => {
 // ===================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const isOnFeaturePage = window.location.pathname.includes('model-battle.html');
+  // Ohne ".html" matchen, damit die Seite auch unter der extensionless
+  // Pretty-URL /model-battle initialisiert.
+  const isOnFeaturePage = window.location.pathname.includes('model-battle');
 
   if (!isOnFeaturePage) {
     debugLog('Model Battle', 'Not on feature page, skipping initialization');
@@ -372,9 +374,21 @@ function displayResults(data) {
         responseEl.style.display = 'block';
       }
     } else {
-      // Failed model - show error state
+      // Failed model - show error state. Error text comes from the backend
+      // and may reflect upstream fragments - build the DOM instead of
+      // interpolating it into innerHTML (XSS).
       if (responseEl) {
-        responseEl.innerHTML = `<div class="model-error-message"><span class="error-icon">⚠️</span><strong>Fehler</strong><p>${result.error || 'Unbekannter Fehler'}</p></div>`;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'model-error-message';
+        const icon = document.createElement('span');
+        icon.className = 'error-icon';
+        icon.textContent = '⚠️';
+        const title = document.createElement('strong');
+        title.textContent = 'Fehler';
+        const message = document.createElement('p');
+        message.textContent = result.error || 'Unbekannter Fehler';
+        wrapper.append(icon, title, message);
+        responseEl.replaceChildren(wrapper);
         responseEl.style.display = 'block';
         responseEl.classList.add('error-response');
       }

@@ -10,22 +10,29 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=0, must-revalidate
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; media-src 'self' data: blob:; connect-src 'self' https://hohl-rocks-back-production.up.railway.app; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
 
-# UTF-8 dauerhaft für Assets ausliefern (relevant für Umlaute)
+# HTML unter /* wird immer revalidiert (max-age=0 oben), damit Deploys und
+# Hotfixes sofort sichtbar sind. "immutable" nur für Dateien, deren Inhalt
+# sich nie ändert (Binaries) - JS/CSS sind NICHT gehasht/versioniert und
+# dürfen deshalb maximal kurz gecacht werden.
 
-/css/*
+/styles.css
   Content-Type: text/css; charset=utf-8
-  Cache-Control: public, max-age=604800, immutable
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/model-battle.css
+  Content-Type: text/css; charset=utf-8
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/model-battle.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=3600, must-revalidate
 
 /js/*
   Content-Type: application/javascript; charset=utf-8
-  Cache-Control: public, max-age=604800, immutable
-
-/data/*
-  Content-Type: application/json; charset=utf-8
-  Cache-Control: no-cache
+  Cache-Control: public, max-age=3600, must-revalidate
 
 /audio/*
   Cache-Control: public, max-age=604800, immutable

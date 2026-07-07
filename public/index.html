@@ -130,6 +130,19 @@
       }
       .skip-link:focus { top: 0; }
 
+      /* Nur für Screenreader/SEO sichtbar (h1 der Seite) */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
       /* ═══════════════════════════════════════════════════════════════
          BACKGROUND VIDEO
          ═══════════════════════════════════════════════════════════════ */
@@ -179,126 +192,6 @@
       @media (prefers-reduced-motion: reduce) {
         .bg-video { display: none; }
         .site-bg { background: var(--bg-dark); }
-      }
-
-      /* ═══════════════════════════════════════════════════════════════
-         HERO SECTION
-         ═══════════════════════════════════════════════════════════════ */
-
-      .hero {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        text-align: center;
-        position: relative;
-      }
-
-      .hero-content {
-        max-width: 800px;
-        animation: fadeInUp 1s ease-out;
-      }
-
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .hero-name {
-        font-size: clamp(3rem, 10vw, 6rem);
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        margin: 0 0 1.5rem;
-        background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        text-shadow: 0 0 60px rgba(0, 47, 167, 0.4);
-        filter: drop-shadow(0 0 30px rgba(0, 47, 167, 0.3));
-      }
-
-      .hero-divider {
-        width: 80px;
-        height: 4px;
-        background: var(--accent-gradient);
-        margin: 0 auto 2rem;
-        border-radius: 2px;
-        box-shadow: var(--glow);
-      }
-
-      /* Tagline Ticker */
-      .tagline-ticker {
-        height: 2.5rem;
-        margin-bottom: 2.5rem;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .tagline-item {
-        position: absolute;
-        width: 100%;
-        font-size: clamp(1.1rem, 3vw, 1.4rem);
-        font-weight: 500;
-        color: var(--text-secondary);
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.6s ease;
-      }
-
-      .tagline-item.active {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .tagline-item.exiting {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-
-      .tagline-highlight {
-        color: var(--accent-primary);
-        font-weight: 600;
-      }
-
-      /* CTA Button */
-      .hero-cta {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 2rem;
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        border-radius: 50px;
-        color: var(--text-primary);
-        font-size: 1rem;
-        font-weight: 500;
-        text-decoration: none;
-        cursor: pointer;
-        backdrop-filter: blur(12px);
-        transition: all 0.3s ease;
-      }
-
-      .hero-cta:hover {
-        background: rgba(0, 47, 167, 0.15);
-        border-color: rgba(0, 47, 167, 0.4);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 30px rgba(0, 47, 167, 0.2);
-      }
-
-      .hero-cta .arrow {
-        transition: transform 0.3s ease;
-      }
-
-      .hero-cta:hover .arrow {
-        transform: translateY(4px);
       }
 
       /* Scroll Indicator - fixiert unten, erscheint verzögert */
@@ -1675,38 +1568,6 @@
         margin: 0 0 2rem;
       }
 
-      /* Filter Buttons */
-      .portfolio-filters {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 2.5rem;
-      }
-
-      .portfolio-filter {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        color: var(--text-secondary);
-        padding: 0.45rem 1.1rem;
-        border-radius: 100px;
-        font-size: 0.82rem;
-        font-family: inherit;
-        cursor: pointer;
-        transition: all 0.25s ease;
-      }
-
-      .portfolio-filter:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--text-primary);
-      }
-
-      .portfolio-filter.active {
-        background: var(--accent-primary);
-        border-color: var(--accent-primary);
-        color: #fff;
-      }
-
       /* Grid */
       .portfolio-grid {
         display: grid;
@@ -2220,14 +2081,6 @@
          ═══════════════════════════════════════════════════════════════ */
 
       @media (max-width: 768px) {
-        .hero {
-          padding: 1.5rem;
-        }
-
-        .hero-name {
-          font-size: clamp(2.5rem, 12vw, 4rem);
-        }
-
         section {
           padding: 3rem 1rem;
         }
@@ -2797,6 +2650,9 @@
       <span class="sound-float-label">Sound</span>
     </button>
 
+    <main id="main">
+    <h1 class="sr-only">Wolf Hohl – TÜV-zertifizierter KI-Manager aus Berlin</h1>
+
     <!-- Manifest Section - Persönliches Statement (Startpunkt) -->
     <!-- FIX: "fade-in" entfernt - Section ist zu groß (1200vh) für IntersectionObserver threshold -->
     <section class="manifest-section" id="manifest">
@@ -2894,7 +2750,7 @@
           </div>
 
           <!-- Response Area (hidden initially) -->
-          <div class="battle-results" id="battle-results" style="display: none;">
+          <div class="battle-results" id="battle-results" style="display: none;" aria-live="polite">
             <div class="battle-results-header">
               <h3 class="battle-results-title">Antworten</h3>
               <button id="battle-new-btn" class="battle-reset-btn">
@@ -2977,7 +2833,7 @@
     </section>
 
     <!-- Sound Player -->
-    <div class="music-player" id="music-player" title="Sound an/aus">
+    <div class="music-player" id="music-player" title="Sound an/aus" role="button" tabindex="0" aria-label="Music Studio öffnen">
       <div class="music-icon">
         <div class="music-bars">
           <div class="music-bar" style="height: 8px;"></div>
@@ -2989,7 +2845,8 @@
       <span class="music-label">hohl.rocks</span>
     </div>
     <audio id="bg-music" loop preload="none">
-      <source src="/audio/road_trip.mp3" type="audio/mpeg">
+      <!-- Fallback-Source; loadTrack(0) setzt beim Init den ersten Playlist-Track -->
+      <source src="/audio/ambient_loop.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Schwebendes Chat-Widget - Frag Wolf -->
@@ -3022,7 +2879,7 @@
             <button class="topic-btn" data-topic="Kaffee oder Tee? Guilty Pleasure? Bestes Kinoerlebnis?">Quick Picks</button>
           </div>
 
-          <div id="ki-chat-response" class="ki-chat-response" style="display: none;">
+          <div id="ki-chat-response" class="ki-chat-response" style="display: none;" aria-live="polite">
             <div class="ki-response-text"></div>
           </div>
         </div>
@@ -3038,7 +2895,7 @@
         </div>
         <div class="ki-chat-privacy">
           Gespräche werden zur Qualitätssicherung gespeichert.
-          <a href="/datenschutz" target="_blank">Datenschutz</a>
+          <a href="#" data-action="impressum">Datenschutz</a>
         </div>
       </div>
     </div>
@@ -3126,6 +2983,7 @@
         </div>
       </div>
     </section>
+    </main>
 
     <!-- Footer -->
     <footer class="site-footer">
@@ -3141,6 +2999,7 @@
 
       <div class="footer-links">
         <a href="#" class="footer-link" data-action="ueber">Über Wolf Hohl</a>
+        <a href="/model-battle.html" class="footer-link">Model Battle</a>
         <a href="#" class="footer-link" data-action="kontakt">Kontakt</a>
         <a href="#" class="footer-link" data-action="impressum">Impressum</a>
         <a href="#" class="footer-link" data-action="impressum">Datenschutz</a>
@@ -3154,7 +3013,7 @@
     <!-- Impressum Overlay -->
     <div id="ov-impressum" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close></div>
-      <section class="dialog" role="dialog" aria-labelledby="imp-title">
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="imp-title">
         <header class="head">
           <h2 id="imp-title">Rechtliches & Transparenz</h2>
           <button class="close" aria-label="Schließen" data-close>×</button>
@@ -3209,14 +3068,16 @@
     <!-- Kontakt Overlay -->
     <div id="ov-kontakt" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close></div>
-      <section class="dialog" role="dialog" aria-labelledby="kontakt-title">
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="kontakt-title">
         <header class="head">
           <h2 id="kontakt-title">Kontakt aufnehmen</h2>
           <button class="close" aria-label="Schließen" data-close>×</button>
         </header>
         <div id="kontakt-body">
-          <!-- Form - Netlify Forms -->
-          <form class='contact-form' id='contact-form' method='POST' name='kontakt'>
+          <!-- Form - Netlify Forms. data-netlify ist zwingend: ohne dieses
+               Attribut registriert Netlify das Formular beim Deploy nicht
+               und POSTs laufen ins SPA-Fallback (200, aber nicht zugestellt) -->
+          <form class='contact-form' id='contact-form' method='POST' name='kontakt' data-netlify='true' netlify-honeypot='bot-field'>
             <!-- Verstecktes Feld: Form-Name (wichtig für Netlify) -->
             <input type="hidden" name="form-name" value="kontakt">
 
@@ -3277,7 +3138,7 @@
     <!-- Über Wolf Hohl Overlay -->
     <div id="ov-ueber" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close></div>
-      <section class="dialog" role="dialog" aria-labelledby="ueber-title">
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="ueber-title">
         <header class="head">
           <h2 id="ueber-title">Über Wolf Hohl</h2>
           <button class="close" aria-label="Schließen" data-close>×</button>
@@ -3362,7 +3223,7 @@
     <!-- Music Studio Overlay -->
     <div id="ov-music-studio" class="overlay" aria-hidden="true">
       <div class="backdrop" data-close></div>
-      <section class="dialog" role="dialog" aria-labelledby="studio-title" style="max-width: 500px;">
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="studio-title" style="max-width: 500px;">
         <header class="head">
           <h2 id="studio-title">Sound Studio</h2>
           <button class="close" aria-label="Schließen" data-close>×</button>
@@ -3469,7 +3330,7 @@
                   <button class="track-nav-btn" id="prev-track" title="Vorheriger Track">
                     <svg viewBox="0 0 24 24"><path d="M19 20L9 12l10-8v16zM7 19V5H5v14h2z"/></svg>
                   </button>
-                  <span class="track-counter" id="track-counter">1 / 4</span>
+                  <span class="track-counter" id="track-counter">1 / 2</span>
                   <button class="track-nav-btn" id="next-track" title="Nächster Track">
                     <svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4zm12 1v14h2V5h-2z"/></svg>
                   </button>
@@ -3489,67 +3350,6 @@
 
     <!-- Scripts -->
     <script>
-      // ═══════════════════════════════════════════════════════════════
-      // PORTFOLIO FILTER
-      // ═══════════════════════════════════════════════════════════════
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const filterBtns = document.querySelectorAll('.portfolio-filter');
-        const cards = document.querySelectorAll('.portfolio-card');
-        if (!filterBtns.length) return;
-
-        filterBtns.forEach(btn => {
-          btn.addEventListener('click', () => {
-            const filter = btn.dataset.filter;
-
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            cards.forEach(card => {
-              const cat = card.dataset.category;
-              if (filter === 'alle' || cat === filter || cat === 'alle') {
-                card.classList.remove('hidden');
-              } else {
-                card.classList.add('hidden');
-              }
-            });
-          });
-        });
-      });
-
-      // TAGLINE TICKER
-      // ═══════════════════════════════════════════════════════════════
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const taglines = document.querySelectorAll('.tagline-item');
-        if (taglines.length === 0) return;
-
-        let currentIndex = 0;
-        let taglineInterval = null;
-
-        function rotateTagline() {
-          const current = taglines[currentIndex];
-          const nextIndex = (currentIndex + 1) % taglines.length;
-          const next = taglines[nextIndex];
-
-          current.classList.remove('active');
-          current.classList.add('exiting');
-
-          setTimeout(() => {
-            current.classList.remove('exiting');
-            next.classList.add('active');
-            currentIndex = nextIndex;
-          }, 300);
-        }
-
-        taglineInterval = setInterval(rotateTagline, 3000);
-
-        // Cleanup on page unload to prevent memory leak
-        window.addEventListener('pagehide', () => {
-          if (taglineInterval) clearInterval(taglineInterval);
-        });
-      });
-
       // ═══════════════════════════════════════════════════════════════
       // VIDEO AUTOPLAY
       // ═══════════════════════════════════════════════════════════════
@@ -3783,13 +3583,20 @@
       // ═══════════════════════════════════════════════════════════════
 
       document.addEventListener('DOMContentLoaded', () => {
+        // Merkt sich das Element, das das Overlay geoeffnet hat,
+        // damit der Fokus beim Schliessen dorthin zurueckkehrt (A11y).
+        let lastFocusedElement = null;
+
         // Helper function to open overlay
         function openOverlay(overlayId) {
           const overlay = document.getElementById(overlayId);
           if (overlay) {
+            lastFocusedElement = document.activeElement;
             overlay.classList.add('active');
             overlay.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
+            const closeBtn = overlay.querySelector('[data-close]');
+            if (closeBtn) closeBtn.focus();
           }
         }
 
@@ -3799,6 +3606,10 @@
             overlay.classList.remove('active');
             overlay.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
+            if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+              lastFocusedElement.focus();
+              lastFocusedElement = null;
+            }
           }
         }
 
@@ -4147,7 +3958,8 @@
         // PLAYLIST - Tracks hinzufügen/ändern hier
         // ═══════════════════════════════════════════════════════════════
         const tracks = [
-          { title: 'Ambient Dreams', artist: 'hohl.rocks', src: '/audio/ambient_loop.mp3' }
+          { title: 'Ambient Dreams', artist: 'hohl.rocks', src: '/audio/ambient_loop.mp3' },
+          { title: 'Road Trip', artist: 'hohl.rocks', src: '/audio/road_trip.mp3' }
         ];
 
         let currentTrackIndex = 0;
@@ -4165,7 +3977,7 @@
         // Render Track List
         function renderTrackList() {
           trackListEl.innerHTML = tracks.map((track, i) => `
-            <div class="track-item ${i === currentTrackIndex ? 'active' : ''}" data-index="${i}">
+            <div class="track-item ${i === currentTrackIndex ? 'active' : ''}" data-index="${i}" role="button" tabindex="0" aria-label="Track abspielen: ${track.title}">
               <span class="track-item-number">${i + 1}</span>
               <div class="track-item-info">
                 <div class="track-item-title">${track.title}</div>
@@ -4176,11 +3988,18 @@
 
           // Add click handlers
           trackListEl.querySelectorAll('.track-item').forEach(item => {
-            item.addEventListener('click', () => {
+            const selectTrack = () => {
               const idx = parseInt(item.dataset.index);
               if (idx !== currentTrackIndex) {
                 loadTrack(idx);
                 if (isPlaying) playTrack();
+              }
+            };
+            item.addEventListener('click', selectTrack);
+            item.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectTrack();
               }
             });
           });
@@ -4249,10 +4068,17 @@
 
         // Open studio overlay when clicking the player button
         if (playerBtn) {
-          playerBtn.addEventListener('click', () => {
+          const openStudio = () => {
             studioOverlay.classList.add('active');
             studioOverlay.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
+          };
+          playerBtn.addEventListener('click', openStudio);
+          playerBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              openStudio();
+            }
           });
         }
 
@@ -4447,9 +4273,11 @@
           });
         });
 
-        // Initialize
+        // Initialize - loadTrack setzt audio.src auf den ersten Playlist-Track,
+        // sonst spielt der erste Play die <source> aus dem Markup, während
+        // die UI den Playlist-Titel anzeigt (Track/UI-Mismatch).
         renderTrackList();
-        updateTrackUI();
+        loadTrack(0);
         document.querySelector('.mood-btn[data-mood="neutral"]')?.classList.add('active');
 
         // Pause when page is hidden
@@ -4503,32 +4331,10 @@
 
         const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content || '';
 
-        // Wolf's Persönlichkeit für die KI
-        const systemPrompt = `Du bist Wolf Hohl – kreativ, höflich, hartnäckig. TÜV-zertifizierter KI-Manager aus Berlin (seit 1987, aufgewachsen in Oberschwaben, geboren in den Golden Sixties).
-
-BERUFLICH: 25 Jahre Geschäftsführer Trailerhaus GmbH (Kino-Trailer). Der stolzeste Moment? Immer wieder, wenn das Team etwas Außergewöhnliches geschaffen hat. Jetzt KI-Berater für Mittelständler, die KI wollen, aber keinen Bullshit.
-
-EXPERTISE: Workflow-Automatisierung mit LLMs, KI-Strategie & Change Management, KI-Integration in bestehende Systeme. Du kommst aus der echten Wirtschaft, nicht aus dem Hörsaal. 25 Jahre Deadline-Druck – du weißt, dass Theorie nichts wert ist, wenn's nicht funktioniert.
-
-PROJEKTE (alle selbst gebaut und live): ki-sicherheit.jetzt (TÜV-zertifizierte KI-Beratung, EU AI Act, DSGVO), report.ki-sicherheit.jetzt (KI-Readiness-Reports für Unternehmen), art-radar.berlin (KI-kuratierter tagesaktueller Überblick über Berlins Kunstszene), nicht-anerkannt.info (Das Atelier der Radikalen Mitte, KI-unterstützt), nah.jetzt (Notfall-App mit KI-Support, funktioniert offline), achtung.live (KI-Text-Check für sensible Daten vor dem Senden, Lektorat), horoscop.one (KI-unterstützte Horoskope), kerstingeffert.de (Webdesign für eine geschätzte Frau).
-
-PERSÖNLICH: SC Freiburg – Finke, Streich, Schuster. Haltung vor Erfolg. Basquiat – die Energie, die Wut, die Schönheit im Krickelkrakel. Helmut Krausser (Melodien, Thanatos, UC, Tagebücher). Jörg Fauser und Neal Stephenson – einfach alles. Yoga (der Stil ist egal, das Machen zählt). Omas Rezepte (Spätzle mit Soß' wenns schnell gehen muss).
-
-FAVORITEN: Lieblings-KI ist Claude Opus. Tool: Notion. Film: "Wir können auch anders". Letztes Buch: Hologrammatica 2 von Tom Hillenbrand. Morgens viel Kaffee. Berlin-Lieblingsort: mein Bett. Guilty Pleasure: harte, saftige, große Äpfel.
-
-MOTTO: "Die Freiheit von Entscheidungen befreit nicht von Einsicht in die Notwendigkeit."
-
-ZIEL: Den Gap zwischen KI-Hype und echter Anwendung schließen.
-
-STIL: Du bist freundlich, direkt und teilst gerne dein Wissen. Du bist selbst User, nicht nur Berater – du baust täglich mit diesen Tools. Antworte kurz und persönlich (max 3-4 Sätze). Keine Rampensau.
-
-SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
-- Du antwortest NUR auf Fragen zu: KI, deine Person/Arbeit, Beratung, Kunst, Kultur, Sport, allgemeine Gesprächsthemen.
-- Du gibst NIEMALS Anleitungen zu: illegalen Aktivitäten, Hacking, Waffen, Drogen, Gewalt, Betrug, Hassrede, sexuellen Inhalten.
-- Bei verdächtigen oder unangemessenen Anfragen antwortest du freundlich: "Das ist nicht mein Thema. Frag mich lieber was über KI, meine Arbeit oder den SC Freiburg!"
-- Du gibst KEINE persönlichen Daten preis (Adresse, Telefon, etc.) – verweise auf das Kontaktformular.
-- Du erzeugst KEINEN Code, der schädlich sein könnte (Malware, Scraper, etc.).
-- Alle Gespräche werden zur Qualitätssicherung protokolliert.`;
+        // Der System-Prompt (Wolfs Persona) wird serverseitig im Backend
+        // erzwungen (hohl-rocks-back: src/config/chatPrompt.js). Das Frontend
+        // sendet nur noch die Nutzernachricht - client-gelieferte
+        // system-Messages werden vom Backend verworfen.
 
         async function sendMessage(message) {
           if (!message.trim()) return;
@@ -4546,7 +4352,6 @@ SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 messages: [
-                  { role: 'system', content: systemPrompt },
                   { role: 'user', content: message }
                 ],
                 model: 'claude'
@@ -4610,21 +4415,5 @@ SICHERHEITSRICHTLINIEN (STRIKT EINHALTEN):
 
     <!-- API Config (for subpages that might need it) -->
     <script src="/js/api-config.js"></script>
-
-    <!-- Audio Controller -->
-    <script type="module" src="/js/audio.js"></script>
-    <script>
-      // Sound Float Button - Fallback für AudioController
-      document.addEventListener('DOMContentLoaded', () => {
-        const btn = document.getElementById('sound-float');
-        if (!btn) return;
-
-        btn.addEventListener('click', () => {
-          if (window.AudioController) {
-            window.AudioController.toggle();
-          }
-        });
-      });
-    </script>
   </body>
 </html>

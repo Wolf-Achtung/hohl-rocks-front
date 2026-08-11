@@ -3420,6 +3420,70 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
+      // VORÜBERGEHEND: Umschalter zur Ursachensuche beim Ruckeln auf dem
+      // iPhone. Tut nichts, solange #diag nicht in der Adresse steht.
+      // Fliegt raus, sobald die Ursache feststeht.
+      // ═══════════════════════════════════════════════════════════════
+
+      (function () {
+        if (!/(^|#|&)diag/.test(location.hash)) return;
+
+        var VARIANTEN = [
+          ['A', 'unverändert', ''],
+          ['B', 'ohne eigene Ebene',
+           '.manifest-text{will-change:auto !important}'],
+          ['C', 'Ebene aufs Fenster begrenzt',
+           '.manifest-text{will-change:auto !important}' +
+           '.manifest-container{will-change:transform;contain:paint}'],
+          ['D', 'Textbox nicht klebend',
+           '.manifest-container{position:relative !important;top:auto !important;' +
+           'transform:none !important;margin:45vh auto}'],
+          ['E', 'ohne Weichzeichner am Knopf',
+           '.skip-intro{backdrop-filter:none !important;' +
+           '-webkit-backdrop-filter:none !important;transition:none !important}'],
+          ['F', 'ohne festen Hintergrund',
+           '.site-bg{position:absolute !important}']
+        ];
+
+        var stil = document.createElement('style');
+        document.head.appendChild(stil);
+
+        var leiste = document.createElement('div');
+        leiste.setAttribute('style',
+          'position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;' +
+          'flex-wrap:wrap;gap:4px;padding:6px;background:rgba(0,0,0,.85);' +
+          'font:600 13px/1.2 system-ui,sans-serif');
+
+        var anzeige = document.createElement('div');
+        anzeige.setAttribute('style',
+          'flex:1 0 100%;color:#9cf;font-weight:400;padding:2px 2px 4px');
+
+        function waehle(i) {
+          stil.textContent = VARIANTEN[i][2];
+          anzeige.textContent = VARIANTEN[i][0] + ' – ' + VARIANTEN[i][1];
+          Array.prototype.forEach.call(leiste.querySelectorAll('button'), function (b, n) {
+            b.style.background = n === i ? '#2d7' : '#333';
+            b.style.color = n === i ? '#000' : '#fff';
+          });
+        }
+
+        VARIANTEN.forEach(function (v, i) {
+          var b = document.createElement('button');
+          b.textContent = v[0];
+          b.setAttribute('style',
+            'flex:1;min-width:38px;padding:9px 0;border:0;border-radius:6px;' +
+            'font:inherit;background:#333;color:#fff');
+          b.addEventListener('click', function () { waehle(i); });
+          leiste.appendChild(b);
+        });
+        leiste.appendChild(anzeige);
+        document.addEventListener('DOMContentLoaded', function () {
+          document.body.appendChild(leiste);
+          waehle(0);
+        });
+      })();
+
+      // ═══════════════════════════════════════════════════════════════
       // MANIFEST SCROLL-EFFEKT - Text scrollt durch Fenster (4 Absätze sichtbar)
       // ═══════════════════════════════════════════════════════════════
 

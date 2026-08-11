@@ -3438,7 +3438,8 @@
         // Einmal messen statt in jedem Bild. Das Lesen von scrollHeight
         // zwingt den Browser, das Layout neu zu berechnen – und zwar
         // direkt nachdem der vorige Durchlauf es mit dem transform
-        // ungültig gemacht hat. Genau dieses Hin und Her ruckelt.
+        // ungültig gemacht hat. Nachgemessen kostet das allerdings nur
+        // 0,04 ms von 16,7 ms Budget: Aufräumen, keine Behebung.
         let maxScroll = 0;
         let viewportHeight = window.innerHeight;
         let sectionHeight = 0;

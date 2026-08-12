@@ -375,7 +375,14 @@
 
       .manifest-text {
         font-size: clamp(1rem, 2.2vw, 1.15rem);
-        color: var(--text-secondary);
+        /* Der Text steht über einem Foto, stellenweise über der hellen
+           Sonne. 70 % Weiß in normaler Stärke verliert dort. Reines Weiß
+           in mittlerer Stärke, wie es der Schlusssatz über sein <strong>
+           ohnehin schon bekam. Der weiche dunkle Schatten trägt über den
+           hellen Stellen und ist über den dunklen nicht zu sehen. */
+        color: var(--text-primary);
+        font-weight: 500;
+        text-shadow: 0 1px 10px rgba(10, 10, 15, 0.45);
         line-height: 1.9;
         transform: translateY(0);
         /* Bewusst ohne transition: die Position kommt aus dem Skript und
@@ -423,8 +430,10 @@
       }
 
       .manifest-text strong {
+        /* Eine Stufe über dem Fließtext, damit Hervorhebungen weiter
+           auffallen, nachdem der Grundtext selbst kräftiger geworden ist. */
         color: var(--text-primary);
-        font-weight: 600;
+        font-weight: 700;
       }
 
       /* Finale Zeile - "Into the Light" Animation */
@@ -447,7 +456,9 @@
           opacity: 1;
           filter: blur(0);
           transform: scale(1);
-          text-shadow: none;
+          /* Derselbe Wert wie im Ruhezustand, damit der Schatten beim
+             Zünden nicht sichtbar wegspringt. */
+          text-shadow: 0 1px 10px rgba(10, 10, 15, 0.45);
         }
         25% {
           opacity: 1;

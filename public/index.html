@@ -364,7 +364,10 @@
         position: relative;
         padding: 0;
         background: transparent;
-        min-height: 1200vh; /* Sehr langer Scroll-Bereich - ein Block pro Viewport */
+        /* Scroll-Weg für alle Tafeln zusammen. Jede bekommt daraus ihr
+           eigenes Fenster – mehrzeilige stehen länger, der Schlusssatz am
+           längsten. Rund 95 vh pro einzeiliger Tafel. */
+        min-height: 1500vh;
         margin-bottom: 0;
       }
 
@@ -376,27 +379,17 @@
         margin: 0 auto;
         text-align: left;
         padding: 2rem;
-        /* Feste Höhe für genau 4 Absätze */
+        /* Bühne für die Tafeln. Sie liegen übereinander an derselben
+           Stelle, deshalb eine feste Höhe. Keine Maske mehr: früher
+           wanderte ein langer Textblock durch dieses Fenster und musste
+           an den Kanten weich auslaufen. Heute verlässt keine Tafel den
+           Rahmen – sie löst sich an Ort und Stelle auf. */
         height: 280px;
-        overflow: hidden;
-        /* Fade-Maske oben und unten */
-        mask-image: linear-gradient(
-          to bottom,
-          transparent 0%,
-          black 15%,
-          black 85%,
-          transparent 100%
-        );
-        -webkit-mask-image: linear-gradient(
-          to bottom,
-          transparent 0%,
-          black 15%,
-          black 85%,
-          transparent 100%
-        );
       }
 
       .manifest-text {
+        position: relative;
+        height: 100%;
         font-size: clamp(1rem, 2.2vw, 1.15rem);
         /* Der Text steht über einem Foto, stellenweise über der hellen
            Sonne. 70 % Weiß in normaler Stärke verliert dort. Reines Weiß
@@ -407,44 +400,38 @@
         font-weight: 500;
         text-shadow: 0 1px 10px rgba(10, 10, 15, 0.45);
         line-height: 1.9;
-        transform: translateY(0);
-        /* Bewusst ohne transition: die Position kommt aus dem Skript und
-           wird in jedem Bild neu gesetzt. Eine Überblendung obendrauf
-           liefe der Scroll-Position hinterher und noch weiter, wenn der
-           Finger längst weg ist – auf dem Telefon gemessene 155 px.
-
-           Und bewusst ohne will-change: transform. Der Block ist rund
-           3100 px hoch und würde als eigene Ebene auf einem iPhone mit
-           dreifacher Pixeldichte etwa 11 Megapixel belegen. WebKit
-           rastert eine solche Ebene beim Verschieben stückweise neu –
-           auf dem Gerät als Ruckeln und Flackern des wandernden Textes
-           bestätigt. Ohne den Hinweis entscheidet der Browser selbst,
-           und das Ergebnis ist auf dem Telefon glatt. */
       }
 
-      .manifest-text p {
-        margin: 0 0 1.2rem;
-        opacity: 1;
-        transition: opacity 0.3s ease;
+      /* Eine Tafel: ein Gedanke. Alle liegen übereinander; das Skript
+         blendet sie nacheinander auf, hält sie und löst sie wieder auf.
+
+         Bewusst ohne transition: die Werte kommen in jedem Bild aus der
+         Scroll-Position. Eine Überblendung obendrauf liefe ihr hinterher
+         und noch weiter, wenn der Finger längst weg ist.
+
+         Bewusst auch ohne festes will-change: eine Tafel ist klein, aber
+         dreizehn dauerhafte Ebenen summieren sich. Den Hinweis setzt das
+         Skript nur für die Sekunde, in der eine Tafel wirklich auf- oder
+         zerfällt. */
+      .manifest-plate {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        margin: 0;
+        opacity: 0;
+        visibility: hidden;
+        /* Der Text steht links. Von links skaliert wandert er beim
+           Auflösen nicht zur Seite. */
+        transform-origin: left center;
       }
 
-      .manifest-text p:last-child {
-        margin-bottom: 0;
-      }
-
-      /* Große Abstände - immer nur ein Block sichtbar */
-      .manifest-text p {
-        margin-bottom: 18rem;
-      }
-
-      /* Erster Absatz */
-      .manifest-opening {
-        margin-bottom: 18rem !important;
-      }
-
-      /* Pausen zwischen wichtigen Absätzen */
-      .manifest-pause {
-        margin-bottom: 18rem !important;
+      /* Ein <br> wäre in einem Flex-Kasten ein eigenes Flex-Element und
+         würde die Zeile nicht mehr umbrechen. Deshalb sitzt der Text der
+         Tafel in einem eigenen Block. */
+      .tafel-zeile {
+        display: block;
+        width: 100%;
       }
 
       .manifest-text em {
@@ -459,72 +446,71 @@
         font-weight: 700;
       }
 
-      /* Finale Zeile - "Into the Light" Animation */
-      .manifest-finale {
-        /* Nicht "all": die Animation unten fasst transform, filter,
-           text-shadow und opacity an. Eine Überblendung auf denselben
-           Eigenschaften arbeitet dagegen. */
-        transition: color 0.3s ease;
+      /* Schlusssatz. Die Tafeln davor lösen sich als Ganzes auf – der
+         letzte Satz verglüht Zeichen für Zeichen: jedes leuchtet kurz
+         auf, hebt ab und zerfällt. Die Lichtwelle läuft von links nach
+         rechts durch den Satz, in Leserichtung.
+
+         Das Skript zerlegt den Satz beim Laden. Wörter bleiben dabei als
+         Einheit zusammen, damit der Umbruch auf dem Telefon stimmt. */
+      .finale-wort {
+        display: inline-block;
+        white-space: nowrap;
       }
 
-      .manifest-finale.glow {
-        animation: intoTheLight 5s ease-out forwards;
+      .finale-zeichen {
+        display: inline-block;
+      }
+
+      .manifest-finale.glow .finale-zeichen {
+        animation: zeichenVerglueht 2.6s cubic-bezier(0.33, 0, 0.5, 1) forwards;
+        /* Der Versatz je Zeichen macht die Welle. 42 ms mal 28 Zeichen
+           sind gut eine Sekunde vom ersten bis zum letzten Zünden. */
+        animation-delay: calc(var(--i, 0) * 42ms);
         /* filter: blur() ist auf dem Telefon teuer – jedes Bild wird neu
-           weichgezeichnet. Der Hinweis erlaubt eine eigene Ebene. */
+           weichgezeichnet. Hier ist der Hinweis vertretbar: die Zeichen
+           sind winzig und die Animation läuft genau einmal. */
         will-change: filter, transform, opacity;
       }
 
-      @keyframes intoTheLight {
+      @keyframes zeichenVerglueht {
         0% {
           opacity: 1;
           filter: blur(0);
-          transform: scale(1);
+          transform: translate(0, 0) scale(1);
           /* Derselbe Wert wie im Ruhezustand, damit der Schatten beim
              Zünden nicht sichtbar wegspringt. */
           text-shadow: 0 1px 10px rgba(10, 10, 15, 0.45);
         }
-        25% {
+        22% {
           opacity: 1;
           filter: blur(0);
-          transform: scale(1.02);
+          transform: translate(0, -1px) scale(1.07);
           text-shadow:
-            0 0 20px rgba(255, 255, 255, 0.8),
-            0 0 40px rgba(255, 255, 255, 0.6),
-            0 0 60px rgba(255, 255, 255, 0.4);
-          color: #fff;
-        }
-        50% {
-          opacity: 1;
-          filter: blur(0);
-          transform: scale(1.03);
-          text-shadow:
-            0 0 30px rgba(255, 255, 255, 0.9),
-            0 0 60px rgba(255, 255, 255, 0.7),
-            0 0 100px rgba(255, 255, 255, 0.5);
-          color: #fff;
-        }
-        75% {
-          opacity: 0.7;
-          filter: blur(3px);
-          transform: scale(1.06);
-          text-shadow:
-            0 0 40px rgba(255, 255, 255, 0.8),
-            0 0 80px rgba(255, 255, 255, 0.5),
-            0 0 120px rgba(255, 255, 255, 0.3);
+            0 0 16px rgba(255, 255, 255, 0.95),
+            0 0 34px rgba(255, 255, 255, 0.65),
+            0 0 60px rgba(255, 255, 255, 0.35);
         }
         100% {
           opacity: 0;
-          filter: blur(10px);
-          transform: scale(1.15);
-          text-shadow:
-            0 0 50px rgba(255, 255, 255, 0),
-            0 0 100px rgba(255, 255, 255, 0);
+          filter: blur(9px);
+          /* --x streut jedes Zeichen ein paar Pixel zur Seite: der Satz
+             zerfällt, statt geschlossen nach oben zu fahren. */
+          transform: translate(var(--x, 0px), -34px) scale(1.6);
+          text-shadow: 0 0 40px rgba(255, 255, 255, 0);
         }
       }
 
-      /* Spacer am Ende für den letzten Satz */
-      .manifest-end-spacer {
-        height: 280px; /* Extra Scroll-Raum - Satz steht alleine */
+      /* Ohne Bewegungsfreude: der Satz geht einfach aus. Das Zerlegen in
+         Zeichen unterbleibt in diesem Fall ganz. */
+      @media (prefers-reduced-motion: reduce) {
+        .finale-satz {
+          transition: opacity 1.5s ease;
+        }
+
+        .manifest-finale.glow .finale-satz {
+          opacity: 0;
+        }
       }
 
       /* Verzögerte Einblendung der nächsten Sektion */
@@ -539,45 +525,14 @@
         transform: translateY(0);
       }
 
-      .manifest-personal {
-        padding-left: 1.5rem;
-        border-left: 2px solid rgba(0, 47, 167, 0.4);
-        color: var(--text-muted);
-        font-size: 0.95em;
-        margin: 0 0 1.2rem;
-      }
-
-      .manifest-signature {
-        margin-top: 1.5rem;
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        letter-spacing: 0.05em;
-      }
-
       @media (max-width: 768px) {
         .manifest-section {
-          min-height: 1000vh;
+          min-height: 1300vh;
         }
 
         .manifest-container {
           padding: 1.5rem;
           height: 220px;
-        }
-
-        .manifest-text p {
-          margin-bottom: 14rem;
-        }
-
-        .manifest-opening {
-          margin-bottom: 14rem !important;
-        }
-
-        .manifest-pause {
-          margin-bottom: 14rem !important;
-        }
-
-        .manifest-end-spacer {
-          height: 200px;
         }
       }
 
@@ -3167,40 +3122,42 @@
     <!-- FIX: "fade-in" entfernt - Section ist zu groß (1200vh) für IntersectionObserver threshold -->
     <section class="manifest-section" id="manifest">
       <div class="manifest-container">
+        <!-- Eine Tafel je Gedanke. Sie liegen übereinander; das Skript
+             blendet sie nacheinander auf und löst sie wieder auf. -->
         <div class="manifest-text">
-          <p class="manifest-opening">Ich war 25 Jahre im Film.<br>
+          <p class="manifest-plate"><span class="tafel-zeile">Ich war 25 Jahre im Film.<br>
           Kino-Trailer.<br>
-          Timing, Wirkung, Aufmerksamkeit.</p>
+          Timing, Wirkung, Aufmerksamkeit.</span></p>
 
-          <p class="manifest-pause">Dann kam KI.<br>
-          Und ich merkte: Das verändert alles.</p>
+          <p class="manifest-plate"><span class="tafel-zeile">Dann kam KI.<br>
+          Und ich merkte: Das verändert alles.</span></p>
 
-          <p>Ich hatte Fragen, aber keine Antworten.<br>
+          <p class="manifest-plate"><span class="tafel-zeile">Ich hatte Fragen, aber keine Antworten.<br>
           Also musste ich selbst ran.<br>
-          Verstehen. Bauen. Sicherstellen.</p>
+          Verstehen. Bauen. Sicherstellen.</span></p>
 
-          <p class="manifest-pause">KI-Sicherheit ist zu wichtig für Halbwissen.</p>
+          <p class="manifest-plate"><span class="tafel-zeile">KI-Sicherheit ist zu wichtig für Halbwissen.</span></p>
 
-          <p>Deshalb bin ich heute hier.</p>
+          <p class="manifest-plate"><span class="tafel-zeile">Deshalb bin ich heute hier.</span></p>
 
-          <p class="manifest-pause">Mit Live-Projekten.<br>
+          <p class="manifest-plate"><span class="tafel-zeile">Mit Live-Projekten.<br>
           Mit einer TÜV-Zertifizierung.<br>
-          Mit 25 Jahren Deadline-Druck im Rücken.</p>
+          Mit 25 Jahren Deadline-Druck im Rücken.</span></p>
 
-          <p>Und mit dem, was mich prägt:</p>
+          <p class="manifest-plate"><span class="tafel-zeile">Und mit dem, was mich prägt:</span></p>
 
-          <p class="manifest-pause">Basquiat – die Energie, die Wut, die Schönheit im Krickelkrakel.<br>
-          Fauser, weil er nichts beschönigt.<br>
-          Stephenson, weil Unwissen keine Ausrede ist.<br>
-          Freiburg – Finke, Streich, Schuster. Haltung vor Erfolg.</p>
+          <p class="manifest-plate"><span class="tafel-zeile">Basquiat – die Energie, die Wut, die Schönheit im Krickelkrakel.</span></p>
 
-          <p class="manifest-pause">Ich mag Systeme,<br>
-          die den Menschen nicht vergessen.</p>
+          <p class="manifest-plate"><span class="tafel-zeile">Fauser, weil er nichts beschönigt.</span></p>
 
-          <p class="manifest-finale"><strong>Alles andere ist nur Technik.</strong></p>
+          <p class="manifest-plate"><span class="tafel-zeile">Stephenson, weil Unwissen keine Ausrede ist.</span></p>
 
-          <!-- Spacer für Scroll-Endpunkt -->
-          <div class="manifest-end-spacer"></div>
+          <p class="manifest-plate"><span class="tafel-zeile">Freiburg – Finke, Streich, Schuster. Haltung vor Erfolg.</span></p>
+
+          <p class="manifest-plate"><span class="tafel-zeile">Ich mag Systeme,<br>
+          die den Menschen nicht vergessen.</span></p>
+
+          <p class="manifest-plate manifest-finale"><span class="tafel-zeile"><strong class="finale-satz">Alles andere ist nur Technik.</strong></span></p>
         </div>
       </div>
     </section>
@@ -4042,47 +3999,112 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // MANIFEST SCROLL-EFFEKT - Text scrollt durch Fenster (4 Absätze sichtbar)
+      // MANIFEST SCROLL-EFFEKT - Tafeln erscheinen und lösen sich auf
       // ═══════════════════════════════════════════════════════════════
+      // Früher wanderte ein langer Textblock durch ein Fenster: die
+      // Tafeln verschwanden nach oben aus dem Bild. Jetzt liegen alle
+      // Tafeln übereinander an derselben Stelle, und jede bekommt ihr
+      // eigenes Stück des Scroll-Wegs: aufblenden, stehen, auflösen.
+      // Der Schlusssatz übernimmt die Auflösung selbst, Zeichen für
+      // Zeichen.
 
       document.addEventListener('DOMContentLoaded', () => {
         const manifestSection = document.querySelector('.manifest-section');
-        const manifestText = document.querySelector('.manifest-text');
+        const tafeln = Array.from(document.querySelectorAll('.manifest-plate'));
         const manifestFinale = document.querySelector('.manifest-finale');
         const delayedSection = document.querySelector('.delayed-section');
-        if (!manifestSection || !manifestText) return;
+        if (!manifestSection || !tafeln.length) return;
 
-        const manifestContainer = document.querySelector('.manifest-container');
+        const sanft = typeof window.matchMedia === 'function'
+          && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Wie lange eine Tafel steht, hängt daran, wie viel auf ihr
+        // steht. Der Schlusssatz bekommt den größten Anteil: dort läuft
+        // die Zeichen-Animation.
+        const gewichte = tafeln.map((el) => {
+          if (el === manifestFinale) return 1.8;
+          return 0.75 + 0.25 * (el.querySelectorAll('br').length + 1);
+        });
+        const summe = gewichte.reduce((a, b) => a + b, 0);
+        let lauf = 0;
+        const fenster = gewichte.map((gewicht) => {
+          const start = lauf / summe;
+          lauf += gewicht;
+          return { start, spanne: gewicht / summe };
+        });
+        const finaleFenster = manifestFinale
+          ? fenster[tafeln.indexOf(manifestFinale)]
+          : null;
+
+        // Zuletzt geschriebener Zustand je Tafel. Erspart dem Browser in
+        // den allermeisten Bildern jede Arbeit: nur die eine Tafel, die
+        // gerade auf- oder zerfällt, ändert sich überhaupt.
+        const zuletzt = tafeln.map(() => '');
+
+        zerlegeSchlusssatz();
 
         let finaleTriggered = false;
         let finaleTimeout = null;
 
-        // Einmal messen statt in jedem Bild. Das Lesen von scrollHeight
-        // zwingt den Browser, das Layout neu zu berechnen – und zwar
-        // direkt nachdem der vorige Durchlauf es mit dem transform
-        // ungültig gemacht hat. Nachgemessen kostet das allerdings nur
-        // 0,04 ms von 16,7 ms Budget: Aufräumen, keine Behebung.
-        let maxScroll = 0;
+        // Einmal messen statt in jedem Bild.
         let viewportHeight = window.innerHeight;
         let sectionHeight = 0;
         let lastWidth = window.innerWidth;
 
         function measureManifest() {
-          // Auch die Höhe der Sektion wird festgehalten. Sie steht in vh,
-          // und wie sich vh beim Ein- und Ausfahren der Adressleiste
-          // verhält, ist von Browser zu Browser verschieden. Aus dem
+          // Die Höhe der Sektion wird festgehalten. Sie steht in vh, und
+          // wie sich vh beim Ein- und Ausfahren der Adressleiste verhält,
+          // ist von Browser zu Browser verschieden. Aus dem
           // Zwischenspeicher gelesen, ist der Nenner unten in jedem Fall
           // ruhig.
           sectionHeight = manifestSection.offsetHeight;
-          // Höhe des Sichtfensters aus dem Element lesen: im CSS steht
-          // 280 px, unter 768 px Breite aber 220 px. Fest verdrahtet lief
-          // der Text auf dem Telefon 60 px zu weit.
-          const containerHeight = manifestContainer
-            ? manifestContainer.clientHeight
-            : 280;
-          maxScroll = Math.max(0, manifestText.scrollHeight - containerHeight);
           viewportHeight = window.innerHeight;
           lastWidth = window.innerWidth;
+        }
+
+        const klemme = (wert) => (wert < 0 ? 0 : wert > 1 ? 1 : wert);
+        // Weicher Start, weiches Ende – ohne die harte Kante einer
+        // linearen Blende.
+        const weich = (t) => t * t * (3 - 2 * t);
+
+        // Zerlegt den Schlusssatz in Wörter und Zeichen. Die Wörter
+        // bleiben als Einheit zusammen, damit der Zeilenumbruch auf dem
+        // Telefon stimmt. Für Screenreader bleibt der Satz am Stück.
+        function zerlegeSchlusssatz() {
+          const satz = manifestFinale && manifestFinale.querySelector('.finale-satz');
+          if (!satz || sanft) return;
+
+          const text = satz.textContent.trim();
+          const vorlesen = document.createElement('span');
+          vorlesen.className = 'sr-only';
+          vorlesen.textContent = text;
+          satz.parentNode.insertBefore(vorlesen, satz);
+          satz.setAttribute('aria-hidden', 'true');
+          satz.textContent = '';
+
+          const woerter = text.split(' ');
+          let nummer = 0;
+          woerter.forEach((wort, index) => {
+            const wortEl = document.createElement('span');
+            wortEl.className = 'finale-wort';
+            for (const zeichen of wort) {
+              const el = document.createElement('span');
+              el.className = 'finale-zeichen';
+              el.style.setProperty('--i', nummer++);
+              // Ein paar Pixel Streuung je Zeichen: der Satz zerfällt,
+              // statt geschlossen davonzufahren.
+              el.style.setProperty('--x', `${((Math.random() - 0.5) * 16).toFixed(1)}px`);
+              el.textContent = zeichen;
+              wortEl.appendChild(el);
+            }
+            satz.appendChild(wortEl);
+            if (index < woerter.length - 1) {
+              satz.appendChild(document.createTextNode(' '));
+              // Das Leerzeichen zählt mit, damit die Welle gleichmäßig
+              // durch den Satz läuft.
+              nummer++;
+            }
+          });
         }
 
         function updateManifestScroll() {
@@ -4092,35 +4114,76 @@
           // viewportHeight kommt bewusst aus dem Zwischenspeicher, nicht
           // frisch aus window.innerHeight: auf dem Telefon fährt die
           // Adressleiste beim Scrollen ein und aus und ändert den Wert um
-          // rund 70 px. Der Nenner würde mitwandern und den Text ohne
-          // Zutun des Lesers verschieben.
+          // rund 70 px. Der Nenner würde mitwandern und die Tafeln ohne
+          // Zutun des Lesers umblenden.
           const nenner = sectionHeight - viewportHeight;
-          const scrollProgress = nenner > 0
-            ? Math.max(0, Math.min(1, -sectionTop / nenner))
+          const fortschritt = nenner > 0 ? klemme(-sectionTop / nenner) : 0;
+
+          tafeln.forEach((el, index) => {
+            const { start, spanne } = fenster[index];
+            // 0 = Tafel beginnt aufzublenden, 1 = sie ist aufgelöst.
+            const lokal = (fortschritt - start) / spanne;
+
+            // Die nächste Tafel setzt an, während die vorige noch
+            // zerfällt. Die Überlappung ist knapp gehalten: beide stehen
+            // an derselben Stelle, zwei lesbare Texte übereinander wären
+            // Matsch. Die abgehende ist zu diesem Zeitpunkt nur noch ein
+            // Schleier.
+            const auf = weich(klemme((lokal + 0.12) / 0.30));
+            const ab = el === manifestFinale
+              ? 0
+              : weich(klemme((lokal - 0.74) / 0.34));
+            const deckung = auf * (1 - ab);
+
+            let stil;
+            if (deckung < 0.01) {
+              stil = 'visibility:hidden;opacity:0';
+            } else if (sanft) {
+              stil = `visibility:visible;opacity:${deckung.toFixed(2)}`;
+            } else if (auf >= 1 && ab <= 0) {
+              // Stehende Tafel: keine Unschärfe, keine Verschiebung,
+              // keine eigene Ebene. So billig wie normaler Text.
+              stil = 'visibility:visible;opacity:1';
+            } else {
+              // Unschärfe in halben Pixeln: sonst zeichnet der Browser
+              // bei jeder Nachkommastelle neu weich.
+              const unschaerfe = Math.round(((1 - auf) * 8 + ab * 12) * 2) / 2;
+              const hoehe = Math.round((1 - auf) * 14 - ab * 20);
+              const groesse = (1 - (1 - auf) * 0.025 + ab * 0.06).toFixed(3);
+              stil = 'visibility:visible;'
+                + `opacity:${deckung.toFixed(2)};`
+                + `filter:blur(${unschaerfe}px);`
+                + `transform:translate3d(0,${hoehe}px,0) scale(${groesse});`
+                + 'will-change:filter,transform,opacity';
+            }
+
+            if (stil !== zuletzt[index]) {
+              el.style.cssText = stil;
+              zuletzt[index] = stil;
+            }
+          });
+
+          // Der Schlusssatz verglüht, sobald er ganz dasteht.
+          const finaleLokal = finaleFenster
+            ? (fortschritt - finaleFenster.start) / finaleFenster.spanne
             : 0;
 
-          // Bewege den Text nach oben basierend auf Scroll-Progress
-          const translateY = -scrollProgress * maxScroll;
-          manifestText.style.transform = `translateY(${translateY}px)`;
-
-          // "Into the Light" Animation - wenn der letzte Satz erreicht ist
-          if (manifestFinale && scrollProgress > 0.88 && !finaleTriggered) {
+          if (manifestFinale && finaleLokal > 0.35 && !finaleTriggered) {
             finaleTriggered = true;
-            // 1 Sekunde warten, dann Animation starten
             finaleTimeout = setTimeout(() => {
               manifestFinale.classList.add('glow');
-              // Sektion gleichzeitig mit Animation einblenden (nicht danach)
+              // Sektion gleichzeitig mit der Animation einblenden.
               if (delayedSection) {
                 delayedSection.classList.add('visible');
               }
-            }, 1000);
+            }, 900);
           }
 
           // Reset wenn zurückgescrollt wird. Der Abstand zur Schwelle
           // oben ist bewusst groß: liegen Auslöser und Rücknahme dicht
           // beieinander, schaltet ein Wackeln von wenigen Pixeln die
-          // Leuchtanimation wieder und wieder an und aus.
-          if (scrollProgress < 0.80 && finaleTriggered) {
+          // Animation wieder und wieder an und aus.
+          if (finaleLokal < 0.1 && finaleTriggered) {
             finaleTriggered = false;
             if (finaleTimeout) clearTimeout(finaleTimeout);
             if (manifestFinale) manifestFinale.classList.remove('glow');

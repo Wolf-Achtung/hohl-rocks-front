@@ -44,8 +44,16 @@ Zwei Sonderschlüssel:
 ## Was das Skript selbst erledigt
 
 `lang`, `canonical`, `hreflang`, `og:locale`, den Verweis aufs eigene
-Manifest, den Sprachwechsel in der Fußzeile und den Verweis auf das
+Manifest, die Markierung im Sprachumschalter und den Verweis auf das
 englische Goodie.
+
+## Sprachweiche
+
+Ein kurzes Skript im Kopf der Seite entscheidet noch vor dem ersten Bild.
+Umgeleitet wird nur von der deutschen Startseite: wer `/en/` direkt
+aufruft, bleibt dort. Beim Erstbesuch entscheidet die Browsersprache,
+danach die von Hand getroffene Wahl (`localStorage`, Schlüssel
+`hohl-sprache`).
 
 ## Was nicht erzeugt wird
 

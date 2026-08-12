@@ -52,25 +52,21 @@ function uebersetze(text, herkunft) {
 }
 
 // -------------------------------------------------------------------
-// 1. Textknoten. Der Zerleger laeuft einmal durch die Datei und merkt
-//    sich, ob er gerade in <script> oder <style> steckt - dort wird
-//    nichts angefasst.
+// 1. Textknoten. Der Zerleger laeuft einmal durch die Datei.
 // -------------------------------------------------------------------
 let ergebnis = "";
 let rest = html;
-let stumm = null;
 
 while (rest.length) {
   const spitz = rest.indexOf("<");
 
   if (spitz === -1) {
-    ergebnis += stumm ? rest : textErsetzen(rest);
+    ergebnis += textErsetzen(rest);
     break;
   }
 
   if (spitz > 0) {
-    const text = rest.slice(0, spitz);
-    ergebnis += stumm ? text : textErsetzen(text);
+    ergebnis += textErsetzen(rest.slice(0, spitz));
     rest = rest.slice(spitz);
   }
 
@@ -87,19 +83,20 @@ while (rest.length) {
   const tag = rest.slice(0, schnitt);
   rest = rest.slice(schnitt);
 
-  // Im Skript steht JavaScript, kein Markup. Ein "<" darin ist ein
-  // Vergleich oder eine Vorlage - der Zerleger haelt es faelschlich fuer
-  // ein Tag. Solange stumm gesetzt ist, wird deshalb nichts angefasst,
-  // und alles landet unveraendert im Ergebnis.
-  const warStumm = stumm !== null;
-  const name = (tag.match(/^<\/?([a-zA-Z0-9-]+)/) || [])[1];
-  if (name) {
-    const zu = tag.startsWith("</");
-    if (!zu && !stumm && (name === "script" || name === "style")) stumm = name;
-    else if (zu && name === stumm) stumm = null;
-  }
+  const name = (tag.match(/^<([a-zA-Z0-9-]+)/) || [])[1];
+  ergebnis += attributeErsetzen(tag);
 
-  ergebnis += (warStumm || stumm) ? tag : attributeErsetzen(tag);
+  // In <script> und <style> steht kein Markup. Ein "<" darin ist ein
+  // Vergleich oder eine Vorlage - wer dort weiter nach Tags sucht,
+  // verschluckt sich am ersten "i < laenge" und haelt den Rest der Datei
+  // fuer Skript. Deshalb wird von hier bis zum schliessenden Tag alles
+  // unveraendert uebernommen, so wie es auch ein Browser tut.
+  if (name === "script" || name === "style") {
+    const schluss = new RegExp(`</${name}\\s*>`, "i").exec(rest);
+    const bis = schluss ? schluss.index : rest.length;
+    ergebnis += rest.slice(0, bis);
+    rest = rest.slice(bis);
+  }
 }
 
 function textErsetzen(stueck) {
@@ -154,9 +151,11 @@ ergebnis = ergebnis
   .replace(/<meta property="og:locale" content="de_DE"/,
     '<meta property="og:locale" content="en_GB"')
   .replace(/href="\/manifest\.json"/, 'href="/en/manifest.json"')
-  // Der Sprachwechsel zeigt aus der englischen Fassung zurueck.
-  .replace(/<a href="\/en\/"([^>]*?)hreflang="en"([^>]*?)data-sprachwechsel/,
-    '<a href="/"$1hreflang="de"$2data-sprachwechsel')
+  // Die Markierung im Sprachumschalter wandert von DE auf EN.
+  .replace(/(<a href="\/" hreflang="de" lang="de" class="sprache-option") aria-current="true"/,
+    "$1")
+  .replace(/(<a href="\/en\/" hreflang="en" lang="en" class="sprache-option")/,
+    '$1 aria-current="true"')
   // Das Goodie liegt in beiden Sprachen vor.
   .replace(/href="\/downloads\/klartext-standard\.md"/g,
     'href="/downloads/plain-language-standard.md"');

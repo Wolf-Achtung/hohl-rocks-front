@@ -2505,6 +2505,20 @@
         display: none;
       }
 
+      /* Ausfallgrund statt Antwort: zurueckhaltend, nicht alarmierend.
+         display bleibt unangetastet - das setzt das Skript per style. */
+      .battle-card-content.is-error {
+        font-size: 0.85rem;
+        font-style: italic;
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      .battle-card-content.is-error::before {
+        content: "– ";
+        font-style: normal;
+        opacity: 0.6;
+      }
+
       /* Scrollbar */
       .battle-card-content::-webkit-scrollbar {
         width: 5px;
@@ -2762,17 +2776,17 @@
           <div class="battle-examples">
             <span class="battle-examples-label">Beispiele:</span>
             <div class="battle-example-btns">
-              <button class="prompt-example-inline" data-prompt="Schreib einen Werbeslogan für vegane Currywurst in Berlin – maximal 6 Wörter, mit Wortwitz.">
-                Slogan: vegane Currywurst
+              <button class="prompt-example-inline" data-prompt="Eine Mitarbeiterin will eine Kundenliste in ChatGPT einfügen, um daraus Serienmails zu bauen. Erklär ihr in drei Sätzen, was daran das Problem ist – und was sie stattdessen tun kann, ohne dass es länger dauert.">
+                Kundendaten in ChatGPT?
               </button>
-              <button class="prompt-example-inline" data-prompt="Plane mir ein Wochenende in Lissabon mit 300 € Budget – Tag für Tag, mit zwei Geheimtipps abseits der Touristenpfade.">
-                Wochenend-Trip planen
+              <button class="prompt-example-inline" data-prompt="Ein Anbieter verspricht uns KI-Automatisierung, 80 % Zeitersparnis, in vier Wochen live. Nenn mir drei Fragen, die zeigen, ob da etwas dran ist – und woran ich die Ausweichantwort erkenne.">
+                KI-Versprechen prüfen
               </button>
-              <button class="prompt-example-inline" data-prompt="Ich will meinen Job kündigen, weiß aber nicht, wie ich es meinem Chef sage. Schreib mir einen Gesprächseinstieg – respektvoll, klar, ohne Floskeln.">
-                Kündigungs-Gespräch starten
+              <button class="prompt-example-inline" data-prompt="Erklär einem 12-köpfigen Mittelstands-Team in fünf Sätzen, was der EU AI Act für die tägliche Arbeit bedeutet. Ohne Paragrafen, ohne Panik, ohne Beraterdeutsch.">
+                EU AI Act in 5 Sätzen
               </button>
-              <button class="prompt-example-inline" data-prompt="Schreib die ersten drei Sätze eines Krimis, der in einem Berliner Späti um 3 Uhr morgens spielt.">
-                Krimi-Opening: Späti 3 Uhr
+              <button class="prompt-example-inline" data-prompt="Ich habe in einem 40-Personen-Betrieb gerade die Verantwortung für KI bekommen. Was mache ich in den ersten 30 Tagen – und was sollte ich auf keinen Fall zuerst anfassen?">
+                Erste 30 Tage mit KI
               </button>
             </div>
           </div>
@@ -3849,6 +3863,10 @@
           // Bold (**text**)
           html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
+          // Bricht eine Antwort mitten in einer Fettung ab, bleibt ein
+          // offenes ** stehen. Bis zum Ende fett setzen statt Sternchen zeigen.
+          html = html.replace(/\*\*([^*]*)$/, '<strong>$1</strong>');
+
           // Italic (*text* or _text_)
           html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
           html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
@@ -3890,7 +3908,11 @@
             const response = document.getElementById(`battle-response-${model}`);
             const time = document.getElementById(`battle-time-${model}`);
             if (loading) loading.style.display = 'flex';
-            if (response) { response.style.display = 'none'; response.innerHTML = ''; }
+            if (response) {
+              response.style.display = 'none';
+              response.innerHTML = '';
+              response.classList.remove('is-error');
+            }
             if (time) time.textContent = '–';
           });
 
@@ -3917,7 +3939,11 @@
             const response = document.getElementById(`battle-response-${model}`);
             const time = document.getElementById(`battle-time-${model}`);
             if (loading) loading.style.display = 'flex';
-            if (response) { response.style.display = 'none'; response.innerHTML = ''; }
+            if (response) {
+              response.style.display = 'none';
+              response.innerHTML = '';
+              response.classList.remove('is-error');
+            }
             if (time) time.textContent = '–';
           });
 
@@ -3949,7 +3975,16 @@
 
                 if (loading) loading.style.display = 'none';
                 if (responseEl) {
-                  responseEl.innerHTML = renderMarkdown(result.response) || '<p>Keine Antwort erhalten.</p>';
+                  const answer = renderMarkdown(result.response);
+                  if (answer) {
+                    responseEl.innerHTML = answer;
+                    responseEl.classList.remove('is-error');
+                  } else {
+                    // Das Backend schickt in result.error den Grund mit -
+                    // ohne ihn stand hier frueher nur "Keine Antwort erhalten".
+                    responseEl.textContent = result.error || 'Keine Antwort erhalten.';
+                    responseEl.classList.add('is-error');
+                  }
                   responseEl.style.display = 'block';
                 }
                 if (timeEl && result.responseTime) {
@@ -3965,7 +4000,8 @@
               const response = document.getElementById(`battle-response-${model}`);
               if (loading) loading.style.display = 'none';
               if (response) {
-                response.innerHTML = '<p>Fehler beim Laden. Bitte versuche es erneut.</p>';
+                response.textContent = 'Fehler beim Laden. Bitte versuche es erneut.';
+                response.classList.add('is-error');
                 response.style.display = 'block';
               }
             });

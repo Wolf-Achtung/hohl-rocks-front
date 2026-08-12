@@ -1,0 +1,32 @@
+{
+  "name": "Wolf Hohl - AI consultant",
+  "short_name": "Wolf Hohl",
+  "description": "TÜV-certified AI management from Berlin. Workflow automation, AI strategy, safe integration – for mid-sized companies that want AI. Without the empty promises.",
+  "start_url": "/en/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#002FA7",
+  "orientation": "portrait-primary",
+  "lang": "en",
+  "categories": [
+    "technology",
+    "business",
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/videos/road_poster.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "label": "Wolf Hohl homepage"
+    }
+  ]
+}

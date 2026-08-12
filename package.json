@@ -9,6 +9,8 @@
   },
   "scripts": {
     "serve": "npx serve public",
-    "lint": "npx htmlhint 'public/**/*.html' || true"
+    "lint": "npx htmlhint 'public/**/*.html' || true",
+    "build:en": "node scripts/build-en.mjs",
+    "check:en": "node scripts/build-en.mjs --pruefe"
   }
 }

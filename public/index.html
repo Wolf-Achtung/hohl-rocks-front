@@ -7,14 +7,14 @@
 
     <meta name="x-api-base" content=""/>
     <title>Wolf Hohl — KI-Experte & Experimentator</title>
-    <meta name="description" content="Wolf Hohl: TÜV-zertifiziertes KI-Management aus Berlin. 25 Jahre Medien-Erfahrung. Workflow-Automatisierung, KI-Strategie, sichere Integration. Für Mittelständler, die KI wollen – ohne Bullshit." />
+    <meta name="description" content="Wolf Hohl: TÜV-zertifiziertes KI-Management aus Berlin. 25 Jahre Medien-Erfahrung. Workflow-Automatisierung, KI-Strategie, sichere Integration. Für Mittelständler, die KI wollen – ohne leere Versprechen." />
     <link rel="canonical" href="https://hohl.rocks/" />
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://hohl.rocks/" />
     <meta property="og:title" content="Wolf Hohl — KI-Experte & Experimentator" />
-    <meta property="og:description" content="Wolf Hohl: TÜV-zertifiziertes KI-Management aus Berlin. 25 Jahre Medien-Erfahrung. Workflow-Automatisierung, KI-Strategie, sichere Integration. Für Mittelständler, die KI wollen – ohne Bullshit." />
+    <meta property="og:description" content="Wolf Hohl: TÜV-zertifiziertes KI-Management aus Berlin. 25 Jahre Medien-Erfahrung. Workflow-Automatisierung, KI-Strategie, sichere Integration. Für Mittelständler, die KI wollen – ohne leere Versprechen." />
     <meta property="og:image" content="https://hohl.rocks/videos/road_poster.jpg" />
     <meta property="og:locale" content="de_DE" />
     <meta property="og:site_name" content="Wolf Hohl" />
@@ -3606,6 +3606,7 @@
              Zwischenergebnisse laufender Projekte. Bewusst im selben Tab,
              wie der Model-Battle-Link daneben. -->
         <a href="https://artgen.de" class="footer-link">In Arbeit</a>
+        <a href="#" class="footer-link" data-action="goodie">Goodie: Klartext</a>
         <a href="#" class="footer-link" data-action="kontakt">Kontakt</a>
         <a href="#" class="footer-link" data-action="impressum">Impressum</a>
         <a href="#" class="footer-link" data-action="impressum">Datenschutz</a>
@@ -3817,7 +3818,7 @@
               <span class="ueber-year">Heute</span>
               <div>
                 <strong>KI-Berater für den Mittelstand</strong>
-                <p>Workflow-Automatisierung, KI-Strategie, sichere Integration – ohne Bullshit</p>
+                <p>Workflow-Automatisierung, KI-Strategie, sichere Integration – ohne leere Versprechen</p>
               </div>
             </div>
           </div>
@@ -3825,6 +3826,32 @@
           <div class="ueber-cta">
             <a href="#" class="btn-submit" data-action="kontakt" style="display: inline-block; text-decoration: none; text-align: center;">Kontakt aufnehmen</a>
           </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Goodie Overlay: der Schreibstandard der Seite zum Mitnehmen -->
+    <div id="ov-goodie" class="overlay" aria-hidden="true">
+      <div class="backdrop" data-close></div>
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="goodie-title" style="max-width: 560px;">
+        <header class="head">
+          <h2 id="goodie-title">Goodie: Der Klartext-Standard</h2>
+          <button class="close" aria-label="Schließen" data-close>×</button>
+        </header>
+        <div class="impressum-content">
+          <section class="imp-section">
+            <p>Alle Texte auf dieser Seite folgen einem Standard: ASD-STE100, die Klartext-Regel der Luftfahrt, übertragen auf Deutsch – kombiniert mit den vier Prinzipien von William Zinsser. Das Ergebnis: Texte, die man einmal liest und sofort versteht.</p>
+            <p style="margin-top: 1rem;"><a href="/downloads/klartext-standard.md" download class="btn-submit" style="display: inline-block; text-decoration: none; text-align: center;">Standard herunterladen (Markdown)</a></p>
+            <p>Frei verwendbar – ohne Anmeldung, ohne Haken.</p>
+          </section>
+          <section class="imp-section">
+            <h3>So setzt du ihn ein</h3>
+            <ul>
+              <li><strong>Mit KI-Assistenten:</strong> Gib die Datei Claude oder ChatGPT und schreibe: „Wende diesen Schreibstandard auf alle deine Texte an." In Claude funktioniert sie direkt als Skill.</li>
+              <li><strong>Im Team:</strong> Die Selbstprüfung am Ende ist eine Checkliste für jede Abgabe.</li>
+              <li><strong>Beim Lektorat:</strong> Die Regeln zeigen Satz für Satz, wo ein Text klemmt.</li>
+            </ul>
+          </section>
         </div>
       </section>
     </div>
@@ -4304,6 +4331,14 @@
           btn.addEventListener('click', (e) => {
             e.preventDefault();
             openOverlay('ov-ueber');
+          });
+        });
+
+        // Open goodie overlay (Klartext-Standard zum Download)
+        document.querySelectorAll('[data-action="goodie"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openOverlay('ov-goodie');
           });
         });
 

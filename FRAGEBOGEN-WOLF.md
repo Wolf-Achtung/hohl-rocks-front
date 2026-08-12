@@ -114,7 +114,7 @@
 
 ### 3.2 Für wen arbeitest du am liebsten?
 > *Beispiele:*
-> - "Mittelständler, die KI wollen, aber keinen Bullshit"
+> - "Mittelständler, die KI wollen, aber keine leeren Versprechen"
 > - "Kreativagenturen, die Angst haben, ersetzt zu werden – und lernen wollen, wie sie KI nutzen"
 > - "Geschäftsführer 50+, die nicht abgehängt werden wollen"
 > - "Teams, die schon ChatGPT nutzen, aber mehr rausholen wollen"

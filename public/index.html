@@ -176,14 +176,16 @@
         content: '';
         position: absolute;
         inset: 0;
-        /* Der Film lief mit nur 15-35 Prozent Abdunklung hinter allem
-           durch - dadurch flimmerte jede Bewegung durch die Inhaltsflaechen.
-           Oben bleibt die Strasse sichtbar, ab der Bildmitte wird es ruhig. */
+        /* Oben unveraendert hell - das Intro lebt vom Bild. Die Ruhe in den
+           Inhaltsbereichen kommt jetzt vom Milchglas der Flaechen selbst
+           (14 Prozent plus Weichzeichner), der Verlauf hilft nur noch
+           zurueckhaltend nach, wo Text steht. */
         background: linear-gradient(
           to bottom,
-          rgba(10, 10, 15, 0.3) 0%,
-          rgba(10, 10, 15, 0.58) 45%,
-          rgba(10, 10, 15, 0.82) 100%
+          rgba(10, 10, 15, 0.15) 0%,
+          rgba(10, 10, 15, 0.28) 35%,
+          rgba(10, 10, 15, 0.45) 60%,
+          rgba(10, 10, 15, 0.72) 100%
         );
         z-index: 1;
       }
@@ -3548,9 +3550,9 @@
 
           <a href="https://nichts-geschenkt.de" target="_blank" rel="noopener" class="portfolio-card">
             <span class="portfolio-card-status live"></span>
-            <span class="portfolio-card-category">Gesellschaft</span>
+            <span class="portfolio-card-category">Denkatelier</span>
             <h3 class="portfolio-card-title">nichts-geschenkt.de</h3>
-            <p class="portfolio-card-desc">Das Atelier der Radikalen Mitte, KI-unterstützt. Für Menschen, die nicht in Lager passen und trotzdem handeln wollen.</p>
+            <p class="portfolio-card-desc">Das Denkatelier für das KI-Zeitalter. Nicht mehr Stoff, sondern Urteil, Haltung und Handlungskraft – in einer Welt aus KI, Krisen und zu viel fremder Gewissheit.</p>
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
@@ -3580,9 +3582,9 @@
 
           <a href="https://mondelese.de" target="_blank" rel="noopener" class="portfolio-card">
             <span class="portfolio-card-status live"></span>
-            <span class="portfolio-card-category">Unterhaltung</span>
+            <span class="portfolio-card-category">Unterhaltung &amp; Selbstreflexion</span>
             <h3 class="portfolio-card-title">mondelese.de</h3>
-            <p class="portfolio-card-desc">Warum nur eine Vorhersage, wenn man auch alle haben kann? KI-unterstützt.</p>
+            <p class="portfolio-card-desc">Senet, das älteste bekannte Brettspiel, im Takt des Mondes: ein Brett, knapp 29½ Tage von Neumond zu Neumond. Keine Vorhersage – eine Frage am Tag und ein Satz mit auf den Weg.</p>
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 

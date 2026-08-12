@@ -2500,9 +2500,16 @@
         font-size: 0.9rem;
         line-height: 1.7;
         color: rgba(255, 255, 255, 0.9);
-        overflow-y: auto;
+        /* Kein Mini-Scrollbalken in der Uebersicht: was nicht passt, laeuft
+           in einen Verlauf aus, "Ganz lesen" oeffnet die volle Antwort */
+        overflow-y: hidden;
         max-height: 350px;
         display: none;
+      }
+
+      /* Waehrend des Streams scrollt die Karte selbst mit (JS pinnt ans Ende) */
+      .battle-card-content.streaming {
+        overflow-y: auto;
       }
 
       /* Ausfallgrund statt Antwort: zurueckhaltend, nicht alarmierend.
@@ -2621,36 +2628,40 @@
         box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
       }
 
-      /* Lesemodus: eine Karte in voller Breite, die anderen als Chips */
-      .battle-expand {
-        display: none;
-        align-items: center;
-        justify-content: center;
-        width: 26px;
-        height: 26px;
-        margin-left: 0.4rem;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        background: rgba(255, 255, 255, 0.06);
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.75rem;
+      /* Lesemodus: eine Karte in voller Breite, die anderen als Chips.
+         Der Einstieg ist der "Ganz lesen"-Knopf unter angeschnittenen
+         Antworten - der Text laeuft davor sichtbar in einen Verlauf aus. */
+      .battle-card-content.clipped {
+        -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+        mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+      }
+
+      .battle-read-btn {
+        align-self: center;
+        margin-top: 0.6rem;
+        padding: 0.45rem 1.2rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.82rem;
+        font-weight: 600;
         cursor: pointer;
-        transition: background 0.2s ease, color 0.2s ease;
+        transition: background 0.2s ease, border-color 0.2s ease;
       }
 
-      .battle-expand:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
+      .battle-read-btn:hover {
+        background: rgba(255, 255, 255, 0.16);
+        border-color: rgba(255, 255, 255, 0.4);
       }
 
-      @media (min-width: 900px) {
-        .battle-card.has-answer .battle-expand {
-          display: inline-flex;
-        }
+      .battle-read-btn[hidden] {
+        display: none;
+      }
 
-        .battle-cards.focus-mode .battle-expand {
-          display: none;
-        }
+      /* Mobil klappt die Karte an Ort und Stelle auf */
+      .battle-card.open .battle-card-content {
+        max-height: none;
       }
 
       .battle-chips {
@@ -3080,7 +3091,6 @@
                     <span class="badge-name">Claude</span>
                   </div>
                   <span class="battle-card-time" id="battle-time-claude">–</span>
-                  <button class="battle-expand" data-expand="claude" aria-label="Antwort in voller Breite lesen" title="Ganz lesen">⤢</button>
                 </div>
                 <div class="battle-card-loading" id="battle-loading-claude">
                   <div class="loading-dots">
@@ -3088,6 +3098,7 @@
                   </div>
                 </div>
                 <div class="battle-card-content" id="battle-response-claude"></div>
+                <button class="battle-read-btn" data-read="claude" hidden>Ganz lesen</button>
               </div>
 
               <!-- GPT -->
@@ -3098,7 +3109,6 @@
                     <span class="badge-name">GPT</span>
                   </div>
                   <span class="battle-card-time" id="battle-time-gpt">–</span>
-                  <button class="battle-expand" data-expand="gpt" aria-label="Antwort in voller Breite lesen" title="Ganz lesen">⤢</button>
                 </div>
                 <div class="battle-card-loading" id="battle-loading-gpt">
                   <div class="loading-dots">
@@ -3106,6 +3116,7 @@
                   </div>
                 </div>
                 <div class="battle-card-content" id="battle-response-gpt"></div>
+                <button class="battle-read-btn" data-read="gpt" hidden>Ganz lesen</button>
               </div>
 
               <!-- Perplexity -->
@@ -3116,7 +3127,6 @@
                     <span class="badge-name">Perplexity</span>
                   </div>
                   <span class="battle-card-time" id="battle-time-perplexity">–</span>
-                  <button class="battle-expand" data-expand="perplexity" aria-label="Antwort in voller Breite lesen" title="Ganz lesen">⤢</button>
                 </div>
                 <div class="battle-card-loading" id="battle-loading-perplexity">
                   <div class="loading-dots">
@@ -3124,6 +3134,7 @@
                   </div>
                 </div>
                 <div class="battle-card-content" id="battle-response-perplexity"></div>
+                <button class="battle-read-btn" data-read="perplexity" hidden>Ganz lesen</button>
               </div>
 
               <!-- Gemini -->
@@ -3134,7 +3145,6 @@
                     <span class="badge-name">Gemini</span>
                   </div>
                   <span class="battle-card-time" id="battle-time-gemini">–</span>
-                  <button class="battle-expand" data-expand="gemini" aria-label="Antwort in voller Breite lesen" title="Ganz lesen">⤢</button>
                 </div>
                 <div class="battle-card-loading" id="battle-loading-gemini">
                   <div class="loading-dots">
@@ -3142,6 +3152,7 @@
                   </div>
                 </div>
                 <div class="battle-card-content" id="battle-response-gemini"></div>
+                <button class="battle-read-btn" data-read="gemini" hidden>Ganz lesen</button>
               </div>
             </div>
 
@@ -4275,10 +4286,11 @@
             if (response) {
               response.style.display = 'none';
               response.innerHTML = '';
-              response.classList.remove('is-error', 'streaming');
+              response.classList.remove('is-error', 'streaming', 'clipped');
             }
             if (time) time.textContent = '–';
-            if (battleCards[model]) battleCards[model].classList.remove('voted', 'has-answer');
+            if (battleCards[model]) battleCards[model].classList.remove('voted', 'has-answer', 'open');
+            if (readBtns[model]) readBtns[model].hidden = true;
           });
           if (voteBox) voteBox.hidden = true;
           if (voteBtns) voteBtns.innerHTML = '';
@@ -4325,6 +4337,7 @@
           if (timeEl && result.responseTime) {
             timeEl.textContent = `${(result.responseTime / 1000).toFixed(1)}s`;
           }
+          requestAnimationFrame(() => updateReadAffordance(model));
         }
 
         // Streaming: ankommende Textstuecke direkt in die Karte tippen
@@ -4341,6 +4354,7 @@
           }
           streamText[model] += text;
           responseEl.textContent = streamText[model];
+          responseEl.scrollTop = responseEl.scrollHeight;
         }
 
         async function runStreamingBattle(prompt) {
@@ -4508,6 +4522,9 @@
           cardsBox.classList.add('focus-mode');
           MODELS.forEach(m => {
             if (battleCards[m]) battleCards[m].classList.toggle('expanded', m === model);
+            const el = document.getElementById(`battle-response-${m}`);
+            if (el) el.classList.remove('clipped');
+            if (readBtns[m]) readBtns[m].hidden = true;
           });
           renderChips(model);
         }
@@ -4517,11 +4534,41 @@
           cardsBox.classList.remove('focus-mode');
           MODELS.forEach(m => { if (battleCards[m]) battleCards[m].classList.remove('expanded'); });
           if (chipsBar) { chipsBar.hidden = true; chipsBar.innerHTML = ''; }
+          requestAnimationFrame(() => MODELS.forEach(updateReadAffordance));
         }
 
-        document.querySelectorAll('.battle-expand').forEach(btn => {
-          btn.addEventListener('click', () => expandCard(btn.dataset.expand));
+        const readBtns = {};
+        document.querySelectorAll('.battle-read-btn').forEach(btn => {
+          readBtns[btn.dataset.read] = btn;
+          btn.addEventListener('click', () => openAnswer(btn.dataset.read));
         });
+
+        // Desktop: Lesemodus in voller Breite. Mobil (Karten sind dort
+        // ohnehin gestapelt): an Ort und Stelle aufklappen.
+        function openAnswer(model) {
+          if (window.matchMedia('(min-width: 900px)').matches) {
+            expandCard(model);
+            return;
+          }
+          const card = battleCards[model];
+          const responseEl = document.getElementById(`battle-response-${model}`);
+          if (card) card.classList.add('open');
+          if (responseEl) responseEl.classList.remove('clipped');
+          if (readBtns[model]) readBtns[model].hidden = true;
+        }
+
+        // Knopf nur zeigen, wenn wirklich etwas abgeschnitten ist
+        function updateReadAffordance(model) {
+          const responseEl = document.getElementById(`battle-response-${model}`);
+          const btn = readBtns[model];
+          const card = battleCards[model];
+          if (!responseEl || !btn || !card) return;
+          const inFocus = cardsBox && cardsBox.classList.contains('focus-mode');
+          const clipped = !inFocus && !card.classList.contains('open') &&
+            responseEl.scrollHeight > responseEl.clientHeight + 4;
+          responseEl.classList.toggle('clipped', clipped);
+          btn.hidden = !clipped;
+        }
 
         // ---------------------------------------------------------------
         // Start Battle

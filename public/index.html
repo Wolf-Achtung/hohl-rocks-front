@@ -2519,6 +2519,275 @@
         opacity: 0.6;
       }
 
+      /* Blind-Battle: Karten anonym, bis abgestimmt oder aufgedeckt ist */
+      .battle-card.blind .badge-icon {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.1) 100%);
+      }
+
+      /* Laufender Stream: dezenter Cursor am Textende */
+      .battle-card-content.streaming::after {
+        content: "▋";
+        display: inline;
+        margin-left: 2px;
+        opacity: 0.5;
+        animation: battle-caret 1s steps(1) infinite;
+      }
+
+      @keyframes battle-caret {
+        50% { opacity: 0; }
+      }
+
+      /* Abstimmung nach dem Blind-Battle */
+      .battle-vote {
+        margin-top: 1.25rem;
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        text-align: center;
+      }
+
+      .battle-vote-question {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.75rem 0;
+      }
+
+      .battle-vote-btns {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .battle-vote-btn {
+        padding: 0.5rem 1.1rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+      }
+
+      .battle-vote-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.16);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+
+      .battle-vote-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+
+      .battle-vote-skip {
+        display: inline-block;
+        margin-top: 0.65rem;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 0.8rem;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      .battle-vote-skip:hover {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Eigene display-Werte wuerden das hidden-Attribut sonst uebersteuern */
+      .battle-vote-skip[hidden],
+      .battle-chips[hidden] {
+        display: none;
+      }
+
+      .battle-vote-result {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.75);
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .battle-vote-result strong {
+        color: var(--text-primary);
+      }
+
+      .battle-card.voted {
+        border-color: rgba(255, 255, 255, 0.45);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+      }
+
+      /* Lesemodus: eine Karte in voller Breite, die anderen als Chips */
+      .battle-expand {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        margin-left: 0.4rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+
+      .battle-expand:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+      }
+
+      @media (min-width: 900px) {
+        .battle-card.has-answer .battle-expand {
+          display: inline-flex;
+        }
+
+        .battle-cards.focus-mode .battle-expand {
+          display: none;
+        }
+      }
+
+      .battle-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .battle-chip {
+        padding: 0.45rem 1rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+
+      .battle-chip:hover {
+        background: rgba(255, 255, 255, 0.14);
+        color: white;
+      }
+
+      .battle-chip.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+
+      .battle-chip-time {
+        font-weight: 400;
+        opacity: 0.6;
+        margin-left: 0.3rem;
+      }
+
+      .battle-cards.focus-mode {
+        display: block;
+      }
+
+      .battle-cards.focus-mode .battle-card {
+        display: none;
+      }
+
+      .battle-cards.focus-mode .battle-card.expanded {
+        display: flex;
+        max-width: 46rem;
+        margin: 0 auto;
+      }
+
+      /* Volle Lesebreite: Deckel ab, Schrift eine Stufe rauf */
+      .battle-cards.focus-mode .battle-card.expanded .battle-card-content {
+        max-height: none;
+        font-size: 1rem;
+        line-height: 1.8;
+      }
+
+      /* Heute in KI */
+      .ki-news-section {
+        position: relative;
+        z-index: 2;
+        padding: 3rem 1.5rem;
+      }
+
+      .ki-news-inner {
+        max-width: 56rem;
+        margin: 0 auto;
+        padding: 1.5rem 1.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      .ki-news-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .ki-news-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .ki-news-date {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .ki-news-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .ki-news-list li {
+        line-height: 1.55;
+      }
+
+      .ki-news-list a {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        transition: border-color 0.2s ease;
+      }
+
+      .ki-news-list a:hover {
+        border-color: rgba(255, 255, 255, 0.7);
+      }
+
+      .ki-news-source {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.4);
+        margin-left: 0.5rem;
+      }
+
+      .ki-news-sentence {
+        display: block;
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.65);
+        margin-top: 0.15rem;
+      }
+
       /* Scrollbar */
       .battle-card-content::-webkit-scrollbar {
         width: 5px;
@@ -2800,6 +3069,8 @@
               </button>
             </div>
 
+            <div class="battle-chips" id="battle-chips" hidden></div>
+
             <div class="battle-cards">
               <!-- Claude -->
               <div class="battle-card" data-model="claude">
@@ -2809,6 +3080,7 @@
                     <span class="badge-name">Claude</span>
                   </div>
                   <span class="battle-card-time" id="battle-time-claude">–</span>
+                  <button class="battle-expand" data-expand="claude" aria-label="Antwort in voller Breite lesen" title="Ganz lesen">⤢</button>
                 </div>
                 <div class="battle-card-loading" id="battle-loading-claude">
                   <div class="loading-dots">
@@ -2826,6 +3098,7 @@
                     <span class="badge-name">GPT</span>
                   </div>
                   <span class="battle-card-time" id="battle-time-gpt">–</span>
+                  <button class="battle-expand" data-expand="gpt" aria-label="Antwort in voller Breite lesen" title="Ganz lesen">⤢</button>
                 </div>
                 <div class="battle-card-loading" id="battle-loading-gpt">
                   <div class="loading-dots">
@@ -2843,6 +3116,7 @@
                     <span class="badge-name">Perplexity</span>
                   </div>
                   <span class="battle-card-time" id="battle-time-perplexity">–</span>
+                  <button class="battle-expand" data-expand="perplexity" aria-label="Antwort in voller Breite lesen" title="Ganz lesen">⤢</button>
                 </div>
                 <div class="battle-card-loading" id="battle-loading-perplexity">
                   <div class="loading-dots">
@@ -2860,6 +3134,7 @@
                     <span class="badge-name">Gemini</span>
                   </div>
                   <span class="battle-card-time" id="battle-time-gemini">–</span>
+                  <button class="battle-expand" data-expand="gemini" aria-label="Antwort in voller Breite lesen" title="Ganz lesen">⤢</button>
                 </div>
                 <div class="battle-card-loading" id="battle-loading-gemini">
                   <div class="loading-dots">
@@ -2869,8 +3144,27 @@
                 <div class="battle-card-content" id="battle-response-gemini"></div>
               </div>
             </div>
+
+            <!-- Blind-Battle: Abstimmung, danach Auflösung -->
+            <div class="battle-vote" id="battle-vote" hidden>
+              <p class="battle-vote-question" id="battle-vote-question">Welche Antwort ist die beste?</p>
+              <div class="battle-vote-btns" id="battle-vote-btns"></div>
+              <button class="battle-vote-skip" id="battle-vote-skip" type="button">Ohne Abstimmung aufdecken</button>
+              <p class="battle-vote-result" id="battle-vote-result" hidden></p>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Heute in KI: täglich frische Meldungen, lautlos weg bei Fehler -->
+    <section class="ki-news-section" id="ki-news-section" hidden aria-label="Aktuelle KI-Meldungen">
+      <div class="ki-news-inner">
+        <div class="ki-news-head">
+          <span class="ki-news-label">Heute in KI</span>
+          <span class="ki-news-date" id="ki-news-date"></span>
+        </div>
+        <ul class="ki-news-list" id="ki-news-list"></ul>
       </div>
     </section>
 
@@ -3897,13 +4191,83 @@
           return html;
         }
 
-        // Reset Battle
-        function resetBattle() {
-          battlePromptInput.value = '';
-          battleStartBtn.disabled = true;
-          if (battleResults) battleResults.style.display = 'none';
+        // ---------------------------------------------------------------
+        // Blind-Battle: die vier Karten laufen anonym als Antwort A-D,
+        // erst nach der Abstimmung (oder auf Wunsch) fallen die Namen.
+        // ---------------------------------------------------------------
+        const MODELS = ['claude', 'gpt', 'perplexity', 'gemini'];
+        const MODEL_META = {
+          claude: { name: 'Claude', letter: 'C' },
+          gpt: { name: 'GPT', letter: 'G' },
+          perplexity: { name: 'Perplexity', letter: 'P' },
+          gemini: { name: 'Gemini', letter: 'G' }
+        };
+        const battleCards = {};
+        MODELS.forEach(m => { battleCards[m] = document.querySelector(`.battle-card[data-model="${m}"]`); });
+        const cardsBox = document.querySelector('.battle-cards');
+        const chipsBar = document.getElementById('battle-chips');
+        const voteBox = document.getElementById('battle-vote');
+        const voteQuestion = document.getElementById('battle-vote-question');
+        const voteBtns = document.getElementById('battle-vote-btns');
+        const voteSkip = document.getElementById('battle-vote-skip');
+        const voteResult = document.getElementById('battle-vote-result');
 
-          ['claude', 'gpt', 'perplexity', 'gemini'].forEach(model => {
+        let blindLetters = {};   // model -> 'A'..'D'
+        let revealed = false;
+        let roundResults = {};   // model -> Ergebnisobjekt vom Backend
+        let streamText = {};     // model -> bisher gestreamter Text
+        let battleRunning = false;
+
+        function labelFor(model) {
+          return revealed ? MODEL_META[model].name : `Antwort ${blindLetters[model] || '?'}`;
+        }
+
+        // Karten mischen und anonymisieren
+        function setupBlindRound() {
+          revealed = false;
+          roundResults = {};
+          streamText = {};
+          blindLetters = {};
+          const order = [...MODELS];
+          for (let i = order.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [order[i], order[j]] = [order[j], order[i]];
+          }
+          order.forEach((model, idx) => {
+            const letter = String.fromCharCode(65 + idx);
+            blindLetters[model] = letter;
+            const card = battleCards[model];
+            if (!card) return;
+            card.style.order = idx;
+            card.classList.add('blind');
+            card.classList.remove('voted', 'has-answer');
+            const icon = card.querySelector('.badge-icon');
+            const name = card.querySelector('.badge-name');
+            if (icon) icon.textContent = letter;
+            if (name) name.textContent = `Antwort ${letter}`;
+          });
+          exitFocusMode();
+        }
+
+        function revealModels() {
+          if (revealed) return;
+          revealed = true;
+          MODELS.forEach(model => {
+            const card = battleCards[model];
+            if (!card) return;
+            card.classList.remove('blind');
+            const icon = card.querySelector('.badge-icon');
+            const name = card.querySelector('.badge-name');
+            if (icon) icon.textContent = MODEL_META[model].letter;
+            if (name) name.textContent = MODEL_META[model].name;
+          });
+          if (cardsBox && cardsBox.classList.contains('focus-mode')) {
+            renderChips(MODELS.find(m => battleCards[m] && battleCards[m].classList.contains('expanded')));
+          }
+        }
+
+        function resetCards() {
+          MODELS.forEach(model => {
             const loading = document.getElementById(`battle-loading-${model}`);
             const response = document.getElementById(`battle-response-${model}`);
             const time = document.getElementById(`battle-time-${model}`);
@@ -3911,18 +4275,261 @@
             if (response) {
               response.style.display = 'none';
               response.innerHTML = '';
-              response.classList.remove('is-error');
+              response.classList.remove('is-error', 'streaming');
             }
             if (time) time.textContent = '–';
+            if (battleCards[model]) battleCards[model].classList.remove('voted', 'has-answer');
           });
+          if (voteBox) voteBox.hidden = true;
+          if (voteBtns) voteBtns.innerHTML = '';
+          if (voteResult) { voteResult.hidden = true; voteResult.innerHTML = ''; }
+        }
 
+        // Reset Battle
+        function resetBattle() {
+          battlePromptInput.value = '';
+          battleStartBtn.disabled = true;
+          if (battleResults) battleResults.style.display = 'none';
+          resetCards();
+          exitFocusMode();
           battlePromptInput.focus();
         }
 
+        // Ein fertiges Modell-Ergebnis in seine Karte schreiben
+        // (identisch fuer Streaming-Abschluss und JSON-Rueckfallebene)
+        function applyResult(result) {
+          const model = result.model;
+          if (!MODELS.includes(model)) return;
+          roundResults[model] = result;
+
+          const loading = document.getElementById(`battle-loading-${model}`);
+          const responseEl = document.getElementById(`battle-response-${model}`);
+          const timeEl = document.getElementById(`battle-time-${model}`);
+
+          if (loading) loading.style.display = 'none';
+          if (responseEl) {
+            responseEl.classList.remove('streaming');
+            const answer = renderMarkdown(result.response);
+            if (answer) {
+              responseEl.innerHTML = answer;
+              responseEl.classList.remove('is-error');
+              if (battleCards[model]) battleCards[model].classList.add('has-answer');
+            } else {
+              // Das Backend schickt in result.error den Grund mit -
+              // ohne ihn stand hier frueher nur "Keine Antwort erhalten".
+              responseEl.textContent = result.error || 'Keine Antwort erhalten.';
+              responseEl.classList.add('is-error');
+            }
+            responseEl.style.display = 'block';
+          }
+          if (timeEl && result.responseTime) {
+            timeEl.textContent = `${(result.responseTime / 1000).toFixed(1)}s`;
+          }
+        }
+
+        // Streaming: ankommende Textstuecke direkt in die Karte tippen
+        function applyDelta(model, text) {
+          if (!MODELS.includes(model) || typeof text !== 'string') return;
+          const responseEl = document.getElementById(`battle-response-${model}`);
+          if (!responseEl) return;
+          if (!(model in streamText)) {
+            streamText[model] = '';
+            const loading = document.getElementById(`battle-loading-${model}`);
+            if (loading) loading.style.display = 'none';
+            responseEl.classList.add('streaming');
+            responseEl.style.display = 'block';
+          }
+          streamText[model] += text;
+          responseEl.textContent = streamText[model];
+        }
+
+        async function runStreamingBattle(prompt) {
+          const resp = await fetch(`${API_BASE}/api/model-battle-stream`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+          });
+          if (!resp.ok || !resp.body) throw new Error(`Stream nicht verfuegbar (${resp.status})`);
+
+          const reader = resp.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            let newline;
+            while ((newline = buffer.indexOf('\n')) >= 0) {
+              const line = buffer.slice(0, newline).trim();
+              buffer = buffer.slice(newline + 1);
+              if (!line.startsWith('data:')) continue;
+              let event;
+              try { event = JSON.parse(line.slice(5)); } catch { continue; }
+              if (event.type === 'delta') applyDelta(event.model, event.text);
+              else if (event.type === 'result') applyResult(event);
+            }
+          }
+        }
+
+        // Rueckfallebene: klassische JSON-Route, alles auf einmal
+        async function runClassicBattle(prompt) {
+          const response = await fetch(`${API_BASE}/api/model-battle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+          });
+          if (!response.ok) throw new Error(`API Error: ${response.status}`);
+          const data = await response.json();
+          if (data.responses) data.responses.forEach(applyResult);
+        }
+
+        // ---------------------------------------------------------------
+        // Abstimmung und Aufloesung
+        // ---------------------------------------------------------------
+        function finishRound() {
+          const successes = MODELS.filter(m => roundResults[m] && roundResults[m].success);
+          if (successes.length >= 2) showVoteUI(successes);
+          else revealModels();
+        }
+
+        function showVoteUI(successes) {
+          if (!voteBox || !voteBtns) return;
+          voteBtns.innerHTML = '';
+          [...successes]
+            .sort((a, b) => blindLetters[a].localeCompare(blindLetters[b]))
+            .forEach(model => {
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'battle-vote-btn';
+              btn.textContent = `Antwort ${blindLetters[model]}`;
+              btn.addEventListener('click', () => submitVote(model));
+              voteBtns.appendChild(btn);
+            });
+          if (voteQuestion) voteQuestion.hidden = false;
+          if (voteSkip) voteSkip.hidden = false;
+          if (voteResult) voteResult.hidden = true;
+          voteBox.hidden = false;
+        }
+
+        async function submitVote(model) {
+          voteBtns.querySelectorAll('button').forEach(b => { b.disabled = true; });
+          if (battleCards[model]) battleCards[model].classList.add('voted');
+
+          // Die Statistik ist Kuer, die Aufloesung Pflicht: ein Fehler beim
+          // Speichern darf das Aufdecken nicht verhindern.
+          let stats = null;
+          try {
+            const resp = await fetch(`${API_BASE}/api/battle-vote`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ model })
+            });
+            if (resp.ok) stats = await resp.json();
+          } catch (e) { /* offline o.ae. - macht nichts */ }
+
+          const letter = blindLetters[model];
+          revealModels();
+          showResolution(model, letter, stats);
+        }
+
+        function showResolution(model, letter, stats) {
+          if (!voteBox || !voteResult) return;
+          if (voteQuestion) voteQuestion.hidden = true;
+          voteBtns.innerHTML = '';
+          if (voteSkip) voteSkip.hidden = true;
+
+          voteResult.innerHTML = '';
+          const lead = document.createElement('span');
+          lead.append(`Antwort ${letter} war `);
+          const strong = document.createElement('strong');
+          strong.textContent = MODEL_META[model].name;
+          lead.appendChild(strong);
+          lead.append('.');
+          voteResult.appendChild(lead);
+
+          if (stats && stats.total > 0 && stats.votes) {
+            const line = document.createElement('span');
+            const parts = MODELS.map(m => {
+              const v = stats.votes[m];
+              return `${MODEL_META[m].name} ${v ? v.percent : 0} %`;
+            });
+            line.textContent = `Alle Stimmen bisher (${stats.total}): ${parts.join(' · ')}`;
+            voteResult.appendChild(document.createElement('br'));
+            voteResult.appendChild(line);
+          }
+          voteResult.hidden = false;
+          voteBox.hidden = false;
+        }
+
+        if (voteSkip) {
+          voteSkip.addEventListener('click', () => {
+            revealModels();
+            if (voteBox) voteBox.hidden = true;
+          });
+        }
+
+        // ---------------------------------------------------------------
+        // Lesemodus: eine Karte in voller Breite, die anderen als Chips
+        // ---------------------------------------------------------------
+        function renderChips(activeModel) {
+          if (!chipsBar || !cardsBox) return;
+          chipsBar.innerHTML = '';
+          if (!cardsBox.classList.contains('focus-mode')) { chipsBar.hidden = true; return; }
+
+          [...MODELS]
+            .sort((a, b) => (blindLetters[a] || 'Z').localeCompare(blindLetters[b] || 'Z'))
+            .forEach(model => {
+              const chip = document.createElement('button');
+              chip.type = 'button';
+              chip.className = 'battle-chip' + (model === activeModel ? ' active' : '');
+              chip.textContent = labelFor(model);
+              const time = roundResults[model] && roundResults[model].responseTime;
+              if (time) {
+                const t = document.createElement('span');
+                t.className = 'battle-chip-time';
+                t.textContent = `${(time / 1000).toFixed(1)}s`;
+                chip.appendChild(t);
+              }
+              chip.addEventListener('click', () => expandCard(model));
+              chipsBar.appendChild(chip);
+            });
+
+          const close = document.createElement('button');
+          close.type = 'button';
+          close.className = 'battle-chip';
+          close.textContent = '✕ Übersicht';
+          close.addEventListener('click', exitFocusMode);
+          chipsBar.appendChild(close);
+          chipsBar.hidden = false;
+        }
+
+        function expandCard(model) {
+          if (!cardsBox || !battleCards[model]) return;
+          cardsBox.classList.add('focus-mode');
+          MODELS.forEach(m => {
+            if (battleCards[m]) battleCards[m].classList.toggle('expanded', m === model);
+          });
+          renderChips(model);
+        }
+
+        function exitFocusMode() {
+          if (!cardsBox) return;
+          cardsBox.classList.remove('focus-mode');
+          MODELS.forEach(m => { if (battleCards[m]) battleCards[m].classList.remove('expanded'); });
+          if (chipsBar) { chipsBar.hidden = true; chipsBar.innerHTML = ''; }
+        }
+
+        document.querySelectorAll('.battle-expand').forEach(btn => {
+          btn.addEventListener('click', () => expandCard(btn.dataset.expand));
+        });
+
+        // ---------------------------------------------------------------
         // Start Battle
+        // ---------------------------------------------------------------
         async function startBattle() {
           const prompt = battlePromptInput.value.trim();
-          if (!prompt) return;
+          if (!prompt || battleRunning) return;
+          battleRunning = true;
 
           const btnText = battleStartBtn.querySelector('.btn-text');
           const btnIcon = battleStartBtn.querySelector('.btn-icon');
@@ -3932,20 +4539,8 @@
           if (btnIcon) btnIcon.textContent = '⏳';
 
           if (battleResults) battleResults.style.display = 'block';
-
-          // Reset and show loading
-          ['claude', 'gpt', 'perplexity', 'gemini'].forEach(model => {
-            const loading = document.getElementById(`battle-loading-${model}`);
-            const response = document.getElementById(`battle-response-${model}`);
-            const time = document.getElementById(`battle-time-${model}`);
-            if (loading) loading.style.display = 'flex';
-            if (response) {
-              response.style.display = 'none';
-              response.innerHTML = '';
-              response.classList.remove('is-error');
-            }
-            if (time) time.textContent = '–';
-          });
+          resetCards();
+          setupBlindRound();
 
           // Scroll to results
           if (battleResults) {
@@ -3955,47 +4550,30 @@
           }
 
           try {
-            const response = await fetch(`${API_BASE}/api/model-battle`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt })
-            });
-
-            if (!response.ok) throw new Error(`API Error: ${response.status}`);
-
-            const data = await response.json();
-
-            // Display results
-            if (data.responses) {
-              data.responses.forEach(result => {
-                const modelKey = result.model;
-                const loading = document.getElementById(`battle-loading-${modelKey}`);
-                const responseEl = document.getElementById(`battle-response-${modelKey}`);
-                const timeEl = document.getElementById(`battle-time-${modelKey}`);
-
-                if (loading) loading.style.display = 'none';
-                if (responseEl) {
-                  const answer = renderMarkdown(result.response);
-                  if (answer) {
-                    responseEl.innerHTML = answer;
-                    responseEl.classList.remove('is-error');
-                  } else {
-                    // Das Backend schickt in result.error den Grund mit -
-                    // ohne ihn stand hier frueher nur "Keine Antwort erhalten".
-                    responseEl.textContent = result.error || 'Keine Antwort erhalten.';
-                    responseEl.classList.add('is-error');
-                  }
-                  responseEl.style.display = 'block';
-                }
-                if (timeEl && result.responseTime) {
-                  timeEl.textContent = `${(result.responseTime / 1000).toFixed(1)}s`;
-                }
-              });
+            try {
+              await runStreamingBattle(prompt);
+            } catch (streamError) {
+              if (Object.keys(roundResults).length === 0) {
+                // Stream kam gar nicht zustande - klassische Route
+                await runClassicBattle(prompt);
+              } else {
+                console.error('Battle-Stream abgebrochen:', streamError);
+              }
             }
 
+            // Bricht die Verbindung mittendrin ab, sauber schliessen statt
+            // ewig Ladepunkte zu zeigen
+            MODELS.forEach(model => {
+              if (!roundResults[model]) {
+                applyResult({ model, response: null, error: 'Verbindung unterbrochen', success: false });
+              }
+            });
+
+            finishRound();
           } catch (error) {
             console.error('Battle error:', error);
-            ['claude', 'gpt', 'perplexity', 'gemini'].forEach(model => {
+            revealModels();
+            MODELS.forEach(model => {
               const loading = document.getElementById(`battle-loading-${model}`);
               const response = document.getElementById(`battle-response-${model}`);
               if (loading) loading.style.display = 'none';
@@ -4006,7 +4584,8 @@
               }
             });
           } finally {
-            battleStartBtn.disabled = false;
+            battleRunning = false;
+            battleStartBtn.disabled = !battlePromptInput.value.trim();
             if (btnText) btnText.textContent = 'Vergleich starten';
             if (btnIcon) btnIcon.textContent = '→';
           }
@@ -4041,6 +4620,64 @@
             }
           });
         });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // HEUTE IN KI - taegliche Meldungen, lautlos weg bei Fehler
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const section = document.getElementById('ki-news-section');
+        const list = document.getElementById('ki-news-list');
+        const dateEl = document.getElementById('ki-news-date');
+        if (!section || !list) return;
+        const API_BASE = document.querySelector('meta[name="x-api-base"]')?.content ?? '';
+
+        async function loadNews() {
+          try {
+            const resp = await fetch(`${API_BASE}/api/news`);
+            if (!resp.ok) return;
+            const data = await resp.json();
+            const items = (Array.isArray(data.items) ? data.items : [])
+              .filter(item => item && item.titel && /^https?:\/\//.test(item.url || ''));
+            if (!items.length) return;
+
+            list.innerHTML = '';
+            items.forEach(item => {
+              const li = document.createElement('li');
+              const link = document.createElement('a');
+              link.href = item.url;
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+              link.textContent = item.titel;
+              li.appendChild(link);
+              if (item.quelle) {
+                const source = document.createElement('span');
+                source.className = 'ki-news-source';
+                source.textContent = item.quelle;
+                li.appendChild(source);
+              }
+              if (item.satz) {
+                const sentence = document.createElement('span');
+                sentence.className = 'ki-news-sentence';
+                sentence.textContent = item.satz;
+                li.appendChild(sentence);
+              }
+              list.appendChild(li);
+            });
+
+            if (dateEl && data.date) {
+              const day = new Date(`${data.date}T12:00:00`);
+              if (!isNaN(day)) {
+                dateEl.textContent = new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'long' }).format(day);
+              }
+            }
+            section.hidden = false;
+          } catch (e) { /* Sektion bleibt einfach weg */ }
+        }
+
+        // Erst nach dem Intro laden - die Meldungen haben keine Eile
+        setTimeout(loadNews, 2500);
       });
 
       // ═══════════════════════════════════════════════════════════════

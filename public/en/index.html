@@ -5,6 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
 
+    <!-- Sprachweiche, noch vor dem ersten Bild. Sonst blitzt die falsche
+         Fassung kurz auf.
+
+         Umgeleitet wird nur von der deutschen Startseite. Wer /en/ direkt
+         aufruft - aus einem geteilten Link, einer Suchtreffer-Liste -
+         bleibt dort, egal was sein Browser bevorzugt. Eine einmal von
+         Hand getroffene Wahl gewinnt danach immer. -->
+    <script>
+      (function () {
+        try {
+          if ((document.documentElement.lang || 'de') !== 'de') return;
+
+          var gewaehlt = null;
+          try { gewaehlt = localStorage.getItem('hohl-sprache'); } catch (e) { /* Privates Fenster */ }
+
+          var ziel = gewaehlt;
+          if (ziel !== 'de' && ziel !== 'en') {
+            // Erstbesuch: die erste Sprache der Browserliste entscheidet,
+            // die eine der beiden Fassungen trifft.
+            var liste = navigator.languages || [navigator.language || 'de'];
+            ziel = 'de';
+            for (var i = 0; i < liste.length; i++) {
+              var eintrag = String(liste[i]).toLowerCase();
+              if (eintrag.indexOf('de') === 0) break;
+              if (eintrag.indexOf('en') === 0) { ziel = 'en'; break; }
+            }
+          }
+
+          if (ziel === 'en') location.replace('/en/' + location.search + location.hash);
+        } catch (e) { /* Im Zweifel bleibt die aufgerufene Fassung stehen */ }
+      })();
+    </script>
+
     <meta name="x-api-base" content=""/>
     <title>Wolf Hohl — AI expert & experimenter</title>
     <meta name="description" content="Wolf Hohl: TÜV-certified AI management from Berlin. 25 years in media. Workflow automation, AI strategy, safe integration. For mid-sized companies that want AI – without the empty promises." />
@@ -369,8 +402,10 @@
         background: transparent;
         /* Scroll-Weg für alle Tafeln zusammen. Jede bekommt daraus ihr
            eigenes Fenster – mehrzeilige stehen länger, der Schlusssatz am
-           längsten. Rund 95 vh pro einzeiliger Tafel. */
-        min-height: 1500vh;
+           längsten. Rund 115 vh pro einzeiliger Tafel: genug Weg, dass
+           Auf- und Zerfall Zeit haben, statt in drei Mausrad-Stufen
+           vorbeizuhuschen. */
+        min-height: 1800vh;
         margin-bottom: 0;
       }
 
@@ -422,11 +457,7 @@
         display: flex;
         align-items: center;
         margin: 0;
-        opacity: 0;
         visibility: hidden;
-        /* Der Text steht links. Von links skaliert wandert er beim
-           Auflösen nicht zur Seite. */
-        transform-origin: left center;
       }
 
       /* Ein <br> wäre in einem Flex-Kasten ein eigenes Flex-Element und
@@ -435,6 +466,17 @@
       .tafel-zeile {
         display: block;
         width: 100%;
+      }
+
+      /* Das Skript macht aus jeder Zeile ein eigenes Element und blendet
+         sie leicht versetzt - eine dreizeilige Tafel baut sich von oben
+         nach unten auf und zerfällt ebenso. */
+      .tafel-line {
+        display: block;
+        opacity: 0;
+        /* Der Text steht links. Von links skaliert wandert er beim
+           Auflösen nicht zur Seite. */
+        transform-origin: left center;
       }
 
       .manifest-text em {
@@ -530,7 +572,7 @@
 
       @media (max-width: 768px) {
         .manifest-section {
-          min-height: 1300vh;
+          min-height: 1550vh;
         }
 
         .manifest-container {
@@ -3011,6 +3053,71 @@
 
       /* Sound Toggle Button */
       /* Floating Sound Button (bottom-left) */
+      /* Sprachwahl oben rechts. Klein, ruhig, immer da - nicht als
+         letzter Verweis in der Fußzeile, wo sie erst findet, wer die
+         ganze Seite hinter sich hat. */
+      .sprache-float {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 100;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        padding: 3px;
+        background: rgba(15, 15, 20, 0.72);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(99, 135, 255, 0.35);
+        border-radius: 18px;
+        font-family: var(--font-family);
+      }
+
+      .sprache-option {
+        /* Flex statt Innenabstand: so lässt sich die Trefferfläche direkt
+           angeben, statt sie aus Schriftgröße und Zeilenhöhe zu erraten. */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        min-height: 32px;
+        padding: 0 0.55rem;
+        border-radius: 15px;
+        color: rgba(180, 200, 255, 0.75);
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        line-height: 1;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.25s ease, color 0.25s ease;
+      }
+
+      .sprache-option:hover,
+      .sprache-option:focus-visible {
+        color: #fff;
+        background: rgba(99, 135, 255, 0.18);
+      }
+
+      /* Die aufgerufene Fassung ist markiert. */
+      .sprache-option[aria-current] {
+        background: var(--accent-primary);
+        color: #fff;
+      }
+
+      @media (max-width: 768px) {
+        .sprache-float {
+          top: 14px;
+          right: 14px;
+        }
+
+        /* Fingerkuppe statt Mauszeiger. */
+        .sprache-option {
+          min-width: 46px;
+          min-height: 42px;
+        }
+      }
+
       .sound-float {
         position: fixed;
         bottom: 24px;
@@ -3106,6 +3213,14 @@
     <a href="#ausprobieren" class="skip-intro" id="skip-intro" style="display:none;" aria-label="Skip to the tools">
       Straight to the tools ↓
     </a>
+
+    <!-- Sprachwahl (fest, oben rechts). Zwei Fassungen, ein Klick.
+         scripts/build-en.mjs setzt die Markierung in der englischen
+         Fassung auf EN um. -->
+    <nav class="sprache-float" aria-label="Sprache / Language">
+      <a href="/" hreflang="de" lang="de" class="sprache-option">DE</a>
+      <a href="/en/" hreflang="en" lang="en" class="sprache-option" aria-current="true">EN</a>
+    </nav>
 
     <!-- Sound Toggle Button (fixed, bottom-left) -->
     <button class="sound-float" id="sound-float" aria-label="Sound on/off" title="Sound on/off">
@@ -3563,9 +3678,6 @@
              wie der Model-Battle-Link daneben. -->
         <a href="https://artgen.de" class="footer-link">In progress</a>
         <a href="#" class="footer-link" data-action="goodie">Goodie: Plain language</a>
-        <!-- Sprachwechsel. scripts/build-en.mjs dreht diesen Verweis in
-             der englischen Fassung um. -->
-        <a href="/" class="footer-link" hreflang="de" data-sprachwechsel>Deutsch</a>
         <a href="#" class="footer-link" data-action="kontakt">Contact</a>
         <a href="#" class="footer-link" data-action="impressum">Legal notice</a>
         <a href="#" class="footer-link" data-action="impressum">Privacy</a>
@@ -4003,12 +4115,24 @@
       // ═══════════════════════════════════════════════════════════════
       // MANIFEST SCROLL-EFFEKT - Tafeln erscheinen und lösen sich auf
       // ═══════════════════════════════════════════════════════════════
-      // Früher wanderte ein langer Textblock durch ein Fenster: die
-      // Tafeln verschwanden nach oben aus dem Bild. Jetzt liegen alle
-      // Tafeln übereinander an derselben Stelle, und jede bekommt ihr
-      // eigenes Stück des Scroll-Wegs: aufblenden, stehen, auflösen.
+      // Alle Tafeln liegen übereinander an derselben Stelle. Jede bekommt
+      // ihr eigenes Stück des Scroll-Wegs: aufblenden, stehen, auflösen.
       // Der Schlusssatz übernimmt die Auflösung selbst, Zeichen für
       // Zeichen.
+      //
+      // Zwei Dinge machen den Wechsel geschmeidig:
+      //
+      // 1. Der angezeigte Fortschritt folgt der Scroll-Position gedämpft
+      //    statt sie starr zu spiegeln. Ein Mausrad springt in Stufen von
+      //    rund 100 px; ohne Dämpfung sieht man von einer Blende drei,
+      //    vier Zwischenstände - sie ruckelt. Der gedämpfte Wert gleitet
+      //    zwischen den Stufen durch. Hier ist der Nachlauf unschädlich:
+      //    es bewegt sich nichts, was der Finger begleitet.
+      //
+      // 2. Die Zeilen einer Tafel sind leicht gegeneinander versetzt. Eine
+      //    dreizeilige Tafel baut sich von oben nach unten auf und zerfällt
+      //    in derselben Richtung - dieselbe Welle wie beim Schlusssatz, nur
+      //    eine Stufe gröber.
 
       document.addEventListener('DOMContentLoaded', () => {
         const manifestSection = document.querySelector('.manifest-section');
@@ -4020,9 +4144,9 @@
         const sanft = typeof window.matchMedia === 'function'
           && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Wie lange eine Tafel steht, hängt daran, wie viel auf ihr
-        // steht. Der Schlusssatz bekommt den größten Anteil: dort läuft
-        // die Zeichen-Animation.
+        // Wie lange eine Tafel steht, hängt daran, wie viel auf ihr steht.
+        // Der Schlusssatz bekommt den größten Anteil: dort läuft die
+        // Zeichen-Animation.
         const gewichte = tafeln.map((el) => {
           if (el === manifestFinale) return 1.8;
           return 0.75 + 0.25 * (el.querySelectorAll('br').length + 1);
@@ -4038,17 +4162,40 @@
           ? fenster[tafeln.indexOf(manifestFinale)]
           : null;
 
-        // Zuletzt geschriebener Zustand je Tafel. Erspart dem Browser in
-        // den allermeisten Bildern jede Arbeit: nur die eine Tafel, die
-        // gerade auf- oder zerfällt, ändert sich überhaupt.
-        const zuletzt = tafeln.map(() => '');
+        // Jede Zeile wird ein eigenes Element - nur so lässt sie sich
+        // einzeln blenden. Die Textknoten bleiben dabei dieselben, das
+        // Wörterbuch der englischen Fassung greift also weiter.
+        const zeilenJeTafel = tafeln.map((el) => {
+          const behaelter = el.querySelector('.tafel-zeile');
+          if (!behaelter) return [];
+          const teile = [];
+          let aktuell = document.createElement('span');
+          aktuell.className = 'tafel-line';
+          for (const knoten of Array.from(behaelter.childNodes)) {
+            if (knoten.nodeName === 'BR') {
+              teile.push(aktuell);
+              aktuell = document.createElement('span');
+              aktuell.className = 'tafel-line';
+            } else {
+              aktuell.appendChild(knoten);
+            }
+          }
+          teile.push(aktuell);
+          teile.forEach((teil) => behaelter.appendChild(teil));
+          return teile;
+        });
+
+        // Zuletzt geschriebener Zustand. Erspart dem Browser in den
+        // allermeisten Bildern jede Arbeit: nur was sich gerade wandelt,
+        // wird überhaupt angefasst.
+        const zuletztTafel = tafeln.map(() => '');
+        const zuletztZeile = zeilenJeTafel.map((zeilen) => zeilen.map(() => ''));
 
         zerlegeSchlusssatz();
 
         let finaleTriggered = false;
         let finaleTimeout = null;
 
-        // Einmal messen statt in jedem Bild.
         let viewportHeight = window.innerHeight;
         let sectionHeight = 0;
         let lastWidth = window.innerWidth;
@@ -4065,7 +4212,7 @@
         }
 
         const klemme = (wert) => (wert < 0 ? 0 : wert > 1 ? 1 : wert);
-        // Weicher Start, weiches Ende – ohne die harte Kante einer
+        // Weicher Start, weiches Ende - ohne die harte Kante einer
         // linearen Blende.
         const weich = (t) => t * t * (3 - 2 * t);
 
@@ -4101,7 +4248,7 @@
             }
             satz.appendChild(wortEl);
             if (index < woerter.length - 1) {
-              satz.appendChild(document.createTextNode(' '));
+              satz.appendChild(document.createTextNode(' '));
               // Das Leerzeichen zählt mit, damit die Welle gleichmäßig
               // durch den Satz läuft.
               nummer++;
@@ -4109,59 +4256,75 @@
           });
         }
 
-        function updateManifestScroll() {
-          const sectionTop = manifestSection.getBoundingClientRect().top;
+        // Versatz zwischen zwei Zeilen derselben Tafel, als Anteil ihres
+        // Fensters.
+        const ZEILEN_VERSATZ = 0.045;
 
-          // Scroll-Fortschritt (0 = Section beginnt, 1 = Section endet).
-          // viewportHeight kommt bewusst aus dem Zwischenspeicher, nicht
-          // frisch aus window.innerHeight: auf dem Telefon fährt die
-          // Adressleiste beim Scrollen ein und aus und ändert den Wert um
-          // rund 70 px. Der Nenner würde mitwandern und die Tafeln ohne
-          // Zutun des Lesers umblenden.
-          const nenner = sectionHeight - viewportHeight;
-          const fortschritt = nenner > 0 ? klemme(-sectionTop / nenner) : 0;
-
+        function zeichne(fortschritt) {
           tafeln.forEach((el, index) => {
             const { start, spanne } = fenster[index];
-            // 0 = Tafel beginnt aufzublenden, 1 = sie ist aufgelöst.
             const lokal = (fortschritt - start) / spanne;
+            const istFinale = el === manifestFinale;
+            const zeilen = zeilenJeTafel[index];
 
-            // Die nächste Tafel setzt an, während die vorige noch
-            // zerfällt. Die Überlappung ist knapp gehalten: beide stehen
-            // an derselben Stelle, zwei lesbare Texte übereinander wären
-            // Matsch. Die abgehende ist zu diesem Zeitpunkt nur noch ein
-            // Schleier.
-            const auf = weich(klemme((lokal + 0.12) / 0.30));
-            const ab = el === manifestFinale
-              ? 0
-              : weich(klemme((lokal - 0.74) / 0.34));
-            const deckung = auf * (1 - ab);
+            // Die erste Tafel bekommt keinen Vorlauf: sie hat keine
+            // Vorgängerin, mit der sie sich überblenden müsste. Mit
+            // Vorlauf stünde sie schon beim Laden als Schleier im Bild.
+            const vorlauf = index === 0 ? 0 : 0.14;
 
-            let stil;
-            if (deckung < 0.01) {
-              stil = 'visibility:hidden;opacity:0';
-            } else if (sanft) {
-              stil = `visibility:visible;opacity:${deckung.toFixed(2)}`;
-            } else if (auf >= 1 && ab <= 0) {
-              // Stehende Tafel: keine Unschärfe, keine Verschiebung,
-              // keine eigene Ebene. So billig wie normaler Text.
-              stil = 'visibility:visible;opacity:1';
-            } else {
-              // Unschärfe in halben Pixeln: sonst zeichnet der Browser
-              // bei jeder Nachkommastelle neu weich.
-              const unschaerfe = Math.round(((1 - auf) * 8 + ab * 12) * 2) / 2;
-              const hoehe = Math.round((1 - auf) * 14 - ab * 20);
-              const groesse = (1 - (1 - auf) * 0.025 + ab * 0.06).toFixed(3);
-              stil = 'visibility:visible;'
-                + `opacity:${deckung.toFixed(2)};`
-                + `filter:blur(${unschaerfe}px);`
-                + `transform:translate3d(0,${hoehe}px,0) scale(${groesse});`
-                + 'will-change:filter,transform,opacity';
-            }
+            let sichtbar = false;
 
-            if (stil !== zuletzt[index]) {
-              el.style.cssText = stil;
-              zuletzt[index] = stil;
+            zeilen.forEach((zeileEl, zeilenNr) => {
+              // Die Zeilen laufen leicht versetzt - die Tafel baut sich
+              // von oben nach unten auf und zerfällt ebenso.
+              const lokalZ = istFinale
+                ? lokal
+                : lokal - zeilenNr * ZEILEN_VERSATZ;
+
+              const auf = weich(klemme((lokalZ + vorlauf) / (vorlauf + 0.26)));
+              const ab = istFinale
+                ? 0
+                : weich(klemme((lokalZ - 0.70) / 0.38));
+              const deckung = auf * (1 - ab);
+
+              let stil;
+              if (deckung < 0.005) {
+                stil = 'opacity:0';
+              } else if (sanft) {
+                sichtbar = true;
+                stil = `opacity:${deckung.toFixed(3)}`;
+              } else if (auf >= 1 && ab <= 0) {
+                // Stehende Zeile: keine Unschärfe, keine Verschiebung,
+                // keine eigene Ebene. So billig wie normaler Text.
+                sichtbar = true;
+                stil = 'opacity:1';
+              } else {
+                sichtbar = true;
+                // Unschärfe in Vierteln eines Pixels: fein genug, dass
+                // man keine Stufen sieht, grob genug, dass der Browser
+                // nicht bei jeder Nachkommastelle neu weichzeichnet.
+                const unschaerfe = Math.round(((1 - auf) * 10 + ab * 14) * 4) / 4;
+                const hoehe = ((1 - auf) * 16 - ab * 22).toFixed(1);
+                const groesse = (1 - (1 - auf) * 0.03 + ab * 0.07).toFixed(4);
+                stil = `opacity:${deckung.toFixed(3)};`
+                  + `filter:blur(${unschaerfe}px);`
+                  + `transform:translate3d(0,${hoehe}px,0) scale(${groesse});`
+                  + 'will-change:filter,transform,opacity';
+              }
+
+              if (stil !== zuletztZeile[index][zeilenNr]) {
+                zeileEl.style.cssText = stil;
+                zuletztZeile[index][zeilenNr] = stil;
+              }
+            });
+
+            // Eine unsichtbare Tafel nimmt der Browser komplett aus dem
+            // Rennen - günstiger, als zwölf durchsichtige Absätze in jedem
+            // Bild mitzurechnen.
+            const tafelStil = sichtbar ? 'visibility:visible' : 'visibility:hidden';
+            if (tafelStil !== zuletztTafel[index]) {
+              el.style.cssText = tafelStil;
+              zuletztTafel[index] = tafelStil;
             }
           });
 
@@ -4181,8 +4344,8 @@
             }, 900);
           }
 
-          // Reset wenn zurückgescrollt wird. Der Abstand zur Schwelle
-          // oben ist bewusst groß: liegen Auslöser und Rücknahme dicht
+          // Reset wenn zurückgescrollt wird. Der Abstand zur Schwelle oben
+          // ist bewusst groß: liegen Auslöser und Rücknahme dicht
           // beieinander, schaltet ein Wackeln von wenigen Pixeln die
           // Animation wieder und wieder an und aus.
           if (finaleLokal < 0.1 && finaleTriggered) {
@@ -4193,29 +4356,85 @@
           }
         }
 
-        // Initial ausführen
+        // ── Gedämpfter Nachlauf ──────────────────────────────────────
+        // ziel kommt aus der Scroll-Position, gezeigt gleitet hinterher.
+        let ziel = 0;
+        let gezeigt = 0;
+        let laeuft = false;
+        let letzteZeit = 0;
+
+        function messeZiel() {
+          const sectionTop = manifestSection.getBoundingClientRect().top;
+          // viewportHeight kommt bewusst aus dem Zwischenspeicher, nicht
+          // frisch aus window.innerHeight: auf dem Telefon fährt die
+          // Adressleiste beim Scrollen ein und aus und ändert den Wert um
+          // rund 70 px. Der Nenner würde mitwandern und die Tafeln ohne
+          // Zutun des Lesers umblenden.
+          const nenner = sectionHeight - viewportHeight;
+          ziel = nenner > 0 ? klemme(-sectionTop / nenner) : 0;
+        }
+
+        function schritt(jetzt) {
+          // Nach einem Tabwechsel liegt der letzte Zeitstempel weit
+          // zurück. Gedeckelt, sonst springt die Dämpfung.
+          const dt = Math.min(50, letzteZeit ? jetzt - letzteZeit : 16);
+          letzteZeit = jetzt;
+
+          const abstand = ziel - gezeigt;
+          if (Math.abs(abstand) > 0.12) {
+            // Sprungmarke oder Ende-Taste: nicht durch alle Tafeln
+            // rauschen, sondern sofort dastehen.
+            gezeigt = ziel;
+          } else {
+            // Zeitbasiert statt je Bild: bei 120 Hz sonst doppelt so
+            // schnell wie bei 60.
+            gezeigt += abstand * (1 - Math.exp(-dt / 110));
+            if (Math.abs(ziel - gezeigt) < 0.0002) gezeigt = ziel;
+          }
+
+          zeichne(gezeigt);
+
+          if (gezeigt !== ziel) {
+            requestAnimationFrame(schritt);
+          } else {
+            laeuft = false;
+            letzteZeit = 0;
+          }
+        }
+
+        function anstossen() {
+          messeZiel();
+          if (sanft) {
+            // Ohne Bewegungsfreude: kein Gleiten, nur der reine Stand.
+            gezeigt = ziel;
+            zeichne(gezeigt);
+            return;
+          }
+          if (!laeuft) {
+            laeuft = true;
+            letzteZeit = 0;
+            requestAnimationFrame(schritt);
+          }
+        }
+
+        // Initial ausführen - ohne Gleiten, sonst blendet die erste Tafel
+        // beim Laden ohne Zutun auf.
         measureManifest();
-        updateManifestScroll();
+        messeZiel();
+        gezeigt = ziel;
+        zeichne(gezeigt);
 
         // Schriften kommen später an und ändern die Texthöhe.
         if (document.fonts && document.fonts.ready) {
           document.fonts.ready.then(() => {
             measureManifest();
-            updateManifestScroll();
+            messeZiel();
+            gezeigt = ziel;
+            zeichne(gezeigt);
           });
         }
 
-        // Bei Scroll aktualisieren (mit Throttling für Performance)
-        let ticking = false;
-        window.addEventListener('scroll', () => {
-          if (!ticking) {
-            window.requestAnimationFrame(() => {
-              updateManifestScroll();
-              ticking = false;
-            });
-            ticking = true;
-          }
-        }, { passive: true });
+        window.addEventListener('scroll', anstossen, { passive: true });
 
         // Neu vermessen nur bei einer echten Änderung: Drehung, oder ein
         // Höhensprung, der größer ist als jede Adressleiste. Das Ein- und
@@ -4225,7 +4444,9 @@
           const hoheSprungt = Math.abs(window.innerHeight - viewportHeight) > 150;
           if (breiteAnders || hoheSprungt) {
             measureManifest();
-            updateManifestScroll();
+            messeZiel();
+            gezeigt = ziel;
+            zeichne(gezeigt);
           }
         }, { passive: true });
       });
@@ -4404,6 +4625,16 @@
           btn.addEventListener('click', (e) => {
             e.preventDefault();
             openOverlay('ov-goodie');
+          });
+        });
+
+        // Sprachwahl merken. Von Hand getroffen schlägt sie ab jetzt jede
+        // Browsereinstellung - die Weiche im Kopf der Seite liest sie.
+        document.querySelectorAll('.sprache-option').forEach(link => {
+          link.addEventListener('click', () => {
+            try {
+              localStorage.setItem('hohl-sprache', link.getAttribute('hreflang'));
+            } catch (e) { /* Privates Fenster: dann gilt sie nur diesmal */ }
           });
         });
 

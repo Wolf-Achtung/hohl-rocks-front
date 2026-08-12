@@ -46,3 +46,9 @@
 /tips/*
   Content-Type: text/html; charset=utf-8
   Cache-Control: no-cache
+
+# Goodies: charset explizit, sonst zeigen Browser Umlaute als Zeichensalat,
+# wenn jemand die Datei direkt oeffnet statt sie herunterzuladen.
+/downloads/*
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: no-cache

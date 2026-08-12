@@ -143,6 +143,24 @@
         border: 0;
       }
 
+      /* Eine Stelle fuer alle Inhaltsflaechen: dichter und weicher als
+         zuvor, damit der Hintergrund nicht mehr durchscheint. */
+      :root {
+        --glass-bg: rgba(255, 255, 255, 0.14);
+        --glass-border: rgba(255, 255, 255, 0.18);
+        --glass-blur: blur(20px) saturate(1.15);
+      }
+
+      /* Mobil laeuft gar kein Video, sondern ein Standbild - dort genuegt
+         die dichtere Flaeche, und der Weichzeichner spart sich die
+         Compositing-Ebenen auf schwaecheren Geraeten. */
+      @media (max-width: 768px), (hover: none) {
+        :root {
+          --glass-bg: rgba(255, 255, 255, 0.1);
+          --glass-blur: none;
+        }
+      }
+
       /* ═══════════════════════════════════════════════════════════════
          BACKGROUND VIDEO
          ═══════════════════════════════════════════════════════════════ */
@@ -158,11 +176,14 @@
         content: '';
         position: absolute;
         inset: 0;
+        /* Der Film lief mit nur 15-35 Prozent Abdunklung hinter allem
+           durch - dadurch flimmerte jede Bewegung durch die Inhaltsflaechen.
+           Oben bleibt die Strasse sichtbar, ab der Bildmitte wird es ruhig. */
         background: linear-gradient(
           to bottom,
-          rgba(10, 10, 15, 0.15) 0%,
-          rgba(10, 10, 15, 0.35) 50%,
-          rgba(10, 10, 15, 0.7) 100%
+          rgba(10, 10, 15, 0.3) 0%,
+          rgba(10, 10, 15, 0.58) 45%,
+          rgba(10, 10, 15, 0.82) 100%
         );
         z-index: 1;
       }
@@ -584,7 +605,9 @@
         max-width: 600px;
         margin: 0 auto 2.5rem;
         padding: 1.25rem 1.5rem;
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         border-left: 3px solid rgba(255, 255, 255, 0.2);
         border-radius: 0 12px 12px 0;
       }
@@ -1330,8 +1353,10 @@
       .ki-chat-input {
         flex: 1;
         padding: 0.75rem 1rem;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
         border-radius: 24px;
         color: #fff;
         font-family: var(--font-family);
@@ -1376,7 +1401,9 @@
       }
 
       .ki-chat-response {
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         border-radius: 12px;
         padding: 1rem;
         margin-top: 0.75rem;
@@ -1541,9 +1568,11 @@
         color: var(--text-primary);
         margin-bottom: 2rem;
         padding: 0.8rem 1.5rem;
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
         transition: all 0.3s ease;
       }
 
@@ -1610,8 +1639,10 @@
         display: flex;
         flex-direction: column;
         padding: 1.5rem;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
         border-radius: 12px;
         text-decoration: none;
         color: var(--text-secondary);
@@ -2162,10 +2193,10 @@
         gap: 0.5rem;
         margin-bottom: 1rem;
         padding: 0.35rem;
-        background: rgba(255, 255, 255, 0.06);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
         border-radius: 999px;
       }
 
@@ -2207,10 +2238,10 @@
       }
 
       .battle-input-area {
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
         border-radius: 20px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
@@ -2450,10 +2481,10 @@
         /* Ohne Weichzeichner scheint das Hintergrundvideo durch und macht
            die Antwortflaeche unruhig. Heller UND milchig: der Film wird zum
            ruhigen Farbverlauf, der Text bekommt eine echte Unterlage. */
-        background: rgba(255, 255, 255, 0.11);
-        backdrop-filter: blur(16px) saturate(1.15);
-        -webkit-backdrop-filter: blur(16px) saturate(1.15);
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
         border-radius: 16px;
         padding: 1.25rem;
         display: flex;
@@ -2598,10 +2629,10 @@
       /* Leitplanken-Test als zweite Betriebsart */
       .guard-panel {
         padding: 1.25rem 1.4rem;
-        background: rgba(255, 255, 255, 0.09);
-        backdrop-filter: blur(14px) saturate(1.1);
-        -webkit-backdrop-filter: blur(14px) saturate(1.1);
-        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
         border-radius: 16px;
         margin-bottom: 1.5rem;
       }
@@ -2672,9 +2703,9 @@
       .guard-summary {
         margin: 1.25rem 0 0 0;
         padding: 0.95rem 1.2rem;
-        background: rgba(255, 255, 255, 0.09);
-        backdrop-filter: blur(14px) saturate(1.1);
-        -webkit-backdrop-filter: blur(14px) saturate(1.1);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         border-left: 3px solid rgba(255, 255, 255, 0.25);
         border-radius: 10px;
         font-size: 0.9rem;
@@ -2694,10 +2725,10 @@
       .battle-block {
         margin-bottom: 1.25rem;
         padding: 1.1rem 1.25rem;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(14px) saturate(1.1);
-        -webkit-backdrop-filter: blur(14px) saturate(1.1);
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
         border-left: 3px solid rgba(255, 200, 120, 0.6);
         border-radius: 12px;
       }
@@ -2896,11 +2927,11 @@
         max-width: 56rem;
         margin: 0 auto;
         padding: 1.5rem 1.75rem;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
         border-radius: 16px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
       }
 
       .ki-news-head {
@@ -3515,10 +3546,10 @@
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
-          <a href="https://nicht-anerkannt.info" target="_blank" rel="noopener" class="portfolio-card">
+          <a href="https://nichts-geschenkt.de" target="_blank" rel="noopener" class="portfolio-card">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">Gesellschaft</span>
-            <h3 class="portfolio-card-title">nicht-anerkannt.info</h3>
+            <h3 class="portfolio-card-title">nichts-geschenkt.de</h3>
             <p class="portfolio-card-desc">Das Atelier der Radikalen Mitte, KI-unterstützt. Für Menschen, die nicht in Lager passen und trotzdem handeln wollen.</p>
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
@@ -3547,10 +3578,10 @@
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
 
-          <a href="https://horoskop.one" target="_blank" rel="noopener" class="portfolio-card">
+          <a href="https://mondelese.de" target="_blank" rel="noopener" class="portfolio-card">
             <span class="portfolio-card-status live"></span>
             <span class="portfolio-card-category">Unterhaltung</span>
-            <h3 class="portfolio-card-title">horoskop.one</h3>
+            <h3 class="portfolio-card-title">mondelese.de</h3>
             <p class="portfolio-card-desc">Warum nur eine Vorhersage, wenn man auch alle haben kann? KI-unterstützt.</p>
             <span class="portfolio-card-arrow">&rarr;</span>
           </a>
@@ -3790,7 +3821,7 @@
               <span class="ueber-year">2025</span>
               <div>
                 <strong>TÜV-Zertifizierung & Live-Projekte</strong>
-                <p>ki-sicherheit.jetzt, report.ki-sicherheit.jetzt, art-radar.berlin, nicht-anerkannt.info, nah.jetzt, achtung.live, horoscop.one, kerstingeffert.de</p>
+                <p>ki-sicherheit.jetzt, report.ki-sicherheit.jetzt, art-radar.berlin, nichts-geschenkt.de, nah.jetzt, achtung.live, mondelese.de, kerstingeffert.de</p>
               </div>
             </div>
             <div class="ueber-timeline-item">

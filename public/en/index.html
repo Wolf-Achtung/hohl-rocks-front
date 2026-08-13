@@ -51,7 +51,9 @@
     <meta property="og:url" content="https://hohl.rocks/en/" />
     <meta property="og:title" content="Wolf Hohl — AI expert & experimenter" />
     <meta property="og:description" content="Wolf Hohl: TÜV-certified AI management from Berlin. 25 years in media. Workflow automation, AI strategy, safe integration. For mid-sized companies that want AI – without the empty promises." />
-    <meta property="og:image" content="https://hohl.rocks/videos/road_poster.jpg" />
+    <meta property="og:image" content="https://hohl.rocks/images/og-card.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_GB" />
     <meta property="og:site_name" content="Wolf Hohl" />
 
@@ -59,7 +61,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Wolf Hohl — AI expert & experimenter" />
     <meta name="twitter:description" content="Wolf Hohl: TÜV-certified AI management, 25 years in media. 8 live AI projects." />
-    <meta name="twitter:image" content="https://hohl.rocks/videos/road_poster.jpg" />
+    <meta name="twitter:image" content="https://hohl.rocks/images/og-card.jpg" />
 
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow" />
@@ -1497,11 +1499,6 @@
         .chat-widget {
           bottom: 14px;
           right: 14px;
-        }
-
-        .sound-float {
-          bottom: 14px;
-          left: 14px;
         }
 
         .chat-panel {
@@ -3102,10 +3099,10 @@
 
       /* Sound Toggle Button */
       /* Floating Sound Button (bottom-left) */
-      /* Sprachwahl oben rechts. Klein, ruhig, immer da - nicht als
-         letzter Verweis in der Fußzeile, wo sie erst findet, wer die
-         ganze Seite hinter sich hat. */
-      .sprache-float {
+      /* Einstellungs-Leiste oben rechts: Sound und Sprache in einem
+         Glas. Klein, ruhig, immer da - und der Chat unten rechts bleibt
+         allein, er ist Handlung, keine Einstellung. */
+      .einstellungen-float {
         position: fixed;
         top: 20px;
         right: 20px;
@@ -3118,8 +3115,21 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(99, 135, 255, 0.35);
-        border-radius: 18px;
+        border-radius: 22px;
         font-family: var(--font-family);
+      }
+
+      .einstellungen-trenner {
+        width: 1px;
+        height: 18px;
+        margin: 0 3px;
+        background: rgba(99, 135, 255, 0.25);
+      }
+
+      .sprache-float {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
       }
 
       .sprache-option {
@@ -3155,7 +3165,7 @@
       }
 
       @media (max-width: 768px) {
-        .sprache-float {
+        .einstellungen-float {
           top: 14px;
           right: 14px;
         }
@@ -3167,48 +3177,40 @@
         }
       }
 
-      /* Dieselben Maße und Farben wie Sprachwahl und Chat-Knopf - drei
-         Ecken, eine Formensprache. */
+      /* Segment in der Einstellungs-Leiste, in der Formensprache der
+         Sprach-Schaltflächen daneben. Immer sichtbar - versteckte
+         Einstellungen findet niemand. */
       .sound-float {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        z-index: 100;
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        height: 44px;
-        padding: 0 0.85rem;
-        background: rgba(15, 15, 20, 0.72);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(99, 135, 255, 0.35);
-        border-radius: 22px;
+        gap: 0.45rem;
+        min-height: 32px;
+        padding: 0 0.8rem;
+        background: transparent;
+        border: none;
+        border-radius: 16px;
         cursor: pointer;
-        transition: all 0.3s ease;
-        color: rgba(180, 200, 255, 0.85);
+        transition: background 0.25s ease, color 0.25s ease;
+        color: rgba(180, 200, 255, 0.75);
         font-family: var(--font-family);
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         font-weight: 600;
-        letter-spacing: 0.02em;
-        opacity: 0;
-        transform: translateY(10px);
-        pointer-events: none;
+        letter-spacing: 0.08em;
       }
-      .sound-float.visible {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-      }
-      .sound-float:hover {
-        border-color: rgba(99, 135, 255, 0.7);
+      .sound-float:hover,
+      .sound-float:focus-visible {
         color: #fff;
-        background: rgba(15, 15, 20, 0.95);
-        box-shadow: 0 0 12px rgba(99, 135, 255, 0.2);
+        background: rgba(99, 135, 255, 0.18);
       }
+      /* Laufender Sound ist markiert wie die aufgerufene Sprache daneben. */
       .sound-float.playing {
-        border-color: var(--accent-primary);
-        color: var(--accent-primary);
+        background: var(--accent-primary);
+        color: #fff;
+      }
+      @media (max-width: 768px) {
+        .sound-float {
+          min-height: 42px;
+        }
       }
       .sound-float-bars {
         display: inline-flex;
@@ -3269,24 +3271,26 @@
       Straight to the tools ↓
     </a>
 
-    <!-- Sprachwahl (fest, oben rechts). Zwei Fassungen, ein Klick.
-         scripts/build-en.mjs setzt die Markierung in der englischen
-         Fassung auf EN um. -->
-    <nav class="sprache-float" aria-label="Sprache / Language">
-      <a href="/" hreflang="de" lang="de" class="sprache-option">DE</a>
-      <a href="/en/" hreflang="en" lang="en" class="sprache-option" aria-current="true">EN</a>
-    </nav>
-
-    <!-- Sound Toggle Button (fixed, bottom-left) -->
-    <button class="sound-float" id="sound-float" aria-label="Sound on/off" title="Sound on/off">
-      <span class="sound-float-bars">
-        <span class="sound-float-bar" style="height: 4px;"></span>
-        <span class="sound-float-bar" style="height: 8px;"></span>
-        <span class="sound-float-bar" style="height: 3px;"></span>
-        <span class="sound-float-bar" style="height: 6px;"></span>
-      </span>
-      <span class="sound-float-label">Sound</span>
-    </button>
+    <!-- Einstellungen (fest, oben rechts): Sound und Sprache in einer
+         Leiste. Der Chat unten rechts bleibt allein - er ist Handlung,
+         keine Einstellung. scripts/build-en.mjs setzt die Markierung der
+         Sprachwahl in der englischen Fassung auf EN um. -->
+    <div class="einstellungen-float">
+      <button class="sound-float" id="sound-float" aria-label="Sound on/off" title="Sound on/off">
+        <span class="sound-float-bars">
+          <span class="sound-float-bar" style="height: 4px;"></span>
+          <span class="sound-float-bar" style="height: 8px;"></span>
+          <span class="sound-float-bar" style="height: 3px;"></span>
+          <span class="sound-float-bar" style="height: 6px;"></span>
+        </span>
+        <span class="sound-float-label">Sound</span>
+      </button>
+      <span class="einstellungen-trenner" aria-hidden="true"></span>
+      <nav class="sprache-float" aria-label="Sprache / Language">
+        <a href="/" hreflang="de" lang="de" class="sprache-option">DE</a>
+        <a href="/en/" hreflang="en" lang="en" class="sprache-option" aria-current="true">EN</a>
+      </nav>
+    </div>
 
     <main id="main">
     <h1 class="sr-only">Wolf Hohl – TÜV-certified AI management from Berlin</h1>
@@ -4578,10 +4582,21 @@
           trailerLaeuft = false;
         }
 
-        // Nur echte Eingaben stoppen - das eigene Scrollen des Trailers
-        // löst keines dieser Ereignisse aus.
+        // Nur echte Fahrt-Übernahmen stoppen - das eigene Scrollen des
+        // Trailers löst keines dieser Ereignisse aus. Und wer während des
+        // Films den Sound anschaltet, die Sprache wechselt oder den Chat
+        // öffnet, stellt etwas ein und will nicht ans Steuer: Klicks,
+        // Tipper und Tasten auf den Schwebe-Elementen und in Overlays
+        // lassen den Trailer weiterlaufen. Das Rad stoppt immer - es ist
+        // in jeder Lage Scroll-Absicht.
+        const istEinstellung = (ereignis) =>
+          ereignis.target instanceof Element
+          && ereignis.target.closest('.einstellungen-float, .chat-widget, .overlay');
         for (const art of ['wheel', 'touchstart', 'keydown', 'mousedown']) {
-          window.addEventListener(art, trailerStoppen, { passive: true });
+          window.addEventListener(art, (ereignis) => {
+            if (art !== 'wheel' && istEinstellung(ereignis)) return;
+            trailerStoppen();
+          }, { passive: true });
         }
 
         function trailerSchritt(jetzt) {
@@ -5648,20 +5663,31 @@
           });
         }
 
-        // Floating sound button - einfaches Play/Pause
+        // Sound-Schalter in der Einstellungs-Leiste - Play/Pause
         if (footerMusicToggle) {
           footerMusicToggle.addEventListener('click', () => {
             togglePlay();
           });
+        }
 
-          // Sound-Button nach kurzem Scroll einblenden
-          const showSoundAfterScroll = () => {
-            if (window.scrollY > 200) {
-              footerMusicToggle.classList.add('visible');
-              window.removeEventListener('scroll', showSoundAfterScroll);
-            }
+        // Wer beim letzten Besuch mit Musik gehört hat, bekommt sie beim
+        // nächsten wieder. Browser geben Ton erst nach einer eigenen
+        // Geste frei - und nur Zeiger und Taste zählen dafür verlässlich,
+        // das Mausrad nicht. Also: bei der ersten echten Geste.
+        let merkWert = null;
+        try { merkWert = localStorage.getItem('hohl-sound'); } catch (e) { /* Privates Fenster */ }
+        if (merkWert === 'an') {
+          const wiederAn = (ereignis) => {
+            window.removeEventListener('pointerdown', wiederAn);
+            window.removeEventListener('keydown', wiederAn);
+            // Zielt die Geste auf den Sound-Schalter selbst, übernimmt
+            // dessen Klick - sonst spielte die Musik an und derselbe
+            // Klick schaltete sie gleich wieder aus.
+            if (ereignis.target instanceof Element && ereignis.target.closest('#sound-float')) return;
+            if (!isPlaying) togglePlay();
           };
-          window.addEventListener('scroll', showSoundAfterScroll, { passive: true });
+          window.addEventListener('pointerdown', wiederAn, { passive: true });
+          window.addEventListener('keydown', wiederAn, { passive: true });
         }
 
         // Initialize Web Audio API
@@ -5752,17 +5778,48 @@
         }
 
         // Play/Pause
+        // Sanft statt hart: Die Musik blendet über eine Sekunde ein und
+        // über eine halbe aus. audio.volume ist dafür frei - die
+        // Lautstärke des Reglers läuft getrennt über den GainNode.
+        let blendTimer = null;
+        function blendeZu(zielWert, dauerMs, fertig) {
+          if (blendTimer) clearInterval(blendTimer);
+          const start = audio.volume;
+          const startZeit = performance.now();
+          blendTimer = setInterval(() => {
+            const t = Math.min(1, (performance.now() - startZeit) / dauerMs);
+            audio.volume = start + (zielWert - start) * t;
+            if (t >= 1) {
+              clearInterval(blendTimer);
+              blendTimer = null;
+              if (fertig) fertig();
+            }
+          }, 40);
+        }
+
+        function merkeSound(wert) {
+          try { localStorage.setItem('hohl-sound', wert); } catch (e) { /* Privates Fenster */ }
+        }
+
         function togglePlay() {
           if (isPlaying) {
-            audio.pause();
+            // Erst ausblenden, dann anhalten - kein harter Schnitt.
+            isPlaying = false;
+            merkeSound('aus');
+            blendeZu(0, 500, () => {
+              audio.pause();
+              audio.volume = 1;
+              stopVisualizer();
+            });
             if (playerBtn) playerBtn.classList.remove('playing');
             if (footerMusicToggle) footerMusicToggle.classList.remove('playing');
             if (playIcon) playIcon.style.display = '';
             if (pauseIcon) pauseIcon.style.display = 'none';
-            stopVisualizer();
-            isPlaying = false;
           } else {
+            audio.volume = 0;
             playTrack();
+            blendeZu(1, 1000);
+            merkeSound('an');
           }
         }
 

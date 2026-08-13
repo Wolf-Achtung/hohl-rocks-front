@@ -405,7 +405,7 @@
            längsten. Rund 105 vh je Tafel: genug Weg, dass Auf- und
            Zerfall Zeit haben, statt in drei Mausrad-Stufen
            vorbeizuhuschen. */
-        min-height: 2000vh;
+        min-height: 1800vh;
         margin-bottom: 0;
       }
 
@@ -580,7 +580,7 @@
 
       @media (max-width: 768px) {
         .manifest-section {
-          min-height: 1750vh;
+          min-height: 1550vh;
         }
 
         .manifest-container {
@@ -3254,19 +3254,13 @@
         <div class="manifest-text">
           <p class="manifest-plate"><span class="tafel-zeile">I spent 25 years in film.</span></p>
 
-          <p class="manifest-plate"><span class="tafel-zeile">Cinema trailers.</span></p>
+          <p class="manifest-plate"><span class="tafel-zeile">Cinema trailers: timing, impact, attention.</span></p>
 
-          <p class="manifest-plate"><span class="tafel-zeile">Timing, impact, attention.</span></p>
-
-          <p class="manifest-plate"><span class="tafel-zeile">Then AI arrived.</span></p>
-
-          <p class="manifest-plate"><span class="tafel-zeile">And I saw it: this changes everything.</span></p>
+          <p class="manifest-plate"><span class="tafel-zeile">Then AI arrived – and I saw it: this changes everything.</span></p>
 
           <p class="manifest-plate"><span class="tafel-zeile">I had questions and no answers.</span></p>
 
-          <p class="manifest-plate"><span class="tafel-zeile">So I got to work myself.</span></p>
-
-          <p class="manifest-plate"><span class="tafel-zeile">Understand it. Build it. Make it safe.</span></p>
+          <p class="manifest-plate"><span class="tafel-zeile">So I got to work myself: understand it, build it, make it safe.</span></p>
 
           <p class="manifest-plate"><span class="tafel-zeile">AI safety is too important for half-knowledge.</span></p>
 
@@ -4360,7 +4354,7 @@
             }
 
             // Eine unsichtbare Tafel nimmt der Browser komplett aus dem
-            // Rennen - günstiger, als zwanzig durchsichtige Absätze in
+            // Rennen - günstiger, als siebzehn durchsichtige Absätze in
             // jedem Bild mitzurechnen.
             const tafelStil = sichtbar ? 'visibility:visible' : 'visibility:hidden';
             if (tafelStil !== zuletztTafel[index]) {
@@ -4490,6 +4484,89 @@
             zeichne(gezeigt);
           }
         }, { passive: true });
+
+        // ── Trailer-Modus ────────────────────────────────────────────
+        // Frisch geladen läuft das Intro von selbst im Trailer-Takt:
+        // das Skript scrollt die Seite langsam durch die Sektion, alles
+        // andere - Tafeln, Welle, Finale - folgt wie beim Scrollen von
+        // Hand. Die erste eigene Eingabe (Rad, Finger, Taste, Klick)
+        // übergibt das Steuer und beendet den Trailer endgültig; ebenso
+        // jede fremde Bewegung der Seite, etwa eine Sprungmarke.
+        //
+        // Testhaken: __ohneTrailer schaltet ihn ab,
+        // __trailerSekundenJeEinheit ändert das Tempo.
+        const TRAILER_TAKT = (window.__trailerSekundenJeEinheit || 2.8) * 1000;
+        let trailerVorbei = sanft || window.__ohneTrailer === true;
+        let trailerLaeuft = false;
+        let trailerZeit = 0;
+        let trailerY = -1;
+        let trailerFortschritt = 0;
+
+        function trailerStoppen() {
+          trailerVorbei = true;
+          trailerLaeuft = false;
+        }
+
+        // Nur echte Eingaben stoppen - das eigene Scrollen des Trailers
+        // löst keines dieser Ereignisse aus.
+        for (const art of ['wheel', 'touchstart', 'keydown', 'mousedown']) {
+          window.addEventListener(art, trailerStoppen, { passive: true });
+        }
+
+        function trailerSchritt(jetzt) {
+          if (!trailerLaeuft) return;
+
+          // Hat jemand anderes die Seite bewegt - Sprungmarke, Suche im
+          // Dokument, ein Skript -, gehört ihm das Steuer.
+          if (trailerY >= 0 && Math.abs(window.scrollY - trailerY) > 6) {
+            trailerStoppen();
+            return;
+          }
+
+          // Nach einem Tabwechsel liegt der letzte Zeitstempel weit
+          // zurück. Gedeckelt, sonst springt der Trailer vorwärts.
+          const dt = Math.min(80, trailerZeit ? jetzt - trailerZeit : 16);
+          trailerZeit = jetzt;
+          trailerFortschritt = klemme(trailerFortschritt + dt / (summe * TRAILER_TAKT));
+
+          const nenner = sectionHeight - viewportHeight;
+          const oben = manifestSection.getBoundingClientRect().top + window.scrollY;
+          const zielY = Math.round(oben + trailerFortschritt * nenner);
+          // Die Seite scrollt global mit scroll-behavior: smooth - der
+          // Browser würde jeden Schritt eigenmächtig animieren und die
+          // Fremdbewegungs-Prüfung oben auslösen. Deshalb ausdrücklich
+          // ohne Animation.
+          try {
+            window.scrollTo({ top: zielY, behavior: 'instant' });
+          } catch (e) {
+            window.scrollTo(0, zielY);
+          }
+          // Browser runden beim Setzen (Zoom, Pixeldichte) - den
+          // tatsächlichen Stand übernehmen, sonst hält der eigene
+          // Vergleich den Trailer für fremdgesteuert.
+          trailerY = window.scrollY;
+
+          if (trailerFortschritt >= 1) {
+            trailerStoppen();
+            return;
+          }
+          requestAnimationFrame(trailerSchritt);
+        }
+
+        // Kurz durchatmen lassen - erst das Bild, dann die Worte.
+        setTimeout(() => {
+          if (trailerVorbei) return;
+          // Nur ganz oben: wer mit Sprungmarke oder aus der Historie
+          // tiefer einsteigt, hat den Trailer nicht bestellt.
+          if (window.scrollY > 40) {
+            trailerVorbei = true;
+            return;
+          }
+          trailerLaeuft = true;
+          trailerZeit = 0;
+          trailerY = window.scrollY;
+          requestAnimationFrame(trailerSchritt);
+        }, 1800);
       });
 
       // ═══════════════════════════════════════════════════════════════

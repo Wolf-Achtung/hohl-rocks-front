@@ -398,11 +398,11 @@
         padding: 0;
         background: transparent;
         /* Scroll-Weg für alle Tafeln zusammen. Jede bekommt daraus ihr
-           eigenes Fenster – mehrzeilige stehen länger, der Schlusssatz am
-           längsten. Rund 115 vh pro einzeiliger Tafel: genug Weg, dass
-           Auf- und Zerfall Zeit haben, statt in drei Mausrad-Stufen
+           eigenes Fenster – wortreiche stehen länger, der Schlusssatz am
+           längsten. Rund 105 vh je Tafel: genug Weg, dass Auf- und
+           Zerfall Zeit haben, statt in drei Mausrad-Stufen
            vorbeizuhuschen. */
-        min-height: 1800vh;
+        min-height: 2000vh;
         margin-bottom: 0;
       }
 
@@ -410,7 +410,9 @@
         position: sticky;
         top: 50%;
         transform: translateY(-50%);
-        max-width: 680px;
+        /* Breit genug, dass auch die längste Zeile (Basquiat, 64
+           Zeichen) am Rechner eine Zeile bleibt. */
+        max-width: 760px;
         margin: 0 auto;
         text-align: left;
         padding: 2rem;
@@ -425,7 +427,8 @@
       .manifest-text {
         position: relative;
         height: 100%;
-        font-size: clamp(1rem, 2.2vw, 1.15rem);
+        /* Eine Zeile pro Bild darf größer sprechen als ein Absatz. */
+        font-size: clamp(1.05rem, 2.4vw, 1.3rem);
         /* Der Text steht über einem Foto, stellenweise über der hellen
            Sonne. 70 % Weiß in normaler Stärke verliert dort. Reines Weiß
            in mittlerer Stärke, wie es der Schlusssatz über sein <strong>
@@ -465,14 +468,19 @@
         width: 100%;
       }
 
-      /* Das Skript macht aus jeder Zeile ein eigenes Element und blendet
-         sie leicht versetzt - eine dreizeilige Tafel baut sich von oben
-         nach unten auf und zerfällt ebenso. */
-      .tafel-line {
+      /* Das Skript zerlegt jede Tafel in Wörter: die Zeile setzt sich
+         Wort für Wort zusammen und zerfällt in derselben Reihenfolge -
+         dieselbe Welle wie beim Schlusssatz, nur eine Stufe gröber. */
+      .tafel-wort {
+        display: inline-block;
+        opacity: 0;
+      }
+
+      /* Der Schlusssatz wird nicht in Wörter zerlegt - sein Verglühen
+         übernimmt die Zeichen-Animation. Aufblenden als Ganzes. */
+      .manifest-finale .tafel-zeile {
         display: block;
         opacity: 0;
-        /* Der Text steht links. Von links skaliert wandert er beim
-           Auflösen nicht zur Seite. */
         transform-origin: left center;
       }
 
@@ -569,7 +577,7 @@
 
       @media (max-width: 768px) {
         .manifest-section {
-          min-height: 1550vh;
+          min-height: 1750vh;
         }
 
         .manifest-container {
@@ -3237,27 +3245,35 @@
     <!-- FIX: "fade-in" entfernt - Section ist zu groß (1200vh) für IntersectionObserver threshold -->
     <section class="manifest-section" id="manifest">
       <div class="manifest-container">
-        <!-- Eine Tafel je Gedanke. Sie liegen übereinander; das Skript
-             blendet sie nacheinander auf und löst sie wieder auf. -->
+        <!-- Eine Tafel, ein Gedanke, eine Zeile - Titelkarten wie im
+             Kino-Trailer. Sie liegen übereinander; das Skript blendet sie
+             nacheinander auf und löst sie wieder auf. -->
         <div class="manifest-text">
-          <p class="manifest-plate"><span class="tafel-zeile">Ich war 25 Jahre im Film.<br>
-          Kino-Trailer.<br>
-          Timing, Wirkung, Aufmerksamkeit.</span></p>
+          <p class="manifest-plate"><span class="tafel-zeile">Ich war 25 Jahre im Film.</span></p>
 
-          <p class="manifest-plate"><span class="tafel-zeile">Dann kam KI.<br>
-          Und ich merkte: Das verändert alles.</span></p>
+          <p class="manifest-plate"><span class="tafel-zeile">Kino-Trailer.</span></p>
 
-          <p class="manifest-plate"><span class="tafel-zeile">Ich hatte Fragen, aber keine Antworten.<br>
-          Also musste ich selbst ran.<br>
-          Verstehen. Bauen. Sicherstellen.</span></p>
+          <p class="manifest-plate"><span class="tafel-zeile">Timing, Wirkung, Aufmerksamkeit.</span></p>
+
+          <p class="manifest-plate"><span class="tafel-zeile">Dann kam KI.</span></p>
+
+          <p class="manifest-plate"><span class="tafel-zeile">Und ich merkte: Das verändert alles.</span></p>
+
+          <p class="manifest-plate"><span class="tafel-zeile">Ich hatte Fragen, aber keine Antworten.</span></p>
+
+          <p class="manifest-plate"><span class="tafel-zeile">Also musste ich selbst ran.</span></p>
+
+          <p class="manifest-plate"><span class="tafel-zeile">Verstehen. Bauen. Sicherstellen.</span></p>
 
           <p class="manifest-plate"><span class="tafel-zeile">KI-Sicherheit ist zu wichtig für Halbwissen.</span></p>
 
           <p class="manifest-plate"><span class="tafel-zeile">Deshalb bin ich heute hier.</span></p>
 
-          <p class="manifest-plate"><span class="tafel-zeile">Mit Live-Projekten.<br>
-          Mit einer TÜV-Zertifizierung.<br>
-          Mit 25 Jahren Deadline-Druck im Rücken.</span></p>
+          <p class="manifest-plate"><span class="tafel-zeile">Mit Live-Projekten.</span></p>
+
+          <p class="manifest-plate"><span class="tafel-zeile">Mit einer TÜV-Zertifizierung.</span></p>
+
+          <p class="manifest-plate"><span class="tafel-zeile">Mit 25 Jahren Deadline-Druck im Rücken.</span></p>
 
           <p class="manifest-plate"><span class="tafel-zeile">Und mit dem, was mich prägt:</span></p>
 
@@ -3269,8 +3285,7 @@
 
           <p class="manifest-plate"><span class="tafel-zeile">Freiburg – Finke, Streich, Schuster. Haltung vor Erfolg.</span></p>
 
-          <p class="manifest-plate"><span class="tafel-zeile">Ich mag Systeme,<br>
-          die den Menschen nicht vergessen.</span></p>
+          <p class="manifest-plate"><span class="tafel-zeile">Ich mag Systeme, die den Menschen nicht vergessen.</span></p>
 
           <p class="manifest-plate manifest-finale"><span class="tafel-zeile"><strong class="finale-satz">Alles andere ist nur Technik.</strong></span></p>
         </div>
@@ -4114,14 +4129,14 @@
       });
 
       // ═══════════════════════════════════════════════════════════════
-      // MANIFEST SCROLL-EFFEKT - Tafeln erscheinen und lösen sich auf
+      // MANIFEST SCROLL-EFFEKT - Titelkarten: eine Zeile, ein Gedanke
       // ═══════════════════════════════════════════════════════════════
-      // Alle Tafeln liegen übereinander an derselben Stelle. Jede bekommt
-      // ihr eigenes Stück des Scroll-Wegs: aufblenden, stehen, auflösen.
-      // Der Schlusssatz übernimmt die Auflösung selbst, Zeichen für
-      // Zeichen.
+      // Alle Tafeln liegen übereinander an derselben Stelle. Jede trägt
+      // genau einen Gedanken in einer Zeile und bekommt ihr eigenes Stück
+      // des Scroll-Wegs: aufblenden, stehen, auflösen. Der Schlusssatz
+      // übernimmt die Auflösung selbst, Zeichen für Zeichen.
       //
-      // Zwei Dinge machen den Wechsel geschmeidig:
+      // Drei Dinge machen den Wechsel geschmeidig:
       //
       // 1. Der angezeigte Fortschritt folgt der Scroll-Position gedämpft
       //    statt sie starr zu spiegeln. Ein Mausrad springt in Stufen von
@@ -4130,10 +4145,12 @@
       //    zwischen den Stufen durch. Hier ist der Nachlauf unschädlich:
       //    es bewegt sich nichts, was der Finger begleitet.
       //
-      // 2. Die Zeilen einer Tafel sind leicht gegeneinander versetzt. Eine
-      //    dreizeilige Tafel baut sich von oben nach unten auf und zerfällt
-      //    in derselben Richtung - dieselbe Welle wie beim Schlusssatz, nur
-      //    eine Stufe gröber.
+      // 2. Jede Zeile setzt sich Wort für Wort zusammen und zerfällt in
+      //    derselben Reihenfolge - dieselbe Welle wie beim Schlusssatz,
+      //    nur eine Stufe gröber.
+      //
+      // 3. Wie lange eine Tafel steht, hängt an ihrer Wortzahl: kurze
+      //    Karten gehen zügig, lange lassen Zeit zum Lesen.
 
       document.addEventListener('DOMContentLoaded', () => {
         const manifestSection = document.querySelector('.manifest-section');
@@ -4145,12 +4162,13 @@
         const sanft = typeof window.matchMedia === 'function'
           && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Wie lange eine Tafel steht, hängt daran, wie viel auf ihr steht.
-        // Der Schlusssatz bekommt den größten Anteil: dort läuft die
-        // Zeichen-Animation.
+        // Lesezeit statt Einheitstakt: 0,7 bis 1,3 Anteile je nach
+        // Wortzahl. Der Schlusssatz bekommt den größten Anteil - dort
+        // läuft die Zeichen-Animation.
         const gewichte = tafeln.map((el) => {
           if (el === manifestFinale) return 1.8;
-          return 0.75 + 0.25 * (el.querySelectorAll('br').length + 1);
+          const woerter = el.textContent.trim().split(/\s+/).length;
+          return Math.min(1.3, Math.max(0.7, 0.55 + 0.07 * woerter));
         });
         const summe = gewichte.reduce((a, b) => a + b, 0);
         let lauf = 0;
@@ -4163,34 +4181,35 @@
           ? fenster[tafeln.indexOf(manifestFinale)]
           : null;
 
-        // Jede Zeile wird ein eigenes Element - nur so lässt sie sich
-        // einzeln blenden. Die Textknoten bleiben dabei dieselben, das
-        // Wörterbuch der englischen Fassung greift also weiter.
-        const zeilenJeTafel = tafeln.map((el) => {
-          const behaelter = el.querySelector('.tafel-zeile');
+        const zeilen = tafeln.map((el) => el.querySelector('.tafel-zeile'));
+
+        // Jede Tafel wird in Wörter zerlegt, damit die Welle laufen kann.
+        // Nur reine Textzeilen: der Schlusssatz trägt sein <strong> und
+        // gehört der Zeichen-Animation.
+        const worteJeTafel = zeilen.map((behaelter) => {
           if (!behaelter) return [];
-          const teile = [];
-          let aktuell = document.createElement('span');
-          aktuell.className = 'tafel-line';
-          for (const knoten of Array.from(behaelter.childNodes)) {
-            if (knoten.nodeName === 'BR') {
-              teile.push(aktuell);
-              aktuell = document.createElement('span');
-              aktuell.className = 'tafel-line';
-            } else {
-              aktuell.appendChild(knoten);
+          const kinder = Array.from(behaelter.childNodes);
+          if (kinder.some((k) => k.nodeType !== Node.TEXT_NODE)) return [];
+          const woerter = behaelter.textContent.trim().split(/\s+/);
+          behaelter.textContent = '';
+          return woerter.map((wort, i) => {
+            const span = document.createElement('span');
+            span.className = 'tafel-wort';
+            span.textContent = wort;
+            behaelter.appendChild(span);
+            if (i < woerter.length - 1) {
+              behaelter.appendChild(document.createTextNode(' '));
             }
-          }
-          teile.push(aktuell);
-          teile.forEach((teil) => behaelter.appendChild(teil));
-          return teile;
+            return span;
+          });
         });
 
         // Zuletzt geschriebener Zustand. Erspart dem Browser in den
         // allermeisten Bildern jede Arbeit: nur was sich gerade wandelt,
         // wird überhaupt angefasst.
         const zuletztTafel = tafeln.map(() => '');
-        const zuletztZeile = zeilenJeTafel.map((zeilen) => zeilen.map(() => ''));
+        const zuletztWort = worteJeTafel.map((w) => w.map(() => ''));
+        const zuletztZeile = tafeln.map(() => '');
 
         zerlegeSchlusssatz();
 
@@ -4257,71 +4276,93 @@
           });
         }
 
-        // Versatz zwischen zwei Zeilen derselben Tafel, als Anteil ihres
-        // Fensters.
-        const ZEILEN_VERSATZ = 0.045;
-
         function zeichne(fortschritt) {
           tafeln.forEach((el, index) => {
             const { start, spanne } = fenster[index];
             const lokal = (fortschritt - start) / spanne;
             const istFinale = el === manifestFinale;
-            const zeilen = zeilenJeTafel[index];
+            const woerter = worteJeTafel[index];
 
             // Die erste Tafel bekommt keinen Vorlauf: sie hat keine
             // Vorgängerin, mit der sie sich überblenden müsste. Mit
             // Vorlauf stünde sie schon beim Laden als Schleier im Bild.
             const vorlauf = index === 0 ? 0 : 0.14;
+            // Roher Auf- und Abblendfortschritt der ganzen Tafel; die
+            // Wörter schneiden sich daraus ihre eigenen Fenster.
+            const auf = klemme((lokal + vorlauf) / (vorlauf + 0.30));
+            const ab = istFinale ? 0 : klemme((lokal - 0.72) / 0.32);
 
             let sichtbar = false;
 
-            zeilen.forEach((zeileEl, zeilenNr) => {
-              // Die Zeilen laufen leicht versetzt - die Tafel baut sich
-              // von oben nach unten auf und zerfällt ebenso.
-              const lokalZ = istFinale
-                ? lokal
-                : lokal - zeilenNr * ZEILEN_VERSATZ;
+            if (woerter.length) {
+              const anzahl = woerter.length;
+              woerter.forEach((wortEl, i) => {
+                // Wort i bekommt sein Fenster im Tafel-Fortschritt: das
+                // erste startet sofort, das letzte schließt bei 1. Breite
+                // 4 Anteile, damit sich die Wellen kräftig überlappen.
+                const s = i / (anzahl + 3);
+                const d = 4 / (anzahl + 3);
+                const wAuf = weich(klemme((auf - s) / d));
+                const wAb = weich(klemme((ab - s) / d));
+                const deckung = wAuf * (1 - wAb);
 
-              const auf = weich(klemme((lokalZ + vorlauf) / (vorlauf + 0.26)));
-              const ab = istFinale
-                ? 0
-                : weich(klemme((lokalZ - 0.70) / 0.38));
-              const deckung = auf * (1 - ab);
+                let stil;
+                if (deckung < 0.005) {
+                  stil = 'opacity:0';
+                } else if (sanft) {
+                  sichtbar = true;
+                  stil = `opacity:${deckung.toFixed(3)}`;
+                } else if (wAuf >= 1 && wAb <= 0) {
+                  // Stehendes Wort: keine Unschärfe, keine Verschiebung,
+                  // keine eigene Ebene. So billig wie normaler Text.
+                  sichtbar = true;
+                  stil = 'opacity:1';
+                } else {
+                  sichtbar = true;
+                  // Unschärfe in Vierteln eines Pixels: fein genug, dass
+                  // man keine Stufen sieht, grob genug, dass der Browser
+                  // nicht bei jeder Nachkommastelle neu weichzeichnet.
+                  const unschaerfe = Math.round(((1 - wAuf) * 7 + wAb * 10) * 4) / 4;
+                  const hoehe = ((1 - wAuf) * 10 - wAb * 18).toFixed(1);
+                  const groesse = (1 - (1 - wAuf) * 0.02 + wAb * 0.06).toFixed(4);
+                  stil = `opacity:${deckung.toFixed(3)};`
+                    + `filter:blur(${unschaerfe}px);`
+                    + `transform:translate3d(0,${hoehe}px,0) scale(${groesse});`
+                    + 'will-change:filter,transform,opacity';
+                }
 
+                if (stil !== zuletztWort[index][i]) {
+                  wortEl.style.cssText = stil;
+                  zuletztWort[index][i] = stil;
+                }
+              });
+            } else if (zeilen[index]) {
+              // Schlusssatz: als Ganzes aufblenden, ohne Abblende - das
+              // Verglühen übernimmt die Zeichen-Animation.
+              const deckung = weich(auf);
               let stil;
               if (deckung < 0.005) {
                 stil = 'opacity:0';
-              } else if (sanft) {
+              } else if (sanft || deckung >= 1) {
                 sichtbar = true;
-                stil = `opacity:${deckung.toFixed(3)}`;
-              } else if (auf >= 1 && ab <= 0) {
-                // Stehende Zeile: keine Unschärfe, keine Verschiebung,
-                // keine eigene Ebene. So billig wie normaler Text.
-                sichtbar = true;
-                stil = 'opacity:1';
+                stil = deckung >= 1 ? 'opacity:1' : `opacity:${deckung.toFixed(3)}`;
               } else {
                 sichtbar = true;
-                // Unschärfe in Vierteln eines Pixels: fein genug, dass
-                // man keine Stufen sieht, grob genug, dass der Browser
-                // nicht bei jeder Nachkommastelle neu weichzeichnet.
-                const unschaerfe = Math.round(((1 - auf) * 10 + ab * 14) * 4) / 4;
-                const hoehe = ((1 - auf) * 16 - ab * 22).toFixed(1);
-                const groesse = (1 - (1 - auf) * 0.03 + ab * 0.07).toFixed(4);
+                const unschaerfe = Math.round((1 - deckung) * 8 * 4) / 4;
                 stil = `opacity:${deckung.toFixed(3)};`
                   + `filter:blur(${unschaerfe}px);`
-                  + `transform:translate3d(0,${hoehe}px,0) scale(${groesse});`
+                  + `transform:translate3d(0,${((1 - deckung) * 10).toFixed(1)}px,0);`
                   + 'will-change:filter,transform,opacity';
               }
-
-              if (stil !== zuletztZeile[index][zeilenNr]) {
-                zeileEl.style.cssText = stil;
-                zuletztZeile[index][zeilenNr] = stil;
+              if (stil !== zuletztZeile[index]) {
+                zeilen[index].style.cssText = stil;
+                zuletztZeile[index] = stil;
               }
-            });
+            }
 
             // Eine unsichtbare Tafel nimmt der Browser komplett aus dem
-            // Rennen - günstiger, als zwölf durchsichtige Absätze in jedem
-            // Bild mitzurechnen.
+            // Rennen - günstiger, als zwanzig durchsichtige Absätze in
+            // jedem Bild mitzurechnen.
             const tafelStil = sichtbar ? 'visibility:visible' : 'visibility:hidden';
             if (tafelStil !== zuletztTafel[index]) {
               el.style.cssText = tafelStil;
@@ -4382,7 +4423,7 @@
           letzteZeit = jetzt;
 
           const abstand = ziel - gezeigt;
-          if (Math.abs(abstand) > 0.12) {
+          if (Math.abs(abstand) > 0.1) {
             // Sprungmarke oder Ende-Taste: nicht durch alle Tafeln
             // rauschen, sondern sofort dastehen.
             gezeigt = ziel;

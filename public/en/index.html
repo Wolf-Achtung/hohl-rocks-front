@@ -2973,13 +2973,69 @@
         margin: 0 auto;
         padding: 1.75rem 2rem;
         display: flex;
-        align-items: center;
-        gap: 2rem;
+        flex-direction: column;
+        gap: 1.4rem;
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: var(--glass-blur);
         -webkit-backdrop-filter: var(--glass-blur);
         border: 1px solid rgba(255, 255, 255, 0.22);
         border-radius: 16px;
+      }
+
+      /* Erst das Problem an drei Sätzen, die jeder kennt: links das
+         Übliche, rechts dasselbe in klar. Der Unterschied erklärt sich
+         schneller als jede Beschreibung. */
+      .goodie-beispiele {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+
+      .goodie-paar {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: baseline;
+        gap: 0.9rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .goodie-vorher {
+        text-align: right;
+        color: rgba(255, 255, 255, 0.38);
+        font-style: italic;
+      }
+
+      .goodie-pfeil {
+        color: var(--accent-primary);
+        font-weight: 700;
+        filter: brightness(1.7);
+      }
+
+      .goodie-pfeil::before {
+        content: '\2192';
+      }
+
+      .goodie-nachher {
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .goodie-problem {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+      }
+
+      .goodie-fuss {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
       }
 
       .goodie-chip {
@@ -3048,7 +3104,34 @@
       }
 
       @media (max-width: 768px) {
-        .goodie-inner {
+        /* Nebeneinander wären die Beispiele zwei schmale Spalten mit
+           je zwei Wörtern pro Zeile. Untereinander bleibt der
+           Unterschied lesbar - der Pfeil zeigt dann nach unten. */
+        .goodie-paar {
+          grid-template-columns: 1fr;
+          gap: 0.15rem;
+        }
+
+        /* Untereinander braucht die Trennung zwischen den Paaren mehr
+           Luft als die zwischen Vorher und Nachher - sonst liest sich
+           die Spalte als eine einzige Kette. */
+        .goodie-beispiele {
+          gap: 1.5rem;
+        }
+
+        .goodie-vorher {
+          text-align: left;
+        }
+
+        .goodie-pfeil {
+          font-size: 0.85rem;
+        }
+
+        .goodie-pfeil::before {
+          content: '\2193';
+        }
+
+        .goodie-fuss {
           flex-direction: column;
           align-items: flex-start;
           gap: 1.25rem;
@@ -3720,19 +3803,45 @@
     </section>
 
     <!-- Goodie: der Klartext-Standard, prominent zwischen den beiden
-         Themenfeldern. Der kurze Nutzen steht hier, die Anleitung im
-         Overlay dahinter (data-action="goodie"). -->
+         Themenfeldern. Erst das Problem an drei Sätzen, die jeder kennt,
+         dann die Lösung zum Mitnehmen. Die Anleitung liegt im Overlay
+         dahinter (data-action="goodie"). -->
     <section class="goodie-section" id="klartext" aria-labelledby="goodie-heading">
       <div class="goodie-inner fade-in">
-        <div class="goodie-text">
+        <div class="goodie-kopf">
           <span class="goodie-chip">Goodie</span>
           <h2 class="goodie-titel" id="goodie-heading">The plain language standard</h2>
-          <p class="goodie-nutzen">This site is easy to read because firm plain language rules stand behind it. Here they are as a file to take with you: hand it to Claude or ChatGPT, and your emails, proposals and reports come out just as clear. That saves time and follow-up questions.</p>
+          <p class="goodie-problem">Everyone knows sentences like these. And everyone reads them twice.</p>
         </div>
-        <div class="goodie-aktion">
-          <a href="/downloads/plain-language-standard.md" download class="btn-submit">Download the standard</a>
-          <span class="goodie-frei">Free to use – no sign-up, no catch.</span>
-          <button type="button" class="goodie-mehr" data-action="goodie">How to use it</button>
+
+        <ul class="goodie-beispiele">
+          <li class="goodie-paar">
+            <span class="goodie-vorher">"Processing cannot be carried out at the present time."</span>
+            <span class="goodie-pfeil" aria-hidden="true"></span>
+            <span class="sr-only">becomes</span>
+            <span class="goodie-nachher">"We won't get to it this week."</span>
+          </li>
+          <li class="goodie-paar">
+            <span class="goodie-vorher">"We request a timely response."</span>
+            <span class="goodie-pfeil" aria-hidden="true"></span>
+            <span class="sr-only">becomes</span>
+            <span class="goodie-nachher">"Please reply by Friday."</span>
+          </li>
+          <li class="goodie-paar">
+            <span class="goodie-vorher">"A prioritisation was undertaken in the course of implementation."</span>
+            <span class="goodie-pfeil" aria-hidden="true"></span>
+            <span class="sr-only">becomes</span>
+            <span class="goodie-nachher">"We decided what comes first."</span>
+          </li>
+        </ul>
+
+        <div class="goodie-fuss">
+          <p class="goodie-nutzen">The plain language standard is the set of rules behind that – the same ones this site is written by. Hand the file to Claude or ChatGPT, and your emails, proposals and reports come back like this. Without you rewriting a thing.</p>
+          <div class="goodie-aktion">
+            <a href="/downloads/plain-language-standard.md" download class="btn-submit">Download the standard</a>
+            <span class="goodie-frei">Free to use – no sign-up, no catch.</span>
+            <button type="button" class="goodie-mehr" data-action="goodie">How to use it</button>
+          </div>
         </div>
       </div>
     </section>

@@ -3582,8 +3582,10 @@
       <span class="music-label">hohl.rocks</span>
     </div>
     <audio id="bg-music" loop preload="none">
-      <!-- Fallback-Source; loadTrack(0) setzt beim Init den ersten Playlist-Track -->
-      <source src="/audio/ambient_loop.mp3" type="audio/mpeg">
+      <!-- Fallback-Source; loadTrack(0) setzt beim Init den ersten
+           Playlist-Track und wählt dabei Opus, wo der Browser es kann. -->
+      <source src="/audio/highway-dusk.ogg" type="audio/ogg; codecs=opus">
+      <source src="/audio/highway-dusk.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Schwebendes Chat-Widget - Frag Wolf -->
@@ -4090,7 +4092,7 @@
             <div class="studio-section">
               <div class="now-playing" style="background: transparent; padding: 0; margin: 0;">
                 <div class="now-playing-label">Now Playing</div>
-                <div class="now-playing-title" id="current-track-title">Ambient Dreams</div>
+                <div class="now-playing-title" id="current-track-title">Highway Dusk</div>
                 <div class="now-playing-artist" id="current-track-artist">hohl.rocks</div>
 
                 <!-- Track Navigation -->
@@ -5538,9 +5540,19 @@
         // ═══════════════════════════════════════════════════════════════
         // PLAYLIST - Tracks hinzufügen/ändern hier
         // ═══════════════════════════════════════════════════════════════
+        // gain gleicht die Lautheit der Stücke an: alle liegen bei rund
+        // -18 LUFS, damit ein Wechsel im Studio nicht im Pegel springt.
+        // "Highway Dusk" ist dafür schon beim Erzeugen normalisiert, die
+        // beiden älteren bekommen ihren Abzug hier - so bleiben ihre
+        // Dateien unangetastet und verlieren nichts durch ein zweites
+        // Encodieren.
         const tracks = [
-          { title: 'Ambient Dreams', artist: 'hohl.rocks', src: '/audio/ambient_loop.mp3' },
-          { title: 'Road Trip', artist: 'hohl.rocks', src: '/audio/road_trip.mp3' }
+          { title: 'Highway Dusk', artist: 'hohl.rocks',
+            src: '/audio/highway-dusk.mp3', opus: '/audio/highway-dusk.ogg', gain: 1 },
+          { title: 'Ambient Dreams', artist: 'hohl.rocks',
+            src: '/audio/ambient_loop.mp3', gain: 0.85 },
+          { title: 'Road Trip', artist: 'hohl.rocks',
+            src: '/audio/road_trip.mp3', gain: 0.68 }
         ];
 
         let currentTrackIndex = 0;
@@ -5599,11 +5611,29 @@
           });
         }
 
+        // Lautstärke-Kette: der Regler im Studio und der Pegelabgleich je
+        // Stück treffen sich im GainNode. audio.volume bleibt frei - das
+        // gehört den Ein- und Ausblenden beim Schalten.
+        let nutzerLautstaerke = 0.3;
+        let stueckGain = 1;
+
+        function wendeLautstaerkeAn() {
+          if (gainNode) gainNode.gain.value = nutzerLautstaerke * stueckGain;
+        }
+
         // Load Track
         function loadTrack(index) {
           currentTrackIndex = index;
           const track = tracks[index];
-          audio.src = track.src;
+          // Opus loopt lückenlos. MP3 trägt am Dateianfang einen
+          // Encoder-Vorlauf, den nicht jeder Browser wegrechnet - bei
+          // einem Stück, das alle 78 Sekunden von vorn beginnt, wäre das
+          // jedes Mal ein hörbarer Stolperer.
+          const kannOpus = typeof audio.canPlayType === 'function'
+            && audio.canPlayType('audio/ogg; codecs=opus') !== '';
+          audio.src = (track.opus && kannOpus) ? track.opus : track.src;
+          stueckGain = typeof track.gain === 'number' ? track.gain : 1;
+          wendeLautstaerkeAn();
           updateTrackUI();
         }
 
@@ -5717,7 +5747,7 @@
           trebleFilter.gain.value = 0;
 
           gainNode = audioContext.createGain();
-          gainNode.gain.value = 0.3;
+          gainNode.gain.value = nutzerLautstaerke * stueckGain;
 
           source.connect(bassFilter);
           bassFilter.connect(midFilter);
@@ -5827,9 +5857,11 @@
 
         // Volume control
         function updateVolume(value) {
-          const vol = value / 100;
-          if (gainNode) gainNode.gain.value = vol;
-          else audio.volume = vol;
+          // Nur merken und über den GainNode ausspielen. Früher fiel diese
+          // Funktion ohne GainNode auf audio.volume zurück - das ist seit
+          // den Blenden belegt und hätte sich gegenseitig überschrieben.
+          nutzerLautstaerke = value / 100;
+          wendeLautstaerkeAn();
           volumeSlider.value = value;
           volumeSlider2.value = value;
         }

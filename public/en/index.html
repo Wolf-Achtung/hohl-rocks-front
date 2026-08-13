@@ -1151,14 +1151,18 @@
          TOOLS SECTION
          ═══════════════════════════════════════════════════════════════ */
 
+      /* Die beiden Themenfelder - dieser Kasten und "Heute in KI" -
+         tragen dasselbe leicht blaue Glas: IKB, stark verdünnt. So
+         lesen sie sich als Paar, ohne mit dem kräftigen Blau der
+         Schaltflächen zu konkurrieren. */
       .tools-section {
-        background: linear-gradient(145deg, rgba(0, 47, 140, 0.06) 0%, rgba(0, 30, 90, 0.08) 100%);
+        background: linear-gradient(145deg, rgba(0, 47, 167, 0.16) 0%, rgba(0, 26, 104, 0.20) 100%);
         backdrop-filter: blur(4px);
         padding: 4rem 2rem;
         border-radius: 24px;
         max-width: 1000px;
         margin: 2rem auto;
-        border: 1px solid rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(99, 135, 255, 0.16);
       }
 
       .tools-grid {
@@ -2955,6 +2959,106 @@
         line-height: 1.8;
       }
 
+      /* Goodie: der Klartext-Standard, prominent zwischen den beiden
+         blauen Themenfeldern. Bewusst heller als die Nachbarn - ein
+         Geschenk darf auffallen. */
+      .goodie-section {
+        position: relative;
+        z-index: 2;
+        padding: 1.5rem 1.5rem 0;
+      }
+
+      .goodie-inner {
+        max-width: 56rem;
+        margin: 0 auto;
+        padding: 1.75rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 16px;
+      }
+
+      .goodie-chip {
+        display: inline-block;
+        margin-bottom: 0.6rem;
+        padding: 0.25rem 0.7rem;
+        background: var(--accent-primary);
+        border-radius: 999px;
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .goodie-titel {
+        margin: 0 0 0.5rem;
+        font-size: 1.35rem;
+        font-weight: 700;
+      }
+
+      .goodie-nutzen {
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--text-secondary);
+      }
+
+      .goodie-aktion {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        flex-shrink: 0;
+      }
+
+      .goodie-aktion .btn-submit {
+        flex: none;
+        display: inline-block;
+        text-decoration: none;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .goodie-frei {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      .goodie-mehr {
+        padding: 0;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        color: rgba(255, 255, 255, 0.65);
+        font-family: var(--font-family);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: color 0.2s ease, border-color 0.2s ease;
+      }
+
+      .goodie-mehr:hover,
+      .goodie-mehr:focus-visible {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.7);
+      }
+
+      @media (max-width: 768px) {
+        .goodie-inner {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1.25rem;
+        }
+
+        .goodie-aktion {
+          align-items: flex-start;
+        }
+      }
+
       /* Heute in KI */
       .ki-news-section {
         position: relative;
@@ -2966,10 +3070,11 @@
         max-width: 56rem;
         margin: 0 auto;
         padding: 1.5rem 1.75rem;
-        background: var(--glass-bg);
+        /* Gleiche blaue Tönung wie der Technik-Kasten darüber. */
+        background: rgba(0, 42, 150, 0.16);
         backdrop-filter: var(--glass-blur);
         -webkit-backdrop-filter: var(--glass-blur);
-        border: 1px solid var(--glass-border);
+        border: 1px solid rgba(99, 135, 255, 0.16);
         border-radius: 16px;
       }
 
@@ -3235,6 +3340,61 @@
         0% { height: 3px; }
         100% { height: 10px; }
       }
+
+      /* Laut und leise direkt an der Leiste: Der Regler klappt aus,
+         sobald Musik läuft. Solange es still ist, gäbe es nichts zu
+         regeln - dann nimmt er auch keinen Platz ein. */
+      .laut-regler {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 0;
+        min-height: 32px;
+        margin: 0;
+        padding: 0;
+        opacity: 0;
+        background: transparent;
+        cursor: pointer;
+        pointer-events: none;
+        transition: width 0.35s ease, opacity 0.35s ease, margin 0.35s ease;
+      }
+      .einstellungen-float.mit-musik .laut-regler {
+        width: 72px;
+        margin: 0 0.4rem 0 0.15rem;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .laut-regler::-webkit-slider-runnable-track {
+        height: 3px;
+        border-radius: 2px;
+        background: rgba(180, 200, 255, 0.4);
+      }
+      .laut-regler::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        margin-top: -4.5px;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+      }
+      .laut-regler::-moz-range-track {
+        height: 3px;
+        border-radius: 2px;
+        background: rgba(180, 200, 255, 0.4);
+      }
+      .laut-regler::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+      }
+      @media (max-width: 768px) {
+        .laut-regler {
+          min-height: 42px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -3285,6 +3445,7 @@
         </span>
         <span class="sound-float-label">Sound</span>
       </button>
+      <input type="range" id="laut-regler" class="laut-regler" min="0" max="100" value="25" aria-label="Volume">
       <span class="einstellungen-trenner" aria-hidden="true"></span>
       <nav class="sprache-float" aria-label="Sprache / Language">
         <a href="/" hreflang="de" lang="de" class="sprache-option">DE</a>
@@ -3554,6 +3715,24 @@
             <!-- Was der Test bedeutet - erscheint erst nach einer Runde -->
             <p class="guard-summary" id="guard-summary" hidden></p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Goodie: der Klartext-Standard, prominent zwischen den beiden
+         Themenfeldern. Der kurze Nutzen steht hier, die Anleitung im
+         Overlay dahinter (data-action="goodie"). -->
+    <section class="goodie-section" id="klartext" aria-labelledby="goodie-heading">
+      <div class="goodie-inner fade-in">
+        <div class="goodie-text">
+          <span class="goodie-chip">Goodie</span>
+          <h2 class="goodie-titel" id="goodie-heading">The plain language standard</h2>
+          <p class="goodie-nutzen">The writing standard behind every text on this site – the plain language rule from aviation, adapted for German. Hand the file to Claude or ChatGPT, and your texts come back the same way: read once, understood at once.</p>
+        </div>
+        <div class="goodie-aktion">
+          <a href="/downloads/plain-language-standard.md" download class="btn-submit">Download the standard</a>
+          <span class="goodie-frei">Free to use – no sign-up, no catch.</span>
+          <button type="button" class="goodie-mehr" data-action="goodie">How to use it</button>
         </div>
       </div>
     </section>
@@ -4014,7 +4193,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                   </svg>
-                  <input type="range" id="volume-slider" min="0" max="100" value="30" aria-label="Volume">
+                  <input type="range" id="volume-slider" min="0" max="100" value="25" aria-label="Volume">
                 </div>
 
                 <button class="play-btn" id="studio-play-btn" title="Play/Pause" aria-label="Play or pause the sound">
@@ -4028,7 +4207,7 @@
                 </button>
 
                 <div class="volume-control">
-                  <input type="range" id="volume-slider-2" min="0" max="100" value="30" aria-label="Volume, right channel">
+                  <input type="range" id="volume-slider-2" min="0" max="100" value="25" aria-label="Volume, right channel">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -5521,6 +5700,8 @@
         const canvas = document.getElementById('audio-visualizer');
         const volumeSlider = document.getElementById('volume-slider');
         const volumeSlider2 = document.getElementById('volume-slider-2');
+        const lautRegler = document.getElementById('laut-regler');
+        const leisteEl = document.querySelector('.einstellungen-float');
         const bassSlider = document.getElementById('bass-slider');
         const midSlider = document.getElementById('mid-slider');
         const trebleSlider = document.getElementById('treble-slider');
@@ -5611,10 +5792,12 @@
           });
         }
 
-        // Lautstärke-Kette: der Regler im Studio und der Pegelabgleich je
-        // Stück treffen sich im GainNode. audio.volume bleibt frei - das
+        // Lautstärke-Kette: die Regler und der Pegelabgleich je Stück
+        // treffen sich im GainNode. audio.volume bleibt frei - das
         // gehört den Ein- und Ausblenden beim Schalten.
-        let nutzerLautstaerke = 0.3;
+        // 0.25 als Start: Die Musik ist Begleitung, keine Ansage. Wer
+        // mehr will, hat den Regler direkt neben dem Sound-Schalter.
+        let nutzerLautstaerke = 0.25;
         let stueckGain = 1;
 
         function wendeLautstaerkeAn() {
@@ -5646,6 +5829,7 @@
           audio.play().then(() => {
             if (playerBtn) playerBtn.classList.add('playing');
             if (footerMusicToggle) footerMusicToggle.classList.add('playing');
+            if (leisteEl) leisteEl.classList.add('mit-musik');
             if (playIcon) playIcon.style.display = 'none';
             if (pauseIcon) pauseIcon.style.display = '';
             drawVisualizer();
@@ -5700,24 +5884,54 @@
           });
         }
 
-        // Wer beim letzten Besuch mit Musik gehört hat, bekommt sie beim
-        // nächsten wieder. Browser geben Ton erst nach einer eigenen
-        // Geste frei - und nur Zeiger und Taste zählen dafür verlässlich,
-        // das Mausrad nicht. Also: bei der ersten echten Geste.
-        let merkWert = null;
-        try { merkWert = localStorage.getItem('hohl-sound'); } catch (e) { /* Privates Fenster */ }
-        if (merkWert === 'an') {
-          const wiederAn = (ereignis) => {
-            window.removeEventListener('pointerdown', wiederAn);
-            window.removeEventListener('keydown', wiederAn);
-            // Zielt die Geste auf den Sound-Schalter selbst, übernimmt
-            // dessen Klick - sonst spielte die Musik an und derselbe
-            // Klick schaltete sie gleich wieder aus.
-            if (ereignis.target instanceof Element && ereignis.target.closest('#sound-float')) return;
-            if (!isPlaying) togglePlay();
-          };
-          window.addEventListener('pointerdown', wiederAn, { passive: true });
-          window.addEventListener('keydown', wiederAn, { passive: true });
+        // Die Musik startet von selbst - aber behutsam: ganz leise, mit
+        // acht Sekunden bis zum vollen Pegel. Nur wer sie beim letzten
+        // Besuch ausgeschaltet hat, behält seine Ruhe.
+        //
+        // Browser geben Ton erst nach einer eigenen Geste frei - und nur
+        // Zeiger und Taste zählen dafür verlässlich, das Mausrad nicht.
+        // Deshalb zwei Wege: ein Direktversuch beim Laden (den erlauben
+        // Browser bei oft besuchten Seiten) und sonst die erste echte
+        // Geste.
+        function leiseAnspielen(mitGeste) {
+          if (isPlaying) return Promise.resolve(true);
+          if (!isInitialized) initAudio();
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          audio.volume = 0;
+          return audio.play().then(() => new Promise((weiter) => {
+            // Beim Direktversuch kann play() durchgehen, während die
+            // WebAudio-Kette noch gesperrt ist - dann liefe die Musik
+            // stumm. Die Kette bekommt einen Moment: Öffnet das eben
+            // angestoßene resume() sie, geht es weiter - sonst wartet
+            // die Seite auf die erste Geste. Nach einer Geste entfällt
+            // die Probe, resume() geht dann immer durch.
+            if (mitGeste || !audioContext || audioContext.state !== 'suspended') return weiter(true);
+            let entschieden = false;
+            const auf = () => { if (!entschieden) { entschieden = true; weiter(true); } };
+            const zu = () => { if (!entschieden) { entschieden = true; weiter(false); } };
+            audioContext.resume().then(auf, zu);
+            setTimeout(zu, 400);
+          })).then((offen) => {
+            if (!offen) {
+              audio.pause();
+              audio.volume = 1;
+              return false;
+            }
+            if (playerBtn) playerBtn.classList.add('playing');
+            if (footerMusicToggle) footerMusicToggle.classList.add('playing');
+            if (leisteEl) leisteEl.classList.add('mit-musik');
+            if (playIcon) playIcon.style.display = 'none';
+            if (pauseIcon) pauseIcon.style.display = '';
+            drawVisualizer();
+            isPlaying = true;
+            blendeZu(1, 8000);
+            return true;
+          }).catch(() => {
+            audio.volume = 1;
+            return false;
+          });
         }
 
         // Initialize Web Audio API
@@ -5843,6 +6057,7 @@
             });
             if (playerBtn) playerBtn.classList.remove('playing');
             if (footerMusicToggle) footerMusicToggle.classList.remove('playing');
+            if (leisteEl) leisteEl.classList.remove('mit-musik');
             if (playIcon) playIcon.style.display = '';
             if (pauseIcon) pauseIcon.style.display = 'none';
           } else {
@@ -5855,7 +6070,8 @@
 
         studioPlayBtn.addEventListener('click', togglePlay);
 
-        // Volume control
+        // Volume control - drei Regler, ein Wert: der an der Leiste und
+        // die beiden im Studio laufen im Gleichschritt.
         function updateVolume(value) {
           // Nur merken und über den GainNode ausspielen. Früher fiel diese
           // Funktion ohne GainNode auf audio.volume zurück - das ist seit
@@ -5864,10 +6080,19 @@
           wendeLautstaerkeAn();
           volumeSlider.value = value;
           volumeSlider2.value = value;
+          if (lautRegler) lautRegler.value = value;
+          try { localStorage.setItem('hohl-laut', String(value)); } catch (e) { /* Privates Fenster */ }
         }
 
         volumeSlider.addEventListener('input', (e) => updateVolume(e.target.value));
         volumeSlider2.addEventListener('input', (e) => updateVolume(e.target.value));
+        if (lautRegler) lautRegler.addEventListener('input', (e) => updateVolume(e.target.value));
+
+        // Die zuletzt gewählte Lautstärke gilt auch beim nächsten Besuch.
+        try {
+          const merkLaut = parseInt(localStorage.getItem('hohl-laut'), 10);
+          if (!isNaN(merkLaut)) updateVolume(Math.min(100, Math.max(0, merkLaut)));
+        } catch (e) { /* Privates Fenster */ }
 
         // EQ Controls
         bassSlider.addEventListener('input', (e) => {
@@ -5934,6 +6159,28 @@
         renderTrackList();
         loadTrack(0);
         document.querySelector('.mood-btn[data-mood="neutral"]')?.classList.add('active');
+
+        // Der Autostart erst NACH loadTrack(0): Der Direktversuch spielt
+        // sonst an, während loadTrack die Quelle wechselt - das neue
+        // Laden bricht das laufende play() mit einem AbortError ab.
+        let merkWert = null;
+        try { merkWert = localStorage.getItem('hohl-sound'); } catch (e) { /* Privates Fenster */ }
+        if (merkWert !== 'aus') {
+          const beiGeste = (ereignis) => {
+            window.removeEventListener('pointerdown', beiGeste);
+            window.removeEventListener('keydown', beiGeste);
+            // Zielt die Geste auf den Sound-Schalter selbst, übernimmt
+            // dessen Klick - sonst spielte die Musik an und derselbe
+            // Klick schaltete sie gleich wieder aus.
+            if (ereignis.target instanceof Element && ereignis.target.closest('#sound-float')) return;
+            leiseAnspielen(true);
+          };
+          leiseAnspielen(false).then((laeuft) => {
+            if (laeuft) return;
+            window.addEventListener('pointerdown', beiGeste, { passive: true });
+            window.addEventListener('keydown', beiGeste, { passive: true });
+          });
+        }
 
         // Pause when page is hidden
         document.addEventListener('visibilitychange', () => {

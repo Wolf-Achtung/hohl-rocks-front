@@ -1227,39 +1227,75 @@
         display: none;
       }
 
-      /* Schwebendes Chat-Widget */
+      /* Schwebendes Chat-Widget. Sitzt wie Sound-Knopf und Sprachwahl
+         auf 20 px Randabstand - drei Ecken, eine Ordnung. */
       .chat-widget {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
+        bottom: 20px;
+        right: 20px;
         z-index: 1000;
         font-family: var(--font-family);
       }
 
-      /* Chat-Bubble (geschlossener Zustand) */
+      /* Chat-Bubble (geschlossener Zustand). Dieselbe Milchglas-Sprache
+         wie Sound-Knopf und Sprachwahl - der frühere volle IKB-Verlauf
+         schrie lauter als alles andere auf der Seite. Beim Überfahren
+         klappt das Etikett aus und sagt, was sich dahinter verbirgt. */
       .chat-bubble {
-        width: 56px;
-        height: 56px;
-        background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 20px rgba(0, 47, 167, 0.4);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: none;
+        height: 44px;
+        min-width: 44px;
+        padding: 0 9px;
+        background: rgba(15, 15, 20, 0.72);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(99, 135, 255, 0.35);
+        border-radius: 22px;
+        cursor: pointer;
+        color: rgba(180, 200, 255, 0.85);
+        transition: border-color 0.3s ease, color 0.3s ease,
+          background 0.3s ease, box-shadow 0.3s ease;
       }
 
-      .chat-bubble:hover {
-        transform: scale(1.08);
-        box-shadow: 0 6px 28px rgba(0, 47, 167, 0.5);
+      .chat-bubble:hover,
+      .chat-bubble:focus-visible {
+        border-color: rgba(99, 135, 255, 0.7);
+        color: #fff;
+        background: rgba(15, 15, 20, 0.95);
+        box-shadow: 0 0 12px rgba(99, 135, 255, 0.2);
       }
 
       .chat-bubble svg {
-        width: 24px;
-        height: 24px;
-        color: #fff;
+        width: 22px;
+        height: 22px;
+        flex: none;
+        color: currentColor;
+      }
+
+      /* Das Etikett liegt zusammengefaltet neben dem Symbol und klappt
+         beim Überfahren aus - am Telefon (ohne Zeiger) bleibt es zu, dort
+         trägt das aria-label. Im offenen Zustand sagt es nichts Neues,
+         die Kopfzeile des Fensters steht dann direkt darüber. */
+      .chat-bubble-label {
+        max-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        opacity: 0;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        transition: max-width 0.35s ease, opacity 0.25s ease,
+          margin-left 0.35s ease;
+      }
+
+      .chat-widget:not(.open) .chat-bubble:hover .chat-bubble-label,
+      .chat-widget:not(.open) .chat-bubble:focus-visible .chat-bubble-label {
+        max-width: 170px;
+        opacity: 1;
+        margin-left: 8px;
+        margin-right: 4px;
       }
 
       .chat-bubble .close-icon {
@@ -1456,8 +1492,13 @@
       /* Mobile Responsive */
       @media (max-width: 480px) {
         .chat-widget {
-          bottom: 16px;
-          right: 16px;
+          bottom: 14px;
+          right: 14px;
+        }
+
+        .sound-float {
+          bottom: 14px;
+          left: 14px;
         }
 
         .chat-panel {
@@ -3123,24 +3164,30 @@
         }
       }
 
+      /* Dieselben Maße und Farben wie Sprachwahl und Chat-Knopf - drei
+         Ecken, eine Formensprache. */
       .sound-float {
         position: fixed;
-        bottom: 24px;
-        left: 24px;
+        bottom: 20px;
+        left: 20px;
         z-index: 100;
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        padding: 0.4rem 0.75rem;
-        background: rgba(15, 15, 20, 0.85);
+        height: 44px;
+        padding: 0 0.85rem;
+        background: rgba(15, 15, 20, 0.72);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(99, 135, 255, 0.4);
-        border-radius: 20px;
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(99, 135, 255, 0.35);
+        border-radius: 22px;
         cursor: pointer;
         transition: all 0.3s ease;
-        color: rgba(180, 200, 255, 0.8);
+        color: rgba(180, 200, 255, 0.85);
         font-family: var(--font-family);
-        font-size: 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
         opacity: 0;
         transform: translateY(10px);
         pointer-events: none;
@@ -3543,6 +3590,7 @@
         <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
+        <span class="chat-bubble-label" aria-hidden="true">Frag mich was</span>
         <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -4160,7 +4208,10 @@
         // Wortzahl. Der Schlusssatz bekommt den größten Anteil - dort
         // läuft die Zeichen-Animation.
         const gewichte = tafeln.map((el) => {
-          if (el === manifestFinale) return 1.8;
+          // 1.2 statt früher 1.8: Das Verglühen läuft auf der Uhr, nicht
+          // auf dem Scroll-Weg. Der lange Rest des Fensters war nur toter
+          // Raum zwischen Schlusssatz und nächster Sektion.
+          if (el === manifestFinale) return 1.2;
           const woerter = el.textContent.trim().split(/\s+/).length;
           return Math.min(1.3, Math.max(0.7, 0.55 + 0.07 * woerter));
         });
@@ -4209,6 +4260,7 @@
 
         let finaleTriggered = false;
         let finaleTimeout = null;
+        let schnittTimeout = null;
 
         let viewportHeight = window.innerHeight;
         let sectionHeight = 0;
@@ -4378,6 +4430,24 @@
                 delayedSection.classList.add('visible');
               }
             }, 900);
+            // Der Schnitt: Nach dem Verglühen fährt die Seite sanft zur
+            // nächsten Szene - "Apropos Technik" soll direkt im Bild
+            // stehen, nicht eine Bildschirmhöhe tiefer warten. Zeitpunkt:
+            // 0,9 s Zünd-Verzögerung plus rund 3,8 s Zeichen-Welle.
+            schnittTimeout = setTimeout(() => {
+              // Nur wenn der Besucher noch am Finale steht. Wer längst
+              // zurück- oder weitergescrollt ist, hat den Schnitt nicht
+              // bestellt - das prüft die Position, nicht die Eingabe.
+              messeZiel();
+              const nochDa = finaleFenster
+                && ziel >= finaleFenster.start + 0.2 * finaleFenster.spanne
+                && ziel <= 1.02;
+              if (!nochDa || !finaleTriggered) return;
+              const ausprobieren = document.getElementById('ausprobieren');
+              if (ausprobieren) {
+                ausprobieren.scrollIntoView({ behavior: sanft ? 'auto' : 'smooth' });
+              }
+            }, 5200);
           }
 
           // Reset wenn zurückgescrollt wird. Der Abstand zur Schwelle oben
@@ -4387,6 +4457,7 @@
           if (finaleLokal < 0.1 && finaleTriggered) {
             finaleTriggered = false;
             if (finaleTimeout) clearTimeout(finaleTimeout);
+            if (schnittTimeout) clearTimeout(schnittTimeout);
             if (manifestFinale) manifestFinale.classList.remove('glow');
             if (delayedSection) delayedSection.classList.remove('visible');
           }

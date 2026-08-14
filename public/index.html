@@ -6003,7 +6003,7 @@
         // Deshalb zwei Wege: ein Direktversuch beim Laden (den erlauben
         // Browser bei oft besuchten Seiten) und sonst die erste echte
         // Geste.
-        function leiseAnspielen(mitGeste) {
+        function leiseAnspielen() {
           if (isPlaying) return Promise.resolve(true);
           if (!isInitialized) initAudio();
           if (audioContext && audioContext.state === 'suspended') {
@@ -6011,13 +6011,15 @@
           }
           audio.volume = 0;
           return audio.play().then(() => new Promise((weiter) => {
-            // Beim Direktversuch kann play() durchgehen, während die
-            // WebAudio-Kette noch gesperrt ist - dann liefe die Musik
-            // stumm. Die Kette bekommt einen Moment: Öffnet das eben
-            // angestoßene resume() sie, geht es weiter - sonst wartet
-            // die Seite auf die erste Geste. Nach einer Geste entfällt
-            // die Probe, resume() geht dann immer durch.
-            if (mitGeste || !audioContext || audioContext.state !== 'suspended') return weiter(true);
+            // play() kann durchgehen, während die WebAudio-Kette noch
+            // gesperrt ist - dann liefe die Musik stumm. Das passiert
+            // beim Direktversuch, aber auch bei Gesten, die der Browser
+            // nicht als Ton-Freigabe zählt: dem Scroll-Ansatz am Handy
+            // etwa. Deshalb prüft die Probe immer - bei einer echten
+            // Geste öffnet das eben angestoßene resume() die Kette
+            // sofort, sonst bleibt die Seite still und wartet auf die
+            // nächste Geste.
+            if (!audioContext || audioContext.state !== 'suspended') return weiter(true);
             let entschieden = false;
             const auf = () => { if (!entschieden) { entschieden = true; weiter(true); } };
             const zu = () => { if (!entschieden) { entschieden = true; weiter(false); } };
@@ -6152,24 +6154,40 @@
         }
 
         function merkeSound(wert) {
-          try { localStorage.setItem('hohl-sound', wert); } catch (e) { /* Privates Fenster */ }
+          // "hohl-sound2", nicht "hohl-sound": Der alte Schlüssel ist
+          // verbrannt - die Tab-Pause lief früher über togglePlay und
+          // schrieb bei jedem Tab-Wechsel ein "aus". Wer den alten Wert
+          // trägt, hat die Musik meist nie selbst abgeschaltet.
+          try { localStorage.setItem('hohl-sound2', wert); } catch (e) { /* Privates Fenster */ }
         }
 
+        // Anhalten ohne Urteil: pausiere() merkt sich nichts. Nur der
+        // Schalter selbst darf "aus" speichern - die Tab-Pause unten
+        // nutzt dieselbe Blende, zählt aber nicht als Abschalten.
+        function pausiere() {
+          // Erst ausblenden, dann anhalten - kein harter Schnitt.
+          isPlaying = false;
+          blendeZu(0, 500, () => {
+            audio.pause();
+            audio.volume = 1;
+            stopVisualizer();
+          });
+          if (playerBtn) playerBtn.classList.remove('playing');
+          if (footerMusicToggle) footerMusicToggle.classList.remove('playing');
+          if (leisteEl) leisteEl.classList.remove('mit-musik');
+          if (playIcon) playIcon.style.display = '';
+          if (pauseIcon) pauseIcon.style.display = 'none';
+        }
+
+        let autoStartVorbei = false;
+
         function togglePlay() {
+          // Wer selbst schaltet, übernimmt: Ab jetzt startet keine
+          // wartende Geste die Musik mehr von allein.
+          autoStartVorbei = true;
           if (isPlaying) {
-            // Erst ausblenden, dann anhalten - kein harter Schnitt.
-            isPlaying = false;
+            pausiere();
             merkeSound('aus');
-            blendeZu(0, 500, () => {
-              audio.pause();
-              audio.volume = 1;
-              stopVisualizer();
-            });
-            if (playerBtn) playerBtn.classList.remove('playing');
-            if (footerMusicToggle) footerMusicToggle.classList.remove('playing');
-            if (leisteEl) leisteEl.classList.remove('mit-musik');
-            if (playIcon) playIcon.style.display = '';
-            if (pauseIcon) pauseIcon.style.display = 'none';
           } else {
             audio.volume = 0;
             playTrack();
@@ -6273,28 +6291,61 @@
         // Der Autostart erst NACH loadTrack(0): Der Direktversuch spielt
         // sonst an, während loadTrack die Quelle wechselt - das neue
         // Laden bricht das laufende play() mit einem AbortError ab.
+        //
+        // Der alte Schlüssel "hohl-sound" wird einmal weggeräumt: Sein
+        // "aus" stammte fast immer von der Tab-Pause, nicht von einer
+        // Entscheidung. Ein echtes Aus schreibt sich ab jetzt unter
+        // "hohl-sound2" - und bleibt.
+        try { localStorage.removeItem('hohl-sound'); } catch (e) { /* Privates Fenster */ }
         let merkWert = null;
-        try { merkWert = localStorage.getItem('hohl-sound'); } catch (e) { /* Privates Fenster */ }
+        try { merkWert = localStorage.getItem('hohl-sound2'); } catch (e) { /* Privates Fenster */ }
         if (merkWert !== 'aus') {
-          const beiGeste = (ereignis) => {
-            window.removeEventListener('pointerdown', beiGeste);
-            window.removeEventListener('keydown', beiGeste);
+          // Die Starter bleiben armiert, bis ein Versuch gelingt oder
+          // jemand den Schalter selbst anfasst. Früher räumten sie sich
+          // beim ersten Ereignis weg - auf dem Handy ist das erste
+          // pointerdown aber oft ein Scroll-Ansatz, der den Ton noch
+          // nicht freigibt: Der Versuch scheiterte still, und kein
+          // Tipper danach konnte die Musik mehr starten. pointerup und
+          // touchend sind dabei, weil erst sie beim Tippen den Ton
+          // freischalten; pointerdown zählt nur für die Maus.
+          const starterArten = ['pointerdown', 'pointerup', 'touchend', 'keydown'];
+          const starterWeg = () => {
+            for (const art of starterArten) window.removeEventListener(art, beiGeste);
+          };
+          let versuchLaeuft = false;
+          function beiGeste(ereignis) {
+            if (autoStartVorbei || isPlaying) { starterWeg(); return; }
+            if (versuchLaeuft) return;
             // Zielt die Geste auf den Sound-Schalter selbst, übernimmt
             // dessen Klick - sonst spielte die Musik an und derselbe
             // Klick schaltete sie gleich wieder aus.
             if (ereignis.target instanceof Element && ereignis.target.closest('#sound-float')) return;
-            leiseAnspielen(true);
-          };
-          leiseAnspielen(false).then((laeuft) => {
+            versuchLaeuft = true;
+            leiseAnspielen().then((laeuft) => {
+              versuchLaeuft = false;
+              if (laeuft) starterWeg();
+            });
+          }
+          leiseAnspielen().then((laeuft) => {
             if (laeuft) return;
-            window.addEventListener('pointerdown', beiGeste, { passive: true });
-            window.addEventListener('keydown', beiGeste, { passive: true });
+            for (const art of starterArten) window.addEventListener(art, beiGeste, { passive: true });
           });
         }
 
-        // Pause when page is hidden
+        // Tab-Wechsel: Die Musik hält an, gilt aber nicht als
+        // abgeschaltet - früher lief das über togglePlay, und dessen
+        // gespeichertes "aus" beendete den Autostart für alle künftigen
+        // Besuche. Bei der Rückkehr spielt sie von selbst weiter.
+        let tabPause = false;
         document.addEventListener('visibilitychange', () => {
-          if (document.hidden && isPlaying) togglePlay();
+          if (document.hidden) {
+            if (isPlaying) { tabPause = true; pausiere(); }
+          } else if (tabPause) {
+            tabPause = false;
+            audio.volume = 0;
+            playTrack();
+            blendeZu(1, 1000);
+          }
         });
       });
 

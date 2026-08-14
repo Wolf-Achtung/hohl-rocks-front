@@ -156,9 +156,13 @@ ergebnis = ergebnis
     "$1")
   .replace(/(<a href="\/en\/" hreflang="en" lang="en" class="sprache-option")/,
     '$1 aria-current="true"')
-  // Das Goodie liegt in beiden Sprachen vor.
+  // Die Goodies liegen in beiden Sprachen vor.
   .replace(/href="\/downloads\/klartext-standard\.md"/g,
-    'href="/downloads/plain-language-standard.md"');
+    'href="/downloads/plain-language-standard.md"')
+  .replace(/href="\/downloads\/schwere-mails\.md"/g,
+    'href="/downloads/five-hard-emails.md"')
+  .replace(/href="\/downloads\/ki-hausordnung\.md"/g,
+    'href="/downloads/ai-house-rules.md"');
 
 // -------------------------------------------------------------------
 // 4. Bericht und Ausgabe

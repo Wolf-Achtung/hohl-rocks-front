@@ -4935,8 +4935,25 @@
           // Nur ganz oben: wer mit Sprungmarke oder aus der Historie
           // tiefer einsteigt, hat den Trailer nicht bestellt.
           if (window.scrollY > 40) {
-            trailerVorbei = true;
-            return;
+            // Ausnahme: Neuladen mitten im Film. Der Browser stellt
+            // dann die alte Scroll-Position wieder her, der Trailer
+            // startet nicht, und die Seite stünde für immer eingefroren
+            // zwischen zwei Tafeln. Wer beim Neuladen noch im Intro
+            // stand, fängt deshalb von vorn an - wer tiefer las,
+            // behält seinen Platz.
+            const nav = typeof performance.getEntriesByType === 'function'
+              && performance.getEntriesByType('navigation')[0];
+            const oben = manifestSection.getBoundingClientRect().top + window.scrollY;
+            const filmEnde = oben + sectionHeight - viewportHeight;
+            if (!nav || nav.type !== 'reload' || window.scrollY >= filmEnde) {
+              trailerVorbei = true;
+              return;
+            }
+            try {
+              window.scrollTo({ top: 0, behavior: 'instant' });
+            } catch (e) {
+              window.scrollTo(0, 0);
+            }
           }
           trailerLaeuft = true;
           trailerZeit = 0;

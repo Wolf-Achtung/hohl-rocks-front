@@ -2979,46 +2979,149 @@
         border-radius: 16px;
       }
 
-      /* Erst das Problem an drei Sätzen, die jeder kennt: links das
-         Übliche, rechts dasselbe in klar. Der Unterschied erklärt sich
-         schneller als jede Beschreibung. */
-      .goodie-beispiele {
-        list-style: none;
-        margin: 0;
-        padding: 0;
+      /* Die Werkstatt: eigener Satz rein, Klartext raus. Das Feld und
+         der Knopf stehen nebeneinander, die Chips füllen das Feld mit
+         den drei Klassikern, das Ergebnis erscheint darunter als
+         markierter Block. */
+      .klartext-werkstatt {
         display: flex;
         flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .klartext-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .klartext-feld {
+        display: flex;
         gap: 0.7rem;
       }
 
-      .goodie-paar {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: baseline;
-        gap: 0.9rem;
+      .klartext-eingabe {
+        flex: 1;
+        resize: vertical;
+        min-height: 3.4rem;
+        padding: 0.7rem 0.9rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+        color: #fff;
+        font-family: var(--font-family);
         font-size: 0.95rem;
         line-height: 1.5;
       }
 
-      .goodie-vorher {
-        text-align: right;
-        color: rgba(255, 255, 255, 0.38);
-        font-style: italic;
+      .klartext-eingabe::placeholder {
+        color: rgba(255, 255, 255, 0.4);
       }
 
-      .goodie-pfeil {
-        color: var(--accent-primary);
-        font-weight: 700;
-        filter: brightness(1.7);
+      .klartext-eingabe:focus {
+        outline: none;
+        border-color: var(--accent-primary);
       }
 
-      .goodie-pfeil::before {
-        content: '\2192';
+      .klartext-knopf {
+        flex: none;
+        align-self: flex-end;
       }
 
-      .goodie-nachher {
+      .klartext-chips {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .klartext-chips-wort {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      .klartext-chip {
+        padding: 0.3rem 0.8rem;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.75);
+        font-family: var(--font-family);
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      }
+
+      .klartext-chip:hover,
+      .klartext-chip:focus-visible {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .klartext-ergebnis {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.9rem 1rem;
+        background: rgba(0, 0, 0, 0.25);
+        border-left: 3px solid var(--accent-primary);
+        border-radius: 0 10px 10px 0;
+      }
+
+      .klartext-ergebnis-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .klartext-ergebnis-text {
+        margin: 0;
         color: #fff;
         font-weight: 600;
+        font-size: 1.02rem;
+        line-height: 1.55;
+        white-space: pre-line;
+      }
+
+      /* Warten und Fehler sprechen leiser als ein Ergebnis. */
+      .klartext-ergebnis.klartext-still .klartext-ergebnis-text {
+        color: rgba(255, 255, 255, 0.55);
+        font-weight: 400;
+      }
+
+      /* Die KI-Hausordnung am Ende von "Apropos Technik": eine schlanke
+         Glaskarte im Stil der Goodie-Sektion. */
+      .hausordnung {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        max-width: 56rem;
+        margin: 2.5rem auto 0;
+        padding: 1.5rem 2rem;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 16px;
+        text-align: left;
+      }
+
+      .hausordnung-titel {
+        margin: 0 0 0.4rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      @media (max-width: 768px) {
+        .hausordnung {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1.25rem;
+        }
       }
 
       .goodie-problem {
@@ -3027,12 +3130,34 @@
         color: var(--text-secondary);
       }
 
+      /* Zwei Mitnahmen nebeneinander: der Standard und die fünf
+         schweren Mails. Die Aktionen sitzen per margin-auto auf einer
+         Linie, egal wie lang die Texte darüber sind. */
       .goodie-fuss {
-        display: flex;
-        align-items: center;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 2rem;
         padding-top: 1.25rem;
         border-top: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .goodie-mitnahme {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .goodie-mitnahme-titel {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .goodie-mitnahme .goodie-aktion {
+        margin-top: auto;
+        padding-top: 0.4rem;
+        align-items: flex-start;
       }
 
       .goodie-chip {
@@ -3101,37 +3226,19 @@
       }
 
       @media (max-width: 768px) {
-        /* Nebeneinander wären die Beispiele zwei schmale Spalten mit
-           je zwei Wörtern pro Zeile. Untereinander bleibt der
-           Unterschied lesbar - der Pfeil zeigt dann nach unten. */
-        .goodie-paar {
-          grid-template-columns: 1fr;
-          gap: 0.15rem;
+        /* Feld und Knopf untereinander - nebeneinander bliebe dem
+           Text nur eine schmale Spalte. */
+        .klartext-feld {
+          flex-direction: column;
         }
 
-        /* Untereinander braucht die Trennung zwischen den Paaren mehr
-           Luft als die zwischen Vorher und Nachher - sonst liest sich
-           die Spalte als eine einzige Kette. */
-        .goodie-beispiele {
-          gap: 1.5rem;
-        }
-
-        .goodie-vorher {
-          text-align: left;
-        }
-
-        .goodie-pfeil {
-          font-size: 0.85rem;
-        }
-
-        .goodie-pfeil::before {
-          content: '\2193';
+        .klartext-knopf {
+          align-self: stretch;
         }
 
         .goodie-fuss {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 1.25rem;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
         }
 
         .goodie-aktion {
@@ -3800,48 +3907,91 @@
             <p class="guard-summary" id="guard-summary" hidden></p>
           </div>
         </div>
+
+        <!-- Mitnahme der Sektion: die KI-Hausordnung. Sie wohnt bewusst
+             hier bei Schutz und Leitplanken statt beim Klartext-Goodie -
+             Sprache und Sicherheit sind zwei Regale. -->
+        <div class="hausordnung fade-in">
+          <div class="hausordnung-text">
+            <span class="goodie-chip">Goodie</span>
+            <h3 class="hausordnung-titel">Die KI-Hausordnung</h3>
+            <p class="goodie-nutzen">Was ins Prompt-Fenster darf und was nie – eine Seite für kleine Teams. Zum Aufhängen, Verlinken und Danach-Arbeiten.</p>
+          </div>
+          <div class="goodie-aktion">
+            <a href="/downloads/ki-hausordnung.md" download class="btn-submit">Hausordnung herunterladen</a>
+            <span class="goodie-frei">Frei verwendbar – ohne Anmeldung, ohne Haken.</span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Goodie: der Klartext-Standard, prominent zwischen den beiden
-         Themenfeldern. Erst das Problem an drei Sätzen, die jeder kennt,
-         dann die Lösung zum Mitnehmen. Die Anleitung liegt im Overlay
-         dahinter (data-action="goodie"). -->
+    <!-- Goodie: der Klartext-Übersetzer, prominent zwischen den beiden
+         Themenfeldern. Kein Schaukasten mehr, sondern ein Werkzeug:
+         eigener Satz rein, Klartext raus - der Leser ist immer der
+         Absender. Die Chips füllen das Feld mit drei Klassikern, deren
+         Übersetzung fest verdrahtet ist und kein Netz braucht; nur
+         eigene Sätze gehen an /api/klartext. Darunter die beiden
+         Mitnahmen. Die Anleitung liegt im Overlay dahinter
+         (data-action="goodie"). -->
     <section class="goodie-section" id="klartext" aria-labelledby="goodie-heading">
       <div class="goodie-inner fade-in">
         <div class="goodie-kopf">
           <span class="goodie-chip">Goodie</span>
-          <h2 class="goodie-titel" id="goodie-heading">Der Klartext-Standard</h2>
-          <p class="goodie-problem">Diese Sätze kennt jeder. Und keiner weiß danach, woran er ist.</p>
+          <h2 class="goodie-titel" id="goodie-heading">Der Klartext-Übersetzer</h2>
+          <p class="goodie-problem">Wir alle schreiben Sätze, die weniger sagen, als wir meinen. Hier drehst du das einmal um.</p>
         </div>
 
-        <ul class="goodie-beispiele">
-          <li class="goodie-paar">
-            <span class="goodie-vorher">„Wir kommen diesbezüglich zeitnah auf Sie zu."</span>
-            <span class="goodie-pfeil" aria-hidden="true"></span>
-            <span class="sr-only">wird zu</span>
-            <span class="goodie-nachher">„Ich melde mich am Montag."</span>
-          </li>
-          <li class="goodie-paar">
-            <span class="goodie-vorher">„Wir müssen unbedingt mal wieder was machen!"</span>
-            <span class="goodie-pfeil" aria-hidden="true"></span>
-            <span class="sr-only">wird zu</span>
-            <span class="goodie-nachher">„Samstag? Ich koche."</span>
-          </li>
-          <li class="goodie-paar">
-            <span class="goodie-vorher">„Melde dich, wenn du was brauchst."</span>
-            <span class="goodie-pfeil" aria-hidden="true"></span>
-            <span class="sr-only">wird zu</span>
-            <span class="goodie-nachher">„Ich ruf dich Dienstag an."</span>
-          </li>
-        </ul>
+        <form class="klartext-werkstatt" id="klartext-form">
+          <label class="klartext-label" for="klartext-eingabe">Welchen Satz schiebst du gerade vor dir her?</label>
+          <div class="klartext-feld">
+            <textarea id="klartext-eingabe" class="klartext-eingabe" rows="2" maxlength="1000" placeholder="Eine Mail, eine Absage, eine Bitte – schreib sie hierher."></textarea>
+            <button type="submit" class="btn-submit klartext-knopf" id="klartext-senden">In Klartext</button>
+          </div>
+          <div class="klartext-chips" role="group" aria-label="Beispiele zum Ausprobieren">
+            <span class="klartext-chips-wort">Oder probier:</span>
+            <button type="button" class="klartext-chip" data-szene="vertroesten">das Vertrösten</button>
+            <button type="button" class="klartext-chip" data-szene="verabreden">die Verabredung</button>
+            <button type="button" class="klartext-chip" data-szene="ernstfall">den Ernstfall</button>
+          </div>
+          <div class="klartext-ergebnis" id="klartext-ergebnis" aria-live="polite" hidden>
+            <span class="klartext-ergebnis-label" id="klartext-ergebnis-label"></span>
+            <p class="klartext-ergebnis-text" id="klartext-ergebnis-text"></p>
+          </div>
+          <span class="goodie-frei">Bleibt unter uns: Dein Satz wird nicht gespeichert.</span>
+
+          <!-- Sprachabhängige Sätze für das Skript, als Textknoten -
+               so übersetzt die englische Fassung sie automatisch mit.
+               Zeichenketten im Skript selbst blieben deutsch. -->
+          <div class="klartext-daten" hidden aria-hidden="true">
+            <span data-szene="vertroesten" data-teil="floskel">Wir kommen diesbezüglich zeitnah auf Sie zu.</span>
+            <span data-szene="vertroesten" data-teil="klar">Ich melde mich am Montag.</span>
+            <span data-szene="verabreden" data-teil="floskel">Wir müssen unbedingt mal wieder was machen!</span>
+            <span data-szene="verabreden" data-teil="klar">Samstag? Ich koche.</span>
+            <span data-szene="ernstfall" data-teil="floskel">Melde dich, wenn du was brauchst.</span>
+            <span data-szene="ernstfall" data-teil="klar">Ich ruf dich Dienstag an.</span>
+            <span data-text="beispiel">So übersetzt der Standard:</span>
+            <span data-text="eigen">Dein Satz in Klartext:</span>
+            <span data-text="warten">Wird übersetzt …</span>
+            <span data-text="fehler">Gerade nicht erreichbar. Probier es gleich noch einmal – die Beispiele gehen immer.</span>
+          </div>
+        </form>
 
         <div class="goodie-fuss">
-          <p class="goodie-nutzen">Der Klartext-Standard sind die Regeln dahinter – dieselben, nach denen diese Seite geschrieben ist. Gib die Datei Claude oder ChatGPT, und deine Mails, Angebote und Berichte kommen so zurück. Ohne dass du selbst umschreibst.</p>
-          <div class="goodie-aktion">
-            <a href="/downloads/klartext-standard.md" download class="btn-submit">Standard herunterladen</a>
-            <span class="goodie-frei">Frei verwendbar – ohne Anmeldung, ohne Haken.</span>
-            <button type="button" class="goodie-mehr" data-action="goodie">So setzt du ihn ein</button>
+          <div class="goodie-mitnahme">
+            <h3 class="goodie-mitnahme-titel">Der Klartext-Standard</h3>
+            <p class="goodie-nutzen">Die Regeln hinter dem Übersetzer – dieselben, nach denen diese Seite geschrieben ist. Gib die Datei Claude oder ChatGPT, und deine Mails, Angebote und Berichte kommen so zurück.</p>
+            <div class="goodie-aktion">
+              <a href="/downloads/klartext-standard.md" download class="btn-submit">Standard herunterladen</a>
+              <button type="button" class="goodie-mehr" data-action="goodie">So setzt du ihn ein</button>
+            </div>
+          </div>
+          <div class="goodie-mitnahme">
+            <h3 class="goodie-mitnahme-titel">Die fünf schweren Mails</h3>
+            <p class="goodie-nutzen">Fertige Vorlagen für die Fälle, in denen Floskeln am meisten kaputt machen: absagen, Preis erhöhen, Fehler eingestehen, Beileid schreiben, Geld anmahnen.</p>
+            <div class="goodie-aktion">
+              <a href="/downloads/schwere-mails.md" download class="btn-submit">Vorlagen herunterladen</a>
+              <span class="goodie-frei">Frei verwendbar – ohne Anmeldung, ohne Haken.</span>
+            </div>
           </div>
         </div>
       </div>
@@ -5235,6 +5385,93 @@
               target.scrollIntoView({ behavior: 'smooth' });
             }
           });
+        });
+      });
+
+      // ═══════════════════════════════════════════════════════════════
+      // KLARTEXT-ÜBERSETZER - eigener Satz rein, Klartext raus
+      // ═══════════════════════════════════════════════════════════════
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('klartext-form');
+        if (!form) return;
+        const eingabe = document.getElementById('klartext-eingabe');
+        const knopf = document.getElementById('klartext-senden');
+        const ergebnis = document.getElementById('klartext-ergebnis');
+        const ergebnisLabel = document.getElementById('klartext-ergebnis-label');
+        const ergebnisText = document.getElementById('klartext-ergebnis-text');
+
+        // Sätze und Beispielpaare kommen aus den versteckten Textknoten
+        // der Sektion - dort übersetzt die englische Fassung sie mit.
+        const texte = {};
+        const szenen = {};
+        form.querySelectorAll('.klartext-daten [data-text]').forEach((el) => {
+          texte[el.dataset.text] = el.textContent.trim();
+        });
+        form.querySelectorAll('.klartext-daten [data-szene]').forEach((el) => {
+          const szene = szenen[el.dataset.szene] || (szenen[el.dataset.szene] = {});
+          szene[el.dataset.teil] = el.textContent.trim();
+        });
+
+        function zeige(label, text, still) {
+          ergebnis.hidden = false;
+          ergebnis.classList.toggle('klartext-still', !!still);
+          ergebnisLabel.textContent = label;
+          ergebnisLabel.hidden = !label;
+          ergebnisText.textContent = text;
+        }
+
+        form.querySelectorAll('.klartext-chip').forEach((chip) => {
+          chip.addEventListener('click', () => {
+            const szene = szenen[chip.dataset.szene];
+            if (!szene) return;
+            eingabe.value = szene.floskel;
+            zeige(texte.beispiel, szene.klar);
+          });
+        });
+
+        form.addEventListener('submit', async (ereignis) => {
+          ereignis.preventDefault();
+          const text = eingabe.value.trim();
+          if (!text) {
+            eingabe.focus();
+            return;
+          }
+
+          // Ein unverändert abgeschicktes Beispiel braucht kein Netz -
+          // seine Übersetzung liegt fest.
+          const bekannt = Object.values(szenen).find((s) => s.floskel === text);
+          if (bekannt) {
+            zeige(texte.beispiel, bekannt.klar);
+            return;
+          }
+
+          knopf.disabled = true;
+          zeige(texte.warten, '…', true);
+          try {
+            const basis = (window.API && typeof window.API.base === 'function') ? window.API.base() : '';
+            const antwort = await fetch(`${basis}/api/klartext`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                text,
+                lang: document.documentElement.lang === 'en' ? 'en' : 'de'
+              })
+            });
+            const daten = await antwort.json();
+            if (daten.success && daten.klartext) {
+              zeige(texte.eigen, daten.klartext);
+            } else if (daten.blocked && daten.moderation) {
+              const hinweis = daten.moderation.hint ? ` ${daten.moderation.hint}` : '';
+              zeige('', `${daten.moderation.message}${hinweis}`, true);
+            } else {
+              zeige('', daten.message || texte.fehler, true);
+            }
+          } catch (fehler) {
+            zeige('', texte.fehler, true);
+          } finally {
+            knopf.disabled = false;
+          }
         });
       });
 

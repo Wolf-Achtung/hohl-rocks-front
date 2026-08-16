@@ -5013,22 +5013,53 @@
         // Frisch geladen läuft das Intro von selbst im Trailer-Takt:
         // das Skript scrollt die Seite langsam durch die Sektion, alles
         // andere - Tafeln, Welle, Finale - folgt wie beim Scrollen von
-        // Hand. Die erste eigene Eingabe (Rad, Finger, Taste, Klick)
-        // übergibt das Steuer und beendet den Trailer endgültig; ebenso
-        // jede fremde Bewegung der Seite, etwa eine Sprungmarke.
+        // Hand. Finger, Taste und Klick übergeben das Steuer und beenden
+        // den Trailer endgültig; ebenso jede fremde Bewegung der Seite,
+        // etwa eine Sprungmarke. Das Rad hält ihn nur an (siehe unten).
         //
         // Testhaken: __ohneTrailer schaltet ihn ab,
-        // __trailerSekundenJeEinheit ändert das Tempo.
+        // __trailerSekundenJeEinheit ändert das Tempo,
+        // __trailerRadRuheMs die Wartezeit nach der letzten Radbewegung.
         const TRAILER_TAKT = (window.__trailerSekundenJeEinheit || 2.8) * 1000;
+        const RAD_RUHE = window.__trailerRadRuheMs || 1200;
         let trailerVorbei = sanft || window.__ohneTrailer === true;
         let trailerLaeuft = false;
         let trailerZeit = 0;
         let trailerY = -1;
         let trailerFortschritt = 0;
+        let radTimer = null;
 
         function trailerStoppen() {
           trailerVorbei = true;
           trailerLaeuft = false;
+          if (radTimer) {
+            clearTimeout(radTimer);
+            radTimer = null;
+          }
+        }
+
+        // Startet den Film dort, wo die Seite gerade steht: beim ersten
+        // Mal ganz oben, nach einer Rad-Pause an der neuen Stelle.
+        function trailerStarten() {
+          if (trailerVorbei || trailerLaeuft) return;
+          const nenner = sectionHeight - viewportHeight;
+          if (nenner <= 0) {
+            trailerStoppen();
+            return;
+          }
+          const oben = manifestSection.getBoundingClientRect().top + window.scrollY;
+          const stand = (window.scrollY - oben) / nenner;
+          // Unterhalb des Films gibt es nichts mehr abzuspielen - wer so
+          // weit gescrollt ist, hat ihn hinter sich gelassen.
+          if (stand >= 1) {
+            trailerStoppen();
+            return;
+          }
+          trailerFortschritt = klemme(stand);
+          trailerZeit = 0;
+          trailerY = window.scrollY;
+          trailerLaeuft = true;
+          requestAnimationFrame(trailerSchritt);
         }
 
         // Nur echte Fahrt-Übernahmen stoppen - das eigene Scrollen des
@@ -5036,17 +5067,32 @@
         // Films den Sound anschaltet, die Sprache wechselt oder den Chat
         // öffnet, stellt etwas ein und will nicht ans Steuer: Klicks,
         // Tipper und Tasten auf den Schwebe-Elementen und in Overlays
-        // lassen den Trailer weiterlaufen. Das Rad stoppt immer - es ist
-        // in jeder Lage Scroll-Absicht.
+        // lassen den Trailer weiterlaufen.
         const istEinstellung = (ereignis) =>
           ereignis.target instanceof Element
           && ereignis.target.closest('.einstellungen-float, .chat-widget, .overlay');
-        for (const art of ['wheel', 'touchstart', 'keydown', 'mousedown']) {
+        for (const art of ['touchstart', 'keydown', 'mousedown']) {
           window.addEventListener(art, (ereignis) => {
-            if (art !== 'wheel' && istEinstellung(ereignis)) return;
+            if (istEinstellung(ereignis)) return;
             trailerStoppen();
           }, { passive: true });
         }
+
+        // Das Rad ist die Ausnahme: Es hält den Film an, statt ihn zu
+        // beenden. Wer ein Stück zurückdreht oder vorspult, will meist
+        // weiterschauen - nur eben von einer anderen Stelle. Ruht das
+        // Rad gut eine Sekunde, läuft der Film dort weiter. Die Pause
+        // deckt auch das Nachlaufen von Trackpads ab: Solange
+        // Rad-Ereignisse kommen, wird die Wartezeit neu gestellt.
+        window.addEventListener('wheel', () => {
+          if (trailerVorbei) return;
+          trailerLaeuft = false;
+          if (radTimer) clearTimeout(radTimer);
+          radTimer = setTimeout(() => {
+            radTimer = null;
+            trailerStarten();
+          }, RAD_RUHE);
+        }, { passive: true });
 
         function trailerSchritt(jetzt) {
           if (!trailerLaeuft) return;
@@ -5091,6 +5137,9 @@
         // Kurz durchatmen lassen - erst das Bild, dann die Worte.
         setTimeout(() => {
           if (trailerVorbei) return;
+          // Wer schon vor dem Start am Rad gedreht hat, bekommt den Film
+          // über die Rad-Ruhe - hier nicht ein zweites Mal.
+          if (radTimer) return;
           // Nur ganz oben: wer mit Sprungmarke oder aus der Historie
           // tiefer einsteigt, hat den Trailer nicht bestellt.
           if (window.scrollY > 40) {
@@ -5114,10 +5163,7 @@
               window.scrollTo(0, 0);
             }
           }
-          trailerLaeuft = true;
-          trailerZeit = 0;
-          trailerY = window.scrollY;
-          requestAnimationFrame(trailerSchritt);
+          trailerStarten();
         }, 1800);
       });
 

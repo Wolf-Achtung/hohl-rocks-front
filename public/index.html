@@ -3000,12 +3000,14 @@
         gap: 0.7rem;
       }
 
+      /* Feld und Ergebnis tragen dieselbe blaue Tönung wie die
+         Nachbar-Sektionen - Klein-Blau, nur zart. */
       .klartext-eingabe {
         flex: 1;
         resize: vertical;
         min-height: 3.4rem;
         padding: 0.7rem 0.9rem;
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(0, 47, 167, 0.16);
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 10px;
         color: #fff;
@@ -3064,7 +3066,7 @@
         flex-direction: column;
         gap: 0.25rem;
         padding: 0.9rem 1rem;
-        background: rgba(0, 0, 0, 0.25);
+        background: rgba(0, 47, 167, 0.22);
         border-left: 3px solid var(--accent-primary);
         border-radius: 0 10px 10px 0;
       }
@@ -3223,6 +3225,11 @@
       .goodie-mehr:focus-visible {
         color: #fff;
         border-color: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Auch als Link nutzbar - gleiche Anmutung wie der Knopf. */
+      a.goodie-mehr {
+        text-decoration: none;
       }
 
       @media (max-width: 768px) {
@@ -3915,11 +3922,12 @@
           <div class="hausordnung-text">
             <span class="goodie-chip">Goodie</span>
             <h3 class="hausordnung-titel">Die KI-Hausordnung</h3>
-            <p class="goodie-nutzen">Was ins Prompt-Fenster darf und was nie – eine Seite für kleine Teams. Zum Aufhängen, Verlinken und Danach-Arbeiten.</p>
+            <p class="goodie-nutzen">Was ins Prompt-Fenster darf und was nie – im Job wie privat. Eine Seite zum Aufhängen, Weitergeben und Danach-Arbeiten, als Word-Datei zum Anpassen.</p>
           </div>
           <div class="goodie-aktion">
-            <a href="/downloads/ki-hausordnung.md" download class="btn-submit">Hausordnung herunterladen</a>
+            <a href="/downloads/ki-hausordnung.docx" download class="btn-submit">Hausordnung herunterladen</a>
             <span class="goodie-frei">Frei verwendbar – ohne Anmeldung, ohne Haken.</span>
+            <a href="/downloads/ki-hausordnung.md" download class="goodie-mehr">Auch als Markdown für deine KI</a>
           </div>
         </div>
       </div>
@@ -3938,7 +3946,7 @@
         <div class="goodie-kopf">
           <span class="goodie-chip">Goodie</span>
           <h2 class="goodie-titel" id="goodie-heading">Der Klartext-Übersetzer</h2>
-          <p class="goodie-problem">Wir alle schreiben Sätze, die weniger sagen, als wir meinen. Hier drehst du das einmal um.</p>
+          <p class="goodie-problem">Wir alle schreiben Sätze, die weniger sagen, als wir meinen: die Absage, die zu weich gerät, die Bitte, die sich nicht traut, die Mail, die nach Amt klingt. Dieses Feld ist für den Moment, bevor du auf Senden drückst – tipp den Satz ein, der dir nicht gelingen will, und zurück kommt, was du eigentlich sagen willst.</p>
         </div>
 
         <form class="klartext-werkstatt" id="klartext-form">
@@ -3969,7 +3977,7 @@
             <span data-szene="verabreden" data-teil="klar">Samstag? Ich koche.</span>
             <span data-szene="ernstfall" data-teil="floskel">Melde dich, wenn du was brauchst.</span>
             <span data-szene="ernstfall" data-teil="klar">Ich ruf dich Dienstag an.</span>
-            <span data-text="beispiel">So übersetzt der Standard:</span>
+            <span data-text="beispiel">Dasselbe in Klartext:</span>
             <span data-text="eigen">Dein Satz in Klartext:</span>
             <span data-text="warten">Wird übersetzt …</span>
             <span data-text="fehler">Gerade nicht erreichbar. Probier es gleich noch einmal – die Beispiele gehen immer.</span>
@@ -3979,7 +3987,7 @@
         <div class="goodie-fuss">
           <div class="goodie-mitnahme">
             <h3 class="goodie-mitnahme-titel">Der Klartext-Standard</h3>
-            <p class="goodie-nutzen">Die Regeln hinter dem Übersetzer – dieselben, nach denen diese Seite geschrieben ist. Gib die Datei Claude oder ChatGPT, und deine Mails, Angebote und Berichte kommen so zurück.</p>
+            <p class="goodie-nutzen">Die Regeln hinter dem Übersetzer, als Datei zum Mitnehmen. Einmal bei Claude oder ChatGPT hinterlegt, schreibt deine KI jeden Text in diesem Ton – Mails, Angebote, Berichte. Du sparst dir das Umschreiben, und deine Post wird beim ersten Lesen verstanden. Wer klar schreibt, bekommt schneller Antwort.</p>
             <div class="goodie-aktion">
               <a href="/downloads/klartext-standard.md" download class="btn-submit">Standard herunterladen</a>
               <button type="button" class="goodie-mehr" data-action="goodie">So setzt du ihn ein</button>

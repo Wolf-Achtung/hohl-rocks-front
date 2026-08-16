@@ -162,7 +162,9 @@ ergebnis = ergebnis
   .replace(/href="\/downloads\/schwere-mails\.md"/g,
     'href="/downloads/five-hard-emails.md"')
   .replace(/href="\/downloads\/ki-hausordnung\.md"/g,
-    'href="/downloads/ai-house-rules.md"');
+    'href="/downloads/ai-house-rules.md"')
+  .replace(/href="\/downloads\/ki-hausordnung\.docx"/g,
+    'href="/downloads/ai-house-rules.docx"');
 
 // -------------------------------------------------------------------
 // 4. Bericht und Ausgabe

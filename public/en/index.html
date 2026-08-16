@@ -3003,12 +3003,14 @@
         gap: 0.7rem;
       }
 
+      /* Feld und Ergebnis tragen dieselbe blaue Tönung wie die
+         Nachbar-Sektionen - Klein-Blau, nur zart. */
       .klartext-eingabe {
         flex: 1;
         resize: vertical;
         min-height: 3.4rem;
         padding: 0.7rem 0.9rem;
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(0, 47, 167, 0.16);
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 10px;
         color: #fff;
@@ -3067,7 +3069,7 @@
         flex-direction: column;
         gap: 0.25rem;
         padding: 0.9rem 1rem;
-        background: rgba(0, 0, 0, 0.25);
+        background: rgba(0, 47, 167, 0.22);
         border-left: 3px solid var(--accent-primary);
         border-radius: 0 10px 10px 0;
       }
@@ -3226,6 +3228,11 @@
       .goodie-mehr:focus-visible {
         color: #fff;
         border-color: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Auch als Link nutzbar - gleiche Anmutung wie der Knopf. */
+      a.goodie-mehr {
+        text-decoration: none;
       }
 
       @media (max-width: 768px) {
@@ -3914,11 +3921,12 @@
           <div class="hausordnung-text">
             <span class="goodie-chip">Goodie</span>
             <h3 class="hausordnung-titel">The AI house rules</h3>
-            <p class="goodie-nutzen">What may go into the prompt window and what never does – one page for small teams. To pin up, link and work by.</p>
+            <p class="goodie-nutzen">What may go into the prompt window and what never does – on the job and in private life. One page to pin up, pass on and work by, as a Word file you can adapt.</p>
           </div>
           <div class="goodie-aktion">
-            <a href="/downloads/ai-house-rules.md" download class="btn-submit">Download the house rules</a>
+            <a href="/downloads/ai-house-rules.docx" download class="btn-submit">Download the house rules</a>
             <span class="goodie-frei">Free to use – no sign-up, no catch.</span>
+            <a href="/downloads/ai-house-rules.md" download class="goodie-mehr">Also as Markdown for your AI</a>
           </div>
         </div>
       </div>
@@ -3937,7 +3945,7 @@
         <div class="goodie-kopf">
           <span class="goodie-chip">Goodie</span>
           <h2 class="goodie-titel" id="goodie-heading">The plain language translator</h2>
-          <p class="goodie-problem">We all write sentences that say less than we mean. Here you get to turn that around.</p>
+          <p class="goodie-problem">We all write sentences that say less than we mean: the rejection that gets too soft, the request that doesn't dare, the email that sounds like a government office. This field is for the moment before you hit send – type in the sentence that won't come out right, and back comes what you actually want to say.</p>
         </div>
 
         <form class="klartext-werkstatt" id="klartext-form">
@@ -3968,7 +3976,7 @@
             <span data-szene="verabreden" data-teil="klar">Saturday? I'm cooking.</span>
             <span data-szene="ernstfall" data-teil="floskel">Let me know if you need anything.</span>
             <span data-szene="ernstfall" data-teil="klar">I'll call you on Tuesday.</span>
-            <span data-text="beispiel">This is how the standard translates it:</span>
+            <span data-text="beispiel">The same in plain language:</span>
             <span data-text="eigen">Your sentence in plain language:</span>
             <span data-text="warten">Translating …</span>
             <span data-text="fehler">Not reachable right now. Try again in a moment – the examples always work.</span>
@@ -3978,7 +3986,7 @@
         <div class="goodie-fuss">
           <div class="goodie-mitnahme">
             <h3 class="goodie-mitnahme-titel">The plain language standard</h3>
-            <p class="goodie-nutzen">The rules behind the translator – the same ones this site is written by. Hand the file to Claude or ChatGPT, and your emails, proposals and reports come back like this.</p>
+            <p class="goodie-nutzen">The rules behind the translator, as a file to take with you. Set it up once in Claude or ChatGPT, and your AI writes every text in this tone – emails, proposals, reports. You save yourself the rewriting, and your messages are understood on first read. Clear writers get answers faster.</p>
             <div class="goodie-aktion">
               <a href="/downloads/plain-language-standard.md" download class="btn-submit">Download the standard</a>
               <button type="button" class="goodie-mehr" data-action="goodie">How to use it</button>

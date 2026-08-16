@@ -3071,6 +3071,12 @@
         border-radius: 0 10px 10px 0;
       }
 
+      /* display:flex schlägt das hidden-Attribut - ohne diese Regel
+         stünde die leere Box als blauer Streifen auf der Seite. */
+      .klartext-ergebnis[hidden] {
+        display: none;
+      }
+
       .klartext-ergebnis-label {
         font-size: 0.75rem;
         letter-spacing: 0.08em;

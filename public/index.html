@@ -3039,7 +3039,8 @@
 
       .klartext-chips-wort {
         font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.45);
+        color: rgba(255, 255, 255, 0.68);
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
       }
 
       .klartext-chip {
@@ -3071,6 +3072,12 @@
         border-radius: 0 10px 10px 0;
       }
 
+      /* display:flex schlägt das hidden-Attribut - ohne diese Regel
+         stünde die leere Box als blauer Streifen auf der Seite. */
+      .klartext-ergebnis[hidden] {
+        display: none;
+      }
+
       .klartext-ergebnis-label {
         font-size: 0.75rem;
         letter-spacing: 0.08em;
@@ -3093,37 +3100,112 @@
         font-weight: 400;
       }
 
-      /* Die KI-Hausordnung am Ende von "Apropos Technik": eine schlanke
-         Glaskarte im Stil der Goodie-Sektion. */
-      .hausordnung {
+      /* Kapitelzeilen: das wiederkehrende Muster über jeder Sektion,
+         gleiche Anmutung wie das Portfolio-Etikett. */
+      .kapitel-zeile {
+        margin: 0 0 0.75rem;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+      }
+
+      /* Der Wegweiser an der Schwelle nach dem Film: einmal die ganze
+         Karte der Seite, dann nie wieder im Weg. */
+      .wegweiser {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        justify-content: space-between;
-        gap: 2rem;
-        max-width: 56rem;
-        margin: 2.5rem auto 0;
-        padding: 1.5rem 2rem;
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: var(--glass-blur);
-        -webkit-backdrop-filter: var(--glass-blur);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 16px;
-        text-align: left;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1.2rem;
       }
 
-      .hausordnung-titel {
-        margin: 0 0 0.4rem;
-        font-size: 1.1rem;
-        font-weight: 700;
+      .wegweiser-wort {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.65);
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+      }
+
+      .wegweiser-chip {
+        padding: 0.3rem 0.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.82rem;
+        text-decoration: none;
+        transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      }
+
+      .wegweiser-chip:hover,
+      .wegweiser-chip:focus-visible {
         color: #fff;
+        border-color: rgba(255, 255, 255, 0.65);
+        background: rgba(255, 255, 255, 0.08);
       }
 
-      @media (max-width: 768px) {
-        .hausordnung {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 1.25rem;
-        }
+      /* Mitnahme-Knöpfe: leise Verwandte von btn-submit. Downloads sind
+         Mitgaben, keine Handlungsaufforderungen - der eine laute Knopf
+         je Sektion gehört dem Werkzeug. */
+      .btn-mitnahme {
+        display: inline-block;
+        padding: 0.55rem 1rem;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: background 0.2s ease, border-color 0.2s ease;
+      }
+
+      .btn-mitnahme::after {
+        content: ' ↓';
+      }
+
+      .btn-mitnahme:hover,
+      .btn-mitnahme:focus-visible {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: #fff;
+      }
+
+      /* Die Einordnung der Modelle als Fußnote unter den Antworten. */
+      .modelle-fussnote {
+        margin: 1.5rem auto 0;
+        max-width: 44rem;
+        font-size: 0.85rem;
+        font-style: italic;
+        line-height: 1.6;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      /* Fingerzeig am Ende der Technik-Sektion auf das Regal. */
+      .mitnahme-verweis {
+        margin: 2.2rem auto 0;
+        text-align: center;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+      }
+
+      .mitnahme-verweis a {
+        color: #fff;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+      }
+
+      .mitnahme-verweis a:hover,
+      .mitnahme-verweis a:focus-visible {
+        border-color: #fff;
+      }
+
+      .goodie-frei-zeile {
+        margin: 0;
+        text-align: center;
       }
 
       .goodie-problem {
@@ -3132,13 +3214,13 @@
         color: var(--text-secondary);
       }
 
-      /* Zwei Mitnahmen nebeneinander: der Standard und die fünf
-         schweren Mails. Die Aktionen sitzen per margin-auto auf einer
-         Linie, egal wie lang die Texte darüber sind. */
+      /* Das Regal: drei Mitnahmen nebeneinander. Die Aktionen sitzen
+         per margin-auto auf einer Linie, egal wie lang die Texte
+         darüber sind. */
       .goodie-fuss {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.6rem;
         padding-top: 1.25rem;
         border-top: 1px solid rgba(255, 255, 255, 0.12);
       }
@@ -3204,9 +3286,12 @@
         white-space: nowrap;
       }
 
+      /* Hell genug fürs bewegte Video dahinter - 0.45 fiel auf hellen
+         Frames unter die Lesbarkeitsschwelle. */
       .goodie-frei {
         font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.45);
+        color: rgba(255, 255, 255, 0.68);
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
       }
 
       .goodie-mehr {
@@ -3234,9 +3319,14 @@
 
       @media (max-width: 768px) {
         /* Feld und Knopf untereinander - nebeneinander bliebe dem
-           Text nur eine schmale Spalte. */
+           Text nur eine schmale Spalte. Und genug Höhe, damit der
+           Platzhalter-Satz ganz zu lesen ist. */
         .klartext-feld {
           flex-direction: column;
+        }
+
+        .klartext-eingabe {
+          min-height: 5.4rem;
         }
 
         .klartext-knopf {
@@ -3699,15 +3789,24 @@
     <section class="tools-section delayed-section" id="ausprobieren">
       <div class="section-container">
         <div class="section-header fade-in">
+          <p class="kapitel-zeile">Zum Ausprobieren</p>
           <h2 class="section-title hero-style-text">
             Apropos Technik...
           </h2>
           <p class="section-subtitle">
             Eine Frage. Vier Modelle. Vier verschiedene Antworten.
           </p>
-          <p class="section-subtitle" style="margin-top: 1rem; font-style: italic; opacity: 0.85;">
-            Claude analysiert, GPT formuliert, Perplexity recherchiert, Gemini verknüpft – gleiche Frage, unterschiedliche Zugänge. Wer das versteht, nutzt KI nicht nur – sondern führt sie.
-          </p>
+          <!-- Der Wegweiser an der Schwelle: Wer hier ankommt - vom Film
+               oder per Sprungknopf -, sieht einmal die ganze Karte der
+               Seite. Bewusst keine feste Leiste: die Seite ist ein
+               Kinosaal, keine App. -->
+          <nav class="wegweiser" aria-label="Auf dieser Seite">
+            <span class="wegweiser-wort">Auf dieser Seite:</span>
+            <a class="wegweiser-chip" href="#ki-battle-inline">Modelle vergleichen</a>
+            <a class="wegweiser-chip" href="#klartext">Klartext übersetzen</a>
+            <a class="wegweiser-chip" href="#mitnehmen">Goodies mitnehmen</a>
+            <a class="wegweiser-chip" href="#portfolio">Projekte ansehen</a>
+          </nav>
         </div>
 
         <!-- KI-Vergleich Inline -->
@@ -3912,24 +4011,18 @@
 
             <!-- Was der Test bedeutet - erscheint erst nach einer Runde -->
             <p class="guard-summary" id="guard-summary" hidden></p>
+
+            <!-- Die Einordnung der vier Modelle landet erst, wenn man
+                 ihre Antworten nebeneinander gesehen hat - deshalb steht
+                 sie hier und nicht mehr als dritter Absatz im Kopf. -->
+            <p class="modelle-fussnote">Claude analysiert, GPT formuliert, Perplexity recherchiert, Gemini verknüpft – gleiche Frage, unterschiedliche Zugänge. Wer das versteht, nutzt KI nicht nur – sondern führt sie.</p>
           </div>
         </div>
 
-        <!-- Mitnahme der Sektion: die KI-Hausordnung. Sie wohnt bewusst
-             hier bei Schutz und Leitplanken statt beim Klartext-Goodie -
-             Sprache und Sicherheit sind zwei Regale. -->
-        <div class="hausordnung fade-in">
-          <div class="hausordnung-text">
-            <span class="goodie-chip">Goodie</span>
-            <h3 class="hausordnung-titel">Die KI-Hausordnung</h3>
-            <p class="goodie-nutzen">Was ins Prompt-Fenster darf und was nie – im Job wie privat. Eine Seite zum Aufhängen, Weitergeben und Danach-Arbeiten, als Word-Datei zum Anpassen.</p>
-          </div>
-          <div class="goodie-aktion">
-            <a href="/downloads/ki-hausordnung.docx" download class="btn-submit">Hausordnung herunterladen</a>
-            <span class="goodie-frei">Frei verwendbar – ohne Anmeldung, ohne Haken.</span>
-            <a href="/downloads/ki-hausordnung.md" download class="goodie-mehr">Auch als Markdown für deine KI</a>
-          </div>
-        </div>
+        <!-- Die Hausordnung wohnt im Mitnehmen-Regal. Hier bleibt der
+             Fingerzeig für alle, die beim Leitplanken-Test denken: so
+             etwas bräuchte mein Team. -->
+        <p class="mitnahme-verweis fade-in">Zum Mitnehmen: <a href="#mitnehmen">die KI-Hausordnung ↓</a></p>
       </div>
     </section>
 
@@ -3944,15 +4037,15 @@
     <section class="goodie-section" id="klartext" aria-labelledby="goodie-heading">
       <div class="goodie-inner fade-in">
         <div class="goodie-kopf">
-          <span class="goodie-chip">Goodie</span>
+          <p class="kapitel-zeile">Zum Mitnehmen</p>
           <h2 class="goodie-titel" id="goodie-heading">Der Klartext-Übersetzer</h2>
-          <p class="goodie-problem">Wir alle schreiben Sätze, die weniger sagen, als wir meinen: die Absage, die zu weich gerät, die Bitte, die sich nicht traut, die Mail, die nach Amt klingt. Dieses Feld ist für den Moment, bevor du auf Senden drückst – tipp den Satz ein, der dir nicht gelingen will, und zurück kommt, was du eigentlich sagen willst.</p>
+          <p class="goodie-problem">Wir alle schreiben Sätze, die weniger sagen, als wir meinen. Dieses Feld ist für den Moment, bevor du auf Senden drückst.</p>
         </div>
 
         <form class="klartext-werkstatt" id="klartext-form">
           <label class="klartext-label" for="klartext-eingabe">Welchen Satz schiebst du gerade vor dir her?</label>
           <div class="klartext-feld">
-            <textarea id="klartext-eingabe" class="klartext-eingabe" rows="2" maxlength="1000" placeholder="Eine Mail, eine Absage, eine Bitte – schreib sie hierher."></textarea>
+            <textarea id="klartext-eingabe" class="klartext-eingabe" rows="2" maxlength="1000" placeholder="Die Absage, die zu weich gerät, die Mail, die nach Amt klingt – schreib deinen Satz hierher."></textarea>
             <button type="submit" class="btn-submit klartext-knopf" id="klartext-senden">In Klartext</button>
           </div>
           <div class="klartext-chips" role="group" aria-label="Beispiele zum Ausprobieren">
@@ -3984,24 +4077,35 @@
           </div>
         </form>
 
-        <div class="goodie-fuss">
+        <!-- Das Regal: alles Mitnehmbare an einem Ort. Die Knöpfe sind
+             bewusst leise - der eine laute Knopf der Sektion gehört dem
+             Übersetzer. -->
+        <div class="goodie-fuss" id="mitnehmen">
           <div class="goodie-mitnahme">
             <h3 class="goodie-mitnahme-titel">Der Klartext-Standard</h3>
-            <p class="goodie-nutzen">Die Regeln hinter dem Übersetzer, als Datei zum Mitnehmen. Einmal bei Claude oder ChatGPT hinterlegt, schreibt deine KI jeden Text in diesem Ton – Mails, Angebote, Berichte. Du sparst dir das Umschreiben, und deine Post wird beim ersten Lesen verstanden. Wer klar schreibt, bekommt schneller Antwort.</p>
+            <p class="goodie-nutzen">Einmal bei Claude oder ChatGPT hinterlegt, schreibt deine KI jeden Text in diesem Ton – du sparst dir das Umschreiben.</p>
             <div class="goodie-aktion">
-              <a href="/downloads/klartext-standard.md" download class="btn-submit">Standard herunterladen</a>
+              <a href="/downloads/klartext-standard.md" download class="btn-mitnahme">Standard herunterladen</a>
               <button type="button" class="goodie-mehr" data-action="goodie">So setzt du ihn ein</button>
             </div>
           </div>
           <div class="goodie-mitnahme">
             <h3 class="goodie-mitnahme-titel">Die fünf schweren Mails</h3>
-            <p class="goodie-nutzen">Fertige Vorlagen für die Fälle, in denen Floskeln am meisten kaputt machen: absagen, Preis erhöhen, Fehler eingestehen, Beileid schreiben, Geld anmahnen.</p>
+            <p class="goodie-nutzen">Fertige Vorlagen für absagen, Preis erhöhen, Fehler eingestehen, Beileid schreiben, Geld anmahnen.</p>
             <div class="goodie-aktion">
-              <a href="/downloads/schwere-mails.md" download class="btn-submit">Vorlagen herunterladen</a>
-              <span class="goodie-frei">Frei verwendbar – ohne Anmeldung, ohne Haken.</span>
+              <a href="/downloads/schwere-mails.md" download class="btn-mitnahme">Vorlagen herunterladen</a>
+            </div>
+          </div>
+          <div class="goodie-mitnahme">
+            <h3 class="goodie-mitnahme-titel">Die KI-Hausordnung</h3>
+            <p class="goodie-nutzen">Was ins Prompt-Fenster darf und was nie – im Job wie privat, als Word-Datei zum Anpassen.</p>
+            <div class="goodie-aktion">
+              <a href="/downloads/ki-hausordnung.docx" download class="btn-mitnahme">Hausordnung herunterladen</a>
+              <a href="/downloads/ki-hausordnung.md" download class="goodie-mehr">Auch als Markdown</a>
             </div>
           </div>
         </div>
+        <p class="goodie-frei goodie-frei-zeile">Alles frei verwendbar – ohne Anmeldung, ohne Haken.</p>
       </div>
     </section>
 

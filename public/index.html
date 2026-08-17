@@ -3214,13 +3214,14 @@
         color: var(--text-secondary);
       }
 
-      /* Das Regal: zwei Mitnahmen nebeneinander. Die Aktionen sitzen
+      /* Das Regal: drei Mitnahmen nebeneinander - der Fahrplan in der
+         Mitte verweist auf seine beiden Nachbarn. Die Aktionen sitzen
          per margin-auto auf einer Linie, egal wie lang die Texte
          darüber sind. */
       .goodie-fuss {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.6rem;
         padding-top: 1.25rem;
         border-top: 1px solid rgba(255, 255, 255, 0.12);
       }
@@ -4090,6 +4091,13 @@
               <a href="/downloads/klartext-standard.md" download class="btn-mitnahme">Standard herunterladen</a>
               <button type="button" class="goodie-mehr" data-action="goodie">So setzt du ihn ein</button>
               <a href="/downloads/schwere-mails.md" download class="goodie-mehr">Dazu: fünf fertige Mail-Vorlagen</a>
+            </div>
+          </div>
+          <div class="goodie-mitnahme">
+            <h3 class="goodie-mitnahme-titel">Der KI-Fahrplan</h3>
+            <p class="goodie-nutzen">Eine Datei, die dich interviewt: Deine KI stellt dir sieben Fragen und baut daraus deinen Plan für die ersten 30 Tage – mit Hausregeln und Monats-Check.</p>
+            <div class="goodie-aktion">
+              <a href="/downloads/ki-fahrplan.md" download class="btn-mitnahme">Fahrplan herunterladen</a>
             </div>
           </div>
           <div class="goodie-mitnahme">

@@ -3217,13 +3217,14 @@
         color: var(--text-secondary);
       }
 
-      /* Das Regal: zwei Mitnahmen nebeneinander. Die Aktionen sitzen
+      /* Das Regal: drei Mitnahmen nebeneinander - der Fahrplan in der
+         Mitte verweist auf seine beiden Nachbarn. Die Aktionen sitzen
          per margin-auto auf einer Linie, egal wie lang die Texte
          darüber sind. */
       .goodie-fuss {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.6rem;
         padding-top: 1.25rem;
         border-top: 1px solid rgba(255, 255, 255, 0.12);
       }
@@ -4089,6 +4090,13 @@
               <a href="/downloads/plain-language-standard.md" download class="btn-mitnahme">Download the standard</a>
               <button type="button" class="goodie-mehr" data-action="goodie">How to use it</button>
               <a href="/downloads/five-hard-emails.md" download class="goodie-mehr">Plus: five ready-made email templates</a>
+            </div>
+          </div>
+          <div class="goodie-mitnahme">
+            <h3 class="goodie-mitnahme-titel">The AI roadmap</h3>
+            <p class="goodie-nutzen">A file that interviews you: your AI asks you seven questions and builds your plan for the first 30 days – with house rules and a monthly check.</p>
+            <div class="goodie-aktion">
+              <a href="/downloads/ai-roadmap.md" download class="btn-mitnahme">Download the roadmap</a>
             </div>
           </div>
           <div class="goodie-mitnahme">

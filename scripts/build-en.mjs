@@ -164,7 +164,9 @@ ergebnis = ergebnis
   .replace(/href="\/downloads\/ki-hausordnung\.md"/g,
     'href="/downloads/ai-house-rules.md"')
   .replace(/href="\/downloads\/ki-hausordnung\.docx"/g,
-    'href="/downloads/ai-house-rules.docx"');
+    'href="/downloads/ai-house-rules.docx"')
+  .replace(/href="\/downloads\/ki-fahrplan\.md"/g,
+    'href="/downloads/ai-roadmap.md"');
 
 // -------------------------------------------------------------------
 // 4. Bericht und Ausgabe

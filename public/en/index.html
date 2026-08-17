@@ -6838,9 +6838,16 @@
               return;
             }
 
-            if (!response.ok) throw new Error('API Error');
+            const data = await response.json().catch(() => ({}));
 
-            const data = await response.json();
+            if (!response.ok) {
+              // Das Backend schickt eine lesbare message (sendError in
+              // helpers.js) - die zeigt mehr als "gerade nicht erreichbar",
+              // etwa "Zeitüberschreitung" statt eines pauschalen Fehlers.
+              responseText.textContent = data.message || 'Entschuldige, gerade kann ich nicht antworten. Probier es spaeter nochmal!';
+              responseText.classList.remove('loading');
+              return;
+            }
 
             // Content moderation detection
             if (data.model === 'moderation' || data.flagged) {

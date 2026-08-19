@@ -72,7 +72,19 @@
 
     <!-- Results Section -->
     <div id="results-section" class="results-section" style="display: none;">
-      
+
+      <!-- Leitplanke: greift die Moderation, kommt HTTP 200 mit blocked:true
+           und ohne responses-Array zurueck. Das gehoert erklaert, nicht als
+           Panne gemeldet - die Seite handelt von KI-Sicherheit. -->
+      <div class="battle-block" id="battle-block" hidden>
+        <div class="battle-block-head">
+          <span class="battle-block-icon" aria-hidden="true">🛡</span>
+          <span class="battle-block-label" id="battle-block-label"></span>
+        </div>
+        <p class="battle-block-message" id="battle-block-message"></p>
+        <p class="battle-block-hint" id="battle-block-hint"></p>
+      </div>
+
       <!-- Battle Stats -->
       <div class="battle-stats">
         <div class="stat-card">
@@ -104,7 +116,7 @@
                 🤖
               </div>
               <div>
-                <h3 class="model-name">Claude Sonnet 4</h3>
+                <h3 class="model-name">Claude</h3>
                 <p class="model-desc">Anthropic</p>
               </div>
             </div>
@@ -139,7 +151,7 @@
                 ✨
               </div>
               <div>
-                <h3 class="model-name">GPT-4o Mini</h3>
+                <h3 class="model-name">GPT</h3>
                 <p class="model-desc">OpenAI</p>
               </div>
             </div>
@@ -174,7 +186,7 @@
                 🔍
               </div>
               <div>
-                <h3 class="model-name">Perplexity Sonar Pro</h3>
+                <h3 class="model-name">Perplexity</h3>
                 <p class="model-desc">Perplexity AI</p>
               </div>
             </div>
@@ -209,7 +221,7 @@
                 💎
               </div>
               <div>
-                <h3 class="model-name">Gemini 2.0 Flash</h3>
+                <h3 class="model-name">Gemini</h3>
                 <p class="model-desc">Google</p>
               </div>
             </div>

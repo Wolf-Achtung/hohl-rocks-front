@@ -642,3 +642,59 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(245, 158, 11, 0.5);
 }
+
+/* ===================================================================
+   LEITPLANKE - Meldung, wenn die Moderation eine Eingabe abfaengt
+   =================================================================== */
+/* Gleiche Rolle wie das Panel auf index.html: erklaeren, warum nichts
+   an die Modelle ging. Vorher fehlte es hier, und eine abgefangene
+   Eingabe endete in einer allgemeinen Fehlermeldung. */
+
+.battle-block {
+  margin-bottom: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid rgba(255, 200, 120, 0.6);
+  border-radius: 12px;
+}
+
+.battle-block[hidden] {
+  display: none;
+}
+
+/* Bei Hinweisen auf eine Notlage ein anderer Ton - kein Warnsignal. */
+.battle-block.care {
+  border-left-color: rgba(140, 190, 255, 0.7);
+}
+
+.battle-block-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.battle-block-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.battle-block-message {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.battle-block-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+}

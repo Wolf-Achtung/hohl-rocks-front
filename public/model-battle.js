@@ -255,6 +255,18 @@ async function startBattle() {
     }
 
     const data = await response.json();
+
+    // Greift die Moderation, antwortet das Backend mit HTTP 200,
+    // blocked:true und OHNE responses-Array. Das lief hier bisher direkt in
+    // displayResults, wo `responses.filter` an undefined scheiterte - der
+    // Besucher sah "Fehler beim Battle. Bitte versuche es erneut." und
+    // versuchte es erneut, mit demselben Ergebnis. Nichts davon war ein
+    // Fehler: die Leitplanke hat getan, wofuer sie da ist.
+    if (data.blocked) {
+      showBlockNotice(data.moderation);
+      return;
+    }
+
     currentBattleResults = data;
 
     displayResults(data);
@@ -281,6 +293,8 @@ async function startBattle() {
 }
 
 function resetResponseCards() {
+  hideBlockNotice();
+
   MODELS.forEach(model => {
     const loadingEl = document.getElementById(`loading-${model}`);
     const responseEl = document.getElementById(`response-${model}`);
@@ -335,7 +349,47 @@ function resetResponseCards() {
   if (modelCountEl) modelCountEl.textContent = '-';
 }
 
+// Zeigt, warum die Eingabe nicht an die Modelle ging. Die Karten bleiben
+// dabei verborgen - es gibt nichts zu vergleichen.
+function showBlockNotice(moderation = {}) {
+  const box = document.getElementById('battle-block');
+  const label = document.getElementById('battle-block-label');
+  const message = document.getElementById('battle-block-message');
+  const hint = document.getElementById('battle-block-hint');
+
+  if (label) label.textContent = moderation.label || 'Abgefangen';
+  if (message) message.textContent = moderation.message || 'Diese Anfrage habe ich abgefangen.';
+  if (hint) hint.textContent = moderation.hint || '';
+  if (box) {
+    box.classList.toggle('care', !!moderation.care);
+    box.hidden = false;
+  }
+
+  const grid = document.querySelector('.responses-grid');
+  if (grid) grid.style.display = 'none';
+  const stats = document.querySelector('.battle-stats');
+  if (stats) stats.style.display = 'none';
+}
+
+function hideBlockNotice() {
+  const box = document.getElementById('battle-block');
+  if (box) box.hidden = true;
+  const grid = document.querySelector('.responses-grid');
+  if (grid) grid.style.display = '';
+  const stats = document.querySelector('.battle-stats');
+  if (stats) stats.style.display = '';
+}
+
 function displayResults(data) {
+  // Riegel fuer jede andere Antwort ohne responses: lieber eine benannte
+  // Meldung als ein TypeError, den der Aufrufer als "Bitte erneut versuchen"
+  // weiterreicht.
+  if (!Array.isArray(data?.responses)) {
+    debugError('Model Battle', 'Antwort ohne responses-Array:', data);
+    showToast('Unerwartete Antwort vom Server.', 'error');
+    return;
+  }
+
   const { responses, meta } = data;
 
   // Find fastest successful model
